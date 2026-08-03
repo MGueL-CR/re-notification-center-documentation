@@ -1,0 +1,37 @@
+.ͼn {
+    color: var(--clink);
+    font-weight: bold;
+    filter: brightness(40%);
+}
+
+.ͼk {
+    color: var(--clink);
+}
+
+.ͼj {
+    color: var(--clink);
+    filter: sepia(40%)
+}
+
+.ͼf,
+.ͼo {
+    color: var(--clink);
+    filter: brightness(33%);
+}
+
+.ͼg {
+    color: #982c61;
+    padding: 0 3px;
+    font-weight: bold;
+}
+
+.ͼm {
+    color: var(--cemph);
+    filter: brightness(65%);
+}
+
+.ͼe {
+    color: var(--cemph);
+    font-style: italic;
+    filter: sepia(55%)
+}

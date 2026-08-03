@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="es" data-theme="sakura">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Guia de la documentación</title>
+
+		<link rel="stylesheet" href="/assets/css/classless.css" />
+		<link rel="stylesheet" href="/assets/css/hljs-style.css" />
+		<link rel="stylesheet" href="/assets/css/styles.css" />
+	</head>
+
+	<body>
+		<header class="p-1">
+			<div class="card">
+				<h1>Documentación de Re: Notification Center</h1>
+				<hr />
+				<p>
+					El objetivo de esta pagina es documentar y organizar todo lo
+					visto para entenger como está construida la extensión
+					Notification Center. Toda la documentación será basada en la
+					versión 24.0 de dicha extension, de acuerdo a como se vaya
+					desarrollando aparareceran la documentación de los nuevos
+					cambios.
+				</p>
+			</div>
+		</header>
+		<main>
+			<aside>
+				<h2>Guía</h2>
+				<table id="menu-main" style="width: 100%">
+					<thead>
+						<tr>
+							<th>Información</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td class="opcion-menu" data-name="conceptos">
+								Conceptos
+							</td>
+						</tr>
+						<tr>
+							<td class="opcion-menu" data-name="estructura">
+								Estructura
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</aside>
+			<article>
+				<header>
+					<h2>Selecciona una opción del menú.</h2>
+				</header>
+				<section>
+					<div id="show-content" class="card"></div>
+				</section>
+			</article>
+			<div class="row">
+				<div class="col"></div>
+			</div>
+		</main>
+		<script>
+			document.addEventListener("DOMContentLoaded", () => {
+				const menu = document.getElementById("menu-main");
+				const contenedor = document.getElementById("show-content");
+
+				menu.addEventListener("click", async (evento) => {
+					// Validamos que el clic haya sido en un elemento con la clase correcta
+					if (evento.target.classList.contains("opcion-menu")) {
+						const urlDestino = `/assets/pages/${evento.target.getAttribute("data-name")}.html`;
+
+						try {
+							const respuesta = await fetch(urlDestino);
+
+							if (!respuesta.ok) {
+								throw new Error(
+									"No se pudo cargar el contenido",
+								);
+							}
+
+							const html = await respuesta.text();
+							contenedor.innerHTML = html;
+						} catch (error) {
+							contenedor.innerHTML = `<p>Error al cargar la sección: ${error.message}</p>`;
+						}
+					}
+				});
+			});
+		</script>
+	</body>
+</html>
