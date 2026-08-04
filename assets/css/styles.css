@@ -1,3 +1,85 @@
+/**
+*   Seccion para personalizar la pagina de error 404.
+*
+*/
+
+.error-404-page {
+    position: relative;
+    height: 60vh;
+}
+
+.error-404-code {
+    position: absolute;
+    bottom: 0;
+    width: fit-content;
+}
+
+.error-404-icon {
+    position: absolute;
+    top: 5rem;
+    right: 0;
+    background-image: url(/assets/images/404-icon.png);
+    background-repeat: no-repeat;
+    background-position: right center;
+    background-size: contain;
+    background-clip: border-box;
+    height: 50vh;
+    z-index: -1;
+}
+
+/**
+* Seccion controla la enumeración en la lista del temario
+*
+*/
+
+.main-list,
+.sub-list,
+.sub-sub-list {
+    list-style: none;
+}
+
+.main-list {
+    counter-reset: section;
+}
+
+.main-list>li {
+    counter-reset: subsection;
+}
+
+.main-list .list-item {
+    padding: 2px 4px;
+    border-radius: 3px;
+}
+
+.main-list .list-item:hover {
+    color: var(--cemph);
+    background-color: var(--cbg);
+}
+
+.main-list>li::before {
+    counter-increment: section;
+    content: counter(section) ". ";
+}
+
+.main-list .sub-list>li {
+    counter-reset: subsubsection;
+}
+
+.main-list .sub-list>li::before {
+    counter-increment: subsection;
+    content: counter(section) "." counter(subsection) ". ";
+}
+
+.main-list .sub-list .sub-sub-list li::before {
+    counter-increment: subsubsection;
+    content: counter(section) "." counter(subsection) "." counter(subsubsection) ". ";
+}
+
+/** 
+* Seccion para colorear el texto dentro de <code>.
+*
+*/
+
 .ͼn {
     color: var(--clink);
     font-weight: bold;

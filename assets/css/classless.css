@@ -13,7 +13,7 @@ Table of Contents:
 :root {
 	--navpos: fixed;
 	--rem: 11pt;
-	--width: 800px;
+	--width: 1024px;
 	--font-p: 300 1em/1.6 'Roboto', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
 	--font-h: 300 1em/1.3 'Roboto', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
 	--font-c: 86%/1.4 monospace;
