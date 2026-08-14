@@ -1,4 +1,18 @@
 /**
+*   Seccion para complementar selectores o elementos sin estilo
+*
+*/
+
+.samp-block {
+    margin: 0.5rem 0 1rem;
+    padding: 0.8rem;
+    border-radius: 0.4rem;
+    background-color: var(--clight);
+    border: 1px solid var(--cmed);
+    color: var(--cfg);
+}
+
+/**
 *   Seccion para personalizar la pagina de error 404.
 *
 */
@@ -33,9 +47,12 @@
 */
 
 .main-list,
-.sub-list,
-.sub-sub-list {
+.list-level-1,
+.list-level-2,
+.list-level-3 {
     list-style: none;
+    padding-left: 1em;
+    margin: 0;
 }
 
 .main-list {
@@ -43,7 +60,8 @@
 }
 
 .main-list>li {
-    counter-reset: subsection;
+    counter-reset: section-1;
+    cursor: pointer;
 }
 
 .main-list .list-item {
@@ -61,33 +79,50 @@
     content: counter(section) ". ";
 }
 
-.main-list .sub-list>li {
-    counter-reset: subsubsection;
+.main-list .list-level-1>li {
+    counter-reset: section-2;
+    cursor: pointer;
 }
 
-.main-list .sub-list>li::before {
-    counter-increment: subsection;
-    content: counter(section) "." counter(subsection) ". ";
+.main-list .list-level-1>li::before {
+    counter-increment: section-1;
+    content: counter(section) "." counter(section-1) ". ";
 }
 
-.main-list .sub-list .sub-sub-list li::before {
-    counter-increment: subsubsection;
-    content: counter(section) "." counter(subsection) "." counter(subsubsection) ". ";
+.main-list .list-level-1 .list-level-2>li {
+    counter-reset: section-3;
+    cursor: pointer;
+}
+
+.main-list .list-level-1 .list-level-2>li::before {
+    counter-increment: section-2;
+    content: counter(section) "." counter(section-1) "." counter(section-2) ". ";
+}
+
+.main-list .list-level-1 .list-level-2 .list-level-3>li {
+    cursor: pointer;
+}
+
+.main-list .list-level-1 .list-level-2 .list-level-3>li::before {
+    counter-increment: section-3;
+    content: counter(section) "." counter(section-1) "." counter(section-2) "." counter(section-3) ". ";
 }
 
 /** 
-* Seccion para colorear el texto dentro de <code>.
+* Seccion para decorar el texto dentro de <code>.
 *
 */
 
+.ͼl {
+    color: #ac4f23;
+}
+
 .ͼn {
-    color: var(--clink);
-    font-weight: bold;
-    filter: brightness(40%);
+    color: #b8802b;
 }
 
 .ͼk {
-    color: var(--clink);
+    color: #3a843f;
 }
 
 .ͼj {
@@ -97,12 +132,13 @@
 
 .ͼf,
 .ͼo {
+    /* color: #1f4e94; */
     color: var(--clink);
     filter: brightness(33%);
 }
 
 .ͼg {
-    color: #982c61;
+    color: #ab4f7a;
     padding: 0 3px;
     font-weight: bold;
 }
