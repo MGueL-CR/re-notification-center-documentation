@@ -2,8 +2,7 @@
 *   Seccion para complementar selectores o elementos sin estilo
 *
 */
-
-.samp-block {
+pre:has(> .samp-block) {
     margin: 0.5rem 0 1rem;
     padding: 0.8rem;
     border-radius: 0.4rem;
@@ -49,9 +48,9 @@
 .main-list,
 .list-level-1,
 .list-level-2,
-.list-level-3 {
+.list-level-3,
+.list-level-4 {
     list-style: none;
-    padding-left: 1em;
     margin: 0;
 }
 
@@ -100,12 +99,23 @@
 }
 
 .main-list .list-level-1 .list-level-2 .list-level-3>li {
+    counter-reset: section-4;
     cursor: pointer;
 }
 
 .main-list .list-level-1 .list-level-2 .list-level-3>li::before {
     counter-increment: section-3;
     content: counter(section) "." counter(section-1) "." counter(section-2) "." counter(section-3) ". ";
+}
+
+
+.main-list .list-level-1 .list-level-2 .list-level-3 .list-level-4>li {
+    cursor: pointer;
+}
+
+.main-list .list-level-1 .list-level-2 .list-level-3 .list-level-4>li::before {
+    counter-increment: section-4;
+    content: counter(section) "." counter(section-1) "." counter(section-2) "." counter(section-3) "." counter(section-4) ". ";
 }
 
 /** 
