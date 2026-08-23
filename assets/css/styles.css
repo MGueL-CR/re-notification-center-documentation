@@ -2,13 +2,65 @@
 *   Seccion para complementar selectores o elementos sin estilo
 *
 */
-pre:has(> .samp-block) {
-    margin: 0.5rem 0 1rem;
+
+.borderless {
+    border: none;
+    outline: none;
+}
+
+.float-span {
+    position: absolute;
+    padding: 0.5em;
+    background-color: var(--cemphbg);
+    border-top: 2px solid var(--clink);
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    font-size: medium;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: var(--cfg);
+}
+
+.float-span::after {
+    content: ":";
+}
+
+hr+pre,
+hr+p {
+    margin-top: 1.75rem;
+}
+
+pre {
+    text-wrap: auto;
+    /*white-space: pre-line;*/
+}
+
+pre:has(> samp) {
     padding: 0.8rem;
     border-radius: 0.4rem;
     background-color: var(--clight);
     border: 1px solid var(--cmed);
     color: var(--cfg);
+}
+
+pre>samp {
+    display: block;
+}
+
+pre:has(> .cm-line) {
+    padding: 0.8rem;
+    border-radius: 0.4rem;
+    background-color: var(--clight);
+    border: 1px solid var(--cmed);
+    border-left: .4rem solid var(--cemph);
+    color: var(--cfg);
+}
+
+pre>.cm-line {
+    font: var(--font-c);
+    margin: 0;
+    position: relative;
+    padding: .2em;
 }
 
 /**
@@ -162,4 +214,9 @@ pre:has(> .samp-block) {
     color: var(--cemph);
     font-style: italic;
     filter: sepia(55%)
+}
+
+.cm-line {
+    display: block;
+    padding: 0 2px 0 6px;
 }
