@@ -4,7 +4,7 @@
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>Guia de la documentación</title>
+	<title>Documentación de Re: Notification Center</title>
 	<link rel="shortcut icon" href="/assets/images/favicon.ico" type="image/x-icon">
 	<link rel="stylesheet" href="/assets/css/classless.css" />
 	<link rel="stylesheet" href="/assets/css/hljs-style.css" />
@@ -12,97 +12,121 @@
 </head>
 
 <body>
-	<header class="px-1">
+	<header id="headerPage" class="px-1">
 		<section>
-			<div class="card hint">
-				<h1>Documentación de Re: Notification Center</h1>
-				<hr />
-				<p>
-					El objetivo de esta página es documentar y organizar
-					todo lo visto para entenger como está construida la
-					extensión Notification Center. Toda la documentación
-					está basada en la versión 24.0 de dicha extension, de
-					acuerdo a como se vaya desarrollando aparareceran la
-					documentación de los nuevos cambios.
+			<div class="card">
+				<h1>Extensión Re: Notification Center</h1>
+				<hr class="my-1" />
+				<p class="hint p-1">
+					Re: Notification Center es una continuacion de la extensión original <a
+						href="https://github.com/Selenium-H/Notification-Center" target="_blank"
+						rel="noopener noreferrer">Notification Center</a> por parte de <a
+						href="https://github.com/Selenium-H" target="_blank" rel="noopener noreferrer">Selenium-H</a>.
+					Esta nueva extensión plantea continuar con el legado, dejando de ser un <code>fork</code> más de
+					la
+					extension y con el objetivo de lograr compatibilidad al escritorio de Gnome a partir de la
+					versión
+					40.
 				</p>
 			</div>
 		</section>
+		<nav id="menuTop" class="menu-top">
+			<ul>
+				<li class="logo-web">Re: Notification Center Docs</li>
+				<li class="menu-item" data-name="intro-main">Inicio </li>
+				<li>Re: Notification Center <a href="#">&#8964;</a>
+					<ul>
+						<li class="submenu-item" data-name="metadata">metadata.json</li>
+						<li class="submenu-item" data-name="extension">extension.js</li>
+						<li class="submenu-item" data-name="stylesheet">stylesheet.css</li>
+						<li class="submenu-item" data-name="prefs">prefs.js</li>
+					</ul>
+				</li>
+				<li>Schemas <a href="#">&#8964;</a>
+					<ul>
+						<li class="submenu-item" data-name="schemas-folder">Información</li>
+						<li class="submenu-item" data-name="pag404">Item 2</li>
+						<li class="submenu-item" data-name="pag404">Item 3</li>
+						<li class="submenu-item" data-name="pag404">Item 4</li>
+					</ul>
+				</li>
+				<li>Locale <a href="#">&#8964;</a>
+					<ul>
+						<li class="submenu-item" data-name="locale-folder">Información</li>
+						<li class="submenu-item" data-name="pag404">Item 2</li>
+						<li class="submenu-item" data-name="pag404">Item 3</li>
+						<li class="mensubmenuu-item" data-name="pag404">Item 4</li>
+					</ul>
+				</li>
+				<li>Otros archivos <a href="#">&#8964;</a>
+					<ul>
+						<li class="submenu-item" data-name="readme">README </li>
+						<li class="submenu-item" data-name="license">LICENSE </li>
+						<li class="submenu-item" data-name="install">INSTALL</li>
+						<hr>
+						<li class="submenu-item" data-name="images-folder">IMAGES/</li>
+					</ul>
+				</li>
+				<li class="float-right">Github</li>
+				<li class="float-right">MGueL-CR</a></li>
+			</ul>
+		</nav>
 	</header>
-	<main class="px-1">
+	<main id="main-content" class="px-1">
 		<div class="row">
 			<div class="col-4">
-				<div class="card hint">
+				<div class="card hint borderless">
 					<h2>Secciones</h2>
 					<hr />
 					<ol id="menu-main" class="main-list p-0">
-						<li>
-							<span class="list-item" data-name="conceptos">HTML and CSS</span>
-							<ol class="sub-list">
-								<li class="list-item">HTML Tutorial</li>
-								<li class="list-item">CSS Tutorial</li>
-								<li class="list-item">
-									Bootstrap Tutorial
-								</li>
-							</ol>
-						</li>
-						<li>
-							<span class="list-item" data-name="estructura">JavaScript</span>
-							<ol class="sub-list">
-								<li class="list-item">
-									JavaScript Tutorial
-								</li>
-								<li>
-									<span class="list-item" data-name="estructura">jQuery Tutorial</span>
-									<ol class="sub-sub-list">
-										<li class="list-item">Item</li>
-										<li class="list-item">Item</li>
-										<li class="list-item">Item</li>
+						<li class="list-item" data-name="extension-folder">EXTENSION/</li>
+						<ol class="list-level-1">
+							<li class="list-item" data-name="metadata">metadata.json</li>
+							<li class="list-item" data-name="extension">extension.js</li>
+							<ol class="list-level-2">
+								<li class="list-item" data-name="extension/info">Información</li>
+								<li class="list-item" data-name="extension/imports">Imports</li>
+								<li class="list-item" data-name="extension/funtions/funciones">Funciones</li>
+								<ol class="list-level-3">
+									<li class="list-item" data-name="extension/funtions/enable">enable();</li>
+									<li class="list-item" data-name="extension/funtions/disable">disable();</li>
+								</ol>
+								<li class="list-item" data-name="extension/class/langclass">LangClass()</li>
+								<ol class="list-level-3">
+									<li class="list-item" data-name="extension/class/mapa">Mapa</li>
+									<li class="list-item" data-name="extension/class/init">_init()</li>
+									<li class="list-item" data-name="extension/class/onOpenStateChanged">
+										_onOpenStateChanged()</li>
+									<li class="list-item" data-name="extension/class/startNotificationCenter">
+										startNotificationCenter()</li>
+									<ol class="list-level-4">
+										<li class="list-item" data-name="extension/bloques/bloque01">Bloque 01</li>
+										<li class="list-item" data-name="extension/bloques/bloque02">Bloque 02</li>
+										<li class="list-item" data-name="extension/bloques/bloque03">Bloque 03</li>
+										<li class="list-item" data-name="extension/bloques/bloque04">Bloque 04</li>
+										<li class="list-item" data-name="extension/bloques/bloque05">Bloque 05</li>
+										<li class="list-item" data-name="extension/bloques/bloque06">Bloque 06</li>
+										<li class="list-item" data-name="extension/bloques/bloque07">Bloque 07</li>
+										<li class="list-item" data-name="extension/bloques/bloque08">Bloque 08</li>
 									</ol>
-								</li>
-								<li class="list-item">JSON Tutorial</li>
+									<li class="list-item" data-name="extension/class/">SubItem</li>
+								</ol>
+								<li class="list-item" data-name="extension/">SubItem</li>
+								<li class="list-item" data-name="extension/">SubItem</li>
 							</ol>
-						</li>
-						<li class="list-item">Server Side</li>
-						<ol class="sub-list">
-							<li class="list-item">SQL Tutorial</li>
-							<li class="list-item">PHP Tutorial</li>
+							<li class="list-item" data-name="stylesheet">stylesheet.css</li>
+							<li class="list-item" data-name="prefs">prefs.js</li>
+							<ol class="list-level-2">
+								<li class="list-item" data-name="prefsGtk3">prefsGtk3.js</li>
+								<li class="list-item" data-name="prefsGtk4">prefsGtk4.js </li>
+							</ol>
 						</ol>
 					</ol>
 				</div>
 			</div>
 			<div class="col">
-				<section id="show-content" class="card">
-					<section>
-						<div class="row m-0">
-							<div class="col" style="text-align: center">
-								<h2>Re: Notification Center</h2>
-							</div>
-						</div>
-						<hr />
-					</section>
-					<article>
-						<h3>Instrucciones:</h3>
-						<p>
-							Para acceder al contenido solo debe cliquear un
-							elemento de la columna de la derecha. Cada
-							elemento contine una breve explicación, uno o
-							varios ejemlos, comentarios, descriciones y
-							referencias.
-						</p>
-					</article>
-					<ol>
-						<li>
-							Item
-							<ol>
-								<li>subitem</li>
-								<li>subitem</li>
-								<li>subitem</li>
-							</ol>
-						</li>
-						<li>Item</li>
-						<li>Item</li>
-					</ol>
-				</section>
+				<article id="show-content" class="card borderless">
+				</article>
 			</div>
 		</div>
 	</main>
@@ -116,37 +140,7 @@
 			<div class="col" style="align-items: center8">versión: 1.0</div>
 		</div>
 	</footer>
-	<script>
-		document.addEventListener("DOMContentLoaded", () => {
-			const menu = document.getElementById("menu-main");
-			const contenedor = document.getElementById("show-content");
-
-			menu.addEventListener("click", async (evento) => {
-				if (evento.target.classList.contains("list-item")) {
-
-					const pagina = evento.target.getAttribute("data-name");
-					const urlDestino = pagina
-						? `/assets/pages/${pagina}.html`
-						: "/assets/pages/pag404.html";
-
-					try {
-						const respuesta = await fetch(urlDestino);
-
-						if (!respuesta.ok) {
-							throw new Error(
-								"No se pudo cargar el contenido",
-							);
-						}
-
-						const html = await respuesta.text();
-						contenedor.innerHTML = html;
-					} catch (error) {
-						contenedor.innerHTML = `<p>Error al cargar la sección: ${error.message}</p>`;
-					}
-				}
-			});
-		});
-	</script>
+	<script src="/assets/scripts/main.js"></script>
 </body>
 
 </html>

@@ -2,6 +2,18 @@
 *   Seccion para complementar selectores o elementos sin estilo
 *
 */
+#headerPage,
+#main-content {
+    scroll-margin-top: 4rem;
+}
+
+.logo-web {
+    background-image: url(/assets/images/favicon.ico);
+    background-repeat: no-repeat;
+    background-size: contain;
+    padding-left: 3.5rem !important;
+    font-weight: bold;
+}
 
 .borderless {
     border: none;
@@ -62,6 +74,40 @@ pre>.cm-line {
     position: relative;
     padding: .2em;
 }
+
+
+/**
+* Seccion para complementar el menu superior <nav>
+*
+*/
+
+.menu-top li {
+    color: var(--cemph);
+}
+
+.menu-top li>a {
+    font-size: large;
+}
+
+.menu-top li:hover:not(.logo-web) {
+    cursor: pointer;
+    color: var(--clink);
+    background-color: var(--cemphbg);
+}
+
+.menu-top ul>li>ul {
+    margin-top: 0.75rem;
+    padding: 0.5rem 0;
+}
+
+.menu-top ul>li>ul hr {
+    margin: 0.5rem;
+}
+
+.menu-top ul>li>ul>li {
+    padding: 0.5rem 1rem;
+}
+
 
 /**
 *   Seccion para personalizar la pagina de error 404.
@@ -171,7 +217,7 @@ pre>.cm-line {
 }
 
 /** 
-* Seccion para decorar el texto dentro de <code>.
+* Seccion para decorar el texto dentro de <pre><code> ... </code></pre>.
 *
 */
 
