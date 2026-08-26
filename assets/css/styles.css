@@ -2,9 +2,21 @@
 *   Seccion para complementar selectores o elementos sin estilo
 *
 */
+
+body {
+    display: grid;
+    min-height: 100vh;
+    grid-template-rows: auto 1fr auto;
+}
+
 #headerPage,
-#main-content {
+#mainContent {
     scroll-margin-top: 4rem;
+}
+
+.main-content {
+    display: grid;
+    grid-area: 1fr;
 }
 
 .logo-web {
@@ -153,6 +165,7 @@ pre>.cm-line {
 }
 
 .main-list {
+    position: relative;
     counter-reset: section;
 }
 
@@ -164,11 +177,25 @@ pre>.cm-line {
 .main-list .list-item {
     padding: 2px 4px;
     border-radius: 3px;
+    transition: all 150ms ease;
 }
 
 .main-list .list-item:hover {
     color: var(--cemph);
     background-color: var(--cbg);
+}
+
+.main-list .list-item.active::after {
+    position: absolute;
+    right: 0;
+    content: "↵";
+    height: auto;
+    width: 100%;
+    padding-right: 0.5rem;
+    color: var(--cemph);
+    background-color: var(--cemphbg);
+    border-bottom: 2px solid var(--clink);
+    text-align: end;
 }
 
 .main-list>li::before {

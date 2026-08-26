@@ -1,0 +1,35 @@
+<div class="markdown prose dark:prose-invert wrap-break-word w-full light markdown-new-styling">
+    <h2 data-section-id="e86dg3" data-start="616" data-end="638">
+        <span role="text">¿Qué es <code data-start="627" data-end="637">schemas/</code>?</span>
+    </h2>
+    <hr data-start="611" data-end="614">
+    <p data-start="651" data-end="752">Aquí vive la configuración permanente, suelen estar los esquemas de <code
+            data-start="684" data-end="695">GSettings</code> (<code data-start="697"
+            data-end="711">.gschema.xml</code>), que también
+        pertenecen a la extensión.</p>
+    <p data-start="754" data-end="769">Lo habitual es:</p>
+    <pre class="cm-content q9tKkq_readonly m-0">
+        <code><span>re-notification-center@mguel-cr/
+    ├── schemas/
+    │   └── org.gnome.shell.extensions....gschema.xml</span>
+        </code>
+    </pre>
+
+    <p data-start="1981" data-end="2019">Todo eso se guarda mediante GSettings.</p>
+    <p data-start="2021" data-end="2043">El archivo XML define:</p>
+    <ul data-start="2045" data-end="2111">
+        <li data-start="2045" data-end="2067">
+            <p data-start="2047" data-end="2067">nombre de la opción;</p>
+        </li>
+        <li data-start="2068" data-end="2075">
+            <p data-start="2070" data-end="2075">tipo;</p>
+        </li>
+        <li data-start="2076" data-end="2096">
+            <p data-start="2078" data-end="2096">valor por defecto;</p>
+        </li>
+        <li data-start="2097" data-end="2111">
+            <p data-start="2099" data-end="2111">descripción.</p>
+        </li>
+    </ul>
+    <p data-start="2113" data-end="2187">Podríamos decir que es la "base de datos" de preferencias de la extensión.</p>
+</div>

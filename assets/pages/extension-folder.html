@@ -1,0 +1,89 @@
+<div class="row">
+    <div class="col-4">
+        <div class="card hint borderless pb-1">
+            <h2>Secciones</h2>
+            <hr />
+            <ol id="menu-main" class="main-list p-0">
+                <li class="list-item active" data-name="extension-folder">EXTENSION/</li>
+                <li class="list-item" data-name="metadata">metadata.json</li>
+                <li class="list-item" data-name="extension">extension.js</li>
+                <ol class="list-level-1">
+                    <li class="list-item" data-name="extension/info">Información</li>
+                    <li class="list-item" data-name="extension/imports">Imports</li>
+                    <li class="list-item" data-name="extension/funtions/funciones">Funciones</li>
+                    <ol class="list-level-2">
+                        <li class="list-item" data-name="extension/funtions/enable">enable();</li>
+                        <li class="list-item" data-name="extension/funtions/disable">disable();</li>
+                    </ol>
+                    <li class="list-item" data-name="extension/class/langclass">LangClass()</li>
+                    <ol class="list-level-2">
+                        <li class="list-item" data-name="extension/class/mapa">Mapa</li>
+                        <li class="list-item" data-name="extension/class/init">_init()</li>
+                        <li class="list-item" data-name="extension/class/onOpenStateChanged">
+                            _onOpenStateChanged()</li>
+                        <li class="list-item" data-name="extension/class/startNotificationCenter">
+                            startNotificationCenter()</li>
+                        <ol class="list-level-3">
+                            <li class="list-item" data-name="extension/bloques/bloque01">Bloque 01</li>
+                            <li class="list-item" data-name="extension/bloques/bloque02">Bloque 02</li>
+                            <li class="list-item" data-name="extension/bloques/bloque03">Bloque 03</li>
+                            <li class="list-item" data-name="extension/bloques/bloque04">Bloque 04</li>
+                            <li class="list-item" data-name="extension/bloques/bloque05">Bloque 05</li>
+                            <li class="list-item" data-name="extension/bloques/bloque06">Bloque 06</li>
+                            <li class="list-item" data-name="extension/bloques/bloque07">Bloque 07</li>
+                            <li class="list-item" data-name="extension/bloques/bloque08">Bloque 08</li>
+                        </ol>
+                        <li class="list-item" data-name="extension/class/">SubItem</li>
+                    </ol>
+                    <li class="list-item" data-name="extension/">SubItem</li>
+                    <li class="list-item" data-name="extension/">SubItem</li>
+                </ol>
+                <li class="list-item" data-name="stylesheet">stylesheet.css</li>
+                <li class="list-item" data-name="prefs">prefs.js</li>
+                <ol class="list-level-1">
+                    <li class="list-item" data-name="prefsGtk3">prefsGtk3.js</li>
+                    <li class="list-item" data-name="prefsGtk4">prefsGtk4.js </li>
+                </ol>
+            </ol>
+        </div>
+    </div>
+    <div class="col">
+        <article id="show-content" class="card borderless">
+            <h2 data-start="229" data-end="268">La anatomía de una extensión de GNOME</h2>
+            <hr data-start="224" data-end="227">
+            <p data-start="270" data-end="349">Piensa en una extensión como una pequeña aplicación que GNOME carga al
+                iniciar.
+            </p>
+            <p data-start="351" data-end="390">Cada archivo tiene una responsabilidad.</p>
+
+            <pre>
+    <code><span>
+    metadata.json     → Identidad
+
+    extension.js      → Inicio de la extensión
+    
+    prefs.js          → Preferencias
+    
+    prefsGtk3.js      → Preferencias (GTK3)
+    
+    prefsGtk4.js      → Preferencias (GTK4)
+    
+    stylesheet.css    → Apariencia
+    
+    schemas/          → Configuración persistente
+    
+    locale/           → Traducciones
+    
+    INSTALL.sh        → Instalación</span>
+    </code>
+            </pre>
+            <h3 data-start="2907" data-end="2960">Entonces, ¿qué archivos son realmente obligatorios?</h3>
+            <hr data-start="2902" data-end="2905">
+            <p data-start="2962" data-end="2991">Prácticamente solo estos dos:</p>
+            <pre class="cm-content q9tKkq_readonly m-0">
+                <code><span>    metadata.json</span><br>    <span>extension.js</span></code>
+            </pre>
+            <p data-start="3033" data-end="3083">*** Todo lo demás depende de lo que haga la extensión.</p>
+        </article>
+    </div>
+</div>

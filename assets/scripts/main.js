@@ -1,23 +1,23 @@
 document.addEventListener("DOMContentLoaded", () => {
     const menuMain = document.getElementById("menu-main");
     const contenido = document.getElementById("show-content");
-    const contenedor = document.getElementById("main-content");
+    const contenedor = document.getElementById("mainContent");
     const headerPage = document.getElementById('headerPage');
     const menuTop = document.getElementById("menuTop");
-
-    menuMain.addEventListener("click", (evento) => {
-        const elemento = evento.target;
-        if (elemento.classList.contains("list-item")) {
-            const pagina = elemento.getAttribute("data-name");
-            loadContentPage(pagina, contenido, contenedor);
-        }
-    });
+    /*
+        menuMain.addEventListener("click", (evento) => {
+            const elemento = evento.target;
+            if (elemento.classList.contains("list-item")) {
+                const pagina = elemento.getAttribute("data-name");
+                loadContentPage(pagina, contenido, contenedor);
+            }
+        });*/
 
     menuTop.addEventListener("click", (evento) => {
         const elemento = evento.target;
         if (elemento.classList.contains("menu-item")) {
             const pagina = elemento.getAttribute("data-name");
-            loadContentPage(pagina, contenido, headerPage);
+            loadContentPage(pagina, contenedor, headerPage);
         }
 
         if (elemento.classList.contains("submenu-item")) {
@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    loadContentPage("intro-main", contenido, headerPage);
+    loadContentPage("intro-main", contenedor, headerPage);
 });
 
 async function loadContentPage(pagina, contenido, contenedor) {
