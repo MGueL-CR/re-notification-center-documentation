@@ -3,6 +3,10 @@
 *
 */
 
+:root {
+    interpolate-size: allow-keywords;
+}
+
 body {
     display: grid;
     min-height: 100vh;
@@ -165,7 +169,8 @@ pre>.cm-line {
 }
 
 .main-list {
-    position: relative;
+    position: sticky;
+    top: 4rem;
     counter-reset: section;
 }
 
@@ -174,28 +179,45 @@ pre>.cm-line {
     cursor: pointer;
 }
 
+.list-level-1,
+.list-level-2,
+.list-level-3,
+.list-level-4 {
+    padding-left: 1rem;
+}
+
 .main-list .list-item {
     padding: 2px 4px;
     border-radius: 3px;
     transition: all 150ms ease;
+    background-color: var(--cemphbg);
+}
+
+.main-list .list-item+.list-level-1,
+.main-list .list-item+.list-level-2,
+.main-list .list-item+.list-level-3 {
+    visibility: collapse;
+    height: 0;
+    transition: height 350ms ease-in 150ms;
+}
+
+.main-list .list-item:hover+.list-level-1,
+.main-list .list-item:hover+.list-level-2,
+.main-list .list-item:hover+.list-level-3 {
+    height: auto;
+    visibility: visible;
+}
+
+.main-list .list-item+.list-level-1:hover,
+.main-list .list-item+.list-level-2:hover,
+.main-list .list-item+.list-level-3:hover {
+    height: fit-content;
+    visibility: visible;
 }
 
 .main-list .list-item:hover {
     color: var(--cemph);
     background-color: var(--cbg);
-}
-
-.main-list .list-item.active::after {
-    position: absolute;
-    right: 0;
-    content: "↵";
-    height: auto;
-    width: 100%;
-    padding-right: 0.5rem;
-    color: var(--cemph);
-    background-color: var(--cemphbg);
-    border-bottom: 2px solid var(--clink);
-    text-align: end;
 }
 
 .main-list>li::before {
