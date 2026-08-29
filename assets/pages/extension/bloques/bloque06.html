@@ -1,0 +1,287 @@
+<span class="float-span">Bloque 06</span>
+<h2>Atajos</h2>
+<hr>
+<pre><code><span class="ͼe">//this.indicatorViewShortcut();</span><span>
+</span><span class="ͼm">Main</span><span class="ͼg">.</span><span>wm</span><span class="ͼg">.</span><span>addKeybinding(
+  </span><span class="ͼk">'indicator-shortcut'</span><span>,
+  </span><span class="ͼj">this</span><span class="ͼg">.</span><span>prefs,
+  </span><span class="ͼm">MetaKeyBindingFlags</span><span class="ͼg">.</span><span>NONE,
+  </span><span class="ͼm">ShellActionMode</span><span class="ͼg">.</span><span>NORMAL </span><span class="ͼg">|</span><span> </span><span class="ͼm">ShellActionMode</span><span class="ͼg">.</span><span>OVERVIEW </span><span class="ͼg">|</span><span> </span><span class="ͼm">ShellActionMode</span><span class="ͼg">.</span><span>POPUP,
+  () =&gt; {
+    </span><span class="ͼj">this</span><span class="ͼg">.</span><span>notificationIcon</span><span class="ͼg">.</span><span>visible </span><span class="ͼg">=</span><span> </span><span class="ͼg">!</span><span>(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>mediaIcon</span><span class="ͼg">.</span><span>visible </span><span class="ͼg">||</span><span> </span><span class="ͼj">this</span><span class="ͼg">.</span><span>eventsIcon</span><span class="ͼg">.</span><span>visible);
+    </span><span class="ͼj">this</span><span class="ͼg">.</span><span>visible </span><span class="ͼg">=</span><span> </span><span class="ͼj">true</span><span>;
+    </span><span class="ͼj">this</span><span class="ͼg">.</span><span>menu</span><span class="ͼg">.</span><span>toggle();
+  }
+);</span></code></pre>
+<p>Ahora entramos en una fase distinta de <code data-start="53" data-end="80">startNotificationCenter()</code>. Hasta
+    ahora el método se dedicó principalmente a <strong data-start="131" data-end="144">construir</strong> la extensión.
+    A partir de aquí empieza a decirle a GNOME:</p>
+<blockquote>"Cuando ocurra esto... avísame."</blockquote>
+<p>Es decir, pasamos de <strong data-start="261" data-end="277">construcción</strong> a <strong data-start="280"
+        data-end="291">eventos</strong>.</p>
+<p>Lo primero que veo... Otra vez aparece un comentario.</p>
+<pre><samp>//this.indicatorViewShortcut();</samp></pre>
+<p>No es malo ni bueno; simplemente es una pista sobre cómo fue evolucionando el proyecto.</p>
+<hr>
+<pre><code><span class="ͼm">Main</span><span class="ͼg">.</span><span>wm</span><span class="ͼg">.</span><span>addKeybinding(...)</span></code></pre>
+<p>Aquí aparece un objeto nuevo.</p>
+<div class="row">
+    <div class="col"><span>Hasta ahora conocíamos:</span>
+        <pre><samp>Main.panel
+Main.messageTray
+Main.layoutManager</samp></pre>
+    </div>
+    <div class="col"><span>Ahora conocemos:</span>
+        <pre><samp>Main.wm</samp></pre>
+    </div>
+</div>
+<h4>¿Qué crees que significa ese <code data-start="1318" data-end="1322">wm</code>?</h4>
+<p>No hace falta saberlo con certeza, pero por el contexto yo apostaría por:</p>
+<blockquote>Window Manager</blockquote>
+<p>Y tiene sentido. ¿Quién registra los atajos del teclado? El gestor de ventanas.</p>
+<p>El nombre addKeybinding&nbsp;es casi perfecto.</p>
+<div class="row">
+    <div class="col"><span>Registrar un atajo de teclado.</span>
+        <pre><samp>add    +    Key    +    Binding</samp></pre>
+    </div>
+    <div class="col">
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <li>Primer parámetro</li>
+        <pre><samp>'indicator-shortcut'</samp></pre>
+    </div>
+    <div class="col">
+    </div>
+</div>
+<div class="row">
+    <div class="col"><span>No dice:</span>
+        <pre><samp>"Ctrl+Alt+N"</samp></pre>
+    </div>
+    <div class="col"><span>Dice:</span>
+        <pre><samp>"indicator-shortcut"</samp></pre>
+    </div>
+</div>
+<h5>¿Por qué?</h5>
+<p>Porque el atajo probablemente está definido en el <code data-start="1870" data-end="1879">gschema</code>. La
+    extensión solo dice:</p>
+<blockquote>"Usa el atajo configurado para <code data-start="1940" data-end="1960">indicator-shortcut</code>."
+</blockquote>
+<blockquote>Eso significa que el usuario puede cambiarlo sin modificar el código.</blockquote>
+<div class="row">
+    <div class="col">
+        <li>Segundo parámetro</li>
+        <pre><samp>this.prefs</samp></pre>
+    </div>
+    <div class="col">
+    </div>
+</div>
+<p>El gestor de ventanas necesita saber <strong data-start="2141" data-end="2174">dónde buscar la
+        configuración</strong> y por eso recibe el objeto <code data-start="2204" data-end="2215">GSettings</code>.</p>
+<div class="row">
+    <div class="col">
+        <li>Tercer parámetro</li>
+        <pre><samp>MetaKeyBindingFlags.NONE</samp></pre>
+    </div>
+    <div class="col">
+    </div>
+</div>
+<p>Aquí todavía no sabemos qué opciones existen. Lo único que sabemos y con eso basta por ahora es:</p>
+<blockquote>"No está usando ninguna bandera especial."</blockquote>
+<div class="row">
+    <div class="col">
+        <li>Cuarto parámetro</li>
+        <pre><samp>ShellActionMode.NORMAL |
+ShellActionMode.OVERVIEW |
+ShellActionMode.POPUP</samp></pre>
+    </div>
+    <div class="col">
+    </div>
+</div>
+<p>Aquí sí podemos deducir bastante. Está diciendo:</p>
+<blockquote>"Este atajo funciona cuando GNOME está en estos modos."</blockquote>
+<p>Visualmente sería algo así:</p>
+<pre><samp>✓ Escritorio normal
+
+✓ Vista de Actividades (Overview)
+
+✓ Cuando hay un Popup abierto</samp></pre>
+<p>Es decir, no limita el atajo únicamente al escritorio. Eso me parece una decisión muy buena desde el punto de vista
+    de la experiencia de usuario.</p>
+<hr><br>
+<div class="row">
+    <div class="col"><span>Llegamos al callback</span>
+        <pre><samp>() =&gt; {</samp></pre>
+    </div>
+    <div class="col">
+    </div>
+</div>
+<p>Todo lo que hay aquí ocurre <strong data-start="3023" data-end="3062">cuando el usuario presiona el atajo</strong>.
+</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>notificationIcon</span><span class="ͼg">.</span><span>visible </span><span class="ͼg">=</span><span>
+    </span><span class="ͼg">!</span><span>(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>mediaIcon</span><span class="ͼg">.</span><span>visible </span><span class="ͼg">||</span><span> </span><span class="ͼj">this</span><span class="ͼg">.</span><span>eventsIcon</span><span class="ͼg">.</span><span>visible);</span></code></pre>
+<p>Aquí Selenium-H nos lanza una expresión lógica interesante. Vamos paso a paso.</p>
+<div class="row">
+    <div class="col">
+        <li>¿Está visible el icono multimedia?</li>
+        <pre><samp>this.mediaIcon.visible</samp></pre>
+    </div>
+    <div class="col">
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <li>¿Está visible el icono de eventos?</li>
+        <pre><samp>this.eventsIcon.visible</samp></pre>
+    </div>
+    <div class="col">
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <li>¿Hay alguno visible?</li>
+        <pre><samp>A || B</samp></pre>
+    </div>
+    <div class="col">
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <li>Para finalmente:</li>
+        <pre><samp>!(...)</samp></pre>
+    </div>
+    <div class="col">
+    </div>
+</div>
+<p>Invertimos el resultado. En otras palabras:</p>
+<pre><samp>Si ya hay un icono visible
+
+↓
+
+No muestres el icono de notificaciones.</samp></pre>
+<p>Porque probablemente solo quiere mostrar <strong data-start="3758" data-end="3783">un indicador a la vez</strong>.
+</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>visible </span><span class="ͼg">=</span><span> </span><span class="ͼj">true</span><span>;</span></code></pre>
+<p>Eso también me gusta. Imagina que el usuario ocultó el botón automáticamente.</p>
+<blockquote>Al pulsar el atajo... Lo vuelve visible y tiene sentido.</blockquote>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>menu</span><span class="ͼg">.</span><span>toggle();</span></code></pre>
+<p>Y aquí ya no hay misterio. Abre el menú:</p>
+<div class="row">
+    <div class="col">
+        <span>Si estaba abierto...</span>
+        <span>Lo cierra.</span>
+    </div>
+    <div class="col">
+        <span>Si estaba cerrado...</span>
+        <span>Lo abre.</span>
+    </div>
+</div>
+<br>
+<hr>
+<h4>¿Qué acabamos de aprender?</h4>
+<p>Este bloque no crea ningún widget, no modifica la interfaz, no mueve componentes. Simplemente registra un <strong
+        data-start="4297" data-end="4319">evento del sistema</strong>.</p>
+<p>Es decir:</p>
+<pre><samp>Usuario pulsa el atajo
+↓
+
+GNOME llama al callback
+↓
+
+La extensión decide qué hacer</samp></pre>
+<hr>
+<h4><strong data-start="85" data-end="107">Diseño de software</strong></h4>
+<p>Veamos el código actual</p>
+<pre><samp>Main.wm.addKeybinding(
+  'indicator-shortcut',
+  this.prefs,
+  MetaKeyBindingFlags.NONE,
+  ShellActionMode.NORMAL | ShellActionMode.OVERVIEW | ShellActionMode.POPUP,
+  () =&gt; {
+    this.notificationIcon.visible = !(this.mediaIcon.visible || this.eventsIcon.visible);
+    this.visible = true;
+    this.menu.toggle();
+  }
+);</samp></pre>
+<p>Funciona perfectamente, pero imagina que en un futuro agregamos:</p>
+<ul>
+    <li>Abrir Notification Center.</li>
+    <li>Activar/Desactivar No Molestar.</li>
+    <li>Limpiar notificaciones.</li>
+    <li>Marcar todas como leídas.</li>
+    <li>Mostrar/Ocultar multimedia.</li>
+</ul>
+<p>Entonces <code data-start="916" data-end="943">startNotificationCenter()</code> empezaría a verse así:</p>
+<pre><samp>Main.wm.addKeybinding(...)
+
+Main.wm.addKeybinding(...)
+
+Main.wm.addKeybinding(...)
+
+Main.wm.addKeybinding(...)
+
+Main.wm.addKeybinding(...)</samp></pre>
+<p>Y dentro de cada uno habría un callback diferente. Ahí empezaría a perder legibilidad y entonces, probablemente haría
+    algo así:</p>
+<pre><code><span class="ͼo">startNotificationCenter</span><span>: </span><span class="ͼg">function</span><span>() {
+
+    ...
+
+    </span><span class="ͼj">this</span><span class="ͼg">.</span><span>registerKeybindings();
+
+    ...
+
+}</span></code></pre>
+<p>Y luego, dentro de la nueva función:</p>
+<pre><code><span class="ͼo">registerKeybindings</span><span>: </span><span class="ͼg">function</span><span>() {
+
+    </span><span class="ͼm">Main</span><span class="ͼg">.</span><span>wm</span><span class="ͼg">.</span><span>addKeybinding(...);
+
+    </span><span class="ͼm">Main</span><span class="ͼg">.</span><span>wm</span><span class="ͼg">.</span><span>addKeybinding(...);
+
+    </span><span class="ͼm">Main</span><span class="ͼg">.</span><span>wm</span><span class="ͼg">.</span><span>addKeybinding(...);
+
+}</span></code></pre>
+<p>Eso ya mejora bastante. Incluso iría un paso más allá... El callback también puede tener nombre.</p>
+<div class="row">
+    <div class="col">
+        <p>En lugar de:</p>
+        <pre><samp>() =&gt; {
+
+    this.notificationIcon.visible = ...
+
+    this.visible = true;
+
+    this.menu.toggle();
+
+}</samp></pre>
+    </div>
+    <div class="col">
+        <p>Podría ser:</p>
+        <pre><samp>() =&gt; this.toggleNotificationCenter()</samp></pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+    </div>
+    <div class="col">
+    </div>
+</div>
+<p>Y crearíamos:</p>
+<pre><samp>toggleNotificationCenter: function() {
+
+    this.notificationIcon.visible =
+        !(this.mediaIcon.visible || this.eventsIcon.visible);
+
+    this.visible = true;
+
+    this.menu.toggle();
+
+}</samp></pre>
+<p>Entonces el código se leería casi como una historia y ya no necesito leer diez líneas para entender qué ocurre.</p>
+<pre><samp>registerKeybindings()
+
+↓
+
+toggleNotificationCenter()</samp></pre>

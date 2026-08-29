@@ -1,0 +1,122 @@
+<span class="float-span">Bloque 01</span>
+<h2>Verificación de actualización</h2>
+<hr>
+<pre>
+    <div class="cm-line"><span class="ͼg">if</span>(<span class="ͼj">this</span><span class="ͼg">.</span>prefs<span class="ͼg">.</span>get_double(<span class="ͼk">"current-version"</span>) <span class="ͼg">&lt;</span> <span class="ͼj">23.03</span>) {    </div><div class="cm-line">  <span class="ͼm">Main</span><span class="ͼg">.</span>notify(</div><div class="cm-line">    <span class="ͼk">"Notification Center"</span>,</div><div class="cm-line">    <span class="ͼk">"Extension is updated. Please Complete the update process in the extension preferences."</span></div><div class="cm-line">  );</div><div class="cm-line">  <span class="ͼg">return</span>;</div><div class="cm-line">}</div>
+</pre>
+<h3>¿Qué hace?</h3>
+<p>Lo primero que hace la extensión es preguntarse:</p>
+<blockquote>"¿Puedo iniciar de forma segura?"</blockquote>
+<p>Y si la respuesta es <strong data-start="760" data-end="766">no</strong>, aborta inmediatamente. Eso es una práctica
+    muy buena.</p>
+<h4>¡Lo interesante!</h4>
+<p>Observa que <strong data-start="860" data-end="889">no ha creado ningún botón</strong>, no ha modificado el panel, no
+    ha conectado señales... Lo primero es verificar que el estado sea válido. Eso evita que la extensión quede "a
+    medias" si las preferencias no son compatibles.</p>
+<hr>
+<h3>Imaginemos el flujo normal.</h3>
+<pre><samp class="samp-block">Extensión v23 instalada
+        ↓
+Usuario actualiza a v24
+        ↓
+GNOME desactiva la extensión
+        ↓
+GNOME instala los nuevos archivos
+        ↓
+GNOME vuelve a cargar la extensión
+        ↓
+_init()
+        ↓
+startNotificationCenter()</samp></pre>
+<p>En ese escenario... ¿Por qué habría un problema?</p>
+<ul>
+    <li>Los archivos ya son los nuevos. </li>
+    <li>El <code data-start="747" data-end="762">metadata.json</code> es el nuevo.</li>
+    <li>El código JavaScript es el nuevo. </li>
+    <li>El esquema (<code data-start="824" data-end="833">gschema</code>) ya fue compilado.</li>
+</ul>
+<p>Todo parece correcto, entonces... ¿qué intenta proteger?</p>
+<p>Aquí es donde hay que fijarse en una línea:</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>prefs</span><span class="ͼg">.</span><span>get_double(</span><span class="ͼk">"current-version"</span><span>)</span></code></pre>
+<div class="row">
+    <div class="col"><span>No está leyendo:</span>
+        <br><br>
+        <span>Ni:</span>
+    </div>
+    <div class="col">
+        <pre><code><span>metadata</span><span>.</span><span>version</span></code></pre>
+        <pre><code><span>metadata</span><span>.</span><span>json</span></code></pre>
+    </div>
+</div>
+<p>Está leyendo una <strong data-start="1135" data-end="1161">preferencia almacenada,</strong>&nbsp;Es decir, algo que
+    vive en <strong data-start="1191" data-end="1204">GSettings</strong>&nbsp;Y eso cambia completamente el panorama.
+</p>
+<hr>
+<h3>Imagina este caso</h3>
+<p>Supongamos que la versión 23 guardaba preferencias así:</p>
+<pre><samp class="samp-block">show-label = true
+indicator-pos = top</samp></pre>
+<p>Y la versión 24 cambia completamente el formato:</p>
+<blockquote>
+    <div>indicator-style = compact</div>
+    <div>label-mode = hidden</div>
+    <div>panel-position = left</div>
+</blockquote>
+<p>El usuario todavía conserva las preferencias antiguas. Porque <strong data-start="1577" data-end="1630">GSettings no
+        se borra al actualizar una extensión</strong>.</p>
+<p>Entonces Selenium-H pudo haber pensado:&nbsp;</p>
+<blockquote>"Si detecto que las preferencias pertenecen a una versión vieja, no continúo hasta migrarlas."</blockquote>
+<p>Eso ya tiene mucho más sentido. No está validando el código. Está validando <strong data-start="1858"
+        data-end="1883">los datos del usuario</strong>.&nbsp;</p>
+<hr>
+<h3>¿Era la mejor solución?</h3>
+<p>Yo diría que <strong data-start="1983" data-end="1989">no</strong>, aquí viene la parte interesante, porque obliga al
+    usuario a intervenir manualmente.</p>
+<p>Lo que hacen muchas aplicaciones es algo como:</p>
+<blockquote>
+    <div>Versión guardada = 23</div>
+    <div>↓</div>
+    <div><br></div>
+    <div>Estoy iniciando la versión 24</div>
+    <div>↓</div>
+    <div><br></div>
+    <div>Migro automáticamente las preferencias</div>
+    <div>↓</div>
+    <div><br></div>
+    <div>Actualizo current-version = 24</div>
+    <div>↓</div>
+    <div><br></div>
+    <div>Continúo normalmente</div>
+</blockquote>
+<p>El usuario ni se entera.</p>
+<p>Entonces creo que Selenium-H hizo esto:</p>
+<blockquote>
+    <div>Versión guardada = 23</div>
+    <div>↓</div>
+    <div><br></div>
+    <div>Estoy iniciando la versión 24</div>
+    <div>↓</div>
+    <div><br></div>
+    <div>Me detengo</div>
+    <div>↓</div>
+    <div><br></div>
+    <div>Muestro una notificación</div>
+    <div>↓</div>
+    <div><br></div>
+    <div>El usuario abre Preferencias</div>
+    <div>↓</div>
+    <div><br></div>
+    <div>Pulsa "Reset"</div>
+    <div>↓</div>
+    <div><br></div>
+    <div>Actualizo preferencias</div>
+    <div>↓</div>
+    <div><br></div>
+    <div>Ahora sí continúo</div>
+</blockquote>
+<p>Es una estrategia válida, pero bastante conservadora.</p>
+<p>¿Recuerdas la descripción original del <code data-start="2673" data-end="2688">metadata.json</code>? Decía algo como:
+</p>
+<blockquote>"Please reset the extension after updating."</blockquote>
+<p>En aquel momento nos pareció extraño. Ahora ya sabemos por qué estaba escrito. No era un mensaje cualquiera. Era
+    consecuencia directa de esta validación.</p>

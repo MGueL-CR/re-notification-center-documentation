@@ -1,0 +1,104 @@
+<h2>_onOpenStateChanged()</h2>
+<hr>
+<pre><code><span class="ͼm">_onOpenStateChanged</span>(<span class="ͼm">menu</span>, <span class="ͼm">open</span>)</code></pre>
+<p>Antes de leer el código, preguntémonos:</p>
+<blockquote>¿Cuándo debería ejecutarse?</blockquote>
+<p>Solo por el nombre, yo diría:</p>
+<blockquote>"Cuando el menú cambia de estado (abierto o cerrado)."</blockquote>
+<div class="row">
+    <div class="col">
+        <span>Y el parámetro:</span>
+    </div>
+    <div class="col">
+        <pre><code><span class="ͼm">open</span></code></pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <span>Seguramente sea un booleano.</span>
+    </div>
+    <div class="col">
+        <pre><samp class="samp-block"> true  -&gt; se abrió 
+ false -&gt; se cerró</samp></pre>
+    </div>
+</div>
+
+<hr>
+<h4>Ahora leamos el primer bloque</h4>
+<pre><code><span class="ͼg">if</span> (<span class="ͼg">!</span><span class="ͼm">open</span>) {<br>    <span class="ͼj">this</span><span class="ͼg">.</span>resetIndicator();<br>    <span class="ͼj">this</span><span class="ͼg">.</span>remove_style_pseudo_class(<span class="ͼk">'active'</span>);<br>    <span class="ͼg">return</span>;<br>}</code></pre>
+<p>Me gusta mucho. Aquí dice:</p>
+<blockquote>"Si el menú se está cerrando..."</blockquote>
+<p>Entonces:</p>
+<ul>
+    <li>reinicia el indicador;</li>
+    <li>quita el estilo visual "activo";</li>
+    <li>termina.</li>
+</ul>
+<p>Es una salida temprana (<em data-start="998" data-end="1012">early return</em>). A mí me gustan mucho porque evitan
+    tener un enorme:</p>
+<pre><code><span class="ͼg">if</span> (<span class="ͼm">open</span>) {<br>   ... <br>}</code></pre>
+<p>envolviendo todo el método.</p>
+<hr>
+<h4>Después viene la parte interesante</h4>
+<pre><code><span class="ͼm">Main</span><span class="ͼg">.</span>panel<span class="ͼg">.</span>statusArea<span class="ͼg">.</span>dateMenu<span class="ͼg">.</span>_calendar<span class="ͼg">.</span>setDate(<span class="ͼg">new</span> <span class="ͼm">Date</span>());</code></pre>
+<p>Aquí ya empezamos a ver algo importante. La extensión <strong data-start="1321" data-end="1374">está reutilizando el
+        calendario original de GNOME</strong>. No crea uno nuevo, simplemente le dice:</p>
+<blockquote>"Actualízate a la fecha actual."</blockquote>
+<p>Eso refuerza algo que ya sospechábamos:</p>
+<span>Notification Center modifica componentes existentes.</span>
+<hr>
+<h4>Luego</h4>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>add_style_pseudo_class(<span class="ͼk">'active'</span>);</code></pre>
+<p>Esto me gusta mucho porque complementa perfectamente el <code data-start="1682" data-end="1691">disable</code>.&nbsp;
+</p>
+<div class="row">
+    <div class="col">
+        <span>Cuando el menú abre:</span>
+        <pre><samp class="samp-block">activo</samp></pre>
+    </div>
+    <div class="col">
+        <span>Cuando cierra:</span>
+        <pre><samp class="samp-block">no activo</samp></pre>
+    </div>
+</div>
+<p>Es muy coherente.</p>
+<hr>
+<h4>Después</h4>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>manageEvents(<span class="ͼj">0</span>);</code></pre>
+<p>No sabemos qué hace, pero el nombre ya nos dice bastante. Probablemente:</p>
+<blockquote>"Actualizar el estado de los eventos."</blockquote>
+<hr>
+<h4>Esta línea</h4>
+<pre><code><div class="cm-line">[</div><div class="cm-line"> <span class="ͼj">this</span><span class="ͼg">.</span>mediaSection<span class="ͼg">.</span>visible,</div><div class="cm-line"> <span class="ͼj">this</span><span class="ͼg">.</span>notificationSection<span class="ͼg">.</span>visible</div><div class="cm-line">] <span class="ͼg">=</span></div><div class="cm-line">[</div><div class="cm-line"> <span class="ͼj">this</span><span class="ͼg">.</span>mediaSection<span class="ͼg">.</span>_shouldShow(),</div><div class="cm-line"> <span class="ͼj">this</span><span class="ͼg">.</span>notificationSection<span class="ͼg">.</span>_list<span class="ͼg">.</span>get_children()<span class="ͼg">.</span>length</div><div class="cm-line">];</div></code></pre>
+<p>Aquí sí tuve que leer dos veces. Porque utiliza una característica muy bonita de JavaScript. Está haciendo una
+    asignación múltiple, es una sintaxis elegante.&nbsp;Equivale más o menos a:</p>
+<pre><code><div class="cm-line"><span class="ͼj">this</span><span class="ͼg">.</span>mediaSection<span class="ͼg">.</span>visible <span class="ͼg">=</span></div><div class="cm-line">    <span class="ͼj">this</span><span class="ͼg">.</span>mediaSection<span class="ͼg">.</span>_shouldShow();</div><div class="cm-line"><br></div><div class="cm-line"><span class="ͼj">this</span><span class="ͼg">.</span>notificationSection<span class="ͼg">.</span>visible <span class="ͼg">=</span></div><div class="cm-line">    <span class="ͼj">this</span><span class="ͼg">.</span>notificationSection<span class="ͼg">.</span>_list<span class="ͼg">.</span>get_children()<span class="ͼg">.</span>length;</div></code></pre>
+<hr>
+<h4>Después</h4>
+<p>Solo el nombre ya me hizo sonreír. Porque cuenta una historia completa. Existe un icono que puede parpadear. Y cuando
+    abrimos el menú... deja de parpadear. Tiene mucho sentido desde el punto de vista de la experiencia de usuario.</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>blinkIconStopIfBlinking();</code></pre>
+<hr>
+<h4>Luego</h4>
+<pre><code><div class="cm-line"><span class="ͼg">if</span>(<span class="ͼg">!</span><span class="ͼj">this</span><span class="ͼg">.</span>showLabel) {</div><div class="cm-line">    ...</div><div class="cm-line">}</div></code></pre>
+<p>Aquí todavía no sabemos qué es <code data-start="2966" data-end="2977">showLabel</code>. Pero entendemos la
+    intención, perfectamente razonable.&nbsp;Si no se muestran etiquetas... reinicia los contadores.</p>
+<hr>
+<h4>Finalmente</h4>
+<pre><code><div class="cm-line"><span class="ͼj">this</span><span class="ͼg">.</span>seenEvents <span class="ͼg">=</span> <span class="ͼj">true</span>;</div><div class="cm-line"><span class="ͼj">this</span><span class="ͼg">.</span>resetIndicator();</div></code></pre>
+<p>Aquí el método termina dejando claro:</p>
+<blockquote>"El usuario ya vio los eventos."</blockquote>
+<p>Eso me parece una decisión de diseño muy lógica.</p>
+<hr>
+<h3>Hay algo que quiero que observes</h3>
+<p>Mira los nombres. No son nombres genéricos. Todos cuentan exactamente qué hacen. Eso facilita muchísimo leer el
+    código años después.</p>
+<pre><samp class="samp-block">_init()
+
+_onOpenStateChanged()
+
+manageEvents()
+
+resetIndicator()
+
+blinkIconStopIfBlinking()</samp></pre>

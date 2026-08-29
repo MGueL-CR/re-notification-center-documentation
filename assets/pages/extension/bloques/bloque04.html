@@ -1,0 +1,147 @@
+<span class="float-span">Bloque 04</span>
+<h2>Configuración DND</h2>
+<hr>
+<p>Y aquí ocurre exactamente lo mismo que vimos con el botón <strong data-start="944" data-end="953">Clear</strong>,
+    pero aplicado al <strong data-start="972" data-end="1010">No molestar (Do Not Disturb - DND)</strong>.</p>
+<pre><code><span class="ͼg">switch</span><span>(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>prefs</span><span class="ͼg">.</span><span>get_enum(</span><span class="ͼk">"dnd-position"</span><span>)) {
+  </span><span class="ͼg">case</span><span> </span><span class="ͼj">1</span><span>:
+    </span><span class="ͼj">this</span><span class="ͼg">.</span><span>dndItem</span><span class="ͼg">.</span><span>_delegate </span><span class="ͼg">=</span><span> </span><span class="ͼj">this</span><span>;
+    </span><span class="ͼj">this</span><span class="ͼg">.</span><span>dndItem</span><span class="ͼg">.</span><span>connect(</span><span class="ͼk">"toggled"</span><span>, ()=&gt;</span><span class="ͼj">this</span><span class="ͼg">.</span><span>dndToggle());
+    </span><span class="ͼj">this</span><span class="ͼg">.</span><span>_messageList</span><span class="ͼg">.</span><span>_dndSwitch</span><span class="ͼg">.</span><span>visible </span><span class="ͼg">=</span><span> </span><span class="ͼj">false</span><span>;
+    </span><span class="ͼj">this</span><span class="ͼg">.</span><span>_messageList</span><span class="ͼg">.</span><span>_dndButton</span><span class="ͼg">.</span><span>label_actor</span><span class="ͼg">.</span><span>visible </span><span class="ͼg">=</span><span> </span><span class="ͼj">false</span><span>;
+    </span><span class="ͼj">this</span><span class="ͼg">.</span><span>menu</span><span class="ͼg">.</span><span>box</span><span class="ͼg">.</span><span>insert_child_at_index(</span><span class="ͼg">new</span><span> </span><span class="ͼm">PopupMenu</span><span class="ͼg">.</span><span>PopupSeparatorMenuItem(), </span><span class="ͼj">0</span><span>);
+    </span><span class="ͼj">this</span><span class="ͼg">.</span><span>menu</span><span class="ͼg">.</span><span>box</span><span class="ͼg">.</span><span>insert_child_at_index(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>dndItem, </span><span class="ͼj">0</span><span>);
+    </span><span class="ͼg">break</span><span>;
+
+  </span><span class="ͼg">case</span><span> </span><span class="ͼj">2</span><span>:
+    </span><span class="ͼj">this</span><span class="ͼg">.</span><span>dndItem</span><span class="ͼg">.</span><span>connect(</span><span class="ͼk">"toggled"</span><span>, ()=&gt;</span><span class="ͼj">this</span><span class="ͼg">.</span><span>dndToggle());
+    </span><span class="ͼj">this</span><span class="ͼg">.</span><span>_messageList</span><span class="ͼg">.</span><span>_dndSwitch</span><span class="ͼg">.</span><span>visible </span><span class="ͼg">=</span><span> </span><span class="ͼj">false</span><span>
+    </span><span class="ͼj">this</span><span class="ͼg">.</span><span>_messageList</span><span class="ͼg">.</span><span>_dndButton</span><span class="ͼg">.</span><span>label_actor</span><span class="ͼg">.</span><span>visible </span><span class="ͼg">=</span><span> </span><span class="ͼj">false</span><span>
+    </span><span class="ͼj">this</span><span class="ͼg">.</span><span>menu</span><span class="ͼg">.</span><span>box</span><span class="ͼg">.</span><span>add_child(</span><span class="ͼg">new</span><span> </span><span class="ͼm">PopupMenu</span><span class="ͼg">.</span><span>PopupSeparatorMenuItem());
+    </span><span class="ͼj">this</span><span class="ͼg">.</span><span>menu</span><span class="ͼg">.</span><span>box</span><span class="ͼg">.</span><span>add_child(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>dndItem);
+}</span></code></pre>
+<p>Lo primero que vemos:</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>prefs</span><span class="ͼg">.</span><span>get_enum(</span><span class="ͼk">"dnd-position"</span><span>)</span></code></pre>
+<p>Ya conocemos este patrón. El usuario, desde las preferencias, eligió dónde quiere que aparezca el interruptor de
+    <strong data-start="1212" data-end="1227">No molestar</strong>. Todavía no hemos visto el <code data-start="1256"
+        data-end="1265">gschema</code>, pero podemos imaginar algo así:
+</p>
+<pre><samp class="samp-block">0 = Original
+1 = Arriba
+2 = Abajo</samp></pre>
+<p>No sabemos si esos son exactamente los valores, pero el <code data-start="1399" data-end="1407">switch</code> nos
+    dice que existen, al menos, las opciones <strong data-start="1453" data-end="1458">1</strong> y <strong
+        data-start="1461" data-end="1466">2</strong>.</p>
+<hr>
+<h3>Case 1:</h3>
+<p>Aquí Selenium-H quiere que el interruptor aparezca <strong data-start="1563" data-end="1588">al principio del
+        menú</strong>.</p>
+<pre><samp class="samp-block">case 1:</samp></pre>
+<p>Veamos las líneas.</p>
+<pre><samp class="samp-block">this.dndItem._delegate = this;</samp></pre>
+<p>Otra vez aparece <code data-start="1686" data-end="1697">_delegate</code>. Es exactamente el mismo patrón que vimos
+    con <code data-start="1745" data-end="1757">ScrollView</code>. Todavía no sabemos por qué GNOME lo necesita, pero ya
+    vimos que Selenium-H lo usa cuando trabaja con componentes complejos de GTK.</p>
+<pre><samp class="samp-block">this.dndItem.connect("toggled", ()=&gt;this.dndToggle());</samp></pre>
+<p>Esto sí es muy claro. Cuando el usuario cambia el interruptor... Se ejecuta:&nbsp;</p>
+<pre><samp class="samp-block">this.dndToggle();</samp></pre>
+<p>Y aquí ya tenemos una conexión mental muy útil. Pues ahora ya sabemos <strong data-start="2313" data-end="2344">quién
+        llama a <code data-start="2329" data-end="2342">dndToggle()</code></strong>. No tuvimos que buscarlo, El propio
+    flujo nos llevó hasta él.</p>
+<pre><samp class="samp-block">this._messageList._dndSwitch.visible = false;
+this._messageList._dndButton.label_actor.visible = false;</samp></pre>
+<p>¿Te recuerda a algo? Exactamente. Hace lo mismo que con <strong data-start="2611" data-end="2620">Clear</strong>,
+    oculta el DND original. No elimina la funcionalidad, solo oculta su representación visual.</p>
+<pre><samp class="samp-block">this.menu.box.insert_child_at_index(...,0);
+this.menu.box.insert_child_at_index(...,0);</samp></pre>
+<p>Aquí hay una diferencia importante respecto al botón <strong data-start="2849" data-end="2858">Clear</strong>.</p>
+<div class="row">
+    <div class="col"><span>Con Clear hizo:</span>
+        <pre><samp>add_child(...)</samp></pre>
+    </div>
+    <div class="col"><span>Ahora hace:</span>
+        <pre><samp>insert_child_at_index(...,0)</samp></pre>
+    </div>
+</div>
+<p>¿Por qué? Porque quiere que aparezca <strong data-start="3011" data-end="3030">arriba del todo</strong>. Visualmente:
+</p>
+<pre><samp class="samp-block">No molestar
+
+────────────
+
+Eventos
+
+Notificaciones
+
+Media</samp></pre>
+<hr>
+<h3>Case 2:</h3>
+<p>Aquí prácticamente reutiliza el mismo código.</p>
+<pre><samp class="samp-block">case 2:</samp></pre>
+<div class="row">
+    <div class="col"><span>La única diferencia real es:</span>
+        <pre><samp>this.menu.box.add_child(...)</samp></pre>
+    </div>
+    <div class="col"><span>En lugar de</span>
+        <pre><samp>insert_child_at_index(...)</samp></pre>
+    </div>
+</div>
+<p>Lo que significa:</p>
+<pre><samp class="samp-block">Eventos
+
+Notificaciones
+
+Media
+
+────────────
+
+No molestar</samp></pre>
+<p>Selenium-H no escribió dos implementaciones distintas. Reutilizó casi todo, solo cambia la forma de insertar el
+    widget, eso hace que el código sea fácil de mantener.</p>
+<hr>
+<p><strong data-start="2118" data-end="2187">Ahora viene un bloque que me parece especialmente
+        interesante.&nbsp;</strong></p>
+<p>Después del <code data-start="2201" data-end="2209">switch</code> aparece:&nbsp;</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>loadDndStatus();
+</span><span class="ͼj">this</span><span class="ͼg">.</span><span>resetIndicator();</span></code></pre>
+<p>Son solo dos líneas, pero sospecho que representan un cambio de fase:</p>
+<ul>
+    <li>Hasta ahora hemos <strong>construido</strong> el Notification Center.</li>
+    <li>A partir de aquí empezamos a <strong>sincronizarlo con el estado real del sistema</strong>.</li>
+</ul>
+<p>Y tengo muchas ganas de ver qué hace <code data-start="2533" data-end="2550">loadDndStatus()</code>, porque por el
+    nombre parece uno de esos métodos que no crea nada, sino que <strong data-start="2627" data-end="2697">lee el estado
+        actual de GNOME y adapta la interfaz de la extensión</strong>. Tengo la impresión de que será otro buen ejemplo
+    de cómo Selenium-H reutiliza el sistema en lugar de reemplazarlo.&nbsp;</p>
+<p>Observa estas dos líneas:</p>
+<pre><samp class="samp-block">this.loadDndStatus();
+this.resetIndicator();</samp></pre>
+<div class="row">
+    <div class="col"><span>No hacen esto:</span>
+        <pre><samp>this.dndItem.visible = true;
+this.notificationCount = 0;</samp></pre>
+    </div>
+    <div class="col"><span>Ni tampoco:</span>
+        <pre><samp>let estado = this.loadDndStatus();</samp></pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <p>Simplemente:</p>
+    </div>
+    <div class="col">
+        <pre><samp>this.loadDndStatus();</samp></pre>
+    </div>
+</div>
+<p>Eso ya nos dice algo sobre esos métodos (lo que podemos deducir), hay dos tipos de métodos muy comunes.</p>
+<h4>Tipo 1: Métodos que devuelven información</h4>
+<p>Esperamos que nos devuelvan un valor:</p>
+<pre><samp class="samp-block">let icon = this.getNotificationIcon();</samp></pre>
+<pre><samp class="samp-block">let enabled = this.isDndEnabled();</samp></pre>
+<h4>Tipo 2: Métodos que realizan una acción</h4>
+<p>No esperamos un resultado, esperamos que <strong data-start="932" data-end="980">ellos mismos modifiquen el estado
+        del objeto</strong> y <code data-start="985" data-end="1002">loadDndStatus()</code> me transmite
+    justamente eso.</p>
+<pre><samp class="samp-block">this.loadPreferences();</samp></pre>
+<pre><samp class="samp-block">this.startNotificationCenter();</samp></pre>
+<pre><samp class="samp-block">this.undoChanges();</samp></pre>

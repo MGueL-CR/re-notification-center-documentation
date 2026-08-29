@@ -1,0 +1,63 @@
+<h2>startNotificationCenter()</h2>
+<hr>
+<p>Me encanta cómo está organizado. Sin leer comentarios ya puedo dividirlo mentalmente.</p>
+<pre><samp class="samp-block">1.
+Verificación de actualización
+
+2.
+Construcción del indicador
+
+3.
+Mover elementos del panel
+
+4.
+Construcción del menú
+
+5.
+Configurar botón Clear
+
+6.
+Configurar DND
+
+7.
+Aplicar estado inicial
+
+8.
+Configurar banner y widgets
+
+9.
+Registrar atajos de teclado
+
+10.
+Conectar señales
+
+11.
+Aplicar preferencias visuales</samp></pre>
+<hr>
+<h3>La propuesta</h3>
+<p>Analizar las 170 líneas de golpe no es conveniente. Creo que perderíamos la oportunidad de entenderlas. Hagamos
+    exactamente lo mismo que hicimos con <code data-start="3890" data-end="3899">_init()</code>. Dividámoslo y vayamos
+    bloque por bloque.</p>
+<pre><samp class="samp-block">Bloque 1
+Verificación de actualización
+
+Bloque 2
+Creación del indicador
+
+Bloque 3
+Reorganización del menú
+
+Bloque 4
+Configuración DND
+
+Bloque 5
+Configurar banner y widgets
+
+Bloque 6
+Atajos
+
+Bloque 7
+Signals
+
+Bloque 8
+Preferencias visuales</samp></pre>

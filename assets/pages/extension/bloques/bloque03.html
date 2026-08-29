@@ -1,0 +1,722 @@
+<span class="float-span">Bloque 03</span>
+<h2>Reorganización del menú</h2>
+<hr>
+<p>El que sigue inmediatamente después es este:</p>
+<pre>
+    <code><span class="ͼj">this</span><span class="ͼg">.</span><span>eventsSection</span><span class="ͼg">.</span><span>allowed </span><span class="ͼg">=</span><span> </span><span class="ͼj">true</span><span>;
+</span><span class="ͼg">if</span><span>(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>eventsSectionPosition </span><span class="ͼg">==</span><span> </span><span class="ͼj">2</span><span>) {
+    </span><span class="ͼj">this</span><span class="ͼg">.</span><span>newEventsSectionParent</span><span class="ͼg">.</span><span>remove_actor(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>eventsSection);
+    </span><span class="ͼj">this</span><span class="ͼg">.</span><span>newEventsSectionParent </span><span class="ͼg">=</span><span> </span><span class="ͼj">this</span><span class="ͼg">.</span><span>_messageList</span><span class="ͼg">.</span><span>_sectionList;
+    </span><span class="ͼj">this</span><span class="ͼg">.</span><span>newEventsSectionParent</span><span class="ͼg">.</span><span>insert_child_at_index(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>eventsSection, </span><span class="ͼj">2</span><span>);
+}</span></code></pre>
+<p>Y aquí creo que empieza la parte más interesante. Ya no está creando componentes (widgets). Ahora empieza a <strong
+        data-start="4251" data-end="4312">reorganizar el Centro de Notificaciones original de GNOME</strong>,&nbsp; es
+    decir, estamos <strong data-start="936" data-end="974">moviendo widgets que GNOME ya creó</strong>. Eso cambia
+    completamente el enfoque.</p>
+<p>En <code data-start="1018" data-end="1027">_init()</code> vimos que se guardaban referencias como:</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>eventsSection </span><span class="ͼg">=</span><span> </span><span class="ͼm">Main</span><span class="ͼg">.</span><span>panel</span><span class="ͼg">.</span><span>statusArea</span><span class="ͼg">.</span><span>dateMenu</span><span class="ͼg">.</span><span>_eventsItem;</span></code></pre>
+<p>Es decir, <code data-start="1164" data-end="1179">eventsSection</code> <strong data-start="1180" data-end="1214">no
+        fue creado por la extensión</strong>. Pertenece al menú original de GNOME.</p>
+<hr>
+<h3>¿Qué hace la extensión?</h3>
+<p>Hace algo muy parecido a esto:</p>
+<pre><samp class="samp-block">GNOME crea:
+
+Calendario
+├── Eventos
+├── Notificaciones
+└── Multimedia</samp></pre>
+<p>Y la extensión dice:</p>
+<blockquote>"Voy a tomar la sección de eventos y colocarla donde el usuario prefiera."</blockquote>
+<p>Por eso aparecen llamadas como:</p>
+<pre><code><span class="ͼm">remove_actor</span><span>(...)
+</span><span class="ͼm">insert_child_at_index</span><span>(...)</span></code></pre>
+<p>No está modificando los eventos. Está modificando <strong data-start="1651" data-end="1677">la posición del
+        widget</strong>.</p>
+<p>Este diseño reutiliza los componentes de GNOME.</p>
+<ul>
+    <li>No crea una lista de eventos nueva.</li>
+    <li>No copia el contenido.</li>
+    <li>No sincroniza dos listas.</li>
+</ul>
+<p>Simplemente toma el widget existente y lo mueve. Eso reduce muchísimo la cantidad de código y evita inconsistencias.
+</p>
+<div class="card">
+    <p>Un detalle que quiero que observes</p>
+    <p>En <code data-start="2032" data-end="2041">_init()</code> vimos esto:</p>
+    <pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>originalEventsSectionParent </span><span class="ͼg">=</span><span> </span><span class="ͼj">this</span><span class="ͼg">.</span><span>newEventsSectionParent;</span></code></pre>
+    <p>En ese momento parecía una línea sin importancia. Ahora ya cobra sentido, necesita recordar:</p>
+    <ul>
+        <li>quién era el padre original. </li>
+        <li>quién es el padre actual.</li>
+    </ul>
+    <p>Porque más adelante, cuando llegue <code data-start="2329" data-end="2344">undoChanges()</code>, probablemente
+        tenga
+        que devolver cada pieza exactamente a su lugar original y esa es una señal de un diseño bastante cuidadoso.</p>
+</div>
+<hr>
+<h3>El siguiente es este:</h3>
+<pre><code><span class="ͼg">if</span><span>(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>showingSections</span><span class="ͼg">.</span><span>length </span><span class="ͼg">==</span><span> </span><span class="ͼj">3</span><span> </span><span class="ͼg">&amp;&amp;</span><span> </span><span class="ͼg">!</span><span class="ͼj">this</span><span class="ͼg">.</span><span>showEventsInCalendarAlso) {
+</span>    <span class="ͼj">this</span><span class="ͼg">.</span><span>dateMenuVbox</span><span class="ͼg">.</span><span>style </span><span class="ͼg">=</span><span> </span><span class="ͼk">"border-width: 0px"</span><span>;
+}
+
+</span><span class="ͼj">this</span><span class="ͼg">.</span><span>_messageListParent</span><span class="ͼg">.</span><span>remove_actor(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>_messageList);
+
+</span><span class="ͼg">if</span><span>(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>prefs</span><span class="ͼg">.</span><span>get_boolean(</span><span class="ͼk">"calendar-on-left"</span><span>)) {
+</span>    <span class="ͼj">this</span><span class="ͼg">.</span><span>_messageListParent</span><span class="ͼg">.</span><span>insert_child_at_index(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>_messageList, </span><span class="ͼj">1</span><span>)
+</span>    <span class="ͼj">this</span><span class="ͼg">.</span><span>dateMenuVbox</span><span class="ͼg">.</span><span>add_style_class_name(</span><span class="ͼk">"notification-center-datemenu-vbox"</span><span>);
+}
+</span><span class="ͼg">else</span><span> {
+</span>    <span class="ͼj">this</span><span class="ͼg">.</span><span>_messageListParent</span><span class="ͼg">.</span><span>insert_child_at_index(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>_messageList, </span><span class="ͼj">0</span><span>);
+}</span></code></pre>
+<p>Lo primero que salta a la vista, otra vez... No está creando nada.</p>
+<p>Está reorganizando la interfaz de GNOME. Ya empieza a ser un patrón muy claro de esta extensión.</p>
+<hr>
+<h4>Primera condición</h4>
+<pre><code><span class="ͼg">if</span><span>(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>showingSections</span><span class="ͼg">.</span><span>length </span><span class="ͼg">==</span><span> </span><span class="ͼj">3</span><span> </span><span class="ͼg">&amp;&amp;</span><span></span><span class="ͼg">!</span><span class="ͼj">this</span><span class="ͼg">.</span><span>showEventsInCalendarAlso)</span></code></pre>
+<p>Aún no conocemos estas preferencias en detalle, pero podemos deducir bastante. Parece decir:</p>
+<ul>
+    <li>Si se están mostrando las tres secciones...</li>
+    <li>...y los eventos <strong data-start="1017" data-end="1023">no</strong> deben mostrarse también en el
+        calendario...</li>
+</ul>
+<p>Entonces:</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>dateMenuVbox</span><span class="ͼg">.</span><span>style </span><span class="ͼg">=</span><span> </span><span class="ͼk">"border-width: 0px"</span><span>;</span></code></pre>
+<p>Es simplemente un ajuste visual. Seguramente evita que aparezca una línea divisoria innecesaria.</p>
+<hr>
+<h4>Ahora viene</h4>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>_messageListParent</span><span class="ͼg">.</span><span>remove_actor(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>_messageList);</span></code></pre>
+<p>Aquí literalmente hace:</p>
+<blockquote>"Quita la lista de mensajes de donde GNOME la colocó."</blockquote>
+<p>Y acto seguido... Decide dónde volver a colocarla</p>
+<pre><code><span class="ͼg">if</span><span>(</span><span class="ͼm">calendar</span><span class="ͼg">-</span><span class="ͼm">on</span><span class="ͼg">-</span><span class="ͼm">left</span><span>)</span></code></pre>
+<div class="row">
+    <div class="col"><span>Entonces:</span>
+        <pre><code><span>insert_child_at_index</span><span>(..., </span><span>1</span><span>)</span></code></pre>
+    </div>
+    <div class="col"><span>Si no:</span>
+        <pre><code><span>insert_child_at_index</span><span>(..., </span><span>0</span><span>)</span></code></pre>
+    </div>
+</div>
+<h5>¿Qué significa esto?</h5>
+<hr>
+<p>La extensión simplemente intercambia el orden. Creo que podemos imaginar el contenedor así:</p>
+<pre><samp class="samp-block">┌──────────────────────────────┐
+│ Calendar | Message List      │
+└──────────────────────────────┘</samp></pre>
+<p>o bien</p>
+<pre><samp class="samp-block">┌──────────────────────────────┐
+│ Message List | Calendar      │
+└──────────────────────────────┘</samp></pre>
+<p>Y hay un detalle elegante, observa que:</p>
+<div class="row">
+    <div class="col"><span>No hace esto:</span>
+        <pre><code><span>new</span><span> </span><span>Calendar</span><span>()</span></code></pre>
+    </div>
+    <div class="col"><span>Ni:</span>
+        <pre><code><span>new</span><span> </span><span>MessageList</span><span>()</span></code></pre>
+    </div>
+</div>
+<p>Otra vez reutilizando completamente GNOME. Simplemente mueve:</p>
+<pre><code><span>this</span><span>.</span><span>_messageList</span></code></pre>
+<hr>
+<p>La siguiente línea también me dice algo.</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>dateMenuVbox</span><span class="ͼg">.</span><span>add_style_class_name(
+</span><span class="ͼk">"notification-center-datemenu-vbox"</span><span>
+);</span></code></pre>
+<p>No modifica el estilo directamente. Agrega una <strong data-start="2590" data-end="2603">clase CSS</strong>, eso
+    significa que la apariencia probablemente esté definida en:</p>
+<pre><samp class="samp-block">stylesheet.css</samp></pre>
+<p>Y eso me encanta, porque mantiene separadas las responsabilidades:</p>
+<ul>
+    <li>JavaScript → comportamiento.</li>
+    <li>CSS → apariencia.</li>
+</ul>
+<hr>
+<h3>for ( ... ) { ... }</h3>
+<p>Ahora viene uno que tengo muchas ganas de analizar:</p>
+<pre><code><span class="ͼg">for</span><span>(</span><span class="ͼg">let</span><span> </span><span class="ͼm">i</span><span class="ͼg">=</span><span class="ͼj">0</span><span>; </span><span class="ͼm">i</span><span class="ͼg">&lt;</span><span class="ͼj">this</span><span class="ͼg">.</span><span>showingSections</span><span class="ͼg">.</span><span>length; </span><span class="ͼm">i</span><span class="ͼg">++</span><span>) {
+    </span><span class="ͼg">if</span><span>(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>showingSections[</span><span class="ͼm">i</span><span>] </span><span class="ͼg">==</span><span> </span><span class="ͼk">"events"</span><span>) {
+        ...
+    }
+    </span><span class="ͼg">else</span><span> {
+        ...
+    }
+}</span></code></pre>
+<p>Porque aquí, por primera vez, la extensión empieza a construir dinámicamente el contenido según las preferencias del
+    usuario.</p>
+<p>Pero quiero que primero nos hagamos una pregunta.</p>
+<h4>¿Qué es <code data-start="408" data-end="425">showingSections</code>?</h4>
+<p>No hemos visto todavía dónde se carga (seguramente en <code data-start="482"
+        data-end="501">loadPreferences()</code>), pero el nombre nos da una pista muy buena. Yo imagino algo como:</p>
+<div class="row">
+    <div class="col">
+        <pre><code><span>this</span><span>.</span><span>showingSections </span><span>=</span><span> [
+    </span><span>"notification"</span><span>,
+    </span><span>"media"</span><span>,
+    </span><span>"events"</span><span>
+];</span></code></pre>
+    </div>
+    <div class="col">
+        <pre><code><span>this</span><span>.</span><span>showingSections </span><span>=</span><span> [
+    </span><span>"notification"</span><span>,
+    </span><span>"events"</span><span>
+];</span></code></pre>
+    </div>
+</div>
+<p>Dependiendo de las preferencias del usuario. Es decir...&nbsp;<strong data-start="809" data-end="855">el usuario
+        decide qué secciones quiere ver</strong>&nbsp;y el <code data-start="863" data-end="868">for</code> simplemente
+    las recorre.</p>
+<hr>
+<p>Aquí Selenium-H trata a <strong data-start="1001" data-end="1011">Events</strong> de forma diferente.</p>
+<pre><code><span class="ͼg">if</span><span>(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>showingSections[</span><span class="ͼm">i</span><span>] </span><span class="ͼg">==</span><span> </span><span class="ͼk">"events"</span><span>) {</span></code></pre>
+<p>Y ¿Por qué eso tiene sentido?</p>
+<div class="row">
+    <div class="col"><span>Porque ya vimos anteriormente que:</span></div>
+    <div class="col">
+        <pre><code><span>this</span><span>.</span><span>eventsSection</span></code></pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col"><span>no tiene exactamente la misma estructura que:</span></div>
+    <div class="col">
+        <pre><code><span>this</span><span>.</span><span>notificationSection</span></code></pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col"><span>ni que</span></div>
+    <div class="col">
+        <pre><code><span>this</span><span>.</span><span>mediaSection</span></code></pre>
+    </div>
+</div>
+<p>Los eventos pertenecen al calendario de GNOME y tienen un comportamiento especial.</p>
+<hr>
+<h4>if (true) { ... }</h4>
+<p>Otra vez... Está quitando el widget del lugar donde estaba.</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>newEventsSectionParent</span><span class="ͼg">.</span><span>remove_actor(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>eventsSection);</span></code></pre>
+<p>Para luego, hacer esto:</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>box</span><span class="ͼg">.</span><span>add(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>eventsSection);</span></code></pre>
+<p>¡Aquí ocurre algo importante! ¿Recuerdas que en <code data-start="1663" data-end="1672">_init()</code> vimos?</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>box </span><span class="ͼg">=</span><span> </span><span class="ͼg">new</span><span> </span><span class="ͼm">St</span><span class="ͼg">.</span><span>BoxLayout(...)</span></code></pre>
+<p>Pues... ¡Aquí empieza a llenarla!</p>
+<p>Hasta ahora <code data-start="1784" data-end="1794">this.box</code> estaba vacía. Ahora recibe su primer contenido.
+</p>
+<hr>
+<h5>this.connectedSignals</h5>
+<p>Y aquí sí quiero detenerme, es la primera conexión de señales importante.</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>connectedSignals</span><span class="ͼg">.</span><span>push(
+    </span><span class="ͼj">this</span><span class="ͼg">.</span><span>eventsSection</span><span class="ͼg">.</span><span>_eventsList</span><span class="ͼg">.</span><span>connect(
+        </span><span class="ͼk">'actor-added'</span><span>,
+        ()=&gt; </span><span class="ͼj">this</span><span class="ͼg">.</span><span>newNotif(...)
+    )
+);</span></code></pre>
+<p>Hasta ahora habíamos visto señales del sistema. Por ejemplo:</p>
+<pre><samp class="samp-block">icon-theme-changed</samp></pre>
+<p>Ahora aparece otra filosofía. La extensión dice:</p>
+<blockquote>"Cuando se agregue un actor a la lista de eventos..."</blockquote>
+<div class="row">
+    <div class="col"><span>ejecuta:</span></div>
+    <div class="col">
+        <pre><samp class="samp-block">newNotif(...)</samp></pre>
+    </div>
+</div>
+<hr>
+<h5>¿Qué significa "actor-added"?</h5>
+<p>Aquí quiero hacer una pequeña hipótesis contigo. Creo que significa algo como:</p>
+<pre><samp class="samp-block">Calendario
+↓
+
+Nuevo evento
+↓
+
+GNOME agrega un nuevo actor gráfico
+↓
+
+actor-added
+↓
+
+newNotif("events")</samp></pre>
+<p>Es decir... La extensión <strong data-start="2606" data-end="2658">no pregunta constantemente si hay eventos
+        nuevos</strong>. Simplemente espera la señal y eso es muchísimo más eficiente.</p>
+<p>Cuando desaparece un evento, ocurre lo mismo con:</p>
+<pre><samp class="samp-block">actor-removed</samp></pre>
+<p>Y finalmente:</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>eventsSection</span><span class="ͼg">.</span><span>setDate(</span><span class="ͼg">new</span><span> </span><span class="ͼm">Date</span><span>());</span></code></pre>
+<p>Esto me parece un detalle bonito. Es como decir:</p>
+<blockquote>"Actualiza inmediatamente la sección de eventos al día de hoy."</blockquote>
+<p>Así el usuario no tiene que abrir y cerrar el calendario para refrescarla.</p>
+<hr>
+<h4>if (false) { ... }</h4>
+<p>Y aquí ya engloba:</p>
+<ul>
+    <li>notification</li>
+    <li>media</li>
+</ul>
+<p>Observa esta línea.</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>removeSection(
+    </span><span class="ͼj">this</span><span>[</span><span class="ͼj">this</span><span class="ͼg">.</span><span>showingSections[</span><span class="ͼm">i</span><span>]</span><span class="ͼg">+</span><span class="ͼk">"Section"</span><span>]
+);</span></code></pre>
+<div class="row">
+    <div class="col"><span>Si:</span></div>
+    <div class="col">
+        <pre><samp class="samp-block">this.showingSections[i]</samp></pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col"><span>Vale:</span></div>
+    <div class="col">
+        <pre><samp class="samp-block">notification</samp></pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col"><span>Entonces construye:</span></div>
+    <div class="col">
+        <pre><samp class="samp-block">this["notificationSection"]</samp></pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col"><span>Que equivale a:</span></div>
+    <div class="col">
+        <pre><samp class="samp-block">this.notificationSection</samp></pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col"><span>Si vale:</span></div>
+    <div class="col">
+        <pre><samp class="samp-block">media</samp></pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col"><span>Obtiene:</span></div>
+    <div class="col">
+        <pre><samp class="samp-block">this.mediaSection</samp></pre>
+    </div>
+</div>
+<p>Eso me pareció bastante elegante. ¡Sin necesidad de escribir dos <code data-start="3690" data-end="3694">if</code>!
+</p>
+<hr>
+<p>Después hace exactamente el mismo patrón.</p>
+<pre><samp class="samp-block">this.box.add(...)</samp></pre>
+<p>Para conectar:</p>
+<pre><samp class="samp-block">actor-added
+actor-removed</samp></pre>
+<p>Por ultimo, aplica una clase CSS.</p>
+<hr>
+<h5>Algo curioso</h5>
+<p>Este <code data-start="3946" data-end="3951">for</code> evita escribir algo como:</p>
+<pre><code><span class="ͼg">if</span><span>(</span><span class="ͼm">notification</span><span>)
+...
+</span><span class="ͼg">if</span><span>(</span><span class="ͼm">media</span><span>)
+...
+</span><span class="ͼg">if</span><span>(</span><span class="ͼm">events</span><span>)
+...</span></code></pre>
+<p>En lugar de eso, la extensión trabaja con una lista. Eso significa que agregar una nueva sección sería relativamente
+    sencillo.</p>
+<p>Hay otro detalle importante, observa esto:</p>
+<pre><samp class="samp-block">this.connectedSignals.push(...)</samp></pre>
+<div class="row">
+    <div class="col"><span>No hace simplemente:</span></div>
+    <div class="col">
+        <pre><samp class="samp-block">connect(...)</samp></pre>
+    </div>
+</div>
+<p>Guarda el resultado. ¿Por qué? Porque esos números (los IDs de las señales) serán necesarios después.</p>
+<p>Y ya empiezo a sospechar dónde... En <code data-start="4479" data-end="4494">undoChanges()</code> o <code
+        data-start="4497" data-end="4508">destroy()</code>.</p>
+<div class="row">
+    <div class="col"><span>Allí seguramente recorrerá:</span></div>
+    <div class="col">
+        <pre><samp class="samp-block">this.connectedSignals</samp></pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col"><span>Para hacer:</span></div>
+    <div class="col">
+        <pre><samp class="samp-block">disconnect(...)</samp></pre>
+    </div>
+</div>
+<p>Eso evita fugas de memoria y señales que queden conectadas cuando la extensión se deshabilita.</p>
+<hr>
+<h4>Resumen de este for</h4>
+<p>Si tuviera que resumir este <code data-start="4823" data-end="4828">for</code> en una sola frase sería:</p>
+<blockquote>Construye dinámicamente el contenido del panel de notificaciones según las preferencias del usuario y deja
+    preparadas todas las conexiones necesarias para que la interfaz se actualice automáticamente cuando cambien las
+    notificaciones, los eventos o el contenido multimedia.</blockquote>
+<p>Y, sinceramente, este es uno de los bloques que más me ha gustado hasta ahora. No por su complejidad, sino porque ya
+    empieza a mostrar una arquitectura basada en <strong data-start="5298" data-end="5309">eventos</strong> y en <strong
+        data-start="5315" data-end="5341">configuración dinámica</strong>, dos ideas que explican muy bien por qué la
+    extensión se sentía tan integrada con GNOME en lugar de parecer una aplicación independiente.</p>
+
+
+<hr>
+<p>El siguiente bloque es pequeño y representa una transición importante:</p>
+<pre>
+    <code>    <span class="ͼj">this</span><span class="ͼg">.</span><span>scrollView</span><span class="ͼg">.</span><span>_delegate </span><span class="ͼg">=</span><span> </span><span class="ͼj">this</span><span>;
+    </span><span class="ͼj">this</span><span class="ͼg">.</span><span>scrollView</span><span class="ͼg">.</span><span>add_actor(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>box);
+    </span><span class="ͼj">this</span><span class="ͼg">.</span><span>box</span><span class="ͼg">.</span><span>add_child(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>noNotificationLabel);
+    </span><span class="ͼj">this</span><span class="ͼg">.</span><span>menu</span><span class="ͼg">.</span><span>box</span><span class="ͼg">.</span><span>add_child(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>scrollView);</span></code>
+</pre>
+<p>A primera vista parecen cuatro líneas sin importancia, pero en realidad <strong data-start="1371" data-end="1479">es
+        el momento en que todo lo que hemos construido empieza a convertirse en el contenido visible del menú</strong>.
+    Es decir, hasta ahora habíamos creado piezas (<code data-start="1528" data-end="1533">box</code>, <code
+        data-start="1535" data-end="1547">scrollView</code>, <code data-start="1549"
+        data-end="1564">eventsSection</code>, <code data-start="1566" data-end="1587">notificationSection</code>...),
+    pero todavía estaban "sueltas". Con este bloque, Selenium-H empieza a ensamblarlas para que el usuario pueda verlas
+    cuando abra el panel.</p>
+<p>Así que...&nbsp;<strong data-start="1746" data-end="1838" data-is-last-node="">¡volvamos&nbsp;y no dejemos ninguna
+        línea sin entender!</strong></p>
+<pre><samp class="samp-block">this.scrollView._delegate = this;</samp></pre>
+<div class="row">
+    <div class="col"><span>Esta es una de esas líneas que uno ve y dice:</span></div>
+    <div class="col">
+        <blockquote>"¿Qué hace eso?"</blockquote>
+    </div>
+</div>
+<div class="row">
+    <div class="col"><span>Y la respuesta honesta es:</span></div>
+    <div class="col">
+        <blockquote>Todavía no lo sabemos con certeza.</blockquote>
+    </div>
+</div>
+<p>Lo que sí podemos deducir es que <code data-start="620" data-end="632">scrollView</code> pertenece a GNOME (<code
+        data-start="652" data-end="667">St.ScrollView</code>), mientras que <code data-start="683"
+        data-end="689">this</code> es nuestra clase <code data-start="707" data-end="727">NotificationCenter</code>.</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>scrollView</span><span class="ͼg">.</span><span>_delegate </span><span class="ͼg">=</span><span> </span><span class="ͼj">this</span><span>;</span></code></pre>
+<p>Aquí la extensión asigna y le está diciendo al <code data-start="824" data-end="836">ScrollView</code>:</p>
+<blockquote>"Cuando necesites consultar cierto comportamiento, tu delegado será NotificationCenter."</blockquote>
+<p>Es un patrón muy usado en GTK/GNOME. No vemos aún que se use, pero seguramente el <code data-start="1014"
+        data-end="1026">ScrollView</code> preguntará cosas al delegado cuando necesite manejar ciertos eventos.</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>scrollView</span><span class="ͼg">.</span><span>add_actor(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>box);</span></code></pre>
+<p>Aquí sí ya estamos sobre terreno conocido. Recordemos lo que hemos construido hasta ahora.</p>
+<div class="row">
+    <div class="col">
+        <p>Durante <code>_init()</code>:</p>
+    </div>
+    <div class="col">
+        <pre><samp class="samp-block">ScrollView
+        (vacío)
+    
+    BoxLayout
+        (vacío)</samp></pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <p>Después, el <code>for</code> empezó a llenar el <code>BoxLayout</code>:</p>
+    </div>
+    <div class="col">
+        <pre><samp class="samp-block">BoxLayout
+    
+    Eventos
+    Notificaciones
+    Multimedia</samp></pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <p>Ahora ocurre:</p>
+    </div>
+    <div class="col">
+        <pre><samp class="samp-block">this.scrollView.add_actor(this.box);</samp></pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <p>Es decir:</p>
+    </div>
+    <div class="col">
+        <pre><samp class="samp-block">ScrollView
+        └── BoxLayout
+                ├── Events
+                ├── Notifications
+                └── Media</samp></pre>
+    </div>
+</div>
+<p>Ya todo empieza a tomar forma.</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>box</span><span class="ͼg">.</span><span>add_child(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>noNotificationLabel);</span></code></pre>
+<p>¿Recuerdas que en <code data-start="1953" data-end="1962">_init()</code> vimos?</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>noNotificationLabel </span><span class="ͼg">=</span><span>
+        </span><span class="ͼg">new</span><span> </span><span class="ͼm">St</span><span class="ͼg">.</span><span>Label({
+            text: </span><span class="ͼm">_</span><span>(</span><span class="ͼk">"No Notifications"</span><span>),
+            ...
+        });</span></code></pre>
+<p>Hasta ahora solo existía, ahora se agrega al <code data-start="2139" data-end="2150">BoxLayout</code>. Lo interesante
+    es que <strong data-start="2175" data-end="2216">no significa que siempre vaya a verse</strong>. Más bien ya queda
+    preparado.</p>
+<p>Probablemente, cuando no existan notificaciones,&nbsp;otro método haga algo como:</p>
+<pre><samp class="samp-block">this.noNotificationLabel.visible = true;</samp></pre>
+<p>Yo sospecho que será <code data-start="2408" data-end="2426">manageAutohide()</code> o <code data-start="2429"
+        data-end="2447">resetIndicator()</code>. Todavía no lo sabemos.</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>menu</span><span class="ͼg">.</span><span>box</span><span class="ͼg">.</span><span>add_child(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>scrollView);</span></code></pre>
+<p>Y aquí termina el ensamblaje. Visualmente queda algo así:</p>
+<pre><samp>PopupMenu
+    └── menu.box
+            │
+            └── ScrollView
+                    │
+                    └── BoxLayout
+                            │
+                            ├── Events
+                            ├── Notifications
+                            ├── Media
+                            └── "No Notifications"</samp></pre>
+<h5>¿Notas algo?</h5>
+<p>Todo lo que estudiamos anteriormente...</p>
+<ul>
+    <li>mover widgets</li>
+    <li>crear labels</li>
+    <li>crear iconos</li>
+    <li>recorrer <code data-start="3031" data-end="3048">showingSections</code></li>
+</ul>
+<p>...era preparar el contenido.&nbsp;</p>
+<p>Aquí, por fin, ese contenido entra dentro del menú de la extensión.</p>
+<hr>
+<h4>Una obserbación</h4>
+<p>Fíjate en el orden.&nbsp;</p>
+<div class="row">
+    <div class="col"><span>No hace esto al principio del método:</span></div>
+    <div class="col">
+        <pre><samp>menu
+    ↓
+ScrollView
+    ↓
+Box</samp></pre>
+    </div>
+</div>
+<p>Lo hace <strong data-start="3315" data-end="3326">después</strong> de llenar el <code data-start="3340"
+        data-end="3351">BoxLayout</code>, es decir, primero arma el contenido, después lo monta. No cambia el resultado
+    final, pero conceptualmente me parece limpio.</p>
+<p>Si lo traduzco a una analogía... Hasta ahora era como construir un librero.</p>
+<p>Primero:</p>
+<ul>
+    <li>haces la estructura;</li>
+    <li>colocas los estantes;</li>
+    <li>ordenas los libros.</li>
+</ul>
+<p>Y <strong data-start="3648" data-end="3660">al final</strong> lo llevas a la sala. No al revés. Eso es exactamente
+    este bloque.</p>
+<hr>
+<h4>Resumen</h4>
+<p>Este bloque no añade funcionalidades nuevas. Su trabajo es <strong data-start="3810" data-end="3843">ensamblar la
+        jerarquía visual</strong>.</p>
+<pre><samp class="samp-block">NotificationCenter
+            │
+            ▼
+    menu.box
+            │
+            ▼
+    ScrollView
+            │
+            ▼
+    BoxLayout
+            │
+            ├── Events
+            ├── Notifications
+            ├── Media
+            └── No Notifications</samp></pre>
+<hr>
+<h4>clearButtonPos</h4>
+<p>El siguiente bloque es:</p>
+<pre><code><span class="ͼg">let</span><span> </span><span class="ͼm">clearButtonPos</span><span> </span><span class="ͼg">=</span><span> </span><span class="ͼj">this</span><span class="ͼg">.</span><span>prefs</span><span class="ͼg">.</span><span>get_enum(</span><span class="ͼk">"clear-button-alignment"</span><span>);
+    </span><span class="ͼg">if</span><span>(</span><span class="ͼm">clearButtonPos</span><span> </span><span class="ͼg">!=</span><span> </span><span class="ͼj">3</span><span>){
+      </span><span class="ͼj">this</span><span class="ͼg">.</span><span>clearButton</span><span class="ͼg">.</span><span>connect(</span><span class="ͼk">'clicked'</span><span>, ()=&gt; {
+        </span><span class="ͼj">this</span><span class="ͼg">.</span><span>notificationSection</span><span class="ͼg">.</span><span>clear();
+      }); 
+      </span><span class="ͼj">this</span><span class="ͼg">.</span><span>clearButton</span><span class="ͼg">.</span><span>set_x_align(</span><span class="ͼj">1</span><span class="ͼg">+</span><span class="ͼm">clearButtonPos</span><span>);
+      </span><span class="ͼj">this</span><span class="ͼg">.</span><span>menu</span><span class="ͼg">.</span><span>box</span><span class="ͼg">.</span><span>add_child(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>clearButton);
+    }
+    </span><span class="ͼj">this</span><span class="ͼg">.</span><span>_messageList</span><span class="ͼg">.</span><span>_clearButton</span><span class="ͼg">.</span><span>opacity </span><span class="ͼg">=</span><span> </span><span class="ͼj">255</span><span class="ͼg">*</span><span>(</span><span class="ͼg">!</span><span class="ͼj">this</span><span class="ͼg">.</span><span>notificationSectionToBeShown);</span></code></pre>
+<hr>
+<p>Ya conocemos bastante bien <code data-start="655" data-end="667">this.prefs</code>.</p>
+<pre><code><span class="ͼg">let</span><span> </span><span class="ͼm">clearButtonPos</span><span> </span><span class="ͼg">=</span><span> </span><span class="ͼj">this</span><span class="ͼg">.</span><span>prefs</span><span class="ͼg">.</span><span>get_enum(</span><span class="ͼk">"clear-button-alignment"</span><span>);</span></code></pre>
+<div class="row">
+    <div class="col"><span>Lo interesante es el método:</span></div>
+    <div class="col">
+        <pre><samp>Lo interesante es el método:</samp></pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col"><span>Hasta ahora habíamos visto:</span></div>
+    <div class="col">
+        <pre><samp>get_boolean(...)
+get_int(...)
+get_string(...)</samp>
+        </pre>
+    </div>
+</div>
+<p>Ahora aparece un <strong data-start="844" data-end="852">enum</strong>. Eso me dice que en el esquema (<code
+        data-start="886" data-end="895">gschema</code>) seguramente exista algo parecido a:</p>
+<pre><samp class="samp-block">Left
+Center
+Right
+Hidden</samp></pre>
+<p>Internamente representados por números. Todavía no hemos abierto el schema, pero ya podemos imaginarlo.</p>
+<hr>
+<pre><code><span class="ͼg">if</span><span>(</span><span class="ͼm">clearButtonPos</span><span> </span><span class="ͼg">!=</span><span> </span><span class="ͼj">3</span><span>)</span></code></pre>
+<p>Y aquí quiero detenerme. ¿Por qué comparar con un número? Porque probablemente:</p>
+<pre><samp class="samp-block">0 = izquierda    
+1 = centro    
+2 = derecha    
+3 = oculto</samp>
+</pre>
+<p>No lo sabemos todavía, pero la lógica apunta exactamente hacia ahí. Y eso explica por qué...</p>
+<div class="row">
+    <div class="col"><span>Si el usuario eligió:</span></div>
+    <div class="col">
+        <blockquote>Ocultar botón</blockquote>
+    </div>
+</div>
+<p>Ni siquiera se agrega al menú.</p>
+<div class="row">
+    <div class="col"><span>Observa que <strong>no hace esto</strong>:</span></div>
+    <div class="col">
+        <pre><samp>this.clearButton.visible = false;</samp></pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col"><span>Sino que directamente hace:</span></div>
+    <div class="col">
+        <blockquote>No lo agrego.</blockquote>
+    </div>
+</div>
+<p>Es una diferencia pequeña, pero elegante. Si nunca va a mostrarse... ¿Para qué crear conexiones? ¿Para qué ocupar
+    espacio? Simplemente no existe.</p>
+<p>Y en caso de existir...</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>clearButton</span><span class="ͼg">.</span><span>connect(</span><span class="ͼk">'clicked'</span><span>, ()=&gt; {
+        </span><span class="ͼj">this</span><span class="ͼg">.</span><span>notificationSection</span><span class="ͼg">.</span><span>clear();
+    });</span></code></pre>
+<p>Esto sí es muy claro. Cuando haces clic... Llama a:</p>
+<pre><samp class="samp-block">notificationSection.clear()</samp></pre>
+<p>Y aquí me surge una duda interesante. No sabemos si ese método es de GNOME o de la extensión.</p>
+<p>Mi intuición me dice que pertenece al propio widget de GNOME. Porque la extensión reutiliza muchísimo código
+    existente.</p>
+<hr>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>clearButton</span><span class="ͼg">.</span><span>set_x_align(</span><span class="ͼj">1</span><span class="ͼg">+</span><span class="ͼm">clearButtonPos</span><span>);</span></code></pre>
+<p>Esta línea parece una pequeña "trampa matemática".</p>
+<div class="row">
+    <div class="col"><span>Si:</span></div>
+    <div class="col">
+        <pre><samp>0
+1
+2</samp>
+        </pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col"><span>Entonces:&nbsp;</span></div>
+    <div class="col">
+        <pre><samp>1
+2
+3</samp>
+        </pre>
+    </div>
+</div>
+<p>Seguramente esos son precisamente los valores que espera GTK para la alineación horizontal.</p>
+<p>Es decir... No hace un <code data-start="2631" data-end="2639">switch</code>. Simplemente suma uno. Muy sencillo.</p>
+<hr>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>menu</span><span class="ͼg">.</span><span>box</span><span class="ͼg">.</span><span>add_child(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>clearButton);</span></code></pre>
+<p>Y ya sabemos perfectamente qué hace. El botón queda agregado al final del menú. Visualmente algo así:</p>
+<pre><samp class="samp-block">──────────────
+    
+Eventos
+Notificaciones
+Multimedia
+
+──────────────
+
+    [ Clear ]</samp></pre>
+<hr>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>_messageList</span><span class="ͼg">.</span><span>_clearButton</span><span class="ͼg">.</span><span>opacity </span><span class="ͼg">=</span><span>
+        </span><span class="ͼj">255</span><span> </span><span class="ͼg">*</span><span> (</span><span class="ͼg">!</span><span class="ͼj">this</span><span class="ͼg">.</span><span>notificationSectionToBeShown);</span></code></pre>
+<p>Cuando uno la ve por primera vez parece magia negra, pero realmente no lo es.</p>
+<div class="row">
+    <div class="col"><span>Sabemos que:</span></div>
+    <div class="col">
+        <pre><samp>true  = 1
+false = 0</samp></pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col"><span>Y en JavaScript:</span></div>
+    <div class="col">
+        <pre><samp>Number(true)  == 1
+Number(false) == 0</samp></pre>
+    </div>
+</div>
+<p>Y aquí ocurre esto:</p>
+<div class="row">
+    <div class="col"><span>Si</span></div>
+    <div class="col">
+        <pre><samp>notificationSectionToBeShown</samp></pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col"><span>es</span></div>
+    <div class="col">
+        <pre><samp>true</samp></pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col"><span>Entonces</span></div>
+    <div class="col">
+        <pre><samp>!true
+↓
+false
+↓
+0
+↓
+255 × 0 = 0</samp></pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col"><span>Opacity:</span></div>
+    <div class="col">
+        <pre><samp>0</samp></pre>
+    </div>
+</div>
+<p>Como resultado&nbsp;<code data-start="2631" data-end="2639">notificationSectionToBeShown</code>&nbsp;es invisible.
+</p>
+<div class="row">
+    <div class="col"><span>Pero, si vale</span></div>
+    <div class="col">
+        <pre><samp>false</samp></pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col"><span>Entonces:</span></div>
+    <div class="col">
+        <pre><samp>!false
+↓
+true
+↓
+1
+↓
+255</samp></pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col"><span>Opacity:</span></div>
+    <div class="col">
+        <pre><samp>255</samp></pre>
+    </div>
+</div>
+<p>Como resultado <code data-start="2631" data-end="2639">notificationSectionToBeShown</code> es visible.</p>
+<hr>
+<h4>¿Pero qué botón es este?</h4>
+<p>No es <strong data-start="3675" data-end="3692">nuestro botón</strong>. Es:&nbsp;</p>
+<pre><samp class="samp-block">this._messageList._clearButton</samp></pre>
+<p>Es decir... el botón original de GNOME. Entonces Selenium-H está diciendo algo así:</p>
+<blockquote>"Dependiendo de cómo esté configurada la extensión, oculta o muestra el botón original."</blockquote>
+<p>Y eso tiene muchísimo sentido. Porque ahora la extensión tiene su propio botón <strong data-start="4013"
+        data-end="4022">Clear</strong>. No tendría sentido mostrar dos.</p>
+<hr>
+<h4>Resumen</h4>
+<p>Este bloque hace cuatro cosas:</p>
+<ul>
+    <li>Obtiene la posición del botón <strong data-start="4440" data-end="4449">Clear</strong> desde las preferencias.
+    </li>
+    <li>Si el usuario no lo ocultó, conecta su evento <code data-start="4522" data-end="4531">clicked</code>.</li>
+    <li>Lo coloca en la posición indicada. </li>
+    <li>Oculta el botón <strong data-start="4588" data-end="4597">Clear</strong> original de GNOME cuando corresponde.
+    </li>
+</ul>

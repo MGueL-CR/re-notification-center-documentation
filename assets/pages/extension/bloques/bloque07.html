@@ -1,0 +1,665 @@
+<span class="float-span">Bloque 07</span>
+<h2>Signals</h2>
+<hr>
+<p>Y aquí empieza una de las partes más importantes de toda la extensión.</p>
+<h3>this.dndSig</h3>
+<hr>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>dndSig </span><span class="ͼg">=</span><span> </span><span class="ͼj">this</span><span class="ͼg">.</span><span>dndpref</span><span class="ͼg">.</span><span>connect(</span><span class="ͼk">"changed::show-banners"</span><span>, () =&gt; {
+    </span><span class="ͼj">this</span><span class="ͼg">.</span><span>loadDndStatus();
+});</span></code></pre>
+<p>Puede parecer pequeño... Pero conceptualmente es enorme.</p>
+<p>Ya lo conocemos, fue creado en <code data-start="1384" data-end="1393">_init()</code>.</p>
+<div class="row">
+    <div class="col">
+        <li>Primero</li>
+        <pre><samp>this.dndpref</samp></pre>
+    </div>
+    <div class="col">
+    </div>
+</div>
+<p>Si recuerdas:</p>
+<pre><samp>this.dndpref =
+    Main.panel.statusArea.dateMenu._indicator._settings;</samp></pre>
+<div class="row">
+    <div class="col"><span>Es decir...</span></div>
+    <div class="col">
+        <ul>
+            <li>No es un botón.</li>
+            <li>No es un widget.</li>
+            <li>No es una etiqueta.</li>
+        </ul>
+    </div>
+    <div class="col"></div>
+</div>
+<p>Es el objeto de <strong data-start="1587" data-end="1604">configuración</strong> del modo "No molestar".</p>
+<div class="row">
+    <div class="col">
+        <li>Después</li>
+        <pre><samp>connect(...)</samp></pre>
+    </div>
+    <div class="col">
+    </div>
+</div>
+<p>Ya empezamos a reconocer este patrón.</p>
+<div class="row">
+    <div class="col"><span>Hasta ahora vimos muchos:</span></div>
+    <div class="col">
+        <pre><samp>actor-added
+
+actor-removed
+
+clicked
+
+toggled</samp></pre>
+    </div>
+    <div class="col"></div>
+</div>
+<p>Todos tenían algo en común, esperaban un evento. Pero ahora aparece algo nuevo</p>
+<pre><samp>"changed::show-banners"</samp></pre>
+<p>Y aquí GNOME nos está diciendo algo muy interesante.</p>
+<div class="col">
+    <div><span>No dice:</span></div>
+    <div>
+        <pre><samp>clicked</samp></pre>
+    </div>
+    <div class="col"></div>
+</div>
+<div class="row">
+    <div class="col"><span>No dice:</span></div>
+    <div class="col">
+        <pre><samp>pressed</samp></pre>
+    </div>
+    <div class="col"></div>
+</div>
+<div class="row">
+    <div class="col"><span>No dice:</span></div>
+    <div class="col">
+        <pre><samp>opened</samp></pre>
+    </div>
+    <div class="col"></div>
+</div>
+<div class="row">
+    <div class="col"><span>Dice:</span></div>
+    <div class="col">
+        <pre><samp>changed::</samp></pre>
+    </div>
+    <div class="col"></div>
+</div>
+<p>Ha cambiado una propiedad.</p>
+<h4>¿Qué propiedad?</h4>
+<pre><samp >show-banners</samp></pre>
+<p>Es decir... Cuando alguien cambie la preferencia:</p>
+<pre><samp >Mostrar banners</samp></pre>
+<p>GNOME avisará inmediatamente.</p>
+<h4>¿Quién puede cambiar esa opción?</h4>
+<p>Varias cosas, por ejemplo:</p>
+<ul>
+    <li>el usuario desde Configuración;</li>
+    <li>el interruptor DND de la extensión;</li>
+    <li>el interruptor DND del propio DateMenu;</li>
+    <li>otra extensión;</li>
+    <li>incluso GNOME Shell.</li>
+</ul>
+<p>Y eso me gusta mucho. Porque Selenium-H <strong data-start="2559" data-end="2589">no pregunta
+        constantemente</strong>:</p>
+<blockquote>"¿Cambió?"</blockquote>
+<p>Simplemente espera y cuando cambia... GNOME le avisa</p>
+<h4>¿Y qué hace?</h4>
+<p>Muy poco.</p>
+<pre><samp>this.loadDndStatus();</samp></pre>
+<p>Y eso también me gusta. No intenta actualizar veinte cosas aquí.</p>
+<div class="row">
+    <div class="col"><span>Solo dice:</span></div>
+    <div class="col">
+        <blockquote>"El estado cambió." -&gt; "Recárgalo."</blockquote>
+    </div>
+    <div class="col"></div>
+</div>
+<hr>
+<h4>Aparece un patrón</h4>
+<p>Aquí aparece un patrón que ya empezamos a reconocer.</p>
+<div class="row">
+    <div class="col"><span>Es muy parecido a esto:</span></div>
+    <div class="col">
+        <pre><samp>Evento
+↓
+
+Método especializado</samp></pre>
+    </div>
+    <div class="col"></div>
+</div>
+<div class="row">
+    <div class="col"><span>En lugar de:</span></div>
+    <div class="col">
+        <pre><samp>Evento
+↓
+
+50 líneas de código</samp></pre>
+    </div>
+    <div class="col"></div>
+</div>
+<p>Eso hace que el código sea mucho más limpio.</p>
+
+<h3>middle-click-dnd</h3>
+<hr>
+<p>A simple vista parece muy pequeño. Pero contiene varias decisiones interesantes.</p>
+<pre><code><span class="ͼg">if</span><span>(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>prefs</span><span class="ͼg">.</span><span>get_boolean(</span><span class="ͼk">"middle-click-dnd"</span><span>)) {
+    </span><span class="ͼj">this</span><span class="ͼg">.</span><span>connect(
+        </span><span class="ͼk">"button-press-event"</span><span>,
+        (</span><span class="ͼm">actor</span><span>, </span><span class="ͼm">event</span><span>)=&gt;</span><span class="ͼj">this</span><span class="ͼg">.</span><span>middleClickDndToggle(</span><span class="ͼm">actor</span><span>, </span><span class="ͼm">event</span><span>)
+    );
+}</span></code></pre>
+<p>Ya estamos completamente acostumbrados a esto.</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>prefs</span><span class="ͼg">.</span><span>get_boolean(</span><span class="ͼk">"middle-click-dnd"</span><span>)</span></code></pre>
+<p>Es simplemente:</p>
+<blockquote>"¿El usuario activó esta opción en las preferencias?"</blockquote>
+<p>Si la respuesta es:&nbsp;<i>false</i></p>
+<p>No hace absolutamente nada, ni siquiera registra el evento. Eso es importante.</p>
+<div class="row">
+    <div class="col"><span>No está haciendo:</span>
+        <pre><samp>connect(...)
+↓
+
+if(...)</samp></pre>
+    </div>
+    <div class="col"></div>
+</div>
+<div class="row">
+    <div class="col"><span>Justamente lo contrario.</span>
+        <pre><samp>if(...)
+↓
+
+connect(...)</samp></pre>
+    </div>
+    <div class="col"></div>
+</div>
+<p><b>¿Por qué eso?</b> Porque significa que, si el usuario nunca utilizará esa función... GNOME nunca tendrá que emitir
+    ese evento para esta extensión. Es un pequeño ahorro, no enorme, pero elegante.</p>
+<div class="row">
+    <div class="col">
+        <li>Y aquí quiero detenerme.</li>
+        <pre><samp>this.connect(...)</samp></pre>
+    </div>
+    <div class="col">
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <p>Hasta ahora habíamos visto:</p>
+        <pre><samp>this.notificationSection._list.connect(...)</samp></pre>
+        <pre><samp>this.eventsSection.connect(...)</samp></pre>
+    </div>
+    <div class="col">
+        <p>Pero ahora es:</p>
+        <pre><samp>this.connect(...)</samp></pre>
+    </div>
+</div>
+<p>Eso significa que el evento pertenece a... <b>NotificationCenter</b>. Es decir... Al botón del panel.</p>
+<h4>¿Qué evento escucha?</h4>
+<pre><samp>button-press-event</samp></pre>
+<div class="row">
+    <div class="col"><span>No dice:</span>
+        <pre><samp>left-click</samp></pre>
+    </div>
+    <div class="col"></div>
+</div>
+<div class="row">
+    <div class="col"><span>No dice:</span>
+        <pre><samp>middle-click</samp></pre>
+    </div>
+    <div class="col"></div>
+</div>
+<div class="row">
+    <div class="col"><span>No dice:</span>
+        <pre><samp>right-click</samp></pre>
+    </div>
+    <div class="col"></div>
+</div>
+<div class="row">
+    <div class="col"><span>Dice simplemente:</span></div>
+    <div class="col">
+        <pre><samp>Se presionó un botón del mouse.</samp></pre>
+    </div>
+</div>
+<p>Y aquí entra en juego otro método.</p>
+<pre><samp>middleClickDndToggle(actor, event)</samp></pre>
+<p>Apuesto bastante a que dentro de ese método encontraremos algo parecido a:</p>
+<pre><samp>if(event.get_button() == 2)</samp></pre>
+<p>O alguna comprobación similar. Porque el evento es genérico. El método decide qué botón fue.</p>
+
+<h3>this.unFreezeSig</h3>
+<hr>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>unFreezeSig </span><span class="ͼg">=</span><span> </span><span class="ͼm">Main</span><span class="ͼg">.</span><span>panel</span><span class="ͼg">.</span><span>statusArea</span><span class="ͼg">.</span><span>dateMenu</span><span class="ͼg">.</span><span>_calendar</span><span class="ͼg">.</span><span>connect(
+    </span><span class="ͼk">'selected-date-changed'</span><span>,
+    (</span><span class="ͼm">calendar</span><span>, </span><span class="ͼm">datetime</span><span>) =&gt; {
+        </span><span class="ͼj">this</span><span class="ͼg">.</span><span>_messageList</span><span class="ͼg">.</span><span>get_parent()</span><span class="ͼg">.</span><span>get_parent()</span><span class="ͼg">.</span><span>layout_manager</span><span class="ͼg">.</span><span>frozen </span><span class="ͼg">=</span><span> </span><span class="ͼj">false</span><span>;
+
+        </span><span class="ͼg">switch</span><span>(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>eventsSectionPosition) {
+            </span><span class="ͼg">case</span><span> </span><span class="ͼj">2</span><span>:
+                [ </span><span class="ͼj">this</span><span class="ͼg">.</span><span>eventsSection</span><span class="ͼg">.</span><span>visible, </span><span class="ͼj">this</span><span class="ͼg">.</span><span>dateMenuVbox</span><span class="ͼg">.</span><span>style ] </span><span class="ͼg">=</span><span>
+                    [ ( </span><span class="ͼj">this</span><span class="ͼg">.</span><span>showEventsSectionIfEmpty </span><span class="ͼg">||</span><span> </span><span class="ͼj">this</span><span class="ͼg">.</span><span>shouldShowEventsSection()), </span><span class="ͼk">""</span><span> ];
+
+                </span><span class="ͼj">this</span><span class="ͼg">.</span><span>_messageList</span><span class="ͼg">.</span><span>_sync();
+                </span><span class="ͼg">return</span><span>;
+
+            </span><span class="ͼg">case</span><span> </span><span class="ͼj">0</span><span>:
+                </span><span class="ͼj">this</span><span class="ͼg">.</span><span>eventsSection</span><span class="ͼg">.</span><span>visible </span><span class="ͼg">=</span><span>
+                    (</span><span class="ͼj">this</span><span class="ͼg">.</span><span>showEventsSectionIfEmpty </span><span class="ͼg">||</span><span> </span><span class="ͼj">this</span><span class="ͼg">.</span><span>shouldShowEventsSection());
+        }
+    }
+);</span></code></pre>
+<h4>Connect(): selected-date-changed</h4>
+<hr>
+<pre><samp>selected-date-changed</samp></pre>
+<p>Ya no necesitamos adivinar. Este evento significa exactamente:</p>
+<blockquote>"El usuario cambió la fecha seleccionada en el calendario."</blockquote>
+<div class="row">
+    <div class="col"><span>No dice:</span></div>
+    <div class="col">
+        <blockquote>abrir menú</blockquote>
+    </div>
+</div>
+<div class="row">
+    <div class="col"><span>ni</span></div>
+    <div class="col">
+        <blockquote>cerrar menú</blockquote>
+    </div>
+</div>
+<div class="row">
+    <div class="col"><span>ni</span></div>
+    <div class="col">
+        <blockquote>llegó una notificación.</blockquote>
+    </div>
+</div>
+<p>Es exclusivamente el calendario. Ahora mira la primera línea</p>
+<pre><samp>this._messageList
+    .get_parent()
+    .get_parent()
+    .layout_manager.frozen = false;</samp></pre>
+<div class="row">
+    <div class="col"><span>No hace:</span>
+        <pre><samp>calendar.refresh();</samp></pre>
+    </div>
+    <div class="col"><span>Hace esto:</span>
+        <pre><samp>layout_manager.frozen = false;</samp></pre>
+    </div>
+</div>
+<p>No llama a un método bonito. Eso me hace pensar inmediatamente:&nbsp;</p>
+<blockquote>"Había algo congelado."</blockquote>
+<h4>¿Qué significa "frozen"?</h4>
+<p>No podemos asegurarlo todavía. Pero una hipótesis razonable sería:</p>
+<blockquote>
+    <div>El administrador del layout deja de recalcular posiciones.</div>
+    <div>↓</div>
+    <div><br></div>
+    <div>Entonces la interfaz no se actualiza.</div>
+    <div>↓</div>
+    <div><br></div>
+    <div>Lo fuerza: <code class="inline-code">frozen = false;</code></div>
+    <div>↓</div>
+    <div><br></div>
+    <div>"Descongélate y vuelve a calcular."</div>
+</blockquote>
+<p>Y ahora viene la parte bonita</p>
+<pre><samp>switch(this.eventsSectionPosition)</samp></pre>
+<p>¡Ya estamos viendo algo familiar! Recuerda que hablamos de esa preferencia. Dependiendo de dónde quiera el usuario la
+    sección de eventos... La extensión hace cosas distintas.</p>
+<h4>Case 2:</h4>
+<p>Hace dos cosas.</p>
+<p><b>Primera: </b>Esto ya casi se lee solo.</p>
+<pre><samp>this.eventsSection.visible =
+    (
+        this.showEventsSectionIfEmpty
+        ||
+        this.shouldShowEventsSection()
+    );</samp></pre>
+<div class="row">
+    <div class="col"><span>Mostrar la sección cuando:</span>
+        <li>el usuario quiere verla siempre,</li>
+    </div>
+    <div class="col"><span>o</span>
+        <li>realmente hay eventos.</li>
+    </div>
+</div>
+<p><b>Segunda:</b> Eliminar cualquier estilo temporal.</p>
+<p>Es decir... Seguramente durante otros estados había puesto:&nbsp;<i><span class="ͼo">border-width</span>:0</i> o algo
+    parecido. Ahora vuelve al estilo normal.</p>
+<p><b>Después:</b> ¡Otro viejo conocido!</p>
+<pre><samp>this._messageList._sync();</samp></pre>
+<p>Ya vimos <code data-start="3252" data-end="3261">_sync()</code> varias veces.&nbsp;</p>
+<pre><samp>Cada vez que cambia algo importante...
+↓
+
+Sincroniza la interfaz.
+</samp></pre>
+<h4>Case 0:</h4>
+<p>Muchísimo más sencillo.</p>
+<pre><samp>this.eventsSection.visible =
+    ...</samp></pre>
+<p>Y listo, no necesita sincronizar nada extra.</p>
+<hr>
+<h5>Ahora quiero detenerme en algo</h5>
+<p>¿Notas que está reaccionando a un evento del calendario?</p>
+<p>Eso significa que... Si el usuario hace esto:</p>
+<pre><samp>Julio
+
+↓
+
+Agosto
+
+↓
+
+Septiembre</samp></pre>
+<p>La sección de eventos puede cambiar. Porque los eventos pertenecen a la fecha seleccionada. Tiene muchísimo sentido.
+</p>
+<p>Creo que este bloque existe para solucionar un pequeño detalle visual.&nbsp;</p>
+<div class="row">
+    <div class="col"><span>Algo parecido a esto:</span></div>
+    <div class="col">
+        <pre><samp>Usuario cambia de día
+↓
+
+El calendario cambia
+↓
+
+Pero la lista de eventos NO
+↓
+
+↓
+
+Problema</samp></pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col"><span>Entonces este callback dice:</span></div>
+    <div class="col">
+        <pre><samp>Cambio de fecha
+
+↓
+
+Actualizar visibilidad
+
+↓
+
+Sincronizar</samp></pre>
+    </div>
+</div>
+<p>Lo que me llama la atención, este sí es un callback relativamente largo. Yo probablemente hoy escribiría algo así:
+</p>
+<pre><samp>selected-date-changed
+
+↓
+
+this.onSelectedDateChanged(...)</samp></pre>
+<p>Y movería toda esta lógica a un método, ni porque esté mal aquí. Sino porque ya empieza a tener varias
+    responsabilidades:</p>
+<ul>
+    <li>descongelar layout;</li>
+    <li>mostrar/ocultar eventos;</li>
+    <li>sincronizar;</li>
+    <li>restaurar estilos.</li>
+</ul>
+<p>Es un buen ejemplo de una situación donde <u>nuestra futura regla de estilo</u> probablemente nos llevaría a extraer
+    un método.<cite><span>Myself at age 6</span></cite></p>
+
+
+
+<h3><span class="ͼj">this</span><span class="ͼg">.</span>dmSig</h3>
+<hr>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>dmSig </span><span class="ͼg">=</span><span> </span><span class="ͼm">Main</span><span class="ͼg">.</span><span>panel</span><span class="ͼg">.</span><span>statusArea</span><span class="ͼg">.</span><span>dateMenu</span><span class="ͼg">.</span><span>menu</span><span class="ͼg">.</span><span>connect(
+    </span><span class="ͼk">"open-state-changed"</span><span>,
+    () =&gt; {
+
+        </span><span class="ͼg">if</span><span> (</span><span class="ͼm">Main</span><span class="ͼg">.</span><span>panel</span><span class="ͼg">.</span><span>statusArea</span><span class="ͼg">.</span><span>dateMenu</span><span class="ͼg">.</span><span>menu</span><span class="ͼg">.</span><span>isOpen) {
+
+            </span><span class="ͼg">if</span><span>(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>eventsSectionPosition </span><span class="ͼg">!=</span><span> </span><span class="ͼj">1</span><span>) {
+                </span><span class="ͼj">this</span><span class="ͼg">.</span><span>manageEvents(</span><span class="ͼj">1</span><span>);
+
+                </span><span class="ͼg">if</span><span>(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>showLabel</span><span class="ͼg">==</span><span class="ͼj">false</span><span>) {
+                    </span><span class="ͼj">this</span><span class="ͼg">.</span><span>eventsCount</span><span class="ͼg">=</span><span class="ͼj">0</span><span>;
+                }
+
+                </span><span class="ͼj">this</span><span class="ͼg">.</span><span>resetIndicator();
+            }
+
+            </span><span class="ͼj">this</span><span class="ͼg">.</span><span>_messageList</span><span class="ͼg">.</span><span>_sync();
+
+            </span><span class="ͼg">if</span><span>(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>hideEmptySpace) {
+                </span><span class="ͼj">this</span><span class="ͼg">.</span><span>_messageList</span><span class="ͼg">.</span><span>visible </span><span class="ͼg">=</span><span>
+                    </span><span class="ͼg">!</span><span class="ͼj">this</span><span class="ͼg">.</span><span>_messageList</span><span class="ͼg">.</span><span>_placeholder</span><span class="ͼg">.</span><span>visible;
+            }
+
+            </span><span class="ͼj">this</span><span class="ͼg">.</span><span>dateMenuVbox</span><span class="ͼg">.</span><span>style </span><span class="ͼg">=</span><span>
+                (</span><span class="ͼj">this</span><span class="ͼg">.</span><span>_messageList</span><span class="ͼg">.</span><span>visible)
+                    </span><span class="ͼg">?</span><span> </span><span class="ͼk">""</span><span>
+                    </span><span class="ͼg">:</span><span> </span><span class="ͼk">"border-width: 0px"</span><span>;
+        }
+        </span><span class="ͼg">else</span><span> {
+
+            </span><span class="ͼm">Main</span><span class="ͼg">.</span><span>panel</span><span class="ͼg">.</span><span>statusArea</span><span class="ͼg">.</span><span>dateMenu</span><span class="ͼg">.</span><span>_calendar</span><span class="ͼg">.</span><span>setDate(</span><span class="ͼg">new</span><span> </span><span class="ͼm">Date</span><span>());
+
+            </span><span class="ͼj">this</span><span class="ͼg">.</span><span>eventsCount </span><span class="ͼg">=</span><span>
+                (</span><span class="ͼj">this</span><span class="ͼg">.</span><span>seenEvents)
+                    </span><span class="ͼg">?</span><span> </span><span class="ͼj">0</span><span>
+                    </span><span class="ͼg">:</span><span> </span><span class="ͼj">this</span><span class="ͼg">.</span><span>eventsCount;
+
+            </span><span class="ͼj">this</span><span class="ͼg">.</span><span>resetIndicator();
+        }
+
+    }
+);</span></code></pre>
+<p>Y... aquí sí que siento que estamos entrando en el <strong data-start="1243" data-end="1273">corazón del
+        comportamiento</strong> de la extensión.</p>
+<hr>
+<h4>Connect(): open-state-changed</h4>
+<pre><samp>open-state-changed</samp></pre>
+<p>Ya no es el calendario, ya no es el mouse, ya no son las preferencias.</p>
+<p>Ahora escuchamos algo muy importante:</p>
+<blockquote>"El menú DateMenu se abrió o se cerró."</blockquote>
+<p>Es decir... Cada vez que el usuario hace clic en la hora.</p>
+<pre><samp>Usuario
+↓
+
+Hace clic en la hora
+↓
+
+DateMenu cambia de estado
+↓
+
+Este callback despierta</samp></pre>
+<p>Y eso significa que todo este bloque ocurre <strong data-start="1752" data-end="1797">cada vez que se abre o se
+        cierra el panel</strong>.</p>
+<hr>
+<h4>Primera decisión</h4>
+<pre><samp>if (menu.isOpen)</samp></pre>
+<p>Muy elegante, no necesita preguntar</p>
+<pre><samp><span>evento</span> <span>==</span> <span>abrir</span></samp></pre>
+<p>Simplemente pregunta el estado actual:&nbsp;<span class="ͼm"></span><code
+        class="inline-code"><span class="ͼm">menu</span><span class="ͼg">.</span>isOpen</code></p>
+<h5>Si el menú se abrió</h5>
+<hr>
+<p><b>Primero</b>: Lo que hace es:</p>
+<p>¡Otro viejo conocido que todavía no conocemos!</p>
+<pre><samp>this.manageEvents(1);</samp></pre>
+<p>El nombre dice: <b>manageEvents</b>&nbsp;O sea... "Hazte cargo de los eventos" y nada más.</p>
+<p><b>Después:</b>&nbsp;Y aquí me gusta hacer una lectura "humana".&nbsp;</p>
+<pre><samp>if(this.showLabel==false) {
+    this.eventsCount = 0;
+}</samp></pre>
+<p>Si no estoy mostrando el contador... ¿Para qué conservar el número? Parece lógico ponerlo en cero. Aunque todavía no
+    sabemos exactamente cómo funciona <code data-start="2583" data-end="2596">eventsCount</code>.</p>
+<p><b>Luego:</b>&nbsp;Este sí ya casi podemos imaginarlo.</p>
+<pre><samp>this.resetIndicator();</samp></pre>
+<p>Seguramente actualiza todo el indicador:</p>
+<ul>
+    <li>campana</li>
+    <li>icono</li>
+    <li>contador</li>
+    <li>visibilidad</li>
+</ul>
+<p><b>Después:</b>&nbsp;Aparece otra vieja amistad</p>
+<pre><samp>this._messageList._sync();</samp></pre>
+<p>Ya perdí la cuenta de las veces que <code data-start="2914" data-end="2923">_sync()</code> apareció. Eso me dice una
+    cosa.</p>
+<blockquote>El autor confiaba muchísimo en que GNOME sincronizara correctamente la interfaz después de modificar cosas.
+</blockquote>
+<p><b>Siguiente</b>: Cuando no había notificaciones...</p>
+<pre><samp>if(this.hideEmptySpace) {
+
+    this._messageList.visible =
+        !this._messageList._placeholder.visible;
+}</samp></pre>
+<p>Quedaba un espacio enorme, la extensión tenía una opción para ocultarlo.</p>
+<p>Entonces hace exactamente eso: Si el <i>placeholder</i> está visible... Oculta toda la lista y desaparece el espacio
+    vacío.</p>
+<p><b>Luego</b>: Esto conecta perfectamente con bloques anteriores.</p>
+<pre><samp>this.dateMenuVbox.style =
+    (this._messageList.visible)
+        ? ""
+        : "border-width: 0px";</samp></pre>
+<p>Si ya no hay lista... ¿Para qué dejar un borde separando algo que no existe?</p>
+<p>Entonces... Quita el borde. Visualmente queda mucho más limpio.</p>
+<h5>Ahora el menú se cierra</h5>
+<hr>
+<p>Y aquí ocurre algo interesante. Eso me hizo detenerme.</p>
+<pre><samp>Main.panel.statusArea.dateMenu._calendar.setDate(new Date());</samp></pre>
+<p>¿Por qué? Porque significa:</p>
+<pre><samp>"Cuando cierres el menú, vuelve al día de hoy."</samp></pre>
+<p>Imagina esto.</p>
+<pre><samp>Abres el calendario.
+↓
+
+Navegas a diciembre.
+↓
+
+Cierras.
+↓
+
+Mañana vuelves a abrir.
+</samp></pre>
+<p>En lugar de seguir en diciembre... Regresa automáticamente al día actual y sinceramente... Me gusta esa decisión.</p>
+<p><b>Después</b>:</p>
+<pre><samp>this.eventsCount =
+    (this.seenEvents)
+        ? 0
+        : this.eventsCount;</samp></pre>
+<p>Esto también me parece bastante lógico.</p>
+<pre><samp>Si ya viste los eventos...
+↓
+
+El contador vuelve a cero.
+
+Si no...
+↓
+
+Se conserva.
+</samp></pre>
+<p><b>Finalmente</b>: Otra vez.</p>
+<pre><samp>this.resetIndicator();</samp></pre>
+<p>Porque el indicador tiene que reflejar el nuevo estado.</p>
+<hr>
+<h4>Observación&nbsp;</h4>
+<p>¿Te das cuenta de que <code data-start="5305" data-end="5332">startNotificationCenter()</code> ya no está
+    "construyendo" la extensión?</p>
+<p>A esta altura del método... Está definiendo su comportamiento. Ya no agrega widgets, ni mueve paneles.</p>
+<p>Ahora dice:</p>
+<ul>
+    <li>cuando abras...</li>
+    <li>cuando cierres...</li>
+    <li>cuando cambie la fecha...</li>
+    <li>cuando cambie DND...</li>
+</ul>
+<p>Es decir... <i style="font-weight: bold;">La extensión ya está viva.</i>&nbsp;Y eso me parece un cambio muy bonito
+    dentro del método.</p>
+<h3><span class="ͼj">this</span><span class="ͼg">.</span>cmsig&nbsp;</h3>
+<hr>
+<pre><code><span class="ͼg">if</span><span>(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>prefs</span><span class="ͼg">.</span><span>get_boolean(</span><span class="ͼk">"autoclose-menu"</span><span>)) {
+    </span><span class="ͼj">this</span><span class="ͼg">.</span><span>cmsig </span><span class="ͼg">=</span><span> </span><span class="ͼm">global</span><span class="ͼg">.</span><span>display</span><span class="ͼg">.</span><span>connect(
+        </span><span class="ͼk">'notify::focus-window'</span><span>,
+        () =&gt; {
+            </span><span class="ͼg">if</span><span>(</span><span class="ͼm">global</span><span class="ͼg">.</span><span>display</span><span class="ͼg">.</span><span>focus_window </span><span class="ͼg">!=</span><span> </span><span class="ͼj">null</span><span> </span><span class="ͼg">&amp;&amp;</span><span> </span><span class="ͼj">this</span><span class="ͼg">.</span><span>menu</span><span class="ͼg">.</span><span>isOpen) {
+                </span><span class="ͼj">this</span><span class="ͼg">.</span><span>menu</span><span class="ͼg">.</span><span>close(</span><span class="ͼj">1</span><span>);
+            }
+        }
+    );
+}</span></code></pre>
+<p>Y, como ya es costumbre, antes de leer línea por línea intentemos responder una pregunta.</p>
+<blockquote>¿Qué quiere conseguir el autor?</blockquote>
+<p>Solo con leer la preferencia, ya podemos imaginar la intención.</p>
+<h4>Connect():&nbsp;autoclose-menu</h4>
+<hr>
+<pre><samp>if(this.prefs.get_boolean("autoclose-menu"))</samp></pre>
+<p>Ya conocemos este patrón de memoria. Si el usuario no activó la función... <b>No se conecta ningún evento</b>.</p>
+<p>Cada vez me gusta más esta forma de programar. La extensión solo "escucha" aquello que realmente necesita.</p>
+<p><b>Ahora</b> aparece algo nuevo.</p>
+<pre><samp>global.display</samp></pre>
+<p>No habíamos visto mucho <code data-start="1309" data-end="1317">global</code>. Pero por el nombre ya podemos intuir
+    bastante. No pertenece al DateMenu, ni pertenece a Notification Center.</p>
+<p>Parece pertenecer... <b>a toda la sesión de GNOME</b>, es decir, algo mucho más global.</p>
+<h5>¿Y qué escucha?</h5>
+<pre><samp>notify::focus-window</samp></pre>
+<p>Aquí ni siquiera hace falta saber la API. El nombre prácticamente se traduce solo.</p>
+<pre><samp>Notificar cuando cambie la ventana con foco.</samp></pre>
+<p>O sea... Si el usuario cambia de ventana.</p>
+<p>Dibujemos la escena:</p>
+<pre><samp>Usuario abre Notification Center
+↓
+
+Lee las notificaciones
+↓
+
+Hace clic sobre Firefox
+↓
+
+Firefox obtiene el foco
+↓
+
+Este callback despierta</samp></pre>
+<p><b>Y entonces...</b> La condición</p>
+<pre><samp>if(global.display.focus_window != null &amp;&amp;
+   this.menu.isOpen)</samp></pre>
+<p>Dos comprobaciones muy razonables.</p>
+<div class="row">
+    <div class="col">
+        <span><b>Primera:</b></span>
+        <br>
+        <span>Debe existir una ventana enfocada.</span>
+    </div>
+    <div class="col">
+        <span><b>Segunda:</b></span>
+        <br>
+        <span>El menú debe seguir abierto.</span>
+    </div>
+</div>
+<p>Porque si ya estaba cerrado... No hay nada que hacer.</p>
+<p><b>Finalmente:&nbsp;</b>Y listo.</p>
+<pre><samp>this.menu.close(1);</samp></pre>
+<p>No hace nada más, no reinicia, no sincroniza, no actualiza iconos. Simplemente... <b>Cierra el menú</b>.</p>
+<h5>Una función muy "de usuario"</h5>
+<hr>
+<ul>
+    <li>No cambia la arquitectura.</li>
+    <li>No mueve widgets.</li>
+    <li>No reorganiza paneles.</li>
+    <li>Es simplemente una comodidad.</li>
+</ul>
+<p>Imagina este escenario.</p>
+<pre><samp>Abres Notification Center
+↓
+
+Lees una notificación
+↓
+
+Haces clic en VS Code
+↓
+
+El panel desaparece automáticamente</samp></pre>
+<p><b>¿Por qué existe la preferencia?</b> Hay usuarios que prefieren ese comportamiento porque evita dejar el menú
+    abierto por accidente. Otros prefieren que permanezca abierto hasta cerrarlo manualmente.</p>
+<p>Y otra cosa, fíjate que Selenium-H no intentó inventar nada. No hizo un temporizador, no comprobó el ratón, no
+    detectó movimientos.</p>
+<p>Simplemente aprovechó un evento que GNOME ya ofrece:</p>
+<blockquote>"La ventana con foco cambió."</blockquote>
+<p>Eso vuelve a confirmar una idea que llevamos varias semanas comentando.</p>
+<blockquote>Siempre que puede, reutiliza el comportamiento de GNOME en lugar de reinventarlo.</blockquote>
+<p>Y esa, para mí, es una muy buena filosofía para una extensión.</p>

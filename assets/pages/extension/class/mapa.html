@@ -1,0 +1,125 @@
+<h2>Mapa de la clase&nbsp;<code data-start="348" data-end="368">NotificationCenter</code></h2>
+<hr>
+<p>Si yo dibujara la arquitectura completa hoy sería así:</p>
+<pre><samp class="samp-block">NotificationCenter
+│
+├── Inicialización
+│   └── _init()
+│
+├── Eventos
+│   └── _onOpenStateChanged()
+│
+├── Indicador
+│   ├── animateOnNewNotification()
+│   ├── blinkIcon()
+│   ├── blinkIconStopIfBlinking()
+│   └── resetIndicator()
+│
+├── DND
+│   ├── loadDndStatus()
+│   ├── dndToggle()
+│   └── middleClickDndToggle()
+│
+├── Preferencias
+│   └── loadPreferences()
+│
+├── Gestión
+│   ├── manageAutohide()
+│   ├── manageEvents()
+│   ├── manageLabel()
+│   └── manageIconChange()
+│
+├── Notificaciones
+│   ├── newNotif()
+│   └── remNotif()
+│
+├── Iconos / Apariencia
+│   ├── setNotificationIconName()
+│   ├── iconThemeChanged()
+│   ├── shouldShowEventsSection()
+│   └── removeSection()
+│
+└── Ciclo de vida
+    ├── startNotificationCenter()
+    └── undoChanges()</samp></pre>
+<p>Eso demuestra que Selenium-H agrupó funcionalidades relacionadas.</p>
+<hr>
+<h3>1. Inicialización</h3>
+<pre><samp class="samp-block">_init()</samp></pre>
+<p>Responsabilidad:</p>
+<ul>
+    <li contenteditable="true" spellcheck="true" data-tag="li" class="canvas-element">Preparar el objeto.</li>
+    <li contenteditable="true" spellcheck="true" data-tag="li" class="canvas-element">Crear widgets.</li>
+    <li contenteditable="true" spellcheck="true" data-tag="li" class="canvas-element">Obtener referencias a GNOME.</li>
+    <li contenteditable="true" spellcheck="true" data-tag="li" class="canvas-element">Inicializar variables.</li>
+</ul>
+<p>No modifica todavía el comportamiento de GNOME.</p>
+<hr>
+<h3>Eventos del menú</h3>
+<pre><samp class="samp-block">_onOpenStateChanged()</samp></pre>
+<p>Responsabilidad: Responder cuando el usuario abre o cierra el menú.</p>
+<p>Aquí la extensión reacciona.</p>
+<hr>
+<h3>3. Animaciones e indicadores</h3>
+<pre><samp class="samp-block">animateOnNewNotification()
+
+blinkIcon()
+
+blinkIconStopIfBlinking()</samp></pre>
+<p>Ya sabemos que existe un sistema visual para avisar nuevas notificaciones.</p>
+<hr>
+<h3>4. Modo No Molestar (DND)</h3>
+<pre><samp class="samp-block">dndToggle()
+
+loadDndStatus()
+
+middleClickDndToggle()</samp></pre>
+<p>Aquí ya aparece un módulo completo.</p>
+<p>No es solo un botón, tiene:&nbsp;</p>
+<ul>
+    <li contenteditable="true" spellcheck="true" data-tag="li" class="canvas-element">cargar estado</li>
+    <li contenteditable="true" spellcheck="true" data-tag="li" class="canvas-element">cambiar estado</li>
+    <li contenteditable="true" spellcheck="true" data-tag="li" class="canvas-element">acceso rápido con clic central
+    </li>
+</ul>
+<hr>
+<h3>5. Preferencias</h3>
+<pre><samp class="samp-block">loadPreferences()</samp></pre>
+<p>Solo hay uno, eso me parece perfecto. Centralizar la lectura de preferencias suele evitar muchos problemas.</p>
+<hr>
+<h3>6. Gestión de comportamiento</h3>
+<pre><samp class="samp-block">manageAutohide()
+
+manageEvents()
+
+manageLabel()
+
+manageIconChange()</samp></pre>
+<p>Aquí empiezo a ver un patrón, todos comienzan con:</p>
+<pre><samp class="samp-block">manage...</samp></pre>
+<p>Eso probablemente significa:</p>
+<blockquote>"Aplicar una configuración."</blockquote>
+<hr>
+<h3>7. Gestión de notificaciones</h3>
+<pre><samp class="samp-block">newNotif()
+
+remNotif()</samp></pre>
+<p>Muy claro, cuando llega una y cuando desaparece una.</p>
+<hr>
+<h3>8. Gestión visual</h3>
+<pre><samp class="samp-block">removeSection()
+
+resetIndicator()
+
+setNotificationIconName()
+
+iconThemeChanged()
+
+shouldShowEventsSection()</samp></pre>
+<p>Aquí hay una mezcla pequeña, pero todos siguen hablando de la interfaz.</p>
+<hr>
+<h3>Ciclo de vida</h3>
+<pre><samp class="samp-block">startNotificationCenter()
+
+undoChanges()</samp></pre>
+<p>Aquí termina la historia: Empieza y termina.</p>

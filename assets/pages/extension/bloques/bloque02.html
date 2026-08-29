@@ -1,0 +1,56 @@
+<span class="float-span">Bloque 02</span>
+<h2>Construcción del indicador</h2>
+<hr>
+<p>Este bloque me encanta.</p>
+<pre><div class="cm-line"><span class="ͼj">this</span><span class="ͼg">.</span>_indicator<span class="ͼg">.</span>add_child(<span class="ͼj">this</span><span class="ͼg">.</span>eventsIcon);</div><div class="cm-line"><span class="ͼj">this</span><span class="ͼg">.</span>_indicator<span class="ͼg">.</span>add_child(<span class="ͼj">this</span><span class="ͼg">.</span>eventsLabel);</div><div class="cm-line"><span class="ͼj">this</span><span class="ͼg">.</span>_indicator<span class="ͼg">.</span>add_child(<span class="ͼj">this</span><span class="ͼg">.</span>mediaIcon);</div><div class="cm-line"><span class="ͼj">this</span><span class="ͼg">.</span>_indicator<span class="ͼg">.</span>add_child(<span class="ͼj">this</span><span class="ͼg">.</span>notificationIcon);</div><div class="cm-line"><span class="ͼj">this</span><span class="ͼg">.</span>_indicator<span class="ͼg">.</span>add_child(<span class="ͼj">this</span><span class="ͼg">.</span>notificationLabel);</div></pre>
+<p>¿Recuerdas <code data-start="1771" data-end="1780">_init()</code>? Allí vimos esto:</p>
+<pre><div class="cm-line"><span class="ͼj">this</span><span class="ͼg">.</span>eventsIcon <span class="ͼg">=</span> <span class="ͼg">new</span> <span class="ͼm">St</span><span class="ͼg">.</span>Icon(...);</div><div class="cm-line"><span class="ͼj">this</span><span class="ͼg">.</span>notificationIcon <span class="ͼg">=</span> <span class="ͼg">new</span> <span class="ͼm">St</span><span class="ͼg">.</span>Icon(...);</div><div class="cm-line">...</div></pre>
+<p>En aquel momento dijimos:</p>
+<blockquote>"Aquí solo se crean."</blockquote>
+<p>Ahora vemos el siguiente paso. Aquí <strong data-start="1991" data-end="2007">se ensamblan</strong>, es como un LEGO.
+</p>
+<p>En <code data-start="2031" data-end="2040">_init()</code> fabricó las piezas, en <code data-start="2065"
+                data-end="2092">startNotificationCenter()</code> las une.</p>
+<hr>
+<p>Aquí ya empieza a aplicar configuración.</p>
+<pre><div class="cm-line"><span class="ͼj">this</span><span class="ͼg">.</span>setNotificationIconName();</div></pre>
+<p>Todavía no sabemos exactamente cómo decide el icono, pero el nombre del método es muy claro.</p>
+<hr>
+<p>Aquí ya aparece algo muy importante.</p>
+<pre><div class="cm-line"><span class="ͼj">this</span><span class="ͼg">.</span>iconThemeChangeSig <span class="ͼg">=</span></div><div class="cm-line">    <span class="ͼj">this</span><span class="ͼg">.</span>textureCache<span class="ͼg">.</span>connect(</div><div class="cm-line">        <span class="ͼk">'icon-theme-changed'</span>,</div><div class="cm-line">        <span class="ͼj">this</span><span class="ͼg">.</span>iconThemeChanged<span class="ͼg">.</span>bind(<span class="ͼj">this</span>)</div><div class="cm-line">    );</div></pre>
+<p>Nuestra primera señal (<code data-start="2542" data-end="2550">signal</code>) importante. Esto significa:&nbsp;</p>
+<blockquote>"Cuando cambie el tema de iconos del sistema, ejecuta <code data-start="2640"
+                data-end="2660">iconThemeChanged()</code>."</blockquote>
+<p>Y eso me gusta muchísimo. No está preguntando constantemente si cambió el tema. Simplemente se suscribe al evento.
+        Eso es muy GNOME.</p>
+<hr>
+<p>Ahora el botón ya contiene el indicador.</p>
+<pre><div class="cm-line"><span class="ͼj">this</span><span class="ͼg">.</span>add_child(<span class="ͼj">this</span><span class="ͼg">.</span>_indicator);</div></pre>
+<p>Todavía no está en el panel. Solo quedó armado.</p>
+<span>Y finalmente: Aquí nace la extensión visualmente.</span>
+<pre><div class="cm-line"><span class="ͼm">Main</span><span class="ͼg">.</span>panel<span class="ͼg">.</span>addToStatusArea(</div><div class="cm-line">    <span class="ͼk">"NotificationCenter"</span>,</div><div class="cm-line">    <span class="ͼj">this</span>,</div><div class="cm-line">    ...</div><div class="cm-line">);</div></pre>
+<p>Hasta esta línea, todo existía únicamente como objetos en memoria. Aquí GNOME recibe el objeto y dice:</p>
+<blockquote>"Perfecto, voy a mostrar este botón en el panel."</blockquote>
+<hr>
+<h3>Una observación</h3>
+<p>Al principio de este proyecto, si hubiéramos visto:</p>
+<pre><code><span class="ͼm">Main</span><span class="ͼg">.</span><span>panel</span><span class="ͼg">.</span><span>addToStatusArea(...)</span></code></pre>
+<p>Probablemente habríamos dicho:</p>
+<blockquote>"Ah, agrega algo al panel."</blockquote>
+<p>Hoy la lectura es distinta:</p>
+<blockquote>"<em data-start="4720" data-end="4885">Primero creó los componentes en <code data-start="4753"
+                        data-end="4762">_init()</code>, luego los ensambló, configuró el icono, registró una señal para
+                cambios de tema y <strong data-start="4846" data-end="4863">solo entonces</strong> los añadió al
+                panel.</em>"</blockquote>
+
+<p>Antes, cuando veíamos <code data-start="3662" data-end="3671">_init()</code>, probablemente habríamos pensado:</p>
+<blockquote>"¿Por qué no agrega aquí mismo el botón al panel?"</blockquote>
+<p>Ahora la respuesta es evidente. Porque <code data-start="3801" data-end="3810">_init()</code> debe <strong
+                data-start="3816" data-end="3829">construir</strong>, mientras que <code data-start="3845"
+                data-end="3872">startNotificationCenter()</code> debe <strong data-start="3878"
+                data-end="3889">activar</strong>.</p>
+<p>Esa separación me parece una decisión de diseño muy acertada.</p>
+<p>Puede parecer una diferencia pequeña, pero es enorme. Ya no estamos describiendo líneas de código; estamos
+        entendiendo las decisiones de diseño detrás de ellas. Y eso, para un futuro mantenedor de <strong
+                data-start="5085" data-end="5112">Re: Notification Center</strong>, es exactamente el tipo de
+        comprensión que buscamos desde el primer día.&nbsp;</p>

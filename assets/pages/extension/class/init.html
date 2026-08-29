@@ -1,0 +1,116 @@
+<h2>_init()</h2>
+<hr>
+<p>Selenium-H decidió que el constructor fuera el lugar donde el objeto <strong data-start="495" data-end="522">se
+        prepara por completo</strong>, pero <strong data-start="529" data-end="565">sin iniciar todavía la
+        extensión</strong>.</p>
+<p>Eso ya nos dice algo. El ciclo de vida parece ser:</p>
+<pre>><samp class="samp-block">enable()
+    │
+    ▼
+new NotificationCenter()
+    │
+    ▼
+_init()        ← prepara todo
+    │
+    ▼
+startNotificationCenter()  ← comienza a modificar GNOME
+</samp></pre>
+<hr>
+<h3>Dividamos el constructor</h3>
+<h3><strong>Bloque 1:</strong> Preparación básica</h3>
+<pre><code><span class="ͼm">ExtensionUtils</span><span class="ͼg">.</span><span>initTranslations(...);
+</span><span class="ͼj">this</span><span class="ͼg">.</span><span>prefs </span><span class="ͼg">=</span><span> </span><span class="ͼm">ExtensionUtils</span><span class="ͼg">.</span><span>getSettings(...);
+</span><span class="ͼj">this</span><span class="ͼg">.</span><span>parent(...);</span></code></pre>
+<p>Aquí hay tres cosas distintas.</p>
+<h4>1. Traducciones</h4>
+<pre><code><span class="ͼm">ExtensionUtils</span><span class="ͼg">.</span><span>initTranslations(...)</span></code></pre>
+<p>Le dice a la extensión:</p>
+<blockquote>"A partir de ahora puedes usar <code data-start="1193" data-end="1198">_()</code> para traducir textos."
+</blockquote>
+<p>Eso explica por qué más abajo aparece:</p>
+<pre><code><span class="ͼm">_</span><span>(</span><span class="ͼk">"Clear"</span><span>)</span></code></pre>
+<hr>
+<h4>2. Configuración</h4>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>prefs </span><span class="ͼg">=</span><span> </span><span class="ͼm">ExtensionUtils</span><span class="ͼg">.</span><span>getSettings(...)</span></code></pre>
+<p>Ya carga <strong data-start="1393" data-end="1406">GSettings</strong>. Eso significa que desde el constructor
+    cualquier método podrá hacer:</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>prefs</span><span class="ͼg">.</span><span>get_boolean(...)</span>
+<span class="ͼj">this</span><span class="ͼg">.</span><span>prefs</span><span class="ͼg">.</span><span>get_int(...)</span></code></pre>
+<p>Sin volver a buscar la configuración.</p>
+<hr>
+<h4>3. Herencia</h4>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>parent(...)</span></code></pre>
+<p>¿NotificationCenter hereda de alguien? Y la respuesta es:</p>
+<pre><code><span class="ͼo">Extends</span><span>: </span><span class="ͼm">PanelMenuButton</span></code></pre>
+<p>Eso significa que <strong data-start="2158" data-end="2202">NotificationCenter es un botón del panel</strong>. Esto
+    cambia bastante la vista de la arquitectura.</p>
+<blockquote>No contiene un botón. Es el botón.</blockquote>
+<p>Es decir:</p>
+<blockquote>"NotificationCenter es una versión especializada de un PanelMenuButton."</blockquote>
+<hr>
+<p>¿Recuerdas que hablamos de JavaScript moderno?</p>
+<p>Aquí aparece otra traducción mental y esta representa la herencia entre clases.</p>
+<div class="row">
+    <div class="col">
+        <span>En GJS antiguo:</span>
+        <pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>parent(...)</span></code></pre>
+    </div>
+    <div class="col">
+        <span>En JavaScript moderno equivale a:</span>
+        <pre><code><span class="ͼj">super</span><span>(...)</span></code></pre>
+    </div>
+</div>
+<hr>
+<h3><strong>Bloque 2:</strong> Obtener referencias de GNOME</h3>
+<p>Ahora viene un bloque enorme.</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>_messageList <span class="ͼg">=</span> ...</code></pre>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>eventsSection <span class="ͼg">=</span> ...</code></pre>
+<p>etc.</p>
+<p>No está creando nada. Está diciendo:</p>
+<blockquote>"Necesito saber dónde están las cosas de GNOME."</blockquote>
+<p>Es decir, está guardando referencias. Por ejemplo:</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>_messageList </code></pre>
+<p>Seguramente apunta a la lista de notificaciones que ya existe en GNOME. No crea una nueva, sino que obtiene la
+    existente.</p>
+<p>Eso es muy importante. Porque esta extensión <strong data-start="3129" data-end="3187">no reemplaza completamente el
+        centro de notificaciones, m</strong>ás bien, lo reutiliza.
+</p>
+<hr>
+<h3><strong>Bloque 3:</strong> Cargar preferencias</h3>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>loadPreferences();</code></pre>
+<p>Aquí apareció un método muy interesante. No sabemos qué hace, pero el nombre es excelente. Probablemente lea todas
+    las preferencias y las copie a propiedades del objeto.</p>
+<hr>
+<h3><strong>Bloque 4:</strong> Variables de estado</h3>
+<p>Después aparecen muchísimas líneas como:</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>connectedSignals <span class="ͼg">=</span> [];<br><br>... <br><br><span class="ͼj">this</span><span class="ͼg">.</span>notificationCount <span class="ͼg">=</span> <span class="ͼj">0</span>;<br><br>... <br><br><span class="ͼj">this</span><span class="ͼg">.</span>isDndOff <span class="ͼg">=</span> <span class="ͼj">true</span>;</code></pre>
+<p>Aquí Selenium-H está inicializando el estado interno del objeto. No hace acciones, simplemente deja todo listo.</p>
+<hr>
+<h3><strong>Bloque 5:</strong> Crear widgets</h3>
+<p>Aquí ya empezamos a ver ST.</p>
+<pre><code><span class="ͼg">new</span> <span class="ͼm">St</span><span class="ͼg">.</span>Icon(...)		// crea un icono del panel.<br>
+... <br>
+<span class="ͼg">new</span> <span class="ͼm">St</span><span class="ͼg">.</span>Label(...)		// crea una etiqueta.<br>
+... <br>
+<span class="ͼg">new</span> <span class="ͼm">St</span><span class="ͼg">.</span>BoxLayout(...)		// crea un contenedor.<br>
+... <br>
+<span class="ͼg">new</span> <span class="ͼm">St</span><span class="ͼg">.</span>Button(...)		// crea un botón.</code></pre>
+<p>Esto sí me gusta muchísimo. Porque ahora ya sabemos para qué sirve ST. No es teoría, estamos viendo como crea los
+    widgets.</p>
+<hr>
+<h3><strong>Bloque 6:</strong> Scroll</h3>
+<div class="row">
+    <div class="col" contenteditable="true">
+        <span>Aquí aparece:</span>
+        <pre><code><span class="ͼg">new</span> <span class="ͼm">St</span><span class="ͼg">.</span>ScrollView(...)</code></pre>
+    </div>
+    <div class="col" contenteditable="true">
+        <span>y después:</span>
+        <pre><code><span class="ͼm">Main</span><span class="ͼg">.</span>panel<span class="ͼg">.</span>statusArea<span class="ͼg">.</span>dateMenu<span class="ͼg">.</span>menu<span class="ͼg">.</span>box<span class="ͼg">.</span>style <span class="ͼg">=</span> ...</code></pre>
+    </div>
+</div>
+<p>Todavía no vamos a analizarlo. Solo anotar que aquí ya empieza a modificar el aspecto visual.</p>
+<hr>
+<h3><strong>Bloque 7</strong></h3>
+<p>Las dos últimas líneas ya son detalles visuales.</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>add_style_class_name(...)<br><span class="ͼj">this</span><span class="ͼg">.</span>notificationIcon<span class="ͼg">.</span>set_pivot_point(...)</code></pre>
