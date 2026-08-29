@@ -1,0 +1,100 @@
+<h2><span class="ͼm">animateBanner()</span></h2>
+<hr>
+<p>A continuacion, se adjunta notas sobre una funcion no disponible dentro de la extension ni estará proxima a
+    incluirse, sin embargo, exitirán anotaciones que hablan sobre animeciones en Gnome Shell</p>
+
+<p>En realidad hay dos conceptos diferentes.</p>
+<div class="row">
+    <div class="col">
+        <blockquote>Posición final</blockquote>
+    </div>
+    <div class="col">
+        <blockquote>Trayectoria de entrada</blockquote>
+    </div>
+    <div class="col"></div>
+    <div class="col"></div>
+</div>
+<hr>
+<h3>1. Posición final</h3>
+<p>Que ya la tenemos.</p>
+<div class="row">
+    <div class="col"><span>Algo parecido a:</span></div>
+    <div class="col">
+        <pre><samp>Top Left
+Top Center
+Top Right
+...</samp></pre>
+    </div>
+    <div class="col"></div>
+</div>
+<div class="row">
+    <div class="col"><span>Eso es:</span></div>
+    <div class="col">
+        <pre><samp>banner-pos</samp></pre>
+    </div>
+    <div class="col"></div>
+</div>
+<hr>
+<h3>2. Trayectoria de entrada</h3>
+<p>Eso es completamente distinto.</p>
+<div class="col">
+    <div class="col"><span>Por ejemplo:</span></div>
+    <div class="col">
+        <pre><samp>Posición final
+
+Top Right</samp></pre>
+    </div>
+</div>
+<p>Pero... La posición final nunca cambia. Lo único que cambia es <strong data-start="1496" data-end="1531">desde dónde
+        inicia la animación</strong>.</p>
+<pre><samp class="samp-block" contenteditable="true" spellcheck="false">Empieza aquí
+
+Bottom Right
+↓
+
+Sube
+↓
+
+Llega
+↓
+
+Hace rebote
+↓
+
+Se queda fijo</samp></pre>
+<hr>
+<h3>Una mejora muy bonita</h3>
+<hr>
+<p>Eso me parece una mejora muy bonita, porque no modifica la funcionalidad, solo mejora la experiencia visual.</p>
+<p>Incluso podrías imaginar preferencias como:</p>
+<pre><samp class="samp-block" contenteditable="true" spellcheck="false">Animation
+
+○ Fade
+
+○ Slide
+
+○ Bounce
+
+○ Elastic</samp></pre>
+<div class="row">
+    <div class="col"><span>Y luego otra:</span>
+        <pre><samp>Animation Origin
+
+○ Top
+
+○ Bottom
+
+○ Left
+
+○ Right</samp></pre>
+    </div>
+    <div class="col"><span>O incluso:</span>
+        <pre><samp>Animation Duration
+
+300 ms
+
+500 ms
+
+800 ms</samp></pre>
+    </div>
+</div>
