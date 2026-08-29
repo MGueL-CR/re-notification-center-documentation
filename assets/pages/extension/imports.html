@@ -1,0 +1,267 @@
+<div class="markdown prose dark:prose-invert wrap-break-word w-full light markdown-new-styling">
+
+    <h2 data-section-id="jknt46" data-start="306" data-end="326">Imports, Constantes y Variables</h2>
+    <hr data-start="301" data-end="304">
+
+    <p>En las primeras líneas, normalmente ahí encontraremos:</p>
+    <ul>
+        <li>imports</li>
+        <li>constantes</li>
+        <li>variables globales</li>
+    </ul>
+    <p data-start="328" data-end="356">Nada más. La estructura es muy limpia.</p>
+
+    <pre class="cm-content q9tKkq_readonly m-0">
+        <code><span class="ͼg">const</span><span> ... 
+        </span><br><span class="ͼg">const</span><span> ... 
+        </span><br><span class="ͼg">const</span><span> ... 
+            ...    </span><br><span class="ͼg">let</span><span> </span><span class="ͼm">notificationCenter</span><span> </span><span class="ͼg">=</span><span> </span><span class="ͼj">null</span><span>;</span>
+        </code>
+    </pre>
+
+    <p data-start="443" data-end="519">Eso significa que el archivo comienza preparando todo lo que va a necesitar (es
+        una buena práctica.)</p>
+    <h2 data-section-id="x5cz7u" data-start="550" data-end="585">Ahora conozcamos a cada personaje</h2>
+    <hr data-start="545" data-end="548">
+
+    <details class="card" name="const">
+        <summary> 1. ExtensionUtils </summary>
+        <pre class="cm-content q9tKkq_readonly m-0">
+            <code><span class="ͼg">const</span><span> </span><span class="ͼm">ExtensionUtils</span><span> </span><span class="ͼg">=</span><span> </span><span class="ͼm">imports</span><span class="ͼg">.</span><span>misc</span><span class="ͼg">.</span><span>extensionUtils;</span></code>
+        </pre>
+        <p data-start="680" data-end="692">Es el ayudante oficial para las extensiones. Sirve para cosas como:</p>
+        <ul data-start="764" data-end="870">
+            <li data-section-id="195g6g2" data-start="764" data-end="801">
+                <p data-start="766" data-end="801">obtener la carpeta de la extensión;</p>
+            </li>
+            <li data-section-id="dnma87" data-start="802" data-end="844">
+                <p data-start="804" data-end="844">obtener información del <code data-start="828"
+                        data-end="843">metadata.json</code>;</p>
+            </li>
+            <li data-section-id="1bqlsib" data-start="845" data-end="870">
+                <p data-start="847" data-end="870">cargar configuraciones.</p>
+            </li>
+        </ul>
+        <p data-start="872" data-end="895">Yo lo describiría como:</p>
+        <blockquote data-start="897" data-end="946">
+            <p data-start="899" data-end="946"><strong data-start="899" data-end="946">"La caja de herramientas para
+                    extensiones."</strong></p>
+        </blockquote>
+    </details>
+
+    <details class="card" name="const">
+        <summary> 2. Gtk </summary>
+        <pre class="cm-content q9tKkq_readonly m-0">
+            <code><span class="ͼg">const</span><span> </span><span class="ͼm">Gtk</span><span> </span><span class="ͼg">=</span><span> </span><span class="ͼm">imports</span><span class="ͼg">.</span><span>gi</span><span class="ͼg">.</span><span>Gtk;</span></code>
+        </pre>
+
+        <p data-start="1037" data-end="1066">GTK es la biblioteca gráfica. Aquí probablemente se use para las
+            preferencias.
+            Aunque esté importado en <code data-start="1143" data-end="1157">extension.js</code>, todavía no sabemos si
+            realmente se utiliza.</p>
+    </details>
+
+    <details class="card" name="const">
+        <summary> 3. Lang.Class </summary>
+        <pre class="cm-content q9tKkq_readonly m-0">
+        <code><span class="ͼg">const</span><span> </span><span class="ͼm">LangClass</span><span> </span><span class="ͼg">=</span><span> </span><span class="ͼm">imports</span><span class="ͼg">.</span><span>lang</span><span class="ͼg">.</span><span>Class;</span></code>
+        </pre>
+
+        <p data-start="1347" data-end="1388">Este me llamó inmediatamente la atención. Porque hoy en JavaScript usamos:
+        </p>
+        <pre class="cm-content q9tKkq_readonly m-0">
+        <code><span class="ͼg">class</span><span> </span><span class="ͼl">MiClase</span><span> {<br>}</span></code>
+        </pre>
+
+
+        <p data-start="1473" data-end="1525">Pero hace años GJS no soportaba las clases modernas. Entonces se escribían
+            así:
+        </p>
+
+        <pre class="cm-content q9tKkq_readonly m-0">
+                <code><span class="ͼg">new</span><span> </span><span class="ͼm">Lang</span><span class="ͼg">.</span><span>Class(...)</span></code>
+        </pre>
+
+        <p data-start="1594" data-end="1626">Esto ya nos da una pista enorme. Esta extensión fue escrita con una versión
+            antigua de GJS.</p>
+    </details>
+
+    <details class="card" name="const">
+        <summary> 4. Main </summary>
+        <pre class="cm-content q9tKkq_readonly m-0">
+            <code><span class="ͼg">const</span><span> </span><span class="ͼm">Main</span><span> </span><span class="ͼg">=</span><span> </span><span class="ͼm">imports</span><span class="ͼg">.</span><span>ui</span><span class="ͼg">.</span><span>main;</span></code>
+        </pre>
+
+        <p data-start="1754" data-end="1814">Este personaje será uno de los más importantes del proyecto. Yo lo
+            definiría
+            así (no literalmente, pero casi.): </p>
+        <blockquote data-start="1838" data-end="1864">
+            <p data-start="1840" data-end="1864"><strong data-start="1840" data-end="1864">Main es GNOME Shell.</strong>
+            </p>
+        </blockquote>
+
+        <p data-start="1895" data-end="1924">Desde aquí puedes acceder al:</p>
+        <ul data-start="1926" data-end="1993">
+            <li data-section-id="19p1297" data-start="1926" data-end="1942">
+                <p data-start="1928" data-end="1942">panel superior</p>
+            </li>
+            <li data-section-id="1fm0q8b" data-start="1943" data-end="1953">
+                <p data-start="1945" data-end="1953">overview</p>
+            </li>
+            <li data-section-id="qwpk33" data-start="1954" data-end="1963">
+                <p data-start="1956" data-end="1963">bandeja</p>
+            </li>
+            <li data-section-id="7t3zq4" data-start="1964" data-end="1976">
+                <p data-start="1966" data-end="1976">calendario</p>
+            </li>
+            <li data-section-id="ycq3ac" data-start="1977" data-end="1993">
+                <p data-start="1979" data-end="1993">notificaciones</p>
+            </li>
+        </ul>
+    </details>
+
+    <details class="card" name="const">
+        <summary> 5. MetaKeyBindingFlags </summary>
+        <pre class="cm-content q9tKkq_readonly m-0">
+                <code ><span class="ͼg">const</span><span> </span><span class="ͼm">MetaKeyBindingFlags</span><span> </span><span class="ͼg">=</span><span> </span><span class="ͼm">imports</span><span class="ͼg">.</span><span>gi</span><span class="ͼg">.</span><span>Meta</span><span class="ͼg">.</span><span>KeyBindingFlags;</span></code>
+            </pre>
+        <p data-start="2140" data-end="2179">Meta es el gestor de ventanas de GNOME. Aquí parece que la extensión
+            registra
+            atajos de teclado. Todavía no sabemos dónde, pero ya tenemos una pista.</p>
+    </details>
+
+    <details class="card" name="const">
+        <summary> 6. PanelMenuButton </summary>
+        <pre class="cm-content q9tKkq_readonly m-0">
+            <code><span class="ͼg">const</span><span> </span><span class="ͼm">PanelMenuButton</span><span> </span><span class="ͼg">=</span><span> </span><span class="ͼm">imports</span><span class="ͼg">.</span><span>ui</span><span class="ͼg">.</span><span>panelMenu</span><span class="ͼg">.</span><span>Button;</span></code>
+        </pre>
+        <p data-start="2367" data-end="2400">Aquí ya apareció algo importante. Este nombre nos dice que la extensión
+            probablemente agrega un botón al panel
+            superior. Sin leer más código ya podemos imaginar algo como:</p>
+
+        <pre class="cm-content q9tKkq_readonly m-0">
+            <code><span>GNOME Panel    <br>[Actividades]   [Re: Notification Center]</span></code>
+        </pre>
+    </details>
+
+    <details class="card" name="const">
+        <summary> 7. PopupMenu </summary>
+        <pre class="cm-content q9tKkq_readonly m-0">
+            <code><span class="ͼg">const</span><span> </span><span class="ͼm">PopupMenu</span><span> </span><span class="ͼg">=</span><span> </span><span class="ͼm">imports</span><span class="ͼg">.</span><span>ui</span><span class="ͼg">.</span><span>popupMenu;</span></code>
+        </pre>
+        <p data-start="2632" data-end="2661">Esto complementa al anterior. Si hay un botón... probablemente exista un
+            menú.</p>
+    </details>
+
+    <details class="card" name="const">
+        <summary> 8. ShellActionMode </summary>
+        <pre class="cm-content q9tKkq_readonly m-0">
+            <code ><span class="ͼg">const</span><span> </span><span class="ͼm">ShellActionMode</span><span> </span><span class="ͼg">=</span><span> </span><span class="ͼm">imports</span><span class="ͼg">.</span><span>gi</span><span class="ͼg">.</span><span>Shell</span><span class="ͼg">.</span><span>ActionMode;</span></code>
+        </pre>
+        <p data-start="2742" data-end="2792">Esto suele controlar cuándo puede ejecutarse algo.</p>
+        <p data-start="2794" data-end="2806">Por ejemplo:</p>
+        <ul data-start="2808" data-end="2853">
+            <li data-section-id="18kcg09" data-start="2808" data-end="2820">
+                <p data-start="2810" data-end="2820">escritorio</p>
+            </li>
+            <li data-section-id="4on0el" data-start="2821" data-end="2842">
+                <p data-start="2823" data-end="2842">pantalla de bloqueo</p>
+            </li>
+            <li data-section-id="1fm0q8b" data-start="2843" data-end="2853">
+                <p data-start="2845" data-end="2853">overview</p>
+            </li>
+        </ul>
+    </details>
+
+    <details class="card" name="const">
+        <summary> 9. St </summary>
+        <pre class="cm-content q9tKkq_readonly m-0">
+            <code><span class="ͼg">const</span><span> </span><span class="ͼm">St</span><span> </span><span class="ͼg">=</span><span> </span><span class="ͼm">imports</span><span class="ͼg">.</span><span>gi</span><span class="ͼg">.</span><span>St;</span></code>
+                </pre>
+        <p data-start="2925" data-end="2965">Este personaje será nuestro mejor amigo.</p>
+        <p data-start="2967" data-end="2980">ST significa: <strong data-start="2982" data-end="2999">Shell
+                Toolkit</strong>. Es la
+            biblioteca gráfica propia de GNOME Shell. No es GTK y esto es MUY importante.</p>
+        <p data-start="3133" data-end="3163">Muchísima gente confunde esto. Las extensiones NO dibujan el panel usando
+            GTK, lo hacen usando ST. GTK normalmente aparece en las ventanas de preferencias. Este detalle nos ahorrará
+            muchas confusiones más adelante.</p>
+        <p data-start="3293" data-end="3306">Mientras que:</p>
+        <ul data-start="3308" data-end="3346">
+            <li data-section-id="16jz5um" data-start="3308" data-end="3315">
+                <p data-start="3310" data-end="3315">panel</p>
+            </li>
+            <li data-section-id="pz4j6u" data-start="3316" data-end="3325">
+                <p data-start="3318" data-end="3325">botones</p>
+            </li>
+            <li data-section-id="87o6uv" data-start="3326" data-end="3337">
+                <p data-start="3328" data-end="3337">etiquetas</p>
+            </li>
+            <li data-section-id="12l6xb3" data-start="3338" data-end="3346">
+                <p data-start="3340" data-end="3346">iconos</p>
+            </li>
+        </ul>
+        <p data-start="3348" data-end="3355">si son ST.</p>
+    </details>
+
+    <details class="card" name="const">
+        <summary> 10. util.spawn </summary>
+        <pre class="cm-content q9tKkq_readonly m-0">
+            <code><span class="ͼg">const</span><span> </span><span class="ͼm">utilSpawn</span><span> </span><span class="ͼg">=</span><span> </span><span class="ͼm">imports</span><span class="ͼg">.</span><span>misc</span><span class="ͼg">.</span><span>util</span><span class="ͼg">.</span><span>spawn;</span></code>
+        </pre>
+
+        <p data-start="3471" data-end="3487">Muy interesante. Esto permite ejecutar comandos del sistema.</p>
+
+        <div class="row">
+            <div class="col">
+                <p data-start="3534" data-end="3544">Algo como:</p>
+                <pre class="cm-content q9tKkq_readonly m-0">
+                    <code><span class="ͼm">spawn</span><span>([</span><span class="ͼk">"nautilus"</span><span>]);</span></code>
+                </pre>
+            </div>
+            <div class="col">
+                <p data-start="3586" data-end="3587">o</p>
+                <pre class="cm-content q9tKkq_readonly m-0">
+                    <code><span class="ͼm">spawn</span><span>([</span><span class="ͼk">"notify-send"</span><span>, </span><span class="ͼk">"..."</span><span>]);</span></code>
+                </pre>
+            </div>
+        </div>
+    </details>
+
+    <details class="card" name="const">
+        <summary> 11. gettext </summary>
+        <pre><code><span class="ͼg">const</span><span> </span><span class="ͼm">_</span><span> </span><span class="ͼg">=</span><span> ...</span></code></pre>
+        <p>Este símbolo:</p>
+        <pre><code><span class="ͼm">_</span></code></pre>
+        <p>Lo veremos cientos de veces. Sirve para traducciones. Por ejemplo:</p>
+        <pre><code><span class="ͼm">_</span><span>(</span><span class="ͼk">"Preferences"</span><span>)</span></code></pre>
+        <p>Dependiendo del idioma del usuario podría mostrar:</p>
+        <div class="row">
+            <div class="col">
+                <pre><code><span>Preferencias</span></code></pre>
+            </div>
+            <div class="col-1">
+                <p>0</p>
+            </div>
+            <div class="col">
+                <pre><code><span>Settings</span></code></pre>
+            </div>
+        </div>
+    </details>
+
+    <h2>Y finalmente...</h2>
+    <hr data-start="3976" data-end="3979">
+    <pre><code><span class="ͼg">let</span><span> </span><span class="ͼm">notificationCenter</span><span> </span><span class="ͼg">=</span><span> </span><span class="ͼj">null</span><span>;</span></code></pre>
+    <p>Aquí ya aparece nuestra primera variable global. Todavía no sabemos qué clase será. Pero me gusta una cosa.</p>
+    <div class="row">
+        <div class="col">
+            <span>No se llama:</span>
+            <pre><code><span class="ͼm">obj</span></code></pre>
+        </div>
+        <div class="col">
+            <span>ni</span>
+            <pre><code><span class="ͼm">item</span></code></pre>
+        </div>
+    </div>
+    <p>Se llama exactamente igual que la extensión. Eso suele indicar que habrá una clase llamada algo parecido a:</p>
+    <pre><code><span class="ͼm">NotificationCenter</span></code></pre>
+    <p>Y esta variable contendrá <strong>la instancia principal</strong>.</p>
