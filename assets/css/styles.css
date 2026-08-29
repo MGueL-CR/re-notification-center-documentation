@@ -7,6 +7,15 @@
     interpolate-size: allow-keywords;
 }
 
+strong,
+b {
+    font-weight: bold;
+}
+
+.row>.col>li {
+    margin-left: 1rem;
+}
+
 body {
     display: grid;
     min-height: 100vh;

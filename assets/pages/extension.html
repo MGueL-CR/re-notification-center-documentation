@@ -1,0 +1,47 @@
+<div class="markdown prose dark:prose-invert wrap-break-word w-full light markdown-new-styling">
+    <h2 data-start="709" data-end="743">
+        <span role="text">¿Qué es <code data-start="715" data-end="729">extension.js</code>?
+        </span>
+    </h2>
+    <hr data-start="704" data-end="707" />
+    <p data-start="745" data-end="768">
+        Es el punto de entrada. Sería el equivalente a:
+    </p>
+    <div class="row">
+        <div class="col">
+            <p data-start="815" data-end="820">en C,</p>
+            <pre class="cm-content q9tKkq_readonly m-0"><code><span>main()</span></code></pre>
+        </div>
+        <div class="col-1">
+            <p data-start="822" data-end="823">o</p>
+        </div>
+        <div class="col">
+            <p data-start="864" data-end="872">en Java.</p>
+            <pre
+                class="cm-content q9tKkq_readonly m-0"><code><span class="ͼg">public</span><span> </span><span class="ͼg">static</span><span> </span><span class="ͼg">void</span><span> </span><span class="ͼm">main</span><span>()</span></code></pre>
+        </div>
+    </div>
+
+    <p data-start="874" data-end="908">GNOME ejecuta este archivo cuando:</p>
+    <ul data-start="910" data-end="986">
+        <li data-start="910" data-end="935">
+            <p data-start="912" data-end="935">habilitas la extensión;</p>
+        </li>
+        <li data-start="936" data-end="964">
+            <p data-start="938" data-end="964">deshabilitas la extensión;</p>
+        </li>
+        <li data-start="965" data-end="986">
+            <p data-start="967" data-end="986">inicia GNOME Shell.</p>
+        </li>
+    </ul>
+    <p data-start="988" data-end="1025">
+        Aquí viven las funciones principales:
+    </p>
+    <pre class="cm-content q9tKkq_readonly m-0">
+            <code><span class="ͼm">enable</span><span>()</span><br><span class="ͼm">disable</span><span>()</span></code>
+    </pre>
+    <p data-start="1066" data-end="1135">
+        Y, dependiendo de la versión de GNOME, también una clase
+        <code data-start="1123" data-end="1134">Extension</code>.
+    </p>
+</div>
