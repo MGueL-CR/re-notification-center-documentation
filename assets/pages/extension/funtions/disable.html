@@ -1,0 +1,38 @@
+<h2><span>Disable</span>()</h2>
+<hr>
+<p>Aquí también veo una decisión de diseño muy buena.</p>
+<pre>
+    <code><span class="ͼg">function</span><span> </span><span class="ͼm">disable</span><span>() {
+
+    </span><span class="ͼm">notificationCenter</span><span class="ͼg">.</span><span>undoChanges();
+    </span><span class="ͼm">notificationCenter</span><span class="ͼg">.</span><span>destroy();
+  
+  }</span></code>
+</pre>
+<hr>
+<p>Primero</p>
+<pre>
+    <code><span class="ͼm">undoChanges</span><span>();</span></code>
+</pre>
+<p>Literalmente:</p>
+<blockquote>"Deshaz todos los cambios que hice en GNOME."</blockquote>
+<p>Eso puede incluir:</p>
+<ul>
+    <li>quitar el botón;</li>
+    <li>restaurar el panel;</li>
+    <li>desconectar señales.</li>
+</ul>
+<hr>
+<p>Después</p>
+<pre>
+    <code><span class="ͼm">destroy</span><span>();</span></code>
+</pre>
+<p>Y solo cuando todo quedó limpio... destruye el objeto.</p>
+<hr>
+<h3>Una observación</h3>
+<p>Yo habría esperado algo al final&nbsp;como:</p>
+<pre>
+    <code><span class="ͼm">notificationCenter</span><span> </span><span class="ͼg">=</span><span> </span><span class="ͼj">null</span><span>;</span></code>
+</pre>
+<p>No significa que esté mal, simplemente me llama la atención. Más adelante veremos si <code>destroy()</code> ya hace
+    eso indirectamente o si quedó omitido.</p>

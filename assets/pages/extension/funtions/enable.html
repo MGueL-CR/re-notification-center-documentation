@@ -1,0 +1,59 @@
+<h2>Enable()</h2>
+<hr>
+<p>Este <code>enable()</code> es muchísimo más pequeño de lo que esperaba. Esto me dice que Selenium-H quiso que
+    <code>enable()</code> fuera un <b>orquestador</b> , no un lugar donde vive toda la lógica.
+</p>
+
+<pre class="cm-content q9tKkq_readonly m-0">
+    <code><span class="ͼg">function</span><span> </span><span class="ͼm">enable</span><span>() {
+
+</span><span class="ͼm">notificationCenter</span><span> </span><span class="ͼg">=</span><span> </span><span class="ͼg">new</span><span> </span><span class="ͼm">NotificationCenter</span><span>();
+</span><span class="ͼm">notificationCenter</span><span class="ͼg">.</span><span>startNotificationCenter();
+</span><span class="ͼm">reloadExtensionOnPrefsChange</span><span>();
+</span><span class="ͼm">reloadApplicationProfilesOnPrefsChange</span><span>();
+
+}</span>
+</code>
+</pre>
+
+<h3>Analicemos línea por línea</h3>
+<hr>
+<pre class="cm-content q9tKkq_readonly m-0">
+    <code><span class="ͼm">notificationCenter</span><span> </span><span class="ͼg">=</span><span> </span><span class="ͼg">new</span><span> </span><span class="ͼm">NotificationCenter</span><span>();</span></code>
+</pre>
+<p>Se crea el objeto principal, pero fíjate en un detalle... No hace nada más, todavía no inicia la extensión.</p>
+<hr>
+<pre class="cm-content q9tKkq_readonly m-0">
+    <code><span class="ͼm">notificationCenter</span><span class="ͼg">.</span><span>startNotificationCenter();</span></code>
+</pre>
+<p>Y aquí vino la sorpresa. Yo esperaba que el constructor hiciera toda la inicialización. pero Selenium-H separó dos
+    conceptos, que&nbsp; me parece una decisión interesante.</p>
+<blockquote>Crear el objeto<div><br></div>
+    <div>y</div>
+    <div><br></div>
+    <div>Iniciar el objeto</div>
+</blockquote>
+<p>Esto significa que el constructor probablemente solo prepara el objeto. Mientras
+    que&nbsp;<span></span><code><span>startNotificationCenter</span>()</code>&nbsp;es quien realmente:</p>
+<ul>
+    <li>crea el panel,<span></span>
+    </li>
+    <li>
+        registra señales,
+    </li>
+    <li>
+        modifica GNOME.</li>
+</ul>
+<p>Es un patrón bastante limpio.</p>
+<hr>
+<pre class="cm-content q9tKkq_readonly m-0">
+    <code><span class="ͼm">startNotificationCenter</span><span>()</span></code>
+</pre>
+<p>Este nombre me encanta. No necesito ver el código para imaginar qué hace. Probablemente:</p>
+<blockquote>"Si el usuario cambia una preferencia, reinicia la extensión."</blockquote>
+<hr>
+<pre class="cm-content q9tKkq_readonly m-0">
+    <code><span class="ͼm">reloadApplicationProfilesOnPrefsChange</span><span>();</span></code>
+</pre>
+<p>Aquí descubrimos algo que ni siquiera sabíamos que existía,&nbsp;<code>Application Profiles</code>&nbsp;. Eso
+    significa que la extensión tiene un sistema de perfiles, ni siquiera habíamos llegado a esa parte del código.</p>

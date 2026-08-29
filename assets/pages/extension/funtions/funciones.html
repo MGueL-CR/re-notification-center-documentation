@@ -1,0 +1,64 @@
+<h2>Funciones principales</h2>
+<hr>
+<p>Existen 2 funciones principales y sobre todo las más importantes.</p>
+<pre class="cm-content q9tKkq_readonly m-0">
+    <code><span class="ͼm">enable</span><span>()
+
+</span><span class="ͼm">disable</span><span>()</span></code>
+</pre>
+<p>Porque ellas responden a la pregunta que nos planteamos .</p>
+<blockquote>¿Cómo nace la extensión cuando GNOME la carga?</blockquote>
+<p>Si entendemos esas dos funciones, entenderemos el ciclo de vida completo de la extensión. Después de eso, entrar a la
+    clase <code>NotificationCenter</code> será mucho más natural, porque ya sabremos <strong>quién la crea, cuándo la
+        crea y quién la destruye</strong>.
+</p>
+
+<hr>
+
+<h3>¿Qué debería hacer <code>enable()</code>?</h3>
+<blockquote>
+    <div>enable()</div>
+    <div>│</div>
+    <div>├── Crear el objeto NotificationCenter</div>
+    <div>├── Leer la configuración (GSettings)</div>
+    <div>├── Agregar el botón al panel</div>
+    <div>├── Conectar señales (signals)</div>
+    <div>└── Dejar la extensión funcionando</div>
+</blockquote>
+<h3>¿Y <code>disable()</code>?</h3>
+<blockquote>
+    <div>disable()</div>
+    <div>│</div>
+    <div>├── Desconectar señales</div>
+    <div>├── Quitar el botón del panel</div>
+    <div>├── Liberar recursos</div>
+    <div>└── notificationCenter = null</div>
+</blockquote>
+<p>Es decir, <code>disable()</code> debería <strong>deshacer todo lo que hizo <code>enable()</code></strong>. Esta es
+    una regla de oro que quiero que recordemos durante todo el proyecto:</p>
+<blockquote>Todo lo que <code>enable()</code> crea, <code>disable()</code> debe destruir.</blockquote>
+<p>Si alguna vez agregamos una nueva funcionalidad, siempre nos preguntaremos:</p>
+<ul>
+    <li>¿Dónde la inicializo? → <code>enable()</code></li>
+    <li>¿Dónde la limpio? → <code>disable()</code></li>
+</ul>
+<hr>
+<h3>Detalle curioso</h3>
+<p>¿Recuerdas que al principio vimos esta línea?</p>
+<pre class="cm-content q9tKkq_readonly m-0">
+    <code><span class="ͼg">let</span><span> </span><span class="ͼm">notificationCenter</span><span> </span><span class="ͼg">=</span><span> </span><span class="ͼj">null</span><span>;</span></code>
+</pre>
+<p>Ahora ya podemos darle un significado más preciso:</p>
+<ul>
+    <li>Antes de <code>enable()</code>: no existe ningún <code>NotificationCenter</code>.<span></span>
+    </li>
+    <li>
+        Durante <code>enable()</code>: se crea.
+    </li>
+    <li>
+        Mientras la extensión está activa: existe una única instancia.
+    </li>
+    <li>
+        En <code>disable()</code>: se destruye y vuelve a <code>null</code>.</li>
+</ul>
+<p>Esa variable global no está ahí "porque sí". Representa el estado de vida de la extensión.</p>

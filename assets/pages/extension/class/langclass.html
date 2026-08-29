@@ -1,0 +1,115 @@
+<h2>¿Qué es NotificationCenter?</h2>
+<hr>
+<p>Hay un concepto que apareció varias veces y que todavía no conocemos, <code
+        class="inline-code">NotificationCenter</code>, Nosotros ya sabemos <strong data-start="317"
+        data-end="332">cuándo nace,&nbsp;</strong>Ahora necesitamos saber <strong data-start="359" data-end="369">qué
+        es</strong>.</p>
+<pre><code><span class="ͼg">const</span><span> </span><span class="ͼm">NotificationCenter</span><span> </span><span class="ͼg">=</span><span> </span><span class="ͼg">new</span><span> </span><span class="ͼm">LangClass</span><span>({
+    Name: </span><span class="ͼk">'NotificationCenter'</span><span>,
+    ...</span></code></pre>
+<hr>
+<h3>¿Por qué?</h3>
+<p>Porque quiero responder otra pregunta de arquitectura. Hasta ahora sabemos:</p>
+<pre><samp class="samp-block">GNOME
+    │
+    ▼
+ enable()
+    │
+    ▼
+ new NotificationCenter()
+</samp></pre>
+<p>Pero ahora la pregunta es:</p>
+<blockquote>¿Qué es NotificationCenter?</blockquote>
+<p>¿Hereda de <code data-start="973" data-end="991">PanelMenu.Button</code>? ¿Hereda de <code data-start="1005"
+        data-end="1016">PopupMenu</code>? ¿No hereda de nadie? ¿Es simplemente un objeto que contiene otros objetos?</p>
+<p>Eso cambia completamente nuestra comprensión del proyecto.</p>
+<hr>
+<h3>Lo que espero encontrar</h3>
+<p>En esa época GJS todavía se utilizaba mucho y creo que veremos algo parecido a:</p>
+<pre><code><span class="ͼg">const</span><span> </span><span class="ͼm">NotificationCenter</span><span> </span><span class="ͼg">=</span><span> </span><span class="ͼg">new</span><span> </span><span class="ͼm">Lang</span><span class="ͼg">.</span><span>Class({
+
+    Name: </span><span class="ͼk">'NotificationCenter'</span><span>,
+
+    _init: </span><span class="ͼg">function</span><span> () {
+
+    },
+
+    destroy: </span><span class="ͼg">function</span><span> () {
+
+    }
+
+});</span></code></pre>
+<p>Y ya tendríamos identificado el "corazón" de la extensión.</p>
+<p>Fíjate en una cosa.</p>
+<div class="row">
+    <div class="col">
+        <p>No existe:</p>
+        <pre><code><span class="ͼm">constructor</span><span>()</span></code></pre>
+    </div>
+    <div class="col">
+        <p>Existe:</p>
+        <pre><code><span class="ͼm">_init</span><span>()</span></code></pre>
+    </div>
+</div>
+<p>Y ahí ya podemos hacer una equivalencia mental.</p>
+<hr>
+<h3>JavaScript moderno</h3>
+<p>Si hoy escribiéramos una clase sería algo así:</p>
+<pre>
+    <code><span class="ͼg">class</span><span> </span><span class="ͼl">NotificationCenter</span><span> {
+
+    constructor() {
+
+    }
+
+    startNotificationCenter() {
+
+    }
+
+    destroy() {
+
+    }
+
+}</span></code>
+</pre>
+<hr>
+<h3>Un traductor mental</h3>
+<p>A partir de este punto quiero que tengas esta tabla en la cabeza. Con solo esta tabla, de repente el código deja de
+    verse "raro".</p>
+
+<div class="row">
+    <div class="col"></div>
+    <div class="col">
+        <table>
+            <thead>
+                <tr>
+                    <th>JavaScript moderno</th>
+                    <th>GJS antiguo</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>class</code></td>
+                    <td><code>new Lang.Class</code></td>
+                </tr>
+                <tr>
+                    <td><code>constructor()</code></td>
+                    <td><code>_init()</code></td>
+                </tr>
+                <tr>
+                    <td><code>extends</code></td>
+                    <td><code>Extends:</code></td>
+                </tr>
+                <tr>
+                    <td><code>super()</code></td>
+                    <td><code>this.parent()</code></td>
+                </tr>
+                <tr>
+                    <td><code>metodo()</code></td>
+                    <td><code>metodo: function()</code></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col"></div>
+</div>
