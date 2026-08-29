@@ -1,0 +1,67 @@
+<h2>¿Cómo se construyen/instalan las traducciones?</h2>
+<hr>
+<p>Este es un detalle importante: <strong data-start="68" data-end="169">no es GNOME Shell, por sí solo, el que
+        necesariamente compila los <code data-start="136" data-end="141">.po</code> al instalar una extensión</strong>.
+</p>
+<p>El proceso normal de gettext es que <strong data-start="208" data-end="268">alguna etapa de construcción/empaquetado
+        de la extensión</strong> ejecute <code data-start="277" data-end="285">msgfmt</code> y genere los <code
+        data-start="299" data-end="304">.mo</code>. La documentación de GNOME para extensiones describe precisamente el
+    flujo <code data-start="380" data-end="398">.pot → .po → .mo</code>, y señala que los <code data-start="417"
+        data-end="423">.pot</code> y <code data-start="426" data-end="431">.po</code> son archivos fuente de las
+    traducciones, mientras que los <code data-start="490" data-end="495">.mo</code> son los que utiliza Gettext en
+    ejecución.</p>
+<p>En nuestro caso, por lo que ya hemos visto en <strong data-start="623" data-end="650">RE: Notification
+        Center</strong>, esto encaja bastante bien:</p>
+<pre><samp>locale/
+│
+├── notification-center.pot     ← plantilla
+│
+├── de/
+│   └── notification-center.po  ← traducción alemana
+│
+├── it/
+│   └── notification-center.po  ← traducción italiana
+│
+├── ko/
+│   └── notification-center.po  ← traducción coreana
+│
+└── nl/
+    └── notification-center.po  ← traducción neerlandesa</samp></pre>
+<p>Pero <strong data-start="976" data-end="1018">no tenemos los <code data-start="993" data-end="998">.mo</code> en el
+        repositorio</strong>.</p>
+<h3>¿Quién los genera?</h3>
+<hr>
+<p>Podemos afirmar:</p>
+<blockquote>El <code data-start="2617" data-end="2622">.po</code> no se convierte mágicamente en <code data-start="2654"
+        data-end="2659">.mo</code> por el simple hecho de que GNOME cargue la extensión.</blockquote>
+<p>Alguien o algún proceso tiene que ejecutar algo equivalente a:</p>
+<pre><code><span>msgfmt notification-center.po </span><span class="ͼn">-o</span><span> notification-center.mo</span></code></pre>
+<p>El paso concreto es algo como:</p>
+<pre><samp>notification-center.po
+          │
+          │ msgfmt
+          ▼
+notification-center.mo</samp></pre>
+<p><code data-start="1189" data-end="1197">msgfmt</code> es la herramienta de GNU gettext que realiza esa compilación.
+    GNOME documenta este proceso explícitamente y la ubicación esperada tiene una estructura muy específica:</p>
+<pre><samp>locale/
+└── de/
+    └── LC_MESSAGES/
+        └── notification-center.mo</samp></pre>
+<p>Es decir, <strong data-start="1501" data-end="1678">nuestro repositorio contiene los archivos fuente de las
+        traducciones, pero el archivo que Gettext consulta tiene que terminar como <code data-start="1634"
+            data-end="1676">locale/&lt;idioma&gt;/LC_MESSAGES/&lt;dominio&gt;.mo</code></strong>. Esa convención también
+    está documentada por gettext.&nbsp;<span class="contents" data-content-reference-start="1710"
+        data-content-reference-end="1729"><span class="" data-state="closed"></span></span></p>
+<p>Y aquí tenemos una pista muy interesante en <code data-start="1820" data-end="1834">extension.js</code></p>
+<pre><code><span class="ͼm">ExtensionUtils</span><span class="ͼg">.</span><span>initTranslations(</span><span class="ͼk">"notification-center"</span><span>);</span></code></pre>
+<p>Eso es precisamente el mecanismo de <code data-start="1970" data-end="1986">ExtensionUtils</code> para inicializar
+    las traducciones. La documentación de extensiones de GNOME explica que <code data-start="2075"
+        data-end="2095">initTranslations()</code> vincula el dominio de gettext con la carpeta <code data-start="2141"
+        data-end="2149">locale</code> de la extensión cuando está disponible.&nbsp;</p>
+<p>Nuestro dominio es:</p>
+<blockquote>notification-center</blockquote>
+<p>Por eso el nombre del <code data-start="2307" data-end="2312">.mo</code> tiene sentido:</p>
+<pre><samp>notification-center.mo</samp></pre>
+<p>No es casualidad que coincida con:</p>
+<pre><code><span class="ͼm">initTranslations</span><span>(</span><span class="ͼk">"notification-center"</span><span>)</span></code></pre>

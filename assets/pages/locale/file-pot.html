@@ -1,0 +1,42 @@
+<h2>Portable Object Template —&nbsp;<code data-start="1031" data-end="1037">.pot</code></h2>
+<hr>
+<p>El archivo:&nbsp;<code class="inline-code">notification-center.pot</code> es la <strong data-start="1122"
+        data-end="1159">plantilla maestra de traducciones</strong>. La idea es:</p>
+<blockquote>"Estos son todos los textos que la extensión necesita traducir."</blockquote>
+<p>Por ejemplo, imaginemos que el código contiene:</p>
+<pre><code><span class="ͼm">_</span><span>(</span><span class="ͼk">"Clear"</span><span>)</span></code></pre>
+<p>La herramienta de traducción puede terminar teniendo algo conceptualmente parecido a:</p>
+<div class="row">
+    <div class="col">
+        <pre><samp>msgid "Clear"
+msgstr ""</samp></pre>
+    </div>
+    <div class="col"></div>
+</div>
+<p>El <code data-start="1449" data-end="1455">.pot</code> contiene los <code data-start="1469"
+        data-end="1476">msgid</code>, pero <strong data-start="1483" data-end="1539">no contiene una traducción
+        específica para un idioma</strong>. Por eso se llama:</p>
+<blockquote>Portable Object Template</blockquote>
+<p>Conceptualmente:</p>
+<pre><samp>Código de la extensión
+        │
+        │ textos traducibles
+        ▼
+notification-center.pot
+        │
+        ├── alemán
+        │     ▼
+        │   de/notification-center.po
+        │
+        ├── italiano
+        │     ▼
+        │   it/notification-center.po
+        │
+        ├── coreano
+        │     ▼
+        │   ko/notification-center.po
+        │
+        └── neerlandés
+              ▼
+            nl/notification-center.po</samp></pre>
+<p>Es una plantilla a partir de la cual se crean los archivos de traducción.</p>

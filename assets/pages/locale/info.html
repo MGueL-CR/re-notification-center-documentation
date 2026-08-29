@@ -1,0 +1,154 @@
+<h2>Información general</h2>
+<hr>
+<h3>¿Para qué tenemos <code data-start="4206" data-end="4212">.pot</code> y <code data-start="4215"
+        data-end="4220">.po</code>?</h3>
+<hr>
+<p>Podemos verlo como una cadena de producción:</p>
+<pre><samp>             DESARROLLO
+                 │
+                 ▼
+        textos originales
+                 │
+                 ▼
+     notification-center.pot
+          plantilla maestra
+                 │
+       ┌─────────┼─────────┐
+       ▼         ▼         ▼
+      de        it        ko ...
+       │         │         │
+       ▼         ▼         ▼
+     .po       .po       .po
+       │         │         │
+       │      traducción   │
+       │         │         │
+       └─────────┼─────────┘
+                 ▼
+              .mo
+          compilación
+                 │
+                 ▼
+        programa en ejecución</samp></pre>
+<p>Una analogía sencilla:</p>
+<table>
+    <thead>
+        <tr>
+            <th>Archivo</th>
+            <th class="text-left">Podemos pensarlo como</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>.pot</code></td>
+            <td class="text-left"><strong>Formulario/plantilla maestra</strong></td>
+        </tr>
+        <tr>
+            <td><code>.po</code></td>
+            <td class="text-left"><strong>Formulario rellenado para un idioma</strong></td>
+        </tr>
+        <tr>
+            <td><code>.mo</code></td>
+            <td class="text-left"><strong>Formulario convertido a un formato que la aplicación puede consultar
+                    rápidamente</strong></td>
+        </tr>
+    </tbody>
+</table>
+<h3>¿Y por qué no tenemos español?</h3>
+<hr>
+<div class="row">
+    <div class="col">
+        <p>Actualmente tenemos:</p>
+        <pre><samp>de/
+it/
+ko/
+nl/</samp></pre>
+    </div>
+    <div class="col"></div>
+</div>
+<div class="row">
+    <div class="col"><span>pero no:</span>
+        <pre><samp>es/</samp></pre>
+    </div>
+    <div class="col"></div>
+</div>
+<p>Eso significa simplemente que <strong data-start="5323" data-end="5400">el repositorio no tiene una traducción
+        española dentro de esta estructura</strong>. No significa necesariamente que la extensión no pueda funcionar en
+    un sistema en español.</p>
+<p>Si no encuentra una traducción para un <code data-start="5533" data-end="5540">msgid</code>, gettext normalmente
+    termina utilizando el texto original.</p>
+<div class="row">
+    <div class="col"><span>Por ejemplo:</span></div>
+    <div class="col">
+        <pre><samp>_("Clear")</samp></pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col"><span>si no existe traducción:</span></div>
+    <div class="col">
+        <pre><samp>Clear</samp></pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col"><span>Si existe traducción:</span></div>
+    <div class="col">
+        <pre><samp>Clear → Limpiar</samp></pre>
+    </div>
+</div>
+<h4>Un detalle importante</h4>
+<hr>
+<p>No debemos asumir todavía que para agregar español simplemente habría que crearlo y listo.</p>
+<pre><samp>locale/
+
+    es/
+        notification-center.po</samp></pre>
+<p>Hay que estudiar <strong data-start="5956" data-end="6021">cómo se construyen/instalan las traducciones en este
+        proyecto</strong>, dónde espera GNOME encontrar los <code data-start="6056" data-end="6061">.mo</code>, y cómo
+    se relaciona eso con:</p>
+<pre><code><span class="ͼm">imports</span><span class="ͼg">.</span><span>gettext</span><span class="ͼg">.</span><span>domain(</span><span class="ͼk">"notification-center"</span><span>)</span></code></pre>
+<p>Pero eso ya sería el siguiente nivel de investigación, por ahora, para nuestro objetivo actual, creo que la
+    distinción fundamental queda así:</p>
+<blockquote><strong data-start="6304" data-end="6346"><code data-start="6306" data-end="6312">.pot</code> = qué cosas se
+        pueden traducir.</strong><br data-start="6346" data-end="6349">
+    <strong data-start="6351" data-end="6415"><code data-start="6353" data-end="6358">.po</code> = cómo se traducen esas
+        cosas para un idioma concreto.</strong><br data-start="6415" data-end="6418">
+    <strong data-start="6420" data-end="6482"><code data-start="6422" data-end="6427">.mo</code> = la traducción
+        compilada que la aplicación utiliza.</strong>
+</blockquote>
+<h3>¿Qué ocurre cuando la extensión funciona?</h3>
+<hr>
+<p>Aquí podemos conectar esto con algo que acabamos de estudiar en <code data-start="3535"
+        data-end="3549">extension.js</code>.</p>
+<p>Tenemos:</p>
+<pre><code><span class="ͼg">const</span><span> </span><span class="ͼm">_</span><span> </span><span class="ͼg">=</span><span> </span><span class="ͼm">imports</span><span class="ͼg">.</span><span>gettext
+    </span><span class="ͼg">.</span><span>domain(</span><span class="ͼk">"notification-center"</span><span>)
+    </span><span class="ͼg">.</span><span>gettext;</span></code></pre>
+<p>y después aparecen cosas como:</p>
+<div class="row">
+    <div class="col">
+        <pre><samp>_("Clear")</samp></pre>
+    </div>
+    <div class="col">
+        <pre><samp>_("No Notifications")</samp></pre>
+    </div>
+</div>
+<p>La extensión está diciendo, en esencia:</p>
+<blockquote>"Busca una traducción para este texto dentro del dominio <code data-start="3863"
+        data-end="3884">notification-center</code>."</blockquote>
+<p>El flujo conceptual sería:</p>
+<pre><samp>extension.js
+     │
+     │ _("Clear")
+     ▼
+gettext
+     │
+     │ dominio:
+     │ "notification-center"
+     ▼
+idioma actual del usuario
+     │
+     ▼
+traducción correspondiente
+     │
+     ▼
+"Clear" → traducción</samp></pre>
+<p>Y aquí entran los <code data-start="4161" data-end="4166">.mo</code>.</p>

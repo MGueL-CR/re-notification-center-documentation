@@ -1,40 +1,70 @@
-<div class="markdown prose dark:prose-invert wrap-break-word w-full light markdown-new-styling">
-    <h2 data-section-id="owiv15" data-start="315" data-end="336">
-        <span role="text">¿Qué es <code data-start="326" data-end="335">locale/</code>?</span>
-    </h2>
-    <hr data-start="611" data-end="614">
-    <p data-start="338" data-end="455">En una extensión de GNOME, <code data-start="365" data-end="374">locale/</code>
-        normalmente contiene las traducciones (<code data-start="414" data-end="419">.mo</code>) y <strong
-            data-start="423" data-end="454">forma parte de la extensión</strong>.</p>
-    <p data-start="457" data-end="480">Es muy común verla así:</p>
-    <pre class="cm-content q9tKkq_readonly m-0">
-        <code><span>re-notification-center@mguel-cr/
-    ├── extension.js
-    ├── metadata.json<
-    ├── locale/
-    │   ├── de/
-    │   ├── it/
-    │   ├── ko/
-    │   ├── nl/
-    │   └── ...</span>
-        </code>
-    </pre>
-
-
-    <hr data-start="2189" data-end="2192">
-    <h2 data-start="2194" data-end="2209"><span role="text">📄 <code data-start="2200"
-                data-end="2209">locale/</code></span>
-    </h2>
-    <p data-start="2211" data-end="2232">Internacionalización.</p>
-    <p data-start="2234" data-end="2257">Aquí viven los idiomas.</p>
-    <p data-start="2259" data-end="2271">Por ejemplo:</p>
-    <pre class="cm-content q9tKkq_readonly m-0">
-        <code><span>es
-de
-it
-ko</span></code></pre>
-    <p data-start="2294" data-end="2344">Dentro están los archivos <code data-start="2320" data-end="2325">.po</code> y
-        luego los <code data-start="2338" data-end="2343">.mo</code>.</p>
-    <p data-start="2346" data-end="2404">Gracias a esto un usuario alemán ve la interfaz en alemán.</p>
-
+<div class="row">
+    <div class="col-3">
+        <div class="card hint borderless pb-1">
+            <h2>LOCALE/</h2>
+            <hr />
+            <ol id="menu-main" class="main-list p-0">
+                <li class="list-item" data-name="locale/info">Información</li>
+                <li class="list-item" data-name="locale/file-pot">Archivo <mark> .POT</mark></li>
+                <li class="list-item" data-name="locale/file-po">Archivo <mark> .PO</mark></li>
+                <li class="list-item" data-name="locale/file-mo">Archivo <mark> .MO</mark></li>
+                <li class="list-item" data-name="locale/translate">Tradución</li>
+            </ol>
+        </div>
+    </div>
+    <div class="col">
+        <article id="show-content" class="card borderless">
+            <h2>¿Qué es la carpeta <code data-start="239" data-end="247">locale</code>?</h2>
+            <hr>
+            <p>Es una parte bastante independiente de la lógica de la extensión, normalmente contiene las traducciones
+                <code class="inline-code">(.mo)</code>. En términos generales, contiene los recursos que permiten que la
+                extensión
+                muestre sus textos traducidos según el idioma del usuario.
+            </p>
+            <p>En nuestro caso tenemos:</p>
+            <pre><samp>locale/
+├── de/
+│   └── notification-center.po
+├── it/
+│   └── notification-center.po
+├── ko/
+│   └── notification-center.po
+├── nl/
+│   └── notification-center.po
+└── notification-center.pot</samp></pre>
+            <p>En el árbol actual <strong data-start="816" data-end="843">no aparece ningún <code data-start="836"
+                        data-end="841">.mo</code></strong>. Eso es perfectamente posible; probablemente los <code
+                    data-start="893" data-end="898">.mo</code> se generan durante el proceso de instalación/build o se
+                encuentran en otra ubicación
+                cuando la extensión está instalada.</p>
+            <p>Aquí tenemos varios conceptos diferentes:</p>
+            <pre><samp>.pot  → plantilla de traducción
+.po   → traducción de un idioma concreto
+.mo   → traducción compilada que utiliza el programa</samp></pre>
+            <h4>Un detalle importante</h4>
+            <hr>
+            <p>No debemos asumir todavía que para agregar un nuevo idioma simplemente habría que crearlo.</p>
+            <span><b>Por ejemplo</b>: Solo agregar el archivo del idioma español y listo.</span>
+            <pre><samp>locale/es/notification-center.po</samp></pre>
+            <p>Hay que estudiar <strong data-start="5956" data-end="6021">cómo se construyen/instalan las traducciones
+                    en este
+                    proyecto</strong>, dónde espera GNOME encontrar los <code data-start="6056"
+                    data-end="6061">.mo</code>, y cómo
+                se relaciona eso con:</p>
+            <pre><code><span class="ͼm">imports</span><span class="ͼg">.</span><span>gettext</span><span class="ͼg">.</span><span>domain(</span><span class="ͼk">"notification-center"</span><span>)</span></code></pre>
+            <p>Pero eso ya sería el siguiente nivel de investigación. Por ahora, para nuestro objetivo actual, creo que
+                la
+                distinción fundamental queda así:</p>
+            <blockquote><strong data-start="6304" data-end="6346"><code data-start="6306" data-end="6312">.pot</code> =
+                    qué cosas se
+                    pueden traducir.</strong><br data-start="6346" data-end="6349">
+                <strong data-start="6351" data-end="6415"><code data-start="6353" data-end="6358">.po</code> = cómo se
+                    traducen esas
+                    cosas para un idioma concreto.</strong><br data-start="6415" data-end="6418">
+                <strong data-start="6420" data-end="6482"><code data-start="6422" data-end="6427">.mo</code> = la
+                    traducción
+                    compilada que la aplicación utiliza.</strong>
+            </blockquote>
+        </article>
+    </div>
 </div>
