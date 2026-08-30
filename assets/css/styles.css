@@ -244,6 +244,15 @@ pre>.cm-line {
     content: counter(section) "." counter(section-1) ". ";
 }
 
+.main-list .list-item:has(+.list-level-1)::after,
+.main-list .list-item:has(+.list-level-2)::after,
+.main-list .list-item:has(+.list-level-3)::after,
+.main-list .list-item:has(+.list-level-4)::after {
+    content: '⯆';
+    margin-left: 0.25rem;
+    transition: all 350ms ease;
+}
+
 .main-list .list-level-1 .list-level-2>li {
     counter-reset: section-3;
     cursor: pointer;
