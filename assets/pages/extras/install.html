@@ -1,0 +1,29 @@
+<h2>¿Qué es <code>INSTALL.sh</code>?</h2>
+<hr>
+<p>Este archivo <strong>no forma parte de una extensión de GNOME</strong>. Muchas extensiones ni siquiera tienen uno. Es
+    simplemente un script que escribió Selenium-H para facilitar la instalación. En el contenido del archivo
+    <code>INSTALL.sh</code> nos dirá exactamente cómo el autor esperaba instalar la extensión.
+</p>
+<p>La respuesta está aquí:</p>
+<pre><code><span class="ͼl">cp</span><span> </span><span class="ͼn">-rf</span><span> </span><span class="ͼm">$extensionDir</span><span> </span><span class="ͼm">$installDir</span><span>
+</span><span class="ͼl">cp</span><span> </span><span class="ͼn">-rf</span><span> schemas </span><span class="ͼm">$installDir</span><span class="ͼk">"/"</span><span class="ͼm">$extensionDir</span><span>
+</span><span class="ͼl">cp</span><span> </span><span class="ͼn">-rf</span><span> locale </span><span class="ͼm">$installDir</span><span class="ͼk">"/"</span><span class="ͼm">$extensionDir</span></code></pre>
+<p>Es decir:</p>
+<ol>
+    <li> Copia la carpeta <code>notification-center@Selenium-H</code>. </li>
+    <li> Después copia <code>schemas/</code> dentro de ella. </li>
+    <li> Después copia <code>locale/</code> dentro de ella. </li>
+</ol>
+<p>Al final, la extensión instalada queda así:</p>
+<pre><code><span>~/.local/share/gnome-shell/extensions/
+        └── notification-center@Selenium-H/
+            ├── extension.js
+            ├── metadata.json
+            ├── ...
+            ├── schemas/
+            └── locale/</span></code></pre>
+<h3>Entonces, ¿por qué el autor lo hizo así?</h3>
+<hr>
+<p>Creo que fue simplemente una <strong>decisión de organización del repositorio</strong>, probablemente para mantener
+    separadas las traducciones y los esquemas del código fuente.</p>
+<p>No hay ninguna limitación de GNOME que obligue a hacerlo así.</p>
