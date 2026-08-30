@@ -1,0 +1,259 @@
+<h2>Mapas de INSTALL.sh</h2>
+<hr>
+<p>Ahora que terminamos de recorrer todo INSTALL.sh, podemos hacer los mapas.</p>
+
+<div class="tabs">
+    <input type="radio" name="tabs" id="tab1" checked="checked">
+    <label for="tab1">Flujo</label>
+    <div class="tab">
+        <h4>La idea central del flujo</h4>
+        <hr>
+        <p>Podemos resumir todo el script en cinco grandes etapas:</p>
+        <pre><samp>1. Configurar
+      ↓
+2. Preparar destino
+      ↓
+3. Limpiar instalación anterior
+      ↓
+4. Instalar + compilar recursos
+      ↓
+5. Informar resultado</samp></pre>
+        <p>El flujo completo queda así:</p>
+        <pre><samp>┌───────────────────────────────┐
+│          INSTALL.sh           │
+└───────────────┬───────────────┘
+                │
+                ▼
+       Define configuración
+                │
+       ┌────────┴─────────┐
+       │                  │
+       ▼                  ▼
+   installDir        extensionName
+       │                  │
+       │                  ▼
+       │             extensionDir
+       │                  │
+       └────────┬─────────┘
+                ▼
+      ¿Se proporcionó $1?
+          │           │
+         NO          SÍ
+          │           │
+          │           ▼
+          │     installDir=$1
+          │           │
+          └─────┬─────┘
+                ▼
+      ¿Existe installDir?
+          │           │
+         SÍ          NO
+          │           │
+          │           ▼
+          │       ¿Existe $2?
+          │        │       │
+          │       NO      SÍ
+          │        │       │
+          │        ▼       ▼
+          │     pregunta  response=$2
+          │        │       │
+          │        └───┬───┘
+          │            ▼
+          │      ¿response == "y"?
+          │        │          │
+          │       SÍ         NO
+          │        │          │
+          │        ▼          ▼
+          │     mkdir -p     exit
+          │        │
+          │        ▼
+          │      ¿mkdir OK?
+          │       │       │
+          │      SÍ      NO
+          │       │       │
+          │       │       ▼
+          │       │     Error
+          │       │       │
+          │       │       ▼
+          │       │      exit
+          │       │
+          └───┬───┘
+              ▼
+     Elimina instalación anterior
+              │
+              ▼
+       Copia nueva versión
+              │
+       ┌──────┼─────────┐
+       │      │         │
+       ▼      ▼         ▼
+  extension  schemas   locale
+       │      │         │
+       │      ▼         │
+       │ glib-compile-  │
+       │   schemas      │
+       │      │         │
+       │      ▼         │
+       │ gschemas.      │
+       │  compiled      │
+       │                │
+       │                ▼
+       │             msgfmt
+       │                │
+       │                ▼
+       │          *.mo por idioma
+       │
+       └────────┬───────────────┘
+                ▼
+       ¿status == "Done"?
+          │             │
+         SÍ            NO
+          │             │
+          ▼             ▼
+      All Done!    Extension installed,
+                  translations not done
+          │             │
+          └──────┬──────┘
+                 ▼
+       Instrucciones finales
+                 │
+          ┌──────┴───────┐
+          ▼              ▼
+     Reiniciar        Habilitar
+    GNOME Shell      extensión</samp></pre>
+    </div>
+
+    <input type="radio" name="tabs" id="tab2">
+    <label for="tab2">Mental</label>
+    <div class="tab">
+        <p>Aquí lo organizaría de una manera diferente al flujo, porque el mapa mental busca mostrar <strong
+                data-start="3410" data-end="3451">qué responsabilidades tiene el script</strong>, no necesariamente el
+            orden exacto.</p>
+        <pre><samp>                         INSTALL.sh
+                              │
+       ┌──────────────────────┼──────────────────────┐
+       │                      │                      │
+       ▼                      ▼                      ▼
+ CONFIGURACIÓN           INSTALACIÓN            RECURSOS
+       │                      │                      │
+       ├─ installDir          ├─ elimina versión    ├─ schemas
+       │                      │  anterior           │    │
+       ├─ extensionName       │                     │    └─ *.gschema.xml
+       │                      ├─ copia extensión    │         │
+       └─ extensionDir        │                     │         ▼
+                              ├─ copia schemas      │   glib-compile-schemas
+                              │                     │         │
+                              └─ copia locale       │         ▼
+                                                    │   gschemas.compiled
+                                                    │
+                                                    └─ locale
+                                                         │
+                                                         ├─ *.po
+                                                         │
+                                                         └─ msgfmt
+                                                              │
+                                                              ▼
+                                                             *.mo
+<br></samp></pre>
+        <pre><samp>                         INSTALL.sh
+                              │
+                ┌─────────────┼─────────────┐
+                │             │             │
+                ▼             ▼             ▼
+             CONTROL       ERRORES       USUARIO
+                │             │             │
+                ├─ $1         ├─ mkdir       ├─ reiniciar
+                ├─ $2         │  failure     │  GNOME Shell
+                ├─ status     │              │
+                └─ $?         └─ msgfmt      └─ habilitar
+                                 failure         extensión</samp></pre>
+    </div>
+
+    <input type="radio" name="tabs" id="tab3">
+    <label for="tab3">Estructural</label>
+    <div class="tab">
+        <h4>Su relación con la estructura de la extensión</h4>
+        <hr>
+        <p>Esto nos permite ver algo que antes estaba un poco disperso:</p>
+        <blockquote><code data-start="6915" data-end="6927">INSTALL.sh</code> no forma parte del funcionamiento interno
+            de la extensión, solo es una <strong data-start="6995" data-end="7034">herramienta auxiliar de
+                instalación</strong>.</blockquote>
+        <p>La extensión necesita:</p>
+        <ul>
+            <li>extension.js</li>
+            <li>prefs.js</li>
+            <li>metadata.json</li>
+            <li>stylesheet.css</li>
+            <li>schemas/</li>
+            <li>locale/</li>
+            <li>etc.</li>
+        </ul>
+        <p>Pero <code data-start="7166" data-end="7178">INSTALL.sh</code> existe para <strong data-start="7191"
+                data-end="7268">preparar y colocar esos recursos en el lugar donde GNOME Shell los espera</strong>.</p>
+        <hr>
+        <p>Ahora podemos colocar <code data-start="5674" data-end="5686">INSTALL.sh</code> dentro de todo lo que hemos
+            aprendido del proyecto:</p>
+        <pre><samp>                         PROYECTO
+                            │
+             ┌──────────────┼──────────────┐
+             │              │              │
+             ▼              ▼              ▼
+       extensionDir       locale         schemas
+             │              │              │
+             │              │              │
+             │              ▼              ▼
+             │             .po        .gschema.xml
+             │              │              │
+             │            msgfmt    glib-compile-schemas
+             │              │              │
+             │              ▼              ▼
+             │             .mo      gschemas.compiled
+             │              │              │
+             └──────────────┼──────────────┘
+                            │
+                            ▼
+                     INSTALL.sh
+                            │
+                            ▼
+               ~/.local/share/gnome-shell/
+                       extensions/
+                            │
+                            ▼
+                extensión instalada</samp></pre>
+    </div>
+
+    <input type="radio" name="tabs" id="tab4">
+    <label for="tab4">Comparativa</label>
+    <div class="tab">
+        <p>Ahora tenemos además una referencia externa muy útil: <strong data-start="840" data-end="879">el ZIP real de
+                la versión publicada</strong>. Así, podremos contrastar lo que hace el script con lo que efectivamente
+            termina dentro del paquete.</p>
+        <p>Aquí encaja perfectamente nuestro descubrimiento del ZIP. El paquete&nbsp; descargado desde&nbsp;<code
+                data-start="7371" data-end="7393">extensions.gnome.org</code> contenía:</p>
+        <pre><samp>notification-center@Selenium-H/
+├── extension.js
+├── prefs.js
+├── ...
+├── locale/
+│   ├── it/
+│   │   ├── notification-center.po
+│   │   └── LC_MESSAGES/
+│   │       └── notification-center.mo
+│   └── nl/
+│       ├── notification-center.po
+│       └── LC_MESSAGES/
+│           └── notification-center.mo
+│
+└── schemas/
+    ├── org.gnome.shell.extensions.notification-center.gschema.xml
+    └── gschemas.compiled</samp></pre>
+        <p>Ahora sabemos qué representan esos archivos:</p>
+        <pre><samp>.po                 → fuente de traducción
+.mo                 → catálogo compilado para gettext
+
+.gschema.xml        → definición del esquema GSettings
+gschemas.compiled   → esquema compilado</samp></pre>
+        <p>Y sabemos que <code data-start="8096" data-end="8108">INSTALL.sh</code> <strong data-start="8109"
+                data-end="8153">puede generar esos artefactos localmente</strong>.</p>
+    </div>
+</div>

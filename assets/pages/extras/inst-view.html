@@ -1,0 +1,200 @@
+<h2>¿Qué hay en extensions.gnome.org?</h2>
+<hr>
+<p>La hipótesis sería:</p>
+<blockquote>El desarrollador genera los <code data-start="2435" data-end="2440">.mo</code> localmente al preparar una
+    versión y los incluye en el paquete que publica.</blockquote>
+<p>Aquí está justamente la parte que <strong data-start="2351" data-end="2381">todavía no debemos afirmar</strong>.</p>
+<pre><samp>Desarrollador
+    │
+    ├── mantiene .po
+    │
+    ├── ejecuta msgfmt
+    │
+    └── obtiene .mo
+             │
+             ▼
+        ZIP / paquete
+             │
+             ├── .po
+             └── .mo
+                    │
+                    ▼
+        extensions.gnome.org
+                    │
+                    ▼
+             usuario instala</samp></pre>
+<p>Eso es perfectamente posible y&nbsp;<strong data-start="2915" data-end="2974">no requeriría que <code
+            data-start="2935" data-end="2957">extensions.gnome.org</code> compilara nada</strong>. Pero tenemos una
+    buena razón para no decidirlo todavía, tenemos dos mecanismos posibles:</p>
+<p><b>A. </b>Compilación durante la instalación manual</p>
+<pre><samp>.po
+ │
+ ▼
+INSTALL.sh
+ │
+ ▼
+msgfmt
+ │
+ ▼
+.mo</samp></pre>
+<p><b>B. </b>Compilación previa por el desarrollador</p>
+<pre><samp>.po
+ │
+ ▼
+msgfmt
+ │
+ ▼
+.mo
+ │
+ ▼
+ZIP publicado
+ │
+ ▼
+usuario</samp></pre>
+<p>Ambos pueden coexistir perfectamente. De hecho, <strong data-start="3362" data-end="3492"><code data-start="3364"
+            data-end="3376">INSTALL.sh</code> demuestra que el autor quería que una instalación manual pudiera partir de
+        los <code data-start="3456" data-end="3461">.po</code> y producir sus propios <code data-start="3485"
+            data-end="3490">.mo</code></strong>. Pero eso no nos dice todavía cómo preparaba el paquete que distribuía
+    por otros medios.</p>
+<p>Y sí: <strong data-start="4450" data-end="4599">me parece mejor mantener como hipótesis de trabajo que el
+        desarrollador puede generar los <code data-start="4542" data-end="4547">.mo</code> manualmente durante la
+        preparación de una versión</strong>, en lugar de asumir que GNOME o <code data-start="4632"
+        data-end="4654">extensions.gnome.org</code> necesariamente los genera.</p>
+<p>La evidencia que nos falta para convertir esa hipótesis en conclusión es simplemente observar <strong
+        data-start="4777" data-end="4824">qué contiene realmente el paquete publicado</strong> o revisar el proceso de
+    empaquetado que utilizaba el proyecto.</p>
+<h3><i>Notification-centerSelenium-H.v24.shell-extension.zip</i></h3>
+<hr>
+<p>Esto es una <strong data-start="28" data-end="51">evidencia muy buena</strong> para nuestra investigación. Ahora ya
+    no estamos planteando solamente una hipótesis: <strong data-start="140" data-end="218">podemos observar directamente
+        qué contiene el paquete que GNOME distribuye</strong>&nbsp;y hay varias cosas interesantes.</p>
+<h4>1. El <code data-start="265" data-end="271">.zip</code> sí contiene los <code data-start="288"
+        data-end="293">.mo</code></h4>
+<hr>
+<p>Tenemos:</p>
+<pre><samp>locale/
+├── it/
+│   ├── LC_MESSAGES/
+│   │   └── notification-center.mo
+│   ├── notification-center.po
+│   └── ...
+└── nl/
+    ├── LC_MESSAGES/
+    │   └── notification-center.mo
+    ├── notification-center.po
+    └── ...</samp></pre>
+<p>Esto confirma que el paquete publicado <strong data-start="579" data-end="619">ya contiene los catálogos
+        compilados</strong>. Por tanto, cuando un usuario instala esa extensión desde <code data-start="679"
+        data-end="701">extensions.gnome.org</code>, <strong data-start="703" data-end="771">no necesita ejecutar <code
+            data-start="726" data-end="734">msgfmt</code> para que esas traducciones existan</strong>.</p>
+<p>El flujo que ahora podemos considerar confirmado es:</p>
+<pre><samp>notification-center.po
+          │
+          │ msgfmt
+          ▼
+notification-center.mo
+          │
+          ▼
+     paquete .zip
+          │
+          ▼
+extensions.gnome.org
+          │
+          ▼
+       usuario</samp></pre>
+<p>Y el <code data-start="1061" data-end="1066">.po</code> también permanece dentro del ZIP. Es decir, el desarrollador
+    no está sustituyendo el <code data-start="1152" data-end="1157">.po</code> por el <code data-start="1165"
+        data-end="1170">.mo</code>; <strong data-start="1172" data-end="1189">incluye ambos</strong>.</p>
+<h4>2. Esto también confirma algo sobre <code data-start="1236" data-end="1248">INSTALL.sh</code></h4>
+<hr>
+<p>Nuestro <code data-start="1258" data-end="1270">INSTALL.sh</code> tiene:</p>
+<pre><code><span class="ͼl">mkdir</span><span> </span><span class="ͼm">${poFile}</span><span>/LC_MESSAGES
+msgfmt </span><span class="ͼm">${poFile}</span><span>/</span><span class="ͼm">$extensionName</span><span class="ͼk">".po"</span><span> \
+      </span><span class="ͼn">-o</span><span> </span><span class="ͼm">${poFile}</span><span>/LC_MESSAGES/</span><span class="ͼm">$extensionName</span><span class="ͼk">".mo"</span></code></pre>
+<p>Ahora podemos ver que <strong data-start="1432" data-end="1520">está reproduciendo exactamente la estructura que
+        encontramos en el paquete publicado</strong>:</p>
+<pre><samp>&lt;idioma&gt;/
+├── notification-center.po
+└── LC_MESSAGES/
+    └── notification-center.mo</samp></pre>
+<p>Eso difícilmente es casualidad. El script sabe exactamente cómo debe quedar <code data-start="1698"
+        data-end="1707">locale/</code> para que la extensión tenga los catálogos compilados.</p>
+<h4>3. Y hay otra pista todavía más interesante</h4>
+<hr>
+<p>Ahora tenemos además una referencia externa muy útil: el ZIP real de la versión publicada,
+    podremos contrastar lo que hace el script con lo que efectivamente termina dentro del paquete.</p>
+<p>Mira la diferencia entre nuestro repositorio y el ZIP publicado. Nuestro repositorio tenía:</p>
+<pre><samp>locale/
+├── de/
+├── it/
+├── ko/
+├── nl/
+└── notification-center.pot</samp></pre>
+<p>Pero el ZIP tiene:</p>
+<pre><samp>locale/
+├── it/
+├── nl/
+└── notification-center.pot</samp></pre>
+<p>Es decir:&nbsp;<code data-start="2113" data-end="2117">de</code> y <code data-start="2120" data-end="2124">ko</code>
+    no están en el paquete publicado que acabas de descargar. Eso abre una pregunta diferente y bastante interesante:
+</p>
+<blockquote>¿Por qué existen traducciones <code data-start="2275" data-end="2279">de</code> y <code data-start="2282"
+        data-end="2286">ko</code> en el repositorio, pero no fueron incluidas en esta versión publicada?</blockquote>
+<p>No necesitamos responderla ahora, pero <strong data-start="2398" data-end="2421">sí debemos anotarla</strong>.</p>
+<h4>4. Y aparece otra pieza: <code data-start="2456" data-end="2475">gschemas.compiled</code></h4>
+<hr>
+<p>También encontramos:</p>
+<pre><samp>schemas/
+├── gschemas.compiled
+└── org.gnome.shell.extensions.notification-center.gschema.xml</samp></pre>
+<p>Esto es conceptualmente muy parecido a lo que acabamos de descubrir con gettext:</p>
+<pre><samp>gschema.xml
+      │
+      │ compilación
+      ▼
+gschemas.compiled</samp></pre>
+<p>Mientras que:</p>
+<pre><samp>notification-center.po
+      │
+      │ msgfmt
+      ▼
+notification-center.mo</samp></pre>
+<blockquote>Así que el ZIP publicado contiene <strong data-start="2906" data-end="2957">archivos fuente y archivos
+        derivados/compilados</strong>.</blockquote>
+<p>Eso nos dice que el paquete no es simplemente una copia exacta del contenido que vemos en GitHub.</p>
+<h3>Imagen del proceso&nbsp;</h3>
+<hr>
+<p>Creo que podemos ver nuestro modelo a esto:</p>
+<pre><samp>                 REPOSITORIO
+                      │
+          ┌───────────┼───────────┐
+          │           │           │
+          ▼           ▼           ▼
+        código      locale/     schemas/
+                      │           │
+                     .po       .gschema.xml
+                      │           │
+                  msgfmt        compilación
+                      │           │
+                      ▼           ▼
+                     .mo    gschemas.compiled
+                      │           │
+          └───────────┼───────────┘
+                      ▼
+                 PAQUETE .ZIP
+                      │
+                      ▼
+            extensions.gnome.org
+                      │
+                      ▼
+                   usuario</samp></pre>
+<p>Eso ya es mucho más sólido que nuestra hipótesis inicial y algo importante sobre nuestra investigación, esto también
+    nos permite separar claramente dos cosas que antes estaban mezcladas:</p>
+<h4><code class="inline-code">INSTALL.sh</code></h4>
+<p>Es capaz de tomar el material fuente del repositorio y <strong data-start="4205" data-end="4243">preparar una
+        instalación funcional</strong>, incluyendo la compilación de traducciones.</p>
+<h4>El paquete publicado</h4>
+<p>Ya viene <strong data-start="4324" data-end="4337">preparado</strong>. El usuario recibe los <code data-start="4361"
+        data-end="4366">.mo</code> y <code data-start="4369" data-end="4388">gschemas.compiled</code>. Por lo tanto, no
+    necesitamos que <code data-start="4424" data-end="4446">extensions.gnome.org</code> haga necesariamente esas
+    compilaciones en el momento de instalar.</p>

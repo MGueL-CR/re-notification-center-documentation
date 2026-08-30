@@ -1,18 +1,21 @@
 <h2>¿Qué es <code>INSTALL.sh</code>?</h2>
 <hr>
-<p>Este archivo <strong>no forma parte de una extensión de GNOME</strong>. Muchas extensiones ni siquiera tienen uno. Es
-    simplemente un script que escribió Selenium-H para facilitar la instalación. En el contenido del archivo
-    <code>INSTALL.sh</code> nos dirá exactamente cómo el autor esperaba instalar la extensión.
+<p>Este archivo es un instalador auxiliar que prepara un directorio de instalación, elimina una versión previa, copia la
+    extensión y sus recursos (locale y schemas), compila los esquemas GSettings y genera los catálogos binarios de
+    traducción .mo. Finalmente informa al usuario del resultado y le indica que reinicie GNOME Shell y habilite la
+    extensión.</p>
+<p>Por tanto, este tipo de archivo no forma parte de una extensión de GNOME, muchas extensiones ni siquiera tienen uno,
+    es simplemente un script que escribió Selenium-H para facilitar la instalación, es una herramienta del proyecto para
+    facilitar la instalación manual. Tampoco, hemos encontrado ninguna razón para considerar <code>INSTALL.sh</code>
+    parte del
+    runtime de RE: Notification Center.
 </p>
-<p>La respuesta está aquí:</p>
-<pre><code><span class="ͼl">cp</span><span> </span><span class="ͼn">-rf</span><span> </span><span class="ͼm">$extensionDir</span><span> </span><span class="ͼm">$installDir</span><span>
-</span><span class="ͼl">cp</span><span> </span><span class="ͼn">-rf</span><span> schemas </span><span class="ͼm">$installDir</span><span class="ͼk">"/"</span><span class="ͼm">$extensionDir</span><span>
-</span><span class="ͼl">cp</span><span> </span><span class="ͼn">-rf</span><span> locale </span><span class="ͼm">$installDir</span><span class="ͼk">"/"</span><span class="ͼm">$extensionDir</span></code></pre>
 <p>Es decir:</p>
 <ol>
-    <li> Copia la carpeta <code>notification-center@Selenium-H</code>. </li>
-    <li> Después copia <code>schemas/</code> dentro de ella. </li>
-    <li> Después copia <code>locale/</code> dentro de ella. </li>
+    <li> Elimina una versión previa</li>
+    <li> Copia la carpeta <code>notification-center@Selenium-H</code> y su contenido. </li>
+    <li> Después complia y copia <code>schemas/</code> dentro de ella. </li>
+    <li> Después compila y copia <code>locale/</code> dentro de ella. </li>
 </ol>
 <p>Al final, la extensión instalada queda así:</p>
 <pre><code><span>~/.local/share/gnome-shell/extensions/
@@ -22,6 +25,9 @@
             ├── ...
             ├── schemas/
             └── locale/</span></code></pre>
+<p> En el contenido del archivo <code>INSTALL.sh</code> nos dirá exactamente cómo el autor esperaba instalar la
+    extensión.
+</p>
 <h3>Entonces, ¿por qué el autor lo hizo así?</h3>
 <hr>
 <p>Creo que fue simplemente una <strong>decisión de organización del repositorio</strong>, probablemente para mantener
