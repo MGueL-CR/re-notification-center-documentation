@@ -65,3 +65,75 @@ notification-center.mo</samp></pre>
 <pre><samp>notification-center.mo</samp></pre>
 <p>No es casualidad que coincida con:</p>
 <pre><code><span class="ͼm">initTranslations</span><span>(</span><span class="ͼk">"notification-center"</span><span>)</span></code></pre>
+<h3>msgfmt</h3>
+<hr>
+<p><strong data-start="133" data-end="195">El comando <i>msgfmt</i> no es un servicio de servidor ni algo que dependa de
+        GNOME</strong>. Es una herramienta de GNU gettext que puede estar instalada localmente en sistema operativo. Su
+    trabajo es completamente local: toma un <code data-start="322" data-end="327">.po</code> y genera un <code
+        data-start="340" data-end="345">.mo</code>.</p>
+<p>Por ejemplo:</p>
+<pre><code><span>msgfmt de/notification-center.po \
+       </span><span class="ͼ12">-o</span><span> de/LC_MESSAGES/notification-center.mo</span></code></pre>
+<p>No necesita conectarse a ningún servidor, entonces podemos plantear este modelo:&nbsp;</p>
+<p>El desarrollador mantiene en el repositorio:</p>
+<pre><samp>locale/
+├── de/
+│   └── notification-center.po
+├── it/
+│   └── notification-center.po
+├── ko/
+│   └── notification-center.po
+├── nl/
+│   └── notification-center.po
+└── notification-center.pot</samp></pre>
+<p>Y cuando prepara una versión para distribuir:</p>
+<pre><samp>                    REPOSITORIO
+                         │
+                         │ .po
+                         ▼
+              desarrollador / empaquetado
+                         │
+                       msgfmt
+                         │
+                         ▼
+                       .mo
+                         │
+                         ▼
+                  paquete distribuible</samp></pre>
+<blockquote>El <code data-start="1248" data-end="1253">.mo</code> <strong data-start="1254" data-end="1293">no necesita
+        estar versionado en Git</strong>.</blockquote>
+<p>De hecho, tiene bastante sentido no hacerlo porque es un archivo generado. El <code data-start="1374"
+        data-end="1379">.po</code> es la fuente editable y el <code data-start="1407" data-end="1412">.mo</code> es un
+    artefacto derivado.</p>
+<p>El autor no solamente sabe que existe <code data-start="1529" data-end="1537">msgfmt</code>; sabe exactamente <strong
+        data-start="1556" data-end="1592">qué estructura necesita producir</strong>:</p>
+<pre><samp>&lt;idioma&gt;/
+├── notification-center.po
+└── LC_MESSAGES/
+    └── notification-center.mo</samp></pre>
+<p>Eso nos dice que conoce la convención de <b>gettext</b> que necesita su extensión. Por tanto, podríamos tener:</p>
+<div class="row">
+    <div class="col"><span><b>Repositorio:</b></span></div>
+    <div class="col">
+        <pre><samp>locale/de/notification-center.po</samp></pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col"><span><b>Después de ejecutar queda:</b></span></div>
+    <div class="col">
+        <pre><samp>locale/de/
+├── notification-center.po
+└── LC_MESSAGES/
+    └── notification-center.mo</samp></pre>
+    </div>
+</div>
+
+<p>Y en una extensión instalada quedaría:</p>
+<pre><samp>notification-center@.../
+└── locale/
+    └── de/
+        └── LC_MESSAGES/
+            └── notification-center.mo</samp></pre>
+<p>Y entonces, cuando al extensión inicia:</p>
+<pre><code><span class="ͼ11">ExtensionUtils</span><span class="ͼv">.</span><span>initTranslations(</span><span class="ͼz">"notification-center"</span><span>);</span></code></pre>
+<p>Así, puede encontrar el catálogo correspondiente.</p>
