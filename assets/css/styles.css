@@ -320,7 +320,23 @@ pre>.cm-line {
     filter: sepia(55%)
 }
 
+.ͼz {
+    color: #83d197;
+}
+
 .cm-line {
     display: block;
     padding: 0 2px 0 6px;
+}
+
+.ͼ10 {
+    color: #f1a275;
+}
+
+.ͼ11 {
+    color: #b897f4;
+}
+
+.ͼ12 {
+    color: #f9dc78;
 }
