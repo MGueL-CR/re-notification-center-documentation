@@ -1,0 +1,406 @@
+<h2>Contenido de INSTALL.sh</h2>
+<hr>
+<pre><samp>#!/bin/bash
+
+#Version 4
+#=========
+
+
+# Default Installation Directory
+installDir=~/.local/share/gnome-shell/extensions
+
+# Extension Name and directory
+extensionName=notification-center
+extensionDir=$extensionName@Selenium-H</samp></pre>
+<p>Este primer bloque todavía <strong data-start="5353" data-end="5384">no instala ni modifica nada</strong>. Solo
+    establece las variables que el resto del script utilizará.</p>
+<h3>Shebang</h3>
+<pre><code><span class="ͼf">#!/bin/bash</span></code></pre>
+<p>Indica que este archivo debe ejecutarse utilizando <strong data-start="172" data-end="180">Bash</strong>.</p>
+<p>No es simplemente un comentario. El <code data-start="219" data-end="223">#!</code> es el <em data-start="230"
+        data-end="239">shebang</em>, y le dice al sistema qué intérprete debe utilizar cuando ejecutamos el script
+    directamente, por ejemplo:</p>
+<pre><samp>./INSTALL.sh</samp></pre>
+<p>En este caso:</p>
+<pre><samp>INSTALL.sh
+    │
+    ▼
+/bin/bash
+    │
+    ▼
+ejecuta las instrucciones</samp></pre>
+<h3>Versión del script</h3>
+<pre><code><span class="ͼe">#Version 4</span><span>
+</span><span class="ͼe">#=========</span></code></pre>
+<p>Son comentarios y no tienen ningún efecto durante la ejecución.</p>
+<p>El autor está indicando que esta es la <strong data-start="733" data-end="762">versión 4 de <code data-start="748"
+            data-end="760">INSTALL.sh</code></strong>. Importante: esto <strong data-start="782" data-end="844">no
+        necesariamente corresponde a la versión de la extensión</strong>. Es decir, no debemos
+    interpretar:&nbsp;<code><i>Version 4</i> </code>como: <code><i>Notification Center v4.</i></code></p>
+<p>Es la versión del <strong data-start="966" data-end="980">instalador</strong>. Lo podemos considerar simplemente
+    información de mantenimiento para el desarrollador.</p>
+<h3>Directorio predeterminado de instalación</h3>
+<pre><code><span class="ͼe"># Default Installation Directory</span><span>
+</span><span class="ͼm">installDir</span><span class="ͼg">=</span><span>~/.local/share/gnome-shell/extensions</span></code></pre>
+<p>Nuevamente tenemos un comentario descriptivo y después una variable:&nbsp;<code
+        class="inline-code"><i>installDir</i></code>&nbsp;que contiene:&nbsp;</p>
+<blockquote>~/.local/share/gnome-shell/extensions</blockquote>
+<p>El <code data-start="1380" data-end="1383">~</code> representa el <strong data-start="1398"
+        data-end="1451">directorio HOME del usuario que ejecuta el script</strong>.</p>
+<div class="row">
+    <div class="col">
+        <p>Por ejemplo, en tu sistema:&nbsp;</p>
+    </div>
+    <div class="col">
+        <pre><samp>~
+└── /home/mgue</samp></pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col"><span>Por lo que conceptualmente:</span></div>
+    <div class="col">
+        <pre><samp>~/.local/share/gnome-shell/extensions</samp></pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col"><span>Equivale a:</span></div>
+    <div class="col">
+        <pre><samp>/home/dev/.local/share/gnome-shell/extensions</samp></pre>
+    </div>
+</div>
+<p>El propósito de esta variable es evitar repetir toda la ruta posteriormente.</p>
+<div class="row">
+    <div class="col"><span>En lugar de hacer:</span></div>
+    <div class="col">
+        <pre><samp>cp algo ~/.local/share/gnome-shell/extensions</samp></pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col"><span>El script puede utilizar:</span></div>
+    <div class="col">
+        <pre><samp>cp algo $installDir</samp></pre>
+    </div>
+</div>
+<p>Así, si alguna vez cambia el directorio de instalación, solamente tendría que modificarse la variable.</p>
+<h3>Nombre de la extensión</h3>
+<pre><code><span class="ͼe"># Extension Name and directory</span><span>
+</span><span class="ͼm">extensionName</span><span class="ͼg">=</span><span>notification-center</span></code></pre>
+<p>Aquí aparece otra variable:&nbsp;<code class="inline-code">extensionName</code>&nbsp;con el
+    valor:&nbsp;&nbsp;<i><code class="inline-code">notification-center</code>.</i></p>
+<p>Y aquí encontramos algo que <strong data-start="2231" data-end="2284">ya conocemos de nuestro estudio de <code
+            data-start="2268" data-end="2282">extension.js</code></strong>.</p>
+<p>Recordemos:</p>
+<pre><code><span class="ͼm">ExtensionUtils</span><span class="ͼg">.</span><span>initTranslations(</span><span class="ͼk">"notification-center"</span><span>);</span></code></pre>
+<p>Tenemos el mismo identificador:&nbsp;<code class="inline-code"><i>notification-center</i></code>.</p>
+<p>Pero todavía no debemos asumir que todas las apariciones tienen exactamente la misma función. En este contexto
+    concreto, el nombre se está utilizando como <strong data-start="2596" data-end="2658">nombre base de la
+        extensión/archivos relacionados con ella</strong>.</p>
+<p>Por ejemplo, más adelante vimos que el instalador genera:&nbsp;<code
+        class="inline-code"><i>notification-center.mo</i></code>&nbsp; precisamente a partir de:&nbsp;<code
+        class="inline-code">$extensionName</code>. Así que esta variable también sirve para evitar escribir
+    repetidamente:&nbsp;<code class="inline-code"><i>notification-center</i></code>.</p>
+<h3>Directorio de la extensión</h3>
+<pre><code><span class="ͼm">extensionDir</span><span class="ͼg">=</span><span class="ͼm">$extensionName</span><span>@Selenium-H</span></code></pre>
+<p>Aquí tenemos:&nbsp;<code class="inline-code">extensionDir</code> y su valor se construye utilizando la variable
+    anterior:</p>
+<pre><samp>extensionName
+    │
+    ▼
+notification-center
+    │
+    │ + @Selenium-H
+    ▼
+notification-center@Selenium-H</samp></pre>
+<p>Este nombre nos resulta especialmente importante porque <strong data-start="3284" data-end="3343">GNOME Shell
+        identifica las extensiones mediante su UUID</strong>. En este proyecto antiguo, el UUID es:&nbsp;<code
+        class="inline-code"><i>notification-center@Selenium-H</i></code>&nbsp;y eso explica por qué el instalador
+    necesita distinguir: <code class="inline-code">extensionName</code>&nbsp;de&nbsp;<code
+        class="inline-code">extensionDir</code>.</p>
+<p>Son dos conceptos diferentes:</p>
+<table>
+    <thead>
+        <tr>
+            <th>Variable</th>
+            <th class="text-left">Valor</th>
+            <th class="text-left">Función</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>installDir</code></td>
+            <td class="text-left"><code>~/.local/share/gnome-shell/extensions</code></td>
+            <td class="text-left">Dónde se instalan las extensiones</td>
+        </tr>
+        <tr>
+            <td><code>extensionName</code></td>
+            <td class="text-left"><code>notification-center</code></td>
+            <td class="text-left">Nombre/base utilizado por el proyecto</td>
+        </tr>
+        <tr>
+            <td><code>extensionDir</code></td>
+            <td class="text-left"><code>notification-center@Selenium-H</code></td>
+            <td class="text-left">Directorio/UUID de esta extensión</td>
+        </tr>
+    </tbody>
+</table>
+<p>Podemos visualizarlo así:</p>
+<pre><samp>installDir
+│
+└── ~/.local/share/gnome-shell/extensions/
+        │
+        └── extensionDir
+              │
+              └── notification-center@Selenium-H/</samp></pre>
+<hr>
+<pre><samp>echo ""
+
+if [ ! -z $1 ]
+then
+    installDir=$1
+fi
+
+if [ ! -d $installDir ]
+then
+    if [ -z $2 ]
+    then
+    echo $installDir"     directory does not exist."
+    echo "Would you like to create the directory  (y/n) ? "
+    read response
+    else
+    response=$2
+    fi
+    
+    if [ $response == "y" ]
+    then
+    mkdir -p $installDir
+    if [ $? -eq 0 ]
+    then
+        echo " Directory Created "
+    else
+        echo " Error ! "
+        exit
+    fi
+    else
+    echo "Exiting ... ! "
+    exit
+    fi
+fi</samp></pre>
+<p>Este bloque ya empieza a darle <strong data-start="41" data-end="78">comportamiento real al instalador</strong>. Aquí
+    aparecen dos conceptos importantes de Bash: <strong data-start="129" data-end="154">argumentos del script</strong> y
+    <strong data-start="157" data-end="178">códigos de salida</strong>.
+</p>
+<h3>Salto de línea</h3>
+<pre><code><span class="ͼl">echo</span><span> </span><span class="ͼk">""</span></code></pre>
+<p>Simplemente imprime una línea vacía en la terminal. No afecta la lógica del instalador; es únicamente presentación.
+</p>
+<h3>¿Se proporcionó un primer argumento?</h3>
+<pre><code><span class="ͼg">if</span><span> [ ! </span><span class="ͼn">-z</span><span> </span><span class="ͼm">$1</span><span> ]
+</span><span class="ͼg">then</span><span>
+    </span><span class="ͼm">installDir</span><span class="ͼg">=</span><span class="ͼm">$1</span><span>
+</span><span class="ͼg">fi</span></code></pre>
+<p>Aquí aparece <code data-start="480" data-end="484">$1</code>, en Bash, <code data-start="496"
+        data-end="500">$1</code> significa:</p>
+<blockquote>El primer argumento que recibió el script.</blockquote>
+<div class="row">
+    <div class="col"><span>Por ejemplo:</span>
+        <pre><samp>./INSTALL.sh /otra/ruta</samp></pre>
+    </div>
+    <div class="col"><span>Entonces:</span>
+        <pre><samp>$1 = /otra/ruta</samp></pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col"><span>El <code>if</code> pregunta:</span></div>
+    <div class="col">
+        <pre><samp>[ ! -z $1 ]</samp></pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col"><span>Que conceptualmente significa:</span></div>
+    <div class="col">
+        <blockquote>"¿$1 NO está vacío?"</blockquote>
+    </div>
+</div>
+<div class="row">
+    <div class="col"><span>Si existe un primer argumento, el script reemplaza:</span>
+        <pre><samp>installDir=~/.local/share/gnome-shell/extensions</samp></pre>
+    </div>
+    <div class="col"><span>Por:</span>
+        <pre><samp>installDir=$1</samp></pre>
+    </div>
+</div>
+<p>Por tanto, tenemos:</p>
+<pre><samp>             ¿se proporcionó $1?
+                    │
+             ┌──────┴──────┐
+             │             │
+            NO            SÍ
+             │             │
+             ▼             ▼
+     usa valor       installDir=$1
+     predeterminado</samp></pre>
+<p>Esto nos dice algo interesante, el directorio que vimos en el bloque anterior <strong data-start="1277"
+        data-end="1303">no está realmente fijo</strong>, es un <strong data-start="1312" data-end="1336">valor
+        predeterminado</strong>&nbsp;y el usuario puede proporcionar otro directorio.</p>
+<h3>Comprueba si el directorio existe</h3>
+<pre><code><span class="ͼg">if</span><span> [ ! </span><span class="ͼn">-d</span><span> </span><span class="ͼm">$installDir</span><span> ]
+</span><span class="ͼg">then</span></code></pre>
+<p>Aquí aparece:&nbsp;<code class="inline-code">-d</code>&nbsp;que comprueba si una ruta corresponde a un <strong
+        data-start="1548" data-end="1572">directorio existente</strong>. El <code data-start="1578"
+        data-end="1581">!</code> invierte el resultado.&nbsp;</p>
+<div class="row">
+    <div class="col"><span>Por tanto:</span>
+        <pre><samp>[ ! -d $installDir ]</samp></pre>
+    </div>
+    <div class="col"><span>Significa:</span>
+        <blockquote>"Si <code>installDir</code> NO es un directorio existente..."</blockquote>
+    </div>
+</div>
+<p>Entonces entra en el bloque. Tenemos ahora:</p>
+<pre><samp>installDir
+    │
+    ▼
+¿existe como directorio?
+        │
+     ┌──┴──┐
+     │     │
+     SÍ    NO
+     │     │
+     ▼     ▼
+ sigue  intenta
+        crearlo</samp></pre>
+<h3>Comprueba si existe un segundo argumento</h3>
+<pre><code><span class="ͼg">if</span><span> [ </span><span class="ͼn">-z</span><span> </span><span class="ͼm">$2</span><span> ]
+</span><span class="ͼg">then</span></code></pre>
+<p>Aquí aparece <code data-start="2002" data-end="2006">$2</code>. Como seguramente ya estás imaginando:</p>
+<pre><samp>$1 → primer argumento
+$2 → segundo argumento
+$3 → tercer argumento
+...</samp></pre>
+<p>El script está utilizando el segundo argumento como una especie de <strong data-start="2199"
+        data-end="2223">respuesta automática</strong> a la pregunta que veremos enseguida.</p>
+<div class="row">
+    <div class="col"><span>Si <code>$2</code> está vacío:</span>
+        <pre><samp>-z $2</samp></pre>
+    </div>
+    <div class="col"></div>
+</div>
+<p>Entonces el instalador preguntará al usuario, pero si <code data-start="2352" data-end="2356">$2</code> tiene algún
+    valor, <strong data-start="2376" data-end="2391">no pregunta</strong>.</p>
+<h3>Instalación interactiva</h3>
+<pre><code><span class="ͼl">echo</span><span> </span><span class="ͼm">$installDir</span><span class="ͼk">"     directory does not exist."</span><span>
+</span><span class="ͼl">echo</span><span> </span><span class="ͼk">"Would you like to create the directory  (y/n) ? "</span><span>
+read response</span></code></pre>
+<p>Si no existe el directorio y no se proporcionó <code data-start="2609" data-end="2613">$2</code>, muestra:</p>
+<pre><samp>/ruta/... directory does not exist.
+Would you like to create the directory (y/n) ?</samp></pre>
+<div class="row">
+    <div class="col"><span>Y:</span>
+        <pre><samp>read response</samp></pre>
+    </div>
+    <div class="col"></div>
+</div>
+<p>Espera que el usuario escriba algo. Por ejemplo: <i>y<u>&nbsp;&nbsp;</u>&nbsp;e</i>ntonces&nbsp;<i>response =
+        y</i>&nbsp;</p>
+<p>Aquí tenemos un instalador <strong data-start="2882" data-end="2897">interactivo</strong>.</p>
+<h3>Instalación no interactiva</h3>
+<pre><code><span class="ͼg">else</span><span>
+    </span><span class="ͼm">response</span><span class="ͼg">=</span><span class="ͼm">$2</span><span>
+</span><span class="ͼg">fi</span></code></pre>
+<p>El <code data-start="2941" data-end="2947">else</code> es: Si el usuario proporcionó un segundo argumento, el script
+    lo utiliza directamente como respuesta.</p>
+<div class="row">
+    <div class="col"><span>Por ejemplo:</span>
+        <pre><samp>./INSTALL.sh /mi/directorio y</samp></pre>
+    </div>
+    <div class="col"><span>Entonces:</span>
+        <pre><samp>$1 = /mi/directorio
+$2 = y</samp></pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col"><span>Y el script hace:</span>
+        <pre><samp>response = y</samp></pre>
+    </div>
+    <div class="col"></div>
+</div>
+<p>Así que no necesita preguntarnos nada. Esto permite dos formas de utilizar el instalador:</p>
+<p><b>Interactiva</b>: el script pregunta.</p>
+<pre><samp>./INSTALL.sh</samp></pre>
+<p>Con <b>parámetros</b>: el script utiliza directamente los valores proporcionados.</p>
+<pre><samp>./INSTALL.sh /mi/directorio y</samp></pre>
+<h3>Decide si debe crear el directorio</h3>
+<pre><code><span class="ͼg">if</span><span> [ </span><span class="ͼm">$response</span><span> </span><span class="ͼg">==</span><span> </span><span class="ͼk">"y"</span><span> ]
+</span><span class="ͼg">then</span></code></pre>
+<p>Pregunta si la respuesta fue exactamente: <u><i>y</i></u></p>
+<p>Si es así,&nbsp;<code class="inline-code">mkdir</code>, crea un directorio y&nbsp;<code
+        class="inline-code">-p</code>&nbsp;significa que también puede crear los directorios padre que hagan falta.</p>
+<pre><samp>mkdir -p $installDir</samp></pre>
+<p>Por ejemplo, si no existiera:&nbsp;<code class="inline-code">~/.local/share/gnome-shell/extensions</code>, <code
+        data-start="3972" data-end="3982">mkdir -p</code> puede crear la cadena necesaria.</p>
+<h3>Comprueba si <code data-start="4040" data-end="4047">mkdir</code> tuvo éxito</h3>
+<pre><code><span class="ͼg">if</span><span> [ </span><span class="ͼm">$?</span><span> </span><span class="ͼn">-eq</span><span> </span><span class="ͼj">0</span><span> ]</span></code></pre>
+<p>Este es un concepto <strong data-start="4127" data-end="4153">muy importante en Bash</strong>.&nbsp;<code
+        data-start="4156" data-end="4160">$?</code> contiene el <strong data-start="4173" data-end="4222">código de
+        salida del último comando ejecutado</strong>. Justamente antes ejecutamos:</p>
+<pre><samp>mkdir -p $installDir</samp></pre>
+<p>Por lo que ahora: <code class="inline-code">$?</code>&nbsp;contiene el resultado de <code data-start="4349"
+        data-end="4356">mkdir</code>.</p>
+<div class="row">
+    <div class="col"><span>Normalmente:</span>
+        <pre><samp>0 = éxito
+otro valor = error</samp></pre>
+    </div>
+    <div class="col"></div>
+</div>
+<div class="row">
+    <div class="col"><span>Por eso:</span>
+        <pre><samp>[ $? -eq 0 ]</samp></pre>
+    </div>
+    <div class="col"></div>
+</div>
+<p>significa:</p>
+<blockquote>"¿El comando anterior terminó correctamente?"</blockquote>
+<h3>Si tuvo éxito</h3>
+<pre><code><span class="ͼl">echo</span><span> </span><span class="ͼk">" Directory Created "</span></code></pre>
+<p>Simplemente informa al usuario y el script continúa.</p>
+<pre><samp>Directory Created</samp></pre>
+<h3>Si ocurrió un error</h3>
+<pre><code><span class="ͼg">else</span><span>
+    </span><span class="ͼl">echo</span><span> </span><span class="ͼk">" Error ! "</span><span>
+    </span><span class="ͼg">exit</span><span>
+</span><span class="ͼg">fi</span></code></pre>
+<p>Si <code data-start="4748" data-end="4755">mkdir</code> falló,&nbsp;<code data-start="4828"
+        data-end="4834">exit</code> termina la ejecución del script.</p>
+<pre><samp>mkdir
+  │
+  ▼
+$? != 0
+  │
+  ▼
+Error !
+  │
+  ▼
+exit</samp></pre>
+<h3>¿Qué pasa si el usuario responde que NO?</h3>
+<pre><code><span class="ͼg">else</span><span>
+    </span><span class="ͼl">echo</span><span> </span><span class="ͼk">"Exiting ... ! "</span><span>
+    </span><span class="ͼg">exit</span><span>
+</span><span class="ͼg">fi</span></code></pre>
+<p>Tenemos el <code data-start="4933" data-end="4939">else</code> correspondiente a si la respuesta no es <code
+        data-start="5072" data-end="5077">"y"</code>:</p>
+<pre><samp>response != y
+        │
+        ▼
+Exiting ... !
+        │
+        ▼
+        exit</samp></pre>
+<p>El instalador abandona la instalación.</p>
+<hr>
+<pre><samp>echo "Installing Extension "$extensionDir
+echo "Installation Path "$installDir
+echo ""
+echo -ne "Removing any Older Version ...   "
+rm -rf $installDir"/"$extensionDir
+echo "Done"</samp></pre>
