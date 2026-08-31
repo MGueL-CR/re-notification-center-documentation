@@ -1,17 +1,16 @@
 <h2>Contenido de INSTALL.sh</h2>
 <hr>
-<pre><samp>#!/bin/bash
+<pre><code><span class="hljs-meta">#!/bin/bash </span>
 
-#Version 4
-#=========
+<span class="hljs-comment">#Version 4 </span>
+<span class="hljs-comment">#========= </span>
 
+<span class="hljs-comment"># Default Installation Directory </span>
+installDir=~/.local/share/gnome-shell/extensions 
 
-# Default Installation Directory
-installDir=~/.local/share/gnome-shell/extensions
-
-# Extension Name and directory
-extensionName=notification-center
-extensionDir=$extensionName@Selenium-H</samp></pre>
+<span class="hljs-comment"># Extension Name and directory </span>
+extensionName=notification-center 
+extensionDir=<span class="hljs-variable">$extensionName</span>@Selenium-H</code></pre>
 <p>Este primer bloque todavía <strong data-start="5353" data-end="5384">no instala ni modifica nada</strong>. Solo
     establece las variables que el resto del script utilizará.</p>
 <h3>Shebang</h3>
@@ -152,39 +151,38 @@ notification-center@Selenium-H</samp></pre>
               │
               └── notification-center@Selenium-H/</samp></pre>
 <hr>
-<pre><samp>echo ""
+<pre><code><span class="hljs-built_in">echo</span> <span class="hljs-string">""</span>
+<span class="hljs-keyword">if</span> [ ! -z <span class="hljs-variable">$1</span> ]
+<span class="hljs-keyword">then</span>
+    installDir=<span class="hljs-variable">$1</span>
+<span class="hljs-keyword">fi</span>
 
-if [ ! -z $1 ]
-then
-    installDir=$1
-fi
+<span class="hljs-keyword">if</span> [ ! -d <span class="hljs-variable">$installDir</span> ]
+<span class="hljs-keyword">then</span>
+    <span class="hljs-keyword">if</span> [ -z <span class="hljs-variable">$2</span> ]
+    <span class="hljs-keyword">then</span>
+        <span class="hljs-built_in">echo</span> <span class="hljs-variable">$installDir</span><span class="hljs-string">" directory does not exist."</span>
+        <span class="hljs-built_in">echo</span> <span class="hljs-string">"Would you like to create the directory (y/n) ? "</span>
+        <span class="hljs-built_in">read</span> response
+    <span class="hljs-keyword">else</span>
+        response=<span class="hljs-variable">$2</span>
+    <span class="hljs-keyword">fi</span>
 
-if [ ! -d $installDir ]
-then
-    if [ -z $2 ]
-    then
-    echo $installDir"     directory does not exist."
-    echo "Would you like to create the directory  (y/n) ? "
-    read response
-    else
-    response=$2
-    fi
-    
-    if [ $response == "y" ]
-    then
-    mkdir -p $installDir
-    if [ $? -eq 0 ]
-    then
-        echo " Directory Created "
-    else
-        echo " Error ! "
-        exit
-    fi
-    else
-    echo "Exiting ... ! "
-    exit
-    fi
-fi</samp></pre>
+    <span class="hljs-keyword">if</span> [ <span class="hljs-variable">$response</span> == <span class="hljs-string">"y"</span> ]
+    <span class="hljs-keyword">then</span> 
+        <span class="hljs-built_in">mkdir</span> -p <span class="hljs-variable">$installDir</span> 
+        <span class="hljs-keyword">if</span> [ $? -eq 0 ] 
+        <span class="hljs-keyword">then</span> 
+        <span class="hljs-built_in">echo</span> <span class="hljs-string">" Directory Created "</span> 
+        <span class="hljs-keyword">else</span> 
+        <span class="hljs-built_in">echo</span> <span class="hljs-string">" Error ! "</span> 
+        <span class="hljs-built_in">exit</span> 
+        <span class="hljs-keyword">fi</span> 
+    <span class="hljs-keyword">else</span> 
+        <span class="hljs-built_in">echo</span> <span class="hljs-string">"Exiting ... ! "</span> 
+        <span class="hljs-built_in">exit</span> 
+    <span class="hljs-keyword">fi</span> 
+<span class="hljs-keyword">fi</span></code></pre>
 <p>Este bloque ya empieza a darle <strong data-start="41" data-end="78">comportamiento real al instalador</strong>. Aquí
     aparecen dos conceptos importantes de Bash: <strong data-start="129" data-end="154">argumentos del script</strong> y
     <strong data-start="157" data-end="178">códigos de salida</strong>.
@@ -398,9 +396,159 @@ Exiting ... !
         exit</samp></pre>
 <p>El instalador abandona la instalación.</p>
 <hr>
-<pre><samp>echo "Installing Extension "$extensionDir
-echo "Installation Path "$installDir
-echo ""
-echo -ne "Removing any Older Version ...   "
-rm -rf $installDir"/"$extensionDir
-echo "Done"</samp></pre>
+<pre><samp><span class="hljs-built_in">echo</span> <span class="hljs-string">"Installing Extension "</span><span class="hljs-variable">$extensionDir</span> 
+<span class="hljs-built_in">echo</span> <span class="hljs-string">"Installation Path "</span><span class="hljs-variable">$installDir</span> 
+<span class="hljs-built_in">echo</span> <span class="hljs-string">""</span> 
+<span class="hljs-built_in">echo</span> -ne <span class="hljs-string">"Removing any Older Version ... "</span> 
+<span class="hljs-built_in">rm</span> -rf <span class="hljs-variable">$installDir</span><span class="hljs-string">"/"</span><span class="hljs-variable">$extensionDir</span> 
+<span class="hljs-built_in">echo</span> <span class="hljs-string">"Done"</span></samp></pre>
+<p>Este bloque ya entra en la <strong data-start="35" data-end="94">fase de preparación de la instalación propiamente
+        dicha</strong>. Aquí el script informa al usuario y luego elimina cualquier instalación anterior de esa misma
+    extensión.</p>
+<h3>Informa qué extensión va a instalar</h3>
+<pre><code><span class="ͼl">echo</span><span> </span><span class="ͼk">"Installing Extension "</span><span class="ͼm">$extensionDir</span></code></pre>
+<p><code data-start="329" data-end="335">echo</code> muestra texto en la terminal y como <code data-start="372"
+        data-end="387">$extensionDir</code> contiene:&nbsp;<i>notification-center@Selenium-H,&nbsp;</i>el resultado
+    sería aproximadamente:</p>
+<pre><samp>Installing Extension notification-center@Selenium-H</samp></pre>
+<p>Aquí vemos nuevamente por qué anteriormente se definió <code data-start="600" data-end="614">extensionDir</code>:
+    ahora se reutiliza.</p>
+<h3>Informa dónde se instalará</h3>
+<pre><code><span class="ͼl">echo</span><span> </span><span class="ͼk">"Installation Path "</span><span class="ͼm">$installDir</span></code></pre>
+<p>Como <code data-start="731" data-end="743">installDir</code> normalmente contiene:
+    <i>~/.local/share/gnome-shell/extensions</i>&nbsp;mostraría:
+</p>
+<pre><samp>Installation Path ~/.local/share/gnome-shell/extensions</samp></pre>
+<p>Pero si el usuario proporcionó <code data-start="930" data-end="934">$1</code>, aquí aparecería el directorio
+    alternativo. Así que estas dos líneas sirven principalmente como <strong data-start="1032"
+        data-end="1073">información de estado para el usuario</strong>:</p>
+<pre><samp>Installing Extension notification-center@Selenium-H
+Installation Path ~/.local/share/gnome-shell/extensions</samp></pre>
+<p>No modifican nada.</p>
+<h3>Otra línea vacía</h3>
+<pre><code><span class="ͼl">echo</span><span> </span><span class="ͼk">""</span></code></pre>
+<p>Simplemente deja separación visual.</p>
+<h3>Mensaje sin salto de línea</h3>
+<pre><code><span class="ͼl">echo</span><span> </span><span class="ͼn">-ne</span><span> </span><span class="ͼk">"Removing any Older Version ...   "</span></code></pre>
+<p>Aquí aparecen dos opciones de <code data-start="1430" data-end="1436">echo</code>:</p>
+<h4>Evitar el salto de línea al final (<code class="inline-code">-n</code>)</h4>
+<div class="row">
+    <div class="col"><span>Normalmente:</span>
+        <pre><samp>echo "Hola"
+echo "Mundo"</samp></pre>
+    </div>
+    <div class="col"><span>Produce:</span>
+        <pre><samp>Hola
+Mundo</samp></pre>
+    </div>
+</div>
+<p>En nuestro caso esto permite que el siguiente comando se ejecute en la <strong data-start="1726"
+        data-end="1748">misma línea visual</strong>.</p>
+<div class="row">
+    <div class="col"><span>Con <code>-n</code>:</span>
+        <pre><samp>echo -n "Hola"
+echo "Mundo"</samp></pre>
+    </div>
+    <div class="col"><span>Produce:</span>
+        <pre><samp>HolaMundo</samp></pre>
+    </div>
+</div>
+<h4>Secuencias especiales (<code class="inline-code">-e</code>)</h4>
+<p>Permite interpretar secuencias especiales como <code data-start="1808" data-end="1812">\n</code>, <code
+        data-start="1814" data-end="1818">\t</code>, etc.</p>
+<pre><samp>echo -ne "Removing any Older Version ...   "</samp></pre>
+<p>En este texto concreto, no parece haber ninguna secuencia especial que necesite <code data-start="1956"
+        data-end="1960">-e</code>, así que aquí probablemente es innecesario pero <strong data-start="2011"
+        data-end="2053">no afecta al resultado de este mensaje</strong>.</p>
+<h3>Elimina la versión anterior</h3>
+<pre><code><span class="ͼl">rm</span><span> </span><span class="ͼn">-rf</span><span> </span><span class="ͼm">$installDir</span><span class="ͼk">"/"</span><span class="ͼm">$extensionDir</span></code></pre>
+<p>Aquí está la parte importante:&nbsp;<code data-start="2175" data-end="2179">rm</code> significa <strong
+        data-start="2190" data-end="2200">remove</strong>. Las opciones:</p>
+<p><code class="inline-code">-r</code> significa <em data-start="2244" data-end="2255">recursive</em>: elimina
+    directorios y todo su contenido.</p>
+<p><code class="inline-code">-f</code> significa <em data-start="2325" data-end="2332">force</em>: no pregunta antes de
+    eliminar y, en general, ignora ciertos errores como que el archivo no exista.</p>
+<div class="row">
+    <div class="col"><span>La ruta que construye es:</span>
+        <pre><samp>$installDir
+    +
+"/"
+    +
+$extensionDir</samp></pre>
+    </div>
+    <div class="col"><span>Por defecto:</span>
+        <pre><samp>~/.local/share/gnome-shell/extensions/
+    +
+notification-center@Selenium-H</samp></pre>
+    </div>
+</div>
+<p>Resultando en:</p>
+<pre><samp>~/.local/share/gnome-shell/extensions/notification-center@Selenium-H</samp></pre>
+<p>Es decir:</p>
+<blockquote>Borra completamente la instalación anterior de <code data-start="2803"
+        data-end="2835">notification-center@Selenium-H</code>, si existe.</blockquote>
+<h3>¿Por qué <code data-start="2871" data-end="2879">rm -rf</code> y no simplemente copiar encima?</h3>
+<p>Esto es bastante importante para entender la filosofía del instalador.</p>
+<div class="row">
+    <div class="col"><span>El autor no hace:</span>
+        <pre><samp>copiar archivos nuevos
+        ↓
+sobrescribir archivos existentes</samp></pre>
+    </div>
+    <div class="col"></div>
+</div>
+<div class="row">
+    <div class="col"><span>Hace:</span>
+        <pre><samp>instalación anterior
+        │
+        ▼
+     eliminar
+        │
+        ▼
+instalación limpia
+        │
+        ▼
+     copiar nueva</samp></pre>
+    </div>
+    <div class="col"></div>
+</div>
+<p>Eso evita que queden archivos antiguos que ya no formen parte de la nueva versión. Por ejemplo, imaginemos que una
+    versión vieja tenía:</p>
+<pre><samp>extension/
+├── extension.js
+├── prefs.js
+└── old-file.js</samp></pre>
+<p>Y la nueva versión solamente tiene:</p>
+<pre><samp>extension/
+├── extension.js
+└── prefs.js</samp></pre>
+<p>Si simplemente copiáramos encima:</p>
+<pre><samp>extension/
+├── extension.js
+├── prefs.js
+└── old-file.js    ← ¡quedaría!</samp></pre>
+<p>Con:&nbsp;<code class="inline-code"><i>rm -rf ...</i></code>&nbsp;primero se elimina todo y luego se instala
+    nuevamente.</p>
+<pre><samp>extension/
+      ↓
+    vacío</samp></pre>
+<p>Eso produce una instalación más limpia.</p>
+<h3>Finalmente</h3>
+<pre><code><span class="ͼl">echo</span><span> </span><span class="ͼk">"Done"</span></code></pre>
+<p>Como el <code data-start="3881" data-end="3887">echo</code> anterior utilizó <code data-start="3905"
+        data-end="3909">-n</code>, este mensaje aparece en la misma línea:</p>
+<pre><samp>Removing any Older Version ...   Done</samp></pre>
+<p>Por tanto, visualmente el bloque completo produce algo parecido a:</p>
+<pre><samp>Installing Extension notification-center@Selenium-H
+Installation Path ~/.local/share/gnome-shell/extensions
+
+Removing any Older Version ...   Done</samp></pre>
+<p>Y aquí aparece una característica importante de este instalador:</p>
+<blockquote>Cada instalación comienza eliminando completamente la instalación anterior.</blockquote>
+<p>Esto tendrá mucho sentido cuando lleguemos a la parte donde el script comienza a copiar los archivos del repositorio,
+    especialmente <code data-start="5064" data-end="5073">locale/</code> y <code data-start="5076"
+        data-end="5086">schemas/</code>, porque ya sabemos que esos directorios pueden contener <strong
+        data-start="5143" data-end="5165">archivos generados</strong> como <code data-start="5171"
+        data-end="5176">.mo</code> y <code data-start="5179" data-end="5198">gschemas.compiled</code>.</p>
+<p>Ahí podremos ver exactamente <strong data-start="5230" data-end="5286">en qué orden el autor construye la instalación
+        final</strong>.</p>
