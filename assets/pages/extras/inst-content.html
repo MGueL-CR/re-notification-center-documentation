@@ -518,15 +518,21 @@ instalación limpia
 ├── extension.js
 ├── prefs.js
 └── old-file.js</samp></pre>
-<p>Y la nueva versión solamente tiene:</p>
-<pre><samp>extension/
+<div class="row">
+    <div class="col">
+        <span>Y la nueva versión solamente tiene:</span>
+        <pre><samp>extension/
 ├── extension.js
 └── prefs.js</samp></pre>
-<p>Si simplemente copiáramos encima:</p>
-<pre><samp>extension/
+    </div>
+    <div class="col">
+        <span>Si simplemente copiáramos encima:</span>
+        <pre><samp>extension/
 ├── extension.js
 ├── prefs.js
 └── old-file.js    ← ¡quedaría!</samp></pre>
+    </div>
+</div>
 <p>Con:&nbsp;<code class="inline-code"><i>rm -rf ...</i></code>&nbsp;primero se elimina todo y luego se instala
     nuevamente.</p>
 <pre><samp>extension/
@@ -552,3 +558,241 @@ Removing any Older Version ...   Done</samp></pre>
         data-end="5176">.mo</code> y <code data-start="5179" data-end="5198">gschemas.compiled</code>.</p>
 <p>Ahí podremos ver exactamente <strong data-start="5230" data-end="5286">en qué orden el autor construye la instalación
         final</strong>.</p>
+<hr>
+<pre><code><span class="hljs-built_in">echo</span> -ne <span class="hljs-string">"Copying New Version ... "</span> 
+<span class="hljs-built_in">cp</span> -rf <span class="hljs-variable">$extensionDir</span> <span class="hljs-variable">$installDir</span> 
+<span class="hljs-built_in">cp</span> -rf schemas <span class="hljs-variable">$installDir</span><span class="hljs-string">"/"</span><span class="hljs-variable">$extensionDir</span> 
+<span class="hljs-built_in">cp</span> -rf locale <span class="hljs-variable">$installDir</span><span class="hljs-string">"/"</span><span class="hljs-variable">$extensionDir</span> 
+<span class="hljs-built_in">echo</span> <span class="hljs-string">"Done"</span></code></pre>
+<p>Aquí llegamos a un bloque bastante importante porque <strong data-start="57" data-end="99">ahora sí se materializa la
+        instalación</strong>. Además, conecta directamente con lo que acabamos de descubrir sobre <code data-start="169"
+        data-end="177">locale</code> y <code data-start="180" data-end="189">schemas</code>.</p>
+<h3>Mensaje de progreso</h3>
+<pre><code><span class="ͼ10">echo</span><span> </span><span class="ͼ12">-ne</span><span> </span><span class="ͼz">"Copying New Version ...          "</span></code></pre>
+<p>Es el mismo patrón que vimos antes.</p>
+<ul>
+    <li><code>echo</code> → muestra texto.</li>
+    <li><code>-n</code> → no hace salto de línea.</li>
+    <li><code>-e</code> → habilita secuencias especiales, aunque aquí no parece necesario.</li>
+</ul>
+<p>La intención es mostrar: <i>Copying New Version ...&nbsp;</i>y dejar el cursor en esa misma línea mientras se
+    ejecutan los siguientes comandos.</p>
+<div class="row">
+    <div class="col"><span>Al final:</span>
+        <pre><samp><span>echo</span> <span>"Done"</span></samp></pre>
+    </div>
+    <div class="col"></div>
+</div>
+<div class="row">
+    <div class="col"><span>Producirá:</span>
+        <pre><samp>Copying New Version ...          Done</samp></pre>
+    </div>
+    <div class="col"></div>
+</div>
+<h3>Copia la extensión</h3>
+<pre><code><span class="ͼ10">cp</span><span> </span><span class="ͼ12">-rf</span><span> </span><span class="ͼ11">$extensionDir</span><span> </span><span class="ͼ11">$installDir</span></code></pre>
+<p>Aquí aparece:&nbsp;<code class="inline-code">cp</code>&nbsp;que significa <strong data-start="844"
+        data-end="852">copy</strong>. Las opciones:</p>
+<pre><samp>-r → copia directorios recursivamente
+-f → fuerza la copia</samp></pre>
+<div class="row">
+    <div class="col"><span>Recordemos que:</span>
+        <pre><samp>extensionDir=notification-center@Selenium-H</samp></pre>
+    </div>
+    <div class="col"><span>Y:</span>
+        <pre><samp>installDir=~/.local/share/gnome-shell/extensions</samp></pre>
+    </div>
+</div>
+<p>Por lo tanto:</p>
+<pre><samp>cp -rf notification-center@Selenium-H \
+        ~/.local/share/gnome-shell/extensions</samp></pre>
+<p>Copia <strong data-start="1201" data-end="1239">todo el directorio de la extensión</strong> al directorio de
+    extensiones de GNOME.</p>
+<p>Si el repositorio tiene:</p>
+<pre><samp>notification-center@Selenium-H/
+        ├── extension.js
+        ├── metadata.json
+        ├── prefs.js
+        ├── prefsGtk3.js
+        ├── prefsGtk4.js
+        ├── stylesheet.css
+        └── eicon.png</samp></pre>
+<p>Después de esta instrucción tendremos:</p>
+<pre><samp>~/.local/share/gnome-shell/extensions/
+        └── notification-center@Selenium-H/
+            ├── extension.js
+            ├── metadata.json
+            ├── prefs.js
+            ├── prefsGtk3.js
+            ├── prefsGtk4.js
+            ├── stylesheet.css
+            └── eicon.png</samp></pre>
+<p>Pero aquí hay algo que debemos observar:</p>
+<blockquote>El directorio <code data-start="1795" data-end="1809">extensionDir</code> aparentemente ya existe en el
+    repositorio desde donde ejecutamos <code data-start="1875" data-end="1887">INSTALL.sh</code>.</blockquote>
+<p>Es decir, el instalador espera una estructura de trabajo determinada.</p>
+<h3>Copia <code data-start="1979" data-end="1988">schemas</code></h3>
+<pre><code><span class="ͼ10">cp</span><span> </span><span class="ͼ12">-rf</span><span> schemas </span><span class="ͼ11">$installDir</span><span class="ͼz">"/"</span><span class="ͼ11">$extensionDir</span></code></pre>
+<p>Aquí ocurre algo muy interesante, el script toma: <code class="inline-code">schemas/</code>&nbsp;del directorio
+    actual y lo copia dentro de:&nbsp;<b>$installDir/$extensionDir</b></p>
+<pre><samp>repositorio
+        ├── schemas/
+        │   └── ...
+        └── notification-center@Selenium-H/</samp></pre>
+<div class="row">
+    <div class="col"><span>Por tanto:</span>
+        <pre><samp>repositorio
+        ├── schemas/
+        │   └── ...
+        └── notification-center@Selenium-H/</samp></pre>
+    </div>
+    <div class="col"><span>Termina como:</span>
+        <pre><samp>~/.local/share/gnome-shell/extensions/
+        └── notification-center@Selenium-H/
+            ├── ...
+            └── schemas/
+                └── ...</samp></pre>
+    </div>
+</div>
+<h3>Copia <code data-start="2901" data-end="2909">locale</code></h3>
+<pre><code><span class="ͼ10">cp</span><span> </span><span class="ͼ12">-rf</span><span> locale </span><span class="ͼ11">$installDir</span><span class="ͼz">"/"</span><span class="ͼ11">$extensionDir</span></code></pre>
+<p>Y aquí tenemos la otra pieza que acabamos de investigar. Copia <code class="inline-code">locale/</code>&nbsp;dentro
+    del directorio de la extensión.</p>
+<div class="row">
+    <div class="col"><span>Por tanto:</span>
+        <pre><samp>repositorio
+        └── locale/
+            ├── de/
+            ├── it/
+            ├── ko/
+            ├── nl/
+            └── notification-center.pot</samp></pre>
+    </div>
+    <div class="col"><span>Terminará en:</span>
+        <pre><samp>~/.local/share/gnome-shell/extensions/
+        └── notification-center@Selenium-H/
+            └── locale/
+                ├── de/
+                ├── it/
+                ├── ko/
+                ├── nl/
+                └── notification-center.pot</samp></pre>
+    </div>
+</div>
+<p>Pero aquí tenemos que detenernos un momento, hay algo que todavía no hemos visto en <code data-start="3530"
+        data-end="3542">INSTALL.sh</code>:</p>
+<blockquote>¿En qué momento se generan los <code data-start="3580" data-end="3585">.mo</code>?</blockquote>
+<p>Porque este bloque solamente hace:&nbsp;<i>cp locale ...&nbsp;</i>No hay <code data-start="3660"
+        data-end="3668">msgfmt</code> aquí. Por lo tanto, <strong data-start="3690" data-end="3760">la compilación de
+        las traducciones debe ocurrir antes de este <code data-start="3754" data-end="3758">cp</code></strong>. Así que
+    debemos tener muy presente el <strong data-start="4032" data-end="4052">orden del script</strong>.</p>
+<p>Probablemente la secuencia será:</p>
+<pre><samp>        locale/
+                  │
+                  ▼
+              modificar/preparar
+                  │
+                  ▼
+                msgfmt
+                  │
+                  ▼
+           locale/&lt;idioma&gt;/LC_MESSAGES/
+                  │
+                  └── notification-center.mo
+                            │
+                            ▼
+                     cp -rf locale
+                            │
+                            ▼
+                    extensión instalada</samp></pre>
+<p>Esto es mucho más interesante que simplemente decir "el script copia locale".</p>
+<hr>
+<pre><code><span class="hljs-built_in">cd</span> <span class="hljs-variable">$installDir</span><span class="hljs-string">"/"</span><span class="hljs-variable">$extensionDir</span> 
+        <span class="hljs-built_in">echo</span> -ne <span class="hljs-string">"Compiling Schemas ... "</span> 
+        glib-compile-schemas schemas 
+        <span class="hljs-built_in">echo</span> <span class="hljs-string">"Done"</span></code></pre>
+<p>Este bloque es muy interesante porque ahora aparece la <strong data-start="63" data-end="86">segunda
+        compilación</strong> que habíamos detectado, la de <code data-start="127" data-end="136">schemas</code>.</p>
+<h3>Cambiar al directorio de la extensión instalada</h3>
+<pre><code><span class="ͼ10">cd</span><span> </span><span class="ͼ11">$installDir</span><span class="ͼz">"/"</span><span class="ͼ11">$extensionDir</span></code></pre>
+<p><code data-start="393" data-end="397">cd</code> significa <strong data-start="408" data-end="428">change
+        directory</strong>.</p>
+<p>Hasta este momento el script estaba trabajando desde el directorio donde se encuentra <code data-start="517"
+        data-end="529">INSTALL.sh</code>. Ahora cambia al directorio que acaba de instalar.</p>
+<p>Con nuestros valores:</p>
+<pre><samp>$installDir   = ~/.local/share/gnome-shell/extensions
+        $extensionDir = notification-center@Selenium-H</samp></pre>
+<p>Terminamos en:</p>
+<pre><samp>~/.local/share/gnome-shell/extensions/notification-center@Selenium-H</samp></pre>
+<p>Esto es importante porque el siguiente comando utiliza una ruta relativa:&nbsp;<i>glib-compile-schemas
+        schemas.&nbsp;</i>Por lo tanto, necesita estar ubicado en el directorio de la extensión para encontrar:
+    <i>schemas/.</i>
+</p>
+<p>El flujo es:</p>
+<pre><samp>INSTALL.sh
+           │
+           ▼
+        cd ~/.local/share/gnome-shell/extensions/
+           │
+           ▼
+        notification-center@Selenium-H/
+           │
+           ▼
+        glib-compile-schemas schemas</samp></pre>
+<h3>Mensaje de progreso</h3>
+<pre><code><span class="ͼ10">echo</span><span> </span><span class="ͼ12">-ne</span><span> </span><span class="ͼz">"Compiling Schemas ...            "</span></code></pre>
+<p>Es el mismo patrón que vimos anteriormente:</p>
+<ul>
+    <li><code>-n</code> → no saltar de línea.</li>
+    <li><code>-e</code> → permite interpretar secuencias especiales.</li>
+    <li>aquí no hay ninguna secuencia especial, así que <code>-e</code> no parece necesario.</li>
+</ul>
+<p>El objetivo es mostrar:&nbsp;<i>Compiling Schemas ...</i>&nbsp;y dejar el cursor ahí hasta que se termine la
+    compilación.</p>
+<div class="row">
+    <div class="col"><span>Después:</span>
+        <pre><samp>echo "Done"</samp></pre>
+    </div>
+    <div class="col"><span>Produce:</span>
+        <pre><samp>Compiling Schemas ...            Done</samp></pre>
+    </div>
+</div>
+<h3>La parte realmente importante:&nbsp;</h3>
+<pre><code><span>glib-compile-schemas schemas</span></code></pre>
+<p>Aquí tenemos una herramienta de GLib. Su función es tomar los archivos de esquemas GSettings que están dentro de:
+    <b>schemas/&nbsp;</b>y generar el archivo compilado:&nbsp;<i>schemas/gschemas.compiled</i>
+</p>
+<p>Por ejemplo, antes:</p>
+<pre><samp>schemas/
+        └── org.gnome.shell.extensions.notification-center.gschema.xml</samp></pre>
+<p>Después:</p>
+<pre><samp>schemas/
+        ├── org.gnome.shell.extensions.notification-center.gschema.xml
+        └── gschemas.compiled</samp></pre>
+<h3>El proceso de <code data-start="2406" data-end="2415">schemas</code></h3>
+<p>Ahora podemos reconstruir el proceso de <code data-start="2406" data-end="2415">schemas</code></p>
+<p>Tenemos:</p>
+<pre><samp>org.gnome.shell.extensions.notification-center.gschema.xml
+                            │
+                            │ glib-compile-schemas
+                            ▼
+                     gschemas.compiled</samp></pre>
+<h3>Una pista importante sobre el orden</h3>
+<p>Observa que el script hizo anteriormente:</p>
+<pre><code><span class="ͼ10">cp</span><span> </span><span class="ͼ12">-rf</span><span> schemas </span><span class="ͼ11">$installDir</span><span class="ͼz">"/"</span><span class="ͼ11">$extensionDir</span><span>
+        </span><span class="ͼ10">cp</span><span> </span><span class="ͼ12">-rf</span><span> locale </span><span class="ͼ11">$installDir</span><span class="ͼz">"/"</span><span class="ͼ11">$extensionDir</span></code></pre>
+<div class="row">
+    <div class="col"><span>Y&nbsp;<strong>después</strong>:</span>
+        <pre><code><span>cd</span><span> </span><span>$installDir</span><span>"/"</span><span>$extensionDir</span></code></pre>
+    </div>
+    <div class="col"></div>
+</div>
+<div class="row">
+    <div class="col"><span>Y ahora:</span>
+        <pre><samp>glib-compile-schemas schemas</samp></pre>
+    </div>
+    <div class="col"></div>
+</div>
+<p>Por tanto, la compilación se está haciendo <strong data-start="4012" data-end="4040">sobre la copia
+        instalada</strong>, no sobre el <code data-start="4054" data-end="4064">schemas/</code> original del
+    repositorio.</p>

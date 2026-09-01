@@ -161,8 +161,10 @@ gschemas.compiled</samp></pre>
 notification-center.mo</samp></pre>
 <blockquote>Así que el ZIP publicado contiene <strong data-start="2906" data-end="2957">archivos fuente y archivos
         derivados/compilados</strong>.</blockquote>
-<p>Eso nos dice que el paquete no es simplemente una copia exacta del contenido que vemos en GitHub.</p>
-<h3>Imagen del proceso&nbsp;</h3>
+<p>Eso nos dice que el paquete no es simplemente una copia exacta del contenido que vemos en GitHub. Por tanto, en el
+    instalador considera schemas/ como recursos que deben formar parte del directorio final de la
+    extensión. No es una carpeta auxiliar que solamente se usa durante la instalación.</p>
+<h3>Imagen del proceso</h3>
 <hr>
 <p>Creo que podemos ver nuestro modelo a esto:</p>
 <pre><samp>                 REPOSITORIO
