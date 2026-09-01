@@ -1,6 +1,19 @@
+<aside class="list-blocks">
+    <div class="symbol"><span>&#9168;</span></div>
+    <div class="card">
+        <p>Bloques:</p>
+        <a href="#bloque01">Bloque 01</a>
+        <a href="#bloque02">Bloque 02</a>
+        <a href="#bloque03">Bloque 03</a>
+        <a href="#bloque04">Bloque 04</a>
+        <a href="#bloque05">Bloque 05</a>
+        <a href="#bloque06">Bloque 06</a>
+        <a href="#bloque07">Bloque 07</a>
+    </div>
+</aside>
 <h2>Contenido de INSTALL.sh</h2>
 <hr>
-<pre><code><span class="hljs-meta">#!/bin/bash </span>
+<pre id="bloque01"><code><span class="hljs-meta">#!/bin/bash </span>
 
 <span class="hljs-comment">#Version 4 </span>
 <span class="hljs-comment">#========= </span>
@@ -151,7 +164,7 @@ notification-center@Selenium-H</samp></pre>
               │
               └── notification-center@Selenium-H/</samp></pre>
 <hr>
-<pre><code><span class="hljs-built_in">echo</span> <span class="hljs-string">""</span>
+<pre id="bloque02"><code><span class="hljs-built_in">echo</span> <span class="hljs-string">""</span>
 <span class="hljs-keyword">if</span> [ ! -z <span class="hljs-variable">$1</span> ]
 <span class="hljs-keyword">then</span>
     installDir=<span class="hljs-variable">$1</span>
@@ -396,7 +409,7 @@ Exiting ... !
         exit</samp></pre>
 <p>El instalador abandona la instalación.</p>
 <hr>
-<pre><samp><span class="hljs-built_in">echo</span> <span class="hljs-string">"Installing Extension "</span><span class="hljs-variable">$extensionDir</span> 
+<pre id="bloque03"><samp><span class="hljs-built_in">echo</span> <span class="hljs-string">"Installing Extension "</span><span class="hljs-variable">$extensionDir</span> 
 <span class="hljs-built_in">echo</span> <span class="hljs-string">"Installation Path "</span><span class="hljs-variable">$installDir</span> 
 <span class="hljs-built_in">echo</span> <span class="hljs-string">""</span> 
 <span class="hljs-built_in">echo</span> -ne <span class="hljs-string">"Removing any Older Version ... "</span> 
@@ -559,7 +572,7 @@ Removing any Older Version ...   Done</samp></pre>
 <p>Ahí podremos ver exactamente <strong data-start="5230" data-end="5286">en qué orden el autor construye la instalación
         final</strong>.</p>
 <hr>
-<pre><code><span class="hljs-built_in">echo</span> -ne <span class="hljs-string">"Copying New Version ... "</span> 
+<pre id="bloque04"><code><span class="hljs-built_in">echo</span> -ne <span class="hljs-string">"Copying New Version ... "</span> 
 <span class="hljs-built_in">cp</span> -rf <span class="hljs-variable">$extensionDir</span> <span class="hljs-variable">$installDir</span> 
 <span class="hljs-built_in">cp</span> -rf schemas <span class="hljs-variable">$installDir</span><span class="hljs-string">"/"</span><span class="hljs-variable">$extensionDir</span> 
 <span class="hljs-built_in">cp</span> -rf locale <span class="hljs-variable">$installDir</span><span class="hljs-string">"/"</span><span class="hljs-variable">$extensionDir</span> 
@@ -707,10 +720,10 @@ Removing any Older Version ...   Done</samp></pre>
                     extensión instalada</samp></pre>
 <p>Esto es mucho más interesante que simplemente decir "el script copia locale".</p>
 <hr>
-<pre><code><span class="hljs-built_in">cd</span> <span class="hljs-variable">$installDir</span><span class="hljs-string">"/"</span><span class="hljs-variable">$extensionDir</span> 
-        <span class="hljs-built_in">echo</span> -ne <span class="hljs-string">"Compiling Schemas ... "</span> 
-        glib-compile-schemas schemas 
-        <span class="hljs-built_in">echo</span> <span class="hljs-string">"Done"</span></code></pre>
+<pre id="bloque05"><code><span class="hljs-built_in">cd</span> <span class="hljs-variable">$installDir</span><span class="hljs-string">"/"</span><span class="hljs-variable">$extensionDir</span> 
+<span class="hljs-built_in">echo</span> -ne <span class="hljs-string">"Compiling Schemas ... "</span> 
+glib-compile-schemas schemas 
+<span class="hljs-built_in">echo</span> <span class="hljs-string">"Done"</span></code></pre>
 <p>Este bloque es muy interesante porque ahora aparece la <strong data-start="63" data-end="86">segunda
         compilación</strong> que habíamos detectado, la de <code data-start="127" data-end="136">schemas</code>.</p>
 <h3>Cambiar al directorio de la extensión instalada</h3>
@@ -780,7 +793,7 @@ Removing any Older Version ...   Done</samp></pre>
 <h3>Una pista importante sobre el orden</h3>
 <p>Observa que el script hizo anteriormente:</p>
 <pre><code><span class="ͼ10">cp</span><span> </span><span class="ͼ12">-rf</span><span> schemas </span><span class="ͼ11">$installDir</span><span class="ͼz">"/"</span><span class="ͼ11">$extensionDir</span><span>
-        </span><span class="ͼ10">cp</span><span> </span><span class="ͼ12">-rf</span><span> locale </span><span class="ͼ11">$installDir</span><span class="ͼz">"/"</span><span class="ͼ11">$extensionDir</span></code></pre>
+</span><span class="ͼ10">cp</span><span> </span><span class="ͼ12">-rf</span><span> locale </span><span class="ͼ11">$installDir</span><span class="ͼz">"/"</span><span class="ͼ11">$extensionDir</span></code></pre>
 <div class="row">
     <div class="col"><span>Y&nbsp;<strong>después</strong>:</span>
         <pre><code><span>cd</span><span> </span><span>$installDir</span><span>"/"</span><span>$extensionDir</span></code></pre>
@@ -796,3 +809,285 @@ Removing any Older Version ...   Done</samp></pre>
 <p>Por tanto, la compilación se está haciendo <strong data-start="4012" data-end="4040">sobre la copia
         instalada</strong>, no sobre el <code data-start="4054" data-end="4064">schemas/</code> original del
     repositorio.</p>
+<hr>
+<pre id="bloque06"><code><span class="hljs-built_in">echo</span> -ne <span class="hljs-string">"Creating Translations ... "</span> 
+<span class="hljs-built_in">cd</span> locale 
+
+status=<span class="hljs-string">"Done"</span> 
+<span class="hljs-keyword">for</span> poFile <span class="hljs-keyword">in</span> */ 
+<span class="hljs-keyword">do</span> 
+	<span class="hljs-built_in">mkdir</span> <span class="hljs-variable">${poFile}</span>/LC_MESSAGES 
+	msgfmt <span class="hljs-variable">${poFile}</span>/<span class="hljs-variable">$extensionName</span><span class="hljs-string">".po"</span> -o <span class="hljs-variable">${poFile}</span>/LC_MESSAGES/<span class="hljs-variable">$extensionName</span><span class="hljs-string">".mo"</span> 
+	<span class="hljs-keyword">if</span> [ $? != 0 ]; <span class="hljs-keyword">then</span> 
+		status=<span class="hljs-string">"Error"</span> 
+		<span class="hljs-built_in">break</span> 
+	<span class="hljs-keyword">fi</span> 
+<span class="hljs-keyword">done</span></code></pre>
+<p>Este es probablemente <strong data-start="26" data-end="98">el bloque más importante que hemos visto hasta ahora en
+        <code data-start="84" data-end="96">INSTALL.sh</code></strong>, porque aquí queda completamente demostrado cómo
+    el instalador prepara las traducciones.</p>
+<h3>Mensaje de progreso</h3>
+<pre><code><span class="ͼl">echo</span><span> </span><span class="ͼn">-ne</span><span> </span><span class="ͼk">"Creating Translations ...        "</span></code></pre>
+<p>Mismo patrón que ya conocemos:</p>
+<ul>
+    <li><code>echo</code> muestra el mensaje.</li>
+    <li><code>-n</code> evita el salto de línea.</li>
+    <li><code>-e</code> permite secuencias especiales, aunque aquí no parece necesario.</li>
+</ul>
+<p>La terminal mostrará:&nbsp;<i>Creating Translations ...</i>&nbsp;y esperará a que el bloque termine para que después
+    aparezca <code data-start="723" data-end="729">Done</code> o <code data-start="732" data-end="739">Error</code>.</p>
+<h3>Entramos en <code data-start="764" data-end="772">locale</code></h3>
+<pre><code><span class="ͼl">cd</span><span> locale</span></code></pre>
+<p>Esto cambia el directorio de trabajo a <b>locale/</b>&nbsp;y aquí es importante recordar cómo está organizado nuestro
+    repositorio:</p>
+<pre><samp>locale/
+├── de/
+│   └── notification-center.po
+├── it/
+│   └── notification-center.po
+├── ko/
+│   └── notification-center.po
+├── nl/
+│   └── notification-center.po
+└── notification-center.pot</samp></pre>
+<p>El script está entrando precisamente en el lugar donde están los directorios de traducciones.</p>
+<h3>Inicializa el estado</h3>
+<pre><code><span class="ͼm">status</span><span class="ͼg">=</span><span class="ͼk">"Done"</span></code></pre>
+<p>Aquí simplemente crea/asigna una variable:&nbsp;<b>status</b> = "<i>Done</i>"</p>
+<p>La idea es interesante porque el script parte suponiendo:</p>
+<blockquote>"Todo está bien."</blockquote>
+<p>Y solamente cambiará el estado si encuentra un error:</p>
+<pre><samp>status="Done"
+     │
+     ▼
+procesar traducciones
+     │
+     ├── todo bien → Done
+     │
+     └── error → Error</samp></pre>
+<p>Probablemente veremos posteriormente que <code data-start="1726" data-end="1734">status</code> se utiliza para
+    mostrar el resultado final.</p>
+<h3>Recorrer todos los directorios de idiomas</h3>
+<pre><code><span class="ͼg">for</span><span> poFile </span><span class="ͼg">in</span><span> */
+</span><span class="ͼg">do</span></code></pre>
+<p>Aquí aparece un pequeño detalle de Bash muy interesante.</p>
+<p>El patrón: <b>*/</b>&nbsp;representa las <strong data-start="1990" data-end="2051">entradas que son directorios
+        dentro del directorio actual</strong>.</p>
+<p>Como estamos dentro de: <b>locale/ </b>el patrón encontrará:</p>
+<pre><samp>de/
+it/
+ko/
+nl/</samp></pre>
+<p>Pero <strong data-start="2181" data-end="2198">no encontrará</strong>: <b>notification-center.pot&nbsp;</b>porque eso
+    es un archivo, no un directorio. Así que conceptualmente:</p>
+<pre><samp>locale/
+│
+├── de/   ← poFile
+├── it/   ← poFile
+├── ko/   ← poFile
+├── nl/   ← poFile
+│
+└── notification-center.pot  ← ignorado</samp></pre>
+<p>Esto último es importante: <strong data-start="2501" data-end="2533">el <code data-start="2506"
+            data-end="2512">.pot</code> no se compila aquí</strong>. El <code data-start="2539"
+        data-end="2545">.pot</code> es la plantilla/base de traducción; los que contienen las traducciones concretas son
+    los <code data-start="2635" data-end="2640">.po</code>.</p>
+<h3>Crea <code data-start="2658" data-end="2671">LC_MESSAGES</code></h3>
+<pre><code><span class="ͼl">mkdir</span><span> </span><span class="ͼm">${poFile}</span><span>/LC_MESSAGES</span></code></pre>
+<p>Dentro del <code data-start="2684" data-end="2689">for</code>, si <code data-start="2748"
+        data-end="2756">poFile</code> vale <b>it/&nbsp;</b>la expresión&nbsp;<b><span
+            class="ͼm">${poFile}</span>/LC_MESSAGES&nbsp;</b>se convierte en&nbsp;<i><b>it</b>/LC_MESSAGES y</i>&nbsp;se
+    crea ese directorio.</p>
+<pre><samp>it/
+├── LC_MESSAGES/
+└── notification-center.po</samp></pre>
+<p>Después de procesar <code data-start="2948" data-end="2952">it</code>, lo mismo ocurrirá con <code data-start="3050"
+        data-end="3054">de</code>, <code data-start="3056" data-end="3060">ko</code> y <code data-start="3063"
+        data-end="3067">nl</code>.</p>
+<h3>Ocurre la compilación</h3>
+<pre><code><span>msgfmt </span><span class="ͼm">${poFile}</span><span>/</span><span class="ͼm">$extensionName</span><span class="ͼk">".po"</span><span> \
+       </span><span class="ͼn">-o</span><span> </span><span class="ͼm">${poFile}</span><span>/LC_MESSAGES/</span><span class="ͼm">$extensionName</span><span class="ͼk">".mo"</span></code></pre>
+<p>Esta es <strong data-start="3242" data-end="3260">la línea clave</strong>, aquí ocurre la verdadera
+    compilación,tenemos&nbsp;<b>msgfmt</b>&nbsp;que toma un archivo <code data-start="3325" data-end="3330">.po</code> y
+    genera un <code data-start="3343" data-end="3348">.mo</code>.</p>
+<p>Recordemos:</p>
+<pre><samp>extensionName=notification-center</samp></pre>
+<p>Por ejemplo, cuando: <b>poFile</b> = <i>it/&nbsp;</i>la orden queda conceptualmente:</p>
+<pre><samp>msgfmt it/notification-center.po \
+       -o it/LC_MESSAGES/notification-center.mo</samp></pre>
+<p>Lo mismo para <code data-start="3629" data-end="3633">nl</code>:</p>
+<pre><samp>msgfmt nl/notification-center.po \
+       -o nl/LC_MESSAGES/notification-center.mo</samp></pre>
+<h3>El resultado que encontramos</h3>
+<p>Después del <code data-start="3831" data-end="3836">for</code>, tendremos que el resultado es exactamente la
+    estructura que encontramos:</p>
+<pre><samp>locale/
+├── de/
+│   ├── LC_MESSAGES/
+│   │   └── notification-center.mo
+│   └── notification-center.po
+│
+├── it/
+│   ├── LC_MESSAGES/
+│   │   └── notification-center.mo
+│   └── notification-center.po
+│
+├── ko/
+│   ├── LC_MESSAGES/
+│   │   └── notification-center.mo
+│   └── notification-center.po
+│
+├── nl/
+│   ├── LC_MESSAGES/
+│   │   └── notification-center.mo
+│   └── notification-center.po
+│
+└── notification-center.pot</samp></pre>
+<h3>¿Por qué utiliza <code data-start="4706" data-end="4722">$extensionName</code>?</h3>
+<p>Esta parte&nbsp;<b>$extensionName".po"</b> es equivalente a&nbsp;<i>notification-center.po y&nbsp;</i><span
+        class="ͼm"><b>$extensionName</b></span><span class="ͼk"><b>".mo"</b>&nbsp;</span>equivale
+    a&nbsp;<i>notification-center.mo.</i></p>
+<p>El autor está reutilizando la variable que definió al
+    principio:&nbsp;<b>extensionName</b>=<i>notification-center.&nbsp;</i>Así evita repetir el nombre y mantiene
+    consistencia.</p>
+<p>Además, esto nos confirma que el nombre base de los catálogos está deliberadamente ligado
+    a:&nbsp;<i>notification-center.</i></p>
+<h3>Comprueba si <code data-start="5277" data-end="5285">msgfmt</code> falló</h3>
+<pre><code><span class="ͼg">if</span><span> [ </span><span class="ͼm">$?</span><span> !</span><span class="ͼg">=</span><span> </span><span class="ͼj">0</span><span> ]; </span><span class="ͼg">then</span><span>
+  </span><span class="ͼm">status</span><span class="ͼg">=</span><span class="ͼk">"Error"</span><span>
+  break
+</span><span class="ͼg">fi</span></code></pre>
+<p>Otra vez aparece <code data-start="5394" data-end="5398">$?</code>. Justo antes ejecutamos: <b>msgfmt
+        ...&nbsp;</b>por lo que <code data-start="5461" data-end="5465">$?</code> contiene el código de salida de <code
+        data-start="5498" data-end="5506">msgfmt</code>. Conceptualmente:</p>
+<pre><samp>msgfmt
+  │
+  ▼
+¿terminó correctamente?
+  │
+ ┌┴─────────┐
+ │          │
+ 0        != 0
+ │          │
+ ▼          ▼
+seguir    Error
+           │
+           ▼
+         break</samp></pre>
+<h3><code data-start="5734" data-end="5741">break</code> es importante</h3>
+<pre><code><span>break</span></code></pre>
+<p>No termina todo el script, solo termina <strong data-start="5824" data-end="5843">el <code data-start="5829"
+            data-end="5834">for</code> actual</strong>. Por ejemplo:</p>
+<pre><samp>de  → OK
+it  → OK
+ko  → ERROR
+nl  → NO se procesa</samp></pre>
+<p>Es decir, ante el primer error de compilación el script deja de intentar generar más traducciones y continuará con
+    las instrucciones que estén <strong data-start="6086" data-end="6105">fuera del <code data-start="6098"
+            data-end="6103">for</code></strong>.</p>
+<hr>
+<pre id="bloque07"><code><span class="hljs-keyword">if</span> [ <span class="hljs-string">"<span class="hljs-variable">$status</span>"</span> == <span class="hljs-string">"Done"</span> ]; <span class="hljs-keyword">then</span> 
+	<span class="hljs-built_in">echo</span> -e <span class="hljs-variable">$status</span>
+	<span class="hljs-built_in">echo</span> <span class="hljs-string">""</span>
+	<span class="hljs-built_in">echo</span> <span class="hljs-string">"All Done !"</span>
+<span class="hljs-keyword">else</span> 
+	<span class="hljs-built_in">echo</span> <span class="hljs-string">""</span> 
+	<span class="hljs-built_in">echo</span> <span class="hljs-string">"Extension Installed, Translations not done."</span> 
+<span class="hljs-keyword">fi</span>
+
+<span class="hljs-built_in">echo</span> <span class="hljs-string">""</span> 
+<span class="hljs-built_in">echo</span> <span class="hljs-string">"Restart GNOME Shell ( Alt + F2 , Press r , Press Enter )."</span> 
+<span class="hljs-built_in">echo</span> <span class="hljs-string">"Enable this extension using GNOME Tweak Tool."</span> 
+<span class="hljs-built_in">echo</span> <span class="hljs-string">""</span></code></pre>
+<p>Este bloque es básicamente <strong data-start="37" data-end="77">el cierre del proceso de instalación</strong>, y
+    ahora sí podemos completar qué hace <code data-start="117" data-end="125">status</code> que vimos en el bloque
+    anterior.</p>
+<h3>Comprueba el resultado de las traducciones</h3>
+<pre><code><span class="ͼg">if</span><span> [ </span><span class="ͼk">"</span><span class="ͼm">$status</span><span class="ͼk">"</span><span> </span><span class="ͼg">==</span><span> </span><span class="ͼk">"Done"</span><span> ]; </span><span class="ͼg">then</span></code></pre>
+<p>Aquí compara el contenido de la variable <code data-start="302" data-end="310">status</code>
+    con:&nbsp;<b>Done</b>&nbsp;</p>
+<p>Recordemos que anteriormente hicimos:&nbsp;<b>status</b> =&nbsp;<i>"Done"&nbsp;</i>y solamente cambiábamos ese valor
+    cuando <code data-start="442" data-end="450">msgfmt</code> encontraba un error:</p>
+<pre><samp>status="Error"
+break</samp></pre>
+<p>Por lo tanto:</p>
+<pre><samp>msgfmt
+  │
+  ├── todo correcto ──► status="Done"
+  │
+  └── algún error ───► status="Error"</samp></pre>
+<h3>Las traducciones fueron compiladas</h3>
+<pre><code><span class="ͼl">echo</span><span> </span><span class="ͼn">-e</span><span> </span><span class="ͼm">$status</span><span> 
+</span><span class="ͼl">echo</span><span> </span><span class="ͼk">""</span><span> 
+</span><span class="ͼl">echo</span><span> </span><span class="ͼk">"All Done !"</span></code></pre>
+<p>Si&nbsp;<b>status&nbsp;</b>= <i>"Done"&nbsp;</i>muestra:</p>
+<pre><samp>Done
+
+All Done !</samp></pre>
+<p><code data-start="853" data-end="862">echo -e</code> nuevamente habilita secuencias especiales, aunque en este caso
+    no hay ninguna, así que <code data-start="950" data-end="954">-e</code> no aporta nada relevante.</p>
+<h3>¿Y si hubo un error?</h3>
+<pre><code><span class="ͼg">else</span><span>
+  </span><span class="ͼl">echo</span><span> </span><span class="ͼk">""</span><span>
+  </span><span class="ͼl">echo</span><span> </span><span class="ͼk">"Extension Installed, Translations not done."</span><span>
+</span><span class="ͼg">fi</span></code></pre>
+<p>Si <code data-start="1097" data-end="1105">msgfmt</code> falló en alguno de los idiomas <b>status</b>="<i>Error</i>"
+    entonces el script informa:&nbsp;<i>Extension Installed, Translations not done</i>.</p>
+<p>Esto es bastante importante porque nos revela la filosofía del instalador:</p>
+<blockquote>Un error al generar las traducciones no hace que la instalación completa sea considerada fallida.
+</blockquote>
+<p>La extensión ya fue instalada; simplemente las traducciones no quedaron preparadas correctamente, es decir, tenemos
+    dos estados independientes:</p>
+<pre><samp>Instalación de extensión
+        │
+        ├── realizada
+        │
+        ▼
+Traducciones
+        │
+        ├── OK
+        │
+        └── Error</samp></pre>
+<p>Por eso el mensaje dice explícitamente:&nbsp;</p>
+<pre><samp>Extension Installed,
+Translations not done.</samp></pre>
+<p>No dice:</p>
+<pre><samp>Installation failed.</samp></pre>
+<h3>Mensaje final</h3>
+<pre><code><span class="ͼl">echo</span><span> </span><span class="ͼk">""</span><span>
+</span><span class="ͼl">echo</span><span> </span><span class="ͼk">"Restart GNOME Shell ( Alt + F2 , Press r , Press Enter )."</span><span>
+</span><span class="ͼl">echo</span><span> </span><span class="ͼk">"Enable this extension using GNOME Tweak Tool."</span><span>
+</span><span class="ͼl">echo</span><span> </span><span class="ͼk">""</span></code></pre>
+<p>Aquí el script ya no está ejecutando ninguna operación, está dando instrucciones al usuario.</p>
+<h5>Primera instrucción: <b>Restart GNOME Shell</b></h5>
+<p>El autor indica el procedimiento histórico:</p>
+<pre><samp>Alt + F2
+r
+Enter</samp></pre>
+<p>Esto era particularmente relevante en las versiones antiguas de GNOME Shell donde ese procedimiento permitía
+    reiniciar GNOME Shell sin cerrar la sesión.&nbsp;</p>
+<p>No debemos asumir que ese procedimiento sigue siendo válido para las versiones modernas que estamos buscando
+    soportar; eso será una cuestión para nuestra futura fase de modernización.</p>
+<p>Por ahora solamente registramos:</p>
+<blockquote>El instalador fue escrito pensando en un entorno de GNOME Shell donde el reinicio mediante <code
+        data-start="2744" data-end="2766">Alt + F2 → r → Enter</code> era una operación disponible.</blockquote>
+<h5>Segunda instrucción: <b>Enable this extension using GNOME Tweak Tool.</b></h5>
+<p>El instalador <strong data-start="2901" data-end="2945">no habilita la extensión automáticamente</strong>, su
+    responsabilidad termina después de instalarla. El usuario debe posteriormente habilitarla mediante GNOME Tweak Tool.
+</p>
+<p>Tenemos entonces una separación clara:</p>
+<pre><samp>INSTALL.sh
+   │
+   ├── prepara
+   ├── instala
+   ├── compila schemas
+   └── prepara traducciones
+          │
+          ▼
+       termina
+          │
+          ▼
+Usuario
+   │
+   ├── reinicia GNOME Shell
+   └── habilita extensión</samp></pre>

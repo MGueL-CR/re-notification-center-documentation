@@ -5,6 +5,7 @@
 
 :root {
     interpolate-size: allow-keywords;
+    scroll-behavior: smooth;
 }
 
 strong,
@@ -27,6 +28,16 @@ body {
     scroll-margin-top: 4rem;
 }
 
+#bloque01,
+#bloque02,
+#bloque03,
+#bloque04,
+#bloque05,
+#bloque06,
+#bloque07 {
+    scroll-margin-top: 6rem;
+}
+
 .main-content {
     display: grid;
     grid-area: 1fr;
@@ -44,6 +55,74 @@ body {
     border: none;
     outline: none;
 }
+
+.list-blocks {
+    position: fixed;
+    display: flex;
+    justify-content: end;
+    right: 1rem;
+    z-index: 1;
+    gap: 0;
+}
+
+.list-blocks .symbol {
+    place-self: center;
+}
+
+.list-blocks .symbol:hover+.card,
+.list-blocks .card:hover {
+    visibility: visible;
+    opacity: 1;
+    width: fit-content;
+}
+
+.list-blocks .symbol span {
+    cursor: pointer;
+    padding: 1rem 0.25rem;
+    font-weight: bold;
+    font-size: medium;
+    transform: rotate(0.3turn);
+    border-start-start-radius: 6px;
+    border-end-start-radius: 6px;
+    background-color: var(--cbg);
+    color: var(--cfg);
+    border: 1px solid var(--cmed);
+}
+
+.list-blocks .card {
+    visibility: collapse;
+    opacity: 0;
+    display: flex;
+    width: 0;
+    flex-direction: column;
+    margin: 0;
+    padding-bottom: 0.6rem;
+    background-color: var(--cbg);
+    font-size: small;
+    gap: 0.25rem;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    transition: all 300ms ease-in-out;
+}
+
+.list-blocks .card p {
+    font-size: medium;
+    font-weight: bold;
+}
+
+.list-blocks .card a {
+    padding: 0.25rem 0.6rem;
+    font-size: small;
+    font-weight: 600;
+    border-radius: 0.25rem;
+    overflow: hidden;
+}
+
+.list-blocks .card a:hover {
+    background-color: var(--cemphbg);
+}
+
 
 .float-span {
     position: absolute;
