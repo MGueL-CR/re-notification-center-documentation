@@ -1,4 +1,4 @@
-<h2>¿Qué hay en extensions.gnome.org?</h2>
+<h2>¿Donde están los archivos <code>.mo</code>?</h2>
 <hr>
 <p>La hipótesis sería:</p>
 <blockquote>El desarrollador genera los <code data-start="2435" data-end="2440">.mo</code> localmente al preparar una
@@ -26,8 +26,11 @@
 <p>Eso es perfectamente posible y&nbsp;<strong data-start="2915" data-end="2974">no requeriría que <code
             data-start="2935" data-end="2957">extensions.gnome.org</code> compilara nada</strong>. Pero tenemos una
     buena razón para no decidirlo todavía, tenemos dos mecanismos posibles:</p>
-<p><b>A. </b>Compilación durante la instalación manual</p>
-<pre><samp>.po
+
+<div class="row">
+    <div class="col">
+        <span><b>A. </b>Compilación durante la instalación manual</span>
+        <pre><samp>.po
  │
  ▼
 INSTALL.sh
@@ -37,8 +40,10 @@ msgfmt
  │
  ▼
 .mo</samp></pre>
-<p><b>B. </b>Compilación previa por el desarrollador</p>
-<pre><samp>.po
+    </div>
+    <div class="col">
+        <span><b>B. </b>Compilación previa por el desarrollador</span>
+        <pre><samp>.po
  │
  ▼
 msgfmt
@@ -51,6 +56,8 @@ ZIP publicado
  │
  ▼
 usuario</samp></pre>
+    </div>
+</div>
 <p>Ambos pueden coexistir perfectamente. De hecho, <strong data-start="3362" data-end="3492"><code data-start="3364"
             data-end="3376">INSTALL.sh</code> demuestra que el autor quería que una instalación manual pudiera partir de
         los <code data-start="3456" data-end="3461">.po</code> y producir sus propios <code data-start="3485"
@@ -63,9 +70,10 @@ usuario</samp></pre>
 <p>La evidencia que nos falta para convertir esa hipótesis en conclusión es simplemente observar <strong
         data-start="4777" data-end="4824">qué contiene realmente el paquete publicado</strong> o revisar el proceso de
     empaquetado que utilizaba el proyecto.</p>
-<h3><i>Notification-centerSelenium-H.v24.shell-extension.zip</i></h3>
+<h3>¿Qué hay en extensions.gnome.org?</h3>
 <hr>
-<p>Esto es una <strong data-start="28" data-end="51">evidencia muy buena</strong> para nuestra investigación. Ahora ya
+<p>Este archivo <i>notification-centerSelenium-H.v24.shell-extension.zip</i> es una <strong data-start="28"
+        data-end="51">evidencia muy buena</strong> para nuestra investigación. Ahora ya
     no estamos planteando solamente una hipótesis: <strong data-start="140" data-end="218">podemos observar directamente
         qué contiene el paquete que GNOME distribuye</strong>&nbsp;y hay varias cosas interesantes.</p>
 <h4>1. El <code data-start="265" data-end="271">.zip</code> sí contiene los <code data-start="288"
@@ -148,22 +156,129 @@ msgfmt </span><span class="ͼm">${poFile}</span><span>/</span><span class="ͼm">
 ├── gschemas.compiled
 └── org.gnome.shell.extensions.notification-center.gschema.xml</samp></pre>
 <p>Esto es conceptualmente muy parecido a lo que acabamos de descubrir con gettext:</p>
-<pre><samp>gschema.xml
+
+<div class="row">
+    <div class="col">
+        <span>En <code>schemas/</code> tenemos:</span>
+        <pre><samp>gschema.xml
       │
-      │ compilación
+      │ glib-compile-schemas
       ▼
 gschemas.compiled</samp></pre>
-<p>Mientras que:</p>
-<pre><samp>notification-center.po
+    </div>
+    <div class="col">
+        <span>Mientras que en <code>locale/</code>:</span>
+        <pre><samp>notification-center.po
       │
       │ msgfmt
       ▼
 notification-center.mo</samp></pre>
+    </div>
+</div>
+<p>Este bloque nos explica de dónde sale: <b>gschemas.compiled.&nbsp;</b>No es un archivo que el autor haya escrito
+    manualmente. Es un <strong data-start="5193" data-end="5242">artefacto generado por <code data-start="5218"
+            data-end="5240">glib-compile-schemas</code></strong>. Por tanto, ahora tenemos dos tipos diferentes de
+    compilación:</p>
+<table>
+    <thead>
+        <tr>
+            <th>Fuente</th>
+            <th class="text-left">Herramienta</th>
+            <th class="text-left">Resultado</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>.po</code></td>
+            <td class="text-left"><code>msgfmt</code></td>
+            <td class="text-left"><code>.mo</code></td>
+        </tr>
+        <tr>
+            <td><code>.gschema.xml</code></td>
+            <td class="text-left"><code>glib-compile-schemas</code></td>
+            <td class="text-left"><code>gschemas.compiled</code></td>
+        </tr>
+    </tbody>
+</table>
+<br>
 <blockquote>Así que el ZIP publicado contiene <strong data-start="2906" data-end="2957">archivos fuente y archivos
         derivados/compilados</strong>.</blockquote>
-<p>Eso nos dice que el paquete no es simplemente una copia exacta del contenido que vemos en GitHub. Por tanto, en el
-    instalador considera schemas/ como recursos que deben formar parte del directorio final de la
+<p>Esto empieza a darle bastante sentido al instalador, nos dice que el paquete no es simplemente una copia exacta del
+    contenido que vemos en GitHub. Por tanto, en el
+    instalador se considera a schemas/ como recursos que deben formar parte del directorio final de la
     extensión. No es una carpeta auxiliar que solamente se usa durante la instalación.</p>
+
+<h5>Pero con una diferencia importante</h5>
+<p>Hay una diferencia importante entre ambas compilaciones, aunque conceptualmente ambas generan archivos derivados,
+    <strong data-start="3164" data-end="3197">no hacen exactamente lo mismo</strong>.
+</p>
+<div class="row">
+    <div class="col">
+        <h5>gettext</h5>
+        <pre><samp>.po → .mo</samp></pre>
+        <p>El <code>.po</code> contiene las traducciones legibles/editables:</p>
+        <pre><samp>msgid "Clear"
+msgstr "..."</samp></pre>
+        <blockquote><code>msgfmt</code> crea un catálogo binario que gettext utiliza durante la ejecución.</blockquote>
+    </div>
+    <div class="col">
+        <h5>GSettings</h5>
+        <pre><samp>.gschema.xml → gschemas.compiled</samp></pre>
+        <p>El XML contiene la definición del esquema:</p>
+        <pre><samp>keys
+types
+defaults
+descriptions</samp></pre>
+        <blockquote><code>glib-compile-schemas</code> genera una representación compilada que GSettings puede utilizar.
+        </blockquote>
+    </div>
+</div>
+<h4>5. Una pista importante sobre el orden</h4>
+<hr>
+<p>Observa que el script hizo anteriormente:</p>
+<pre><code><span class="ͼl">cp</span><span> </span><span class="ͼn">-rf</span><span> schemas </span><span class="ͼm">$installDir</span><span class="ͼk">"/"</span><span class="ͼm">$extensionDir</span><span>
+</span><span class="ͼl">cp</span><span> </span><span class="ͼn">-rf</span><span> locale </span><span class="ͼm">$installDir</span><span class="ͼk">"/"</span><span class="ͼm">$extensionDir</span></code></pre>
+<p>Y <strong data-start="3859" data-end="3870">después</strong>:</p>
+<pre><code><span class="ͼl">cd</span><span> </span><span class="ͼm">$installDir</span><span class="ͼk">"/"</span><span class="ͼm">$extensionDir</span></code></pre>
+<p>Y ahora:</p>
+<pre><code><span>glib-compile-schemas schemas</span></code></pre>
+<p>Por tanto, la compilación se está haciendo <strong data-start="4012" data-end="4040">sobre la copia
+        instalada</strong>, no sobre el <code data-start="4054" data-end="4064">schemas/</code> original del
+    repositorio.</p>
+<p>Esto es importante. El flujo real es:</p>
+<pre><samp>REPOSITORIO
+    │
+    ├── schemas/
+    │     └── *.gschema.xml
+    │
+    └── locale/
+          └── *.po
+              │
+              ▼
+          preparación
+              │
+              ├── msgfmt
+              │
+              └── ...
+              │
+              ▼
+        cp schemas
+              │
+              ▼
+      EXTENSIÓN INSTALADA
+              │
+              ▼
+   glib-compile-schemas schemas
+              │
+              ▼
+     gschemas.compiled</samp></pre>
+<p>Bueno, hay que ser cuidadosos con la parte de <code data-start="4656" data-end="4664">msgfmt</code>: <strong
+        data-start="4666" data-end="4754">por el fragmento que vimos, la compilación de los <code data-start="4718"
+            data-end="4723">.po</code> ocurre antes del <code data-start="4741"
+            data-end="4752">cp locale</code></strong>. El punto importante aquí es que <code data-start="4788"
+        data-end="4810">glib-compile-schemas</code> definitivamente ocurre después de copiar <code data-start="4852"
+        data-end="4861">schemas</code>.</p>
+
 <h3>Imagen del proceso</h3>
 <hr>
 <p>Creo que podemos ver nuestro modelo a esto:</p>
@@ -194,9 +309,13 @@ notification-center.mo</samp></pre>
     nos permite separar claramente dos cosas que antes estaban mezcladas:</p>
 <h4><code class="inline-code">INSTALL.sh</code></h4>
 <p>Es capaz de tomar el material fuente del repositorio y <strong data-start="4205" data-end="4243">preparar una
-        instalación funcional</strong>, incluyendo la compilación de traducciones.</p>
+        instalación funcional</strong>, incluyendo la compilación de traducciones, es decir, no solamente instala
+    archivos; también convierte ciertos archivos fuente en los artefactos que necesita la extensión en tiempo de
+    ejecución.</p>
 <h4>El paquete publicado</h4>
-<p>Ya viene <strong data-start="4324" data-end="4337">preparado</strong>. El usuario recibe los <code data-start="4361"
-        data-end="4366">.mo</code> y <code data-start="4369" data-end="4388">gschemas.compiled</code>. Por lo tanto, no
+<p>Ya viene <strong data-start="4324" data-end="4337">preparado</strong>, ya contiene los productos de esas
+    compilaciones, por lo que en algún momento previo a su distribución alguien tuvo que ejecutar <code>msgfmt</code> y
+    <code>glib-compile-schemas</code>. El usuario recibe los <code data-start="4361" data-end="4366">.mo</code> y <code
+        data-start="4369" data-end="4388">gschemas.compiled</code>. Por lo tanto, no
     necesitamos que <code data-start="4424" data-end="4446">extensions.gnome.org</code> haga necesariamente esas
     compilaciones en el momento de instalar.</p>

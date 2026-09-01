@@ -985,6 +985,61 @@ nl  → NO se procesa</samp></pre>
 <p>Es decir, ante el primer error de compilación el script deja de intentar generar más traducciones y continuará con
     las instrucciones que estén <strong data-start="6086" data-end="6105">fuera del <code data-start="6098"
             data-end="6103">for</code></strong>.</p>
+<h3>Una conclusión importante</h3>
+<p>Con este bloque podemos afirmar algo que antes era solamente una hipótesis:</p>
+<blockquote><code data-start="6240" data-end="6252">INSTALL.sh</code> está diseñado explícitamente para generar los
+    <code data-start="6299" data-end="6304">.mo</code> a partir de los <code data-start="6321"
+        data-end="6326">.po</code>.
+</blockquote>
+<p>Ahora, sabemos que:</p>
+<ul>
+    <li>No depende de un servidor.</li>
+    <li>No depende de <code>extensions.gnome.org</code>.</li>
+    <li>No depende de que GNOME Shell compile las traducciones durante la ejecución.</li>
+    <li>Es una tarea que este script realiza <strong>localmente</strong>.</li>
+</ul>
+<p>Y además sabemos exactamente cómo:</p>
+<pre><samp>             locale/
+                │
+       ┌────────┼────────┐
+       ▼        ▼        ▼
+      de/      it/      ...
+       │        │
+       ▼        ▼
+ notification-center.po
+       │
+       │ msgfmt
+       ▼
+notification-center.mo
+       │
+       ▼
+LC_MESSAGES/</samp></pre>
+<h3>Una observación todavía más interesante</h3>
+<p>Fíjate en el orden general que hemos visto hasta ahora, anteriormente <code data-start="6995"
+        data-end="7007">INSTALL.sh</code> hizo:</p>
+<pre><samp>1. eliminar instalación anterior
+2. copiar extensionDir
+3. copiar schemas
+4. copiar locale
+5. compilar schemas</samp></pre>
+<p>Y <strong data-start="7153" data-end="7233">ahora estamos viendo que entra nuevamente en <code data-start="7200"
+            data-end="7208">locale</code> para ejecutar <code data-start="7223" data-end="7231">msgfmt</code></strong>.
+</p>
+<p>Eso significa que el script está generando el <code data-start="7282" data-end="7287">.mo</code> <strong
+        data-start="7288" data-end="7342">después de haber copiado <code data-start="7315" data-end="7323">locale</code>
+        a la instalación</strong>, pero hay que mirar cuidadosamente las rutas para comprobar dónde está ocurriendo
+    exactamente cada operación.</p>
+<p>Aquí quiero ser muy preciso y <strong data-start="7484" data-end="7503">no adelantarnos</strong>: terminemos de
+    recorrer las siguientes líneas antes de reconstruir el orden completo, porque seguramente el bloque siguiente nos
+    mostrará cómo sale de <code data-start="7655" data-end="7663">locale</code>, cómo reporta <code data-start="7678"
+        data-end="7686">status</code> y qué hace finalmente con el resultado.</p>
+<p>Ese orden será importante para entender si <code data-start="7771" data-end="7783">INSTALL.sh</code>:</p>
+<pre><samp>A) Compila en el repositorio y luego copia</samp></pre>
+<pre><samp>B) Copia primero y compila dentro de la instalación</samp></pre>
+<p>Con lo que tenemos hasta ahora, <strong data-start="7967" data-end="8074">este bloque está ejecutando <code
+            data-start="7997" data-end="8005">msgfmt</code> dentro del <code data-start="8017"
+            data-end="8025">locale</code> que tiene el script como directorio de trabajo</strong>. El siguiente bloque
+    nos permitirá cerrar exactamente esa parte del flujo.</p>
 <hr>
 <pre id="bloque07"><code><span class="hljs-keyword">if</span> [ <span class="hljs-string">"<span class="hljs-variable">$status</span>"</span> == <span class="hljs-string">"Done"</span> ]; <span class="hljs-keyword">then</span> 
 	<span class="hljs-built_in">echo</span> -e <span class="hljs-variable">$status</span>
@@ -1059,7 +1114,7 @@ Translations not done.</samp></pre>
 </span><span class="ͼl">echo</span><span> </span><span class="ͼk">"Enable this extension using GNOME Tweak Tool."</span><span>
 </span><span class="ͼl">echo</span><span> </span><span class="ͼk">""</span></code></pre>
 <p>Aquí el script ya no está ejecutando ninguna operación, está dando instrucciones al usuario.</p>
-<h5>Primera instrucción: <b>Restart GNOME Shell</b></h5>
+<h5><b>Primera instrucción:</b> Restart GNOME Shell</h5>
 <p>El autor indica el procedimiento histórico:</p>
 <pre><samp>Alt + F2
 r
@@ -1071,7 +1126,7 @@ Enter</samp></pre>
 <p>Por ahora solamente registramos:</p>
 <blockquote>El instalador fue escrito pensando en un entorno de GNOME Shell donde el reinicio mediante <code
         data-start="2744" data-end="2766">Alt + F2 → r → Enter</code> era una operación disponible.</blockquote>
-<h5>Segunda instrucción: <b>Enable this extension using GNOME Tweak Tool.</b></h5>
+<h5><b>Segunda instrucción:</b> Enable this extension using GNOME Tweak Tool.</h5>
 <p>El instalador <strong data-start="2901" data-end="2945">no habilita la extensión automáticamente</strong>, su
     responsabilidad termina después de instalarla. El usuario debe posteriormente habilitarla mediante GNOME Tweak Tool.
 </p>
