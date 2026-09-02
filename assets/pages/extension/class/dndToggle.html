@@ -1,0 +1,108 @@
+<h2>dndToggle()</h2>
+<hr>
+<pre><code><span class="hljs-attr">dndToggle</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">dndpref</span>.<span class="hljs-title function_">set_boolean</span>(<span class="hljs-string">'show-banners'</span>,!<span class="hljs-variable language_">this</span>.<span class="hljs-property">dndpref</span>.<span class="hljs-title function_">get_boolean</span>(<span class="hljs-string">'show-banners'</span>));
+
+  }</code></pre>
+<p>Lo primero que me llamó la atención, no hay:</p>
+<ul>
+    <li><code>if</code></li>
+    <li><code>switch</code></li>
+    <li><code>for</code></li>
+    <li><code>try</code></li>
+    <li>llamadas a otros métodos</li>
+</ul>
+<p>Solo una línea.</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>dndpref</span><span class="ͼg">.</span><span>set_boolean(
+    </span><span class="ͼk">'show-banners'</span><span>,
+    </span><span class="ͼg">!</span><span class="ͼj">this</span><span class="ͼg">.</span><span>dndpref</span><span class="ͼg">.</span><span>get_boolean(</span><span class="ͼk">'show-banners'</span><span>)
+);</span></code></pre>
+<p>Lo que hace es elegantísimo, si lo descomponemos:</p>
+<div class="row">
+    <div class="col"><span>Primero lee el valor actual</span>
+        <pre><samp>this.dndpref.get_boolean('show-banners')</samp></pre>
+    </div>
+    <div class="col"></div>
+</div>
+<p>Supongamos que devuelve&nbsp;<i><b>true</b></i>&nbsp;después hace&nbsp;<i><b>!</b></i>&nbsp;es decir:</p>
+<pre><samp>!true
+↓
+
+false</samp></pre>
+<p>Y finalmente lo vuelve a guardar:&nbsp;<i><b>set_boolean(...).</b></i></p>
+<p>Dibujémoslo:</p>
+<div class="row">
+    <div class="col"><span>Caso 1</span>
+        <pre><samp>show-banners = true
+↓
+
+leer
+↓
+
+true
+↓
+
+!
+↓
+
+false
+↓
+
+guardar
+↓
+
+show-banners = false</samp></pre>
+    </div>
+    <div class="col"><span>Caso 2</span>
+        <pre><samp>show-banners = false
+↓
+
+leer
+↓
+
+false
+↓
+
+!
+↓
+
+true
+↓
+
+guardar
+↓
+
+show-banners = true</samp></pre>
+    </div>
+</div>
+<p>Es literalmente un <strong data-start="1005" data-end="1020">interruptor</strong>.</p>
+<p>Y aquí descubrimos otra cosa fíjate que <code data-start="1071" data-end="1084">dndToggle()</code>... <b>No sabe
+        absolutamente nada de la interfaz.</b>&nbsp;No conoce:</p>
+<ul>
+    <li>iconos</li>
+    <li>etiquetas</li>
+    <li>opacidad</li>
+    <li>animaciones</li>
+    <li>menú</li>
+</ul>
+<p>Solo conoce una cosa: <i>La preferencia de GNOME</i> y eso me parece un excelente diseño.</p>
+<p>Cada método tiene una responsabilidad, si lo ponemos junto a los otros dos:</p>
+<p>Responsabilidad de <code class="inline-code">middleClickDndToggle()</code>:</p>
+<blockquote>Detectar el clic central.</blockquote>
+<p>Responsabilidad de <code class="inline-code">dndToggle()</code>:</p>
+<blockquote>Cambiar el valor de la preferencia.</blockquote>
+<p>Responsabilidad de <code class="inline-code">loadDndStatus()</code>:</p>
+<blockquote>Reflejar ese estado en toda la interfaz.</blockquote>
+<p>Eso significa que el flujo está perfectamente dividido.</p>
+<pre><samp>Usuario
+↓
+
+middleClickDndToggle()
+↓
+
+dndToggle()
+↓
+
+loadDndStatus()</samp></pre>
+<p>Cada método hace <strong data-start="1801" data-end="1818">una sola cosa&nbsp;</strong>y la hace bien.</p>

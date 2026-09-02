@@ -1,0 +1,197 @@
+<h2>loadPreferences()</h2>
+<hr>
+<pre><code><span class="hljs-attr">loadPreferences</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">autohide</span>                     = <span class="hljs-variable language_">this</span>.<span class="hljs-property">prefs</span>.<span class="hljs-title function_">get_int</span>(<span class="hljs-string">"autohide"</span>);
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">mediaSectionToBeShown</span>        = (<span class="hljs-variable language_">this</span>.<span class="hljs-property">prefs</span>.<span class="hljs-title function_">get_int</span>(<span class="hljs-string">"show-media"</span>)&gt;<span class="hljs-number">0</span>)?<span class="hljs-attr">true</span>:<span class="hljs-literal">false</span>;
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">notificationSectionToBeShown</span> = (<span class="hljs-variable language_">this</span>.<span class="hljs-property">prefs</span>.<span class="hljs-title function_">get_int</span>(<span class="hljs-string">"show-notification"</span>)&gt;<span class="hljs-number">0</span>)?<span class="hljs-attr">true</span>:<span class="hljs-literal">false</span>;
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">eventsSectionToBeShown</span>       = (<span class="hljs-variable language_">this</span>.<span class="hljs-property">prefs</span>.<span class="hljs-title function_">get_int</span>(<span class="hljs-string">"show-events"</span>)&gt;<span class="hljs-number">0</span>)?<span class="hljs-attr">true</span>:<span class="hljs-literal">false</span>;
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">eventsSectionPosition</span>        = <span class="hljs-variable language_">this</span>.<span class="hljs-property">prefs</span>.<span class="hljs-title function_">get_enum</span>(<span class="hljs-string">"events-position"</span>);  <span class="hljs-comment">// 0 = below, 1 = dont show, 2 = beside</span>
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">hideEmptySpace</span>               = <span class="hljs-variable language_">this</span>.<span class="hljs-property">prefs</span>.<span class="hljs-title function_">get_boolean</span>(<span class="hljs-string">"autohide-space-beside-calendar"</span>);
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">showEventsInCalendarAlso</span>     = (<span class="hljs-variable language_">this</span>.<span class="hljs-property">eventsSectionToBeShown</span> &amp;&amp; <span class="hljs-variable language_">this</span>.<span class="hljs-property">eventsSectionPosition</span> != <span class="hljs-number">1</span>) ? <span class="hljs-attr">true</span>: <span class="hljs-literal">false</span>;
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">showEventsSectionIfEmpty</span>     = <span class="hljs-variable language_">this</span>.<span class="hljs-property">prefs</span>.<span class="hljs-title function_">get_boolean</span>(<span class="hljs-string">"show-events-section-if-empty"</span>); 
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">showThreeIcons</span>               = <span class="hljs-variable language_">this</span>.<span class="hljs-property">prefs</span>.<span class="hljs-title function_">get_boolean</span>(<span class="hljs-string">"individual-icons"</span>);
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">includeEventsCount</span>           = <span class="hljs-variable language_">this</span>.<span class="hljs-property">prefs</span>.<span class="hljs-title function_">get_boolean</span>(<span class="hljs-string">"include-events-count"</span>);
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">newNotificationAction</span>        = <span class="hljs-variable language_">this</span>.<span class="hljs-property">prefs</span>.<span class="hljs-title function_">get_enum</span>(<span class="hljs-string">"new-notification"</span>);
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">eventsSectionhere</span>            = <span class="hljs-variable language_">this</span>.<span class="hljs-property">showEventsInCalendarAlso</span>;
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">showingSections</span>              = <span class="hljs-variable language_">this</span>.<span class="hljs-property">prefs</span>.<span class="hljs-title function_">get_strv</span>(<span class="hljs-string">"sections-order"</span>);
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">appBlackList</span>                 = <span class="hljs-variable language_">this</span>.<span class="hljs-property">prefs</span>.<span class="hljs-title function_">get_strv</span>(<span class="hljs-string">"name-list"</span>);
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">scriptList</span>                   = <span class="hljs-variable language_">this</span>.<span class="hljs-property">prefs</span>.<span class="hljs-title function_">get_strv</span>(<span class="hljs-string">"script-list"</span>);
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">allowRunningScript</span>           = <span class="hljs-variable language_">this</span>.<span class="hljs-property">prefs</span>.<span class="hljs-title function_">get_boolean</span>(<span class="hljs-string">"run-script"</span>);
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">blackListAction</span>              = <span class="hljs-variable language_">this</span>.<span class="hljs-property">prefs</span>.<span class="hljs-title function_">get_enum</span>(<span class="hljs-string">"for-list"</span>); 
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">notAnimateIcon</span>               = !<span class="hljs-variable language_">this</span>.<span class="hljs-property">prefs</span>.<span class="hljs-title function_">get_boolean</span>(<span class="hljs-string">"animate-icon"</span>);
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">blinkTime</span>                    = <span class="hljs-variable language_">this</span>.<span class="hljs-property">prefs</span>.<span class="hljs-title function_">get_int</span>(<span class="hljs-string">"blink-time"</span>);
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">blinkCount</span>                   = <span class="hljs-variable language_">this</span>.<span class="hljs-property">prefs</span>.<span class="hljs-title function_">get_int</span>(<span class="hljs-string">"blink-icon"</span>)*<span class="hljs-number">2</span>;
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">showLabel</span>                    = <span class="hljs-variable language_">this</span>.<span class="hljs-property">prefs</span>.<span class="hljs-title function_">get_boolean</span>(<span class="hljs-string">"show-label"</span>);
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">changeIcons</span>                  = <span class="hljs-variable language_">this</span>.<span class="hljs-property">prefs</span>.<span class="hljs-title function_">get_boolean</span>(<span class="hljs-string">"change-icons"</span>);  
+
+  }</code></pre>
+<p>Este método:</p>
+<ul>
+    <li><span>No toma decisiones</span>.</li>
+    <li>No mueve widgets.</li>
+    <li>No conecta señales.</li>
+    <li>No modifica la interfaz.</li>
+</ul>
+<p>Hace una sola cosa:</p>
+<blockquote>Leer todas las preferencias del usuario y guardarlas en memoria.</blockquote>
+<p>Es como cuando un programa inicia y carga su archivo de configuración.</p>
+<pre><samp>gschema
+↓
+
+loadPreferences()
+↓
+
+this.autohide
+this.showLabel
+this.changeIcons
+...</samp></pre>
+<p>A partir de ese momento, el resto de la extensión ya no tiene que preguntar constantemente al <code data-start="578"
+        data-end="587">gschema</code>. Solo consulta las propiedades del objeto, eso es mucho más eficiente y hace el
+    código más legible.</p>
+<p>Hay un patrón muy claro, la mayoría de las líneas son simplemente:</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>algo </span><span class="ͼg">=</span><span> </span><span class="ͼj">this</span><span class="ͼg">.</span><span>prefs</span><span class="ͼg">.</span><span>get_xxx(...)</span></code></pre>
+<p>Por ejemplo:</p>
+<pre><samp>this.autohide = this.prefs.get_int("autohide");
+this.showLabel = this.prefs.get_boolean("show-label");
+</samp></pre>
+<p>No hay misterio, solo está creando una "fotografía" de la configuración actual.</p>
+<h3>Ahora sí, vamos por grupos</h3>
+<hr>
+<p>Porque creo que aquí Selenium-H organizó las preferencias por temas.</p>
+<h4>1. Autohide</h4>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>autohide </span><span class="ͼg">=</span><span> </span><span class="ͼj">this</span><span class="ͼg">.</span><span>prefs</span><span class="ͼg">.</span><span>get_int(</span><span class="ͼk">"autohide"</span><span>);</span></code></pre>
+<p>Ya sabemos que después existe:&nbsp;<b><i>manageAutohide()</i></b>. Así que esta variable será la materia prima de
+    ese método.</p>
+<h4>2. Secciones visibles</h4>
+<p>Aquí aparece un grupo muy interesante.</p>
+<pre><code><span class="hljs-variable language_">this</span>.<span class="hljs-property">mediaSectionToBeShown</span>
+<span class="hljs-variable language_">this</span>.<span class="hljs-property">notificationSectionToBeShown</span>
+<span class="hljs-variable language_">this</span>.<span class="hljs-property">eventsSectionToBeShown</span></code></pre>
+<p>Me gusta que el nombre sea tan descriptivo.</p>
+<div class="row">
+    <div class="col"><span>No dice:</span>
+        <pre><samp>showMedia</samp></pre>
+    </div>
+    <div class="col"><span>Dice literalmente:</span>
+        <blockquote>"La sección de medios debe mostrarse."</blockquote>
+    </div>
+</div>
+<p>Es muy fácil leer después un código como:&nbsp;<b><i>if (this.mediaSectionToBeShown)</i></b></p>
+<h5>Un detalle curioso:</h5>
+<pre><code><span>(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>prefs</span><span class="ͼg">.</span><span>get_int(...) </span><span class="ͼg">&gt;</span><span> </span><span class="ͼj">0</span><span>) </span><span class="ͼg">?</span><span> </span><span class="ͼj">true</span><span> </span><span class="ͼg">:</span><span> </span><span class="ͼj">false</span><span>;</span></code></pre>
+<p>Aquí tengo una pequeña observación.</p>
+<p>Esto ya devuelve un booleano. Es decir <i>true</i> o <i>false</i>.</p>
+<pre><code><span>(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>prefs</span><span class="ͼg">.</span><span>get_int(</span><span class="ͼk">"show-media"</span><span>) </span><span class="ͼg">&gt;</span><span> </span><span class="ͼj">0</span><span>)</span></code></pre>
+<p>Entonces el operador ternario:&nbsp;<i><b>? true : false</b></i>&nbsp;es redundante. Podría haberse escrito
+    simplemente:</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>mediaSectionToBeShown </span><span class="ͼg">=</span><span>
+    </span><span class="ͼj">this</span><span class="ͼg">.</span><span>prefs</span><span class="ͼg">.</span><span>get_int(</span><span class="ͼk">"show-media"</span><span>) </span><span class="ͼg">&gt;</span><span> </span><span class="ͼj">0</span><span>;</span></code></pre>
+<p>El resultado sería exactamente el mismo. No es un error, simplemente es una forma más verbosa.</p>
+<h4>3. Posición de eventos</h4>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>eventsSectionPosition </span><span class="ͼg">=</span><span>
+    </span><span class="ͼj">this</span><span class="ͼg">.</span><span>prefs</span><span class="ͼg">.</span><span>get_enum(</span><span class="ͼk">"events-position"</span><span>);</span></code></pre>
+<p>Y aquí... ¡Aparece el famoso comentario!</p>
+<pre><samp>// 0 = below
+// 1 = dont show
+// 2 = beside</samp></pre>
+<p>¿Recuerdas cuánto hablamos de esto cuando recorríamos <code data-start="2718"
+        data-end="2745">startNotificationCenter()</code>? Ahora por fin tenemos la confirmación oficial.</p>
+<h4>4. Variable derivada</h4>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>showEventsInCalendarAlso </span><span class="ͼg">=</span><span>
+(
+    </span><span class="ͼj">this</span><span class="ͼg">.</span><span>eventsSectionToBeShown </span><span class="ͼg">&amp;&amp;</span><span>
+    </span><span class="ͼj">this</span><span class="ͼg">.</span><span>eventsSectionPosition </span><span class="ͼg">!=</span><span> </span><span class="ͼj">1</span><span>
+)
+</span><span class="ͼg">?</span><span> </span><span class="ͼj">true</span><span> </span><span class="ͼg">:</span><span> </span><span class="ͼj">false</span><span>;</span></code></pre>
+<p>Aquí ya no está leyendo una preferencia, está calculando una nueva.</p>
+<pre><samp>Preferencia A
+
++
+
+Preferencia B
+
+↓
+
+Nueva variable útil</samp></pre>
+<p>Eso evita repetir esa condición en diez lugares distintos.</p>
+<h4>5. Configuración visual</h4>
+<pre><samp>showThreeIcons
+includeEventsCount
+showLabel
+changeIcons
+</samp></pre>
+<p>Aquí aparecen varias conocidas. Todas tienen nombres prácticamente autoexplicativos.</p>
+<h4>6. Listas</h4>
+<pre><samp>showingSections
+appBlackList
+scriptList
+</samp></pre>
+<p>Aquí aparecen cosas interesantes, ya podemos imaginar que más adelante habrá métodos que trabajen con ellas.</p>
+<h4>7. Scripts</h4>
+<pre><samp>allowRunningScript</samp></pre>
+<p>Esto me llamó la atención porque confirma que la extensión puede ejecutar scripts definidos por el usuario. Todavía
+    no sabemos cómo, pero sabemos que existe esa posibilidad.</p>
+<h4>8. Animación</h4>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>notAnimateIcon </span><span class="ͼg">=</span><span>
+    </span><span class="ͼg">!</span><span class="ͼj">this</span><span class="ͼg">.</span><span>prefs</span><span class="ͼg">.</span><span>get_boolean(</span><span class="ͼk">"animate-icon"</span><span>);</span></code></pre>
+<p>Aquí está nuestra vieja conocida, me hizo gracia el nombre.</p>
+<div class="row">
+    <div class="col"><span>No guarda:</span>
+        <pre><samp>animateIcon</samp></pre>
+    </div>
+    <div class="col"><span>Guarda:</span>
+        <pre><samp>notAnimateIcon</samp></pre>
+    </div>
+</div>
+<p>Y para obtenerlo hace una negación. Funciona perfectamente, pero personalmente creo que habría sido más claro guardar
+    directamente:&nbsp;<i>this.animateIcon</i>&nbsp;y evitar el <code data-start="4371" data-end="4374">!</code> mental
+    cada vez que se lea el código.</p>
+<p>No está mal, es simplemente una decisión de estilo.</p>
+<h4>9. Parpadeo</h4>
+<p>Sin sorpresa con&nbsp;<i><b>this.blinkTime</b></i>, Pero con...</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>blinkCount </span><span class="ͼg">=</span><span>
+    </span><span class="ͼj">this</span><span class="ͼg">.</span><span>prefs</span><span class="ͼg">.</span><span>get_int(</span><span class="ͼk">"blink-icon"</span><span>) </span><span class="ͼg">*</span><span> </span><span class="ͼj">2</span><span>;</span></code></pre>
+<p>Aquí sí levanto una ceja. <b>¿Por qué multiplicar por dos?</b>&nbsp;No lo sabemos todavía.&nbsp;</p>
+<p>Y justamente por eso <strong data-start="4737" data-end="4774">no voy a inventar una explicación</strong>. Puede que
+    más adelante encontremos un:&nbsp;<b><i>while(blinkCount--)</i></b>&nbsp;o que cuente encendidos y apagados. De
+    momento, solo anotaría la duda.</p>
+<h3>En resumen</h3>
+<hr>
+<p>Diría que <code data-start="5175" data-end="5194">loadPreferences()</code> es como leer un archivo <code
+        data-start="5219" data-end="5231">config.ini</code> al arrancar una aplicación.</p>
+<p>No hace absolutamente nada más que cargar datos, ni una sola llamada como a: <i>manage...&nbsp;</i>Ni una
+    modificación visual, solo deja el objeto preparado.</p>
+<pre><samp>Usuario cambia preferencias
+↓
+
+gschema
+↓
+
+loadPreferences()
+↓
+
+Variables internas
+↓
+
+El resto de la extensión trabaja únicamente con esas variables.</samp></pre>
+<h5>Destacar un detalle de diseño</h5>
+<p>¿Recuerdas que en <code data-start="5492" data-end="5509">loadDndStatus()</code> dijimos que existía un "único punto
+    de verdad" para sincronizar el estado DND? Aquí veo la misma filosofía.</p>
+<p>En lugar de tener por todo el código cosas
+    como:&nbsp;<b><i>this.prefs.get_boolean("show-label")</i></b>&nbsp;repetidas una y otra vez... Selenium-H decidió
+    concentrarlas aquí.</p>
+<p>Eso tiene varias ventajas:</p>
+<ul>
+    <li>Si cambia el nombre de una clave del <code>gschema</code>, probablemente solo haya que modificar este método.
+    </li>
+    <li>El resto del código queda más limpio, porque trabaja con propiedades como <code>this.showLabel</code> o
+        <code>this.changeIcons</code> en lugar de conocer los detalles del almacenamiento.
+    </li>
+    <li>También facilita la lectura: cuando más adelante veamos <code>if (this.showLabel)</code>, ya sabremos que ese
+        valor proviene de una preferencia cargada al iniciar.</li>
+</ul>
+<p>Creo que esta función cumple exactamente el papel que esperábamos: <strong data-start="6319" data-end="6348">no hace
+        nada espectacular</strong>, pero prepara el terreno para que todas las demás funcionen de forma ordenada. Es uno
+    de esos métodos que rara vez llaman la atención, pero cuyo diseño influye en toda la arquitectura de la extensión.
+</p>

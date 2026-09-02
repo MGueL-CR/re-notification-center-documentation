@@ -1,0 +1,172 @@
+<h2>middleClickDndToggle()</h2>
+<hr>
+<pre><code><span class="hljs-attr">middleClickDndToggle</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params">actor, event</span>) {
+
+    <span class="hljs-keyword">switch</span>(event.<span class="hljs-title function_">get_button</span>()) {
+
+      <span class="hljs-keyword">case</span> <span class="hljs-number">2</span>: <span class="hljs-comment">// if middle click</span>
+
+        <span class="hljs-comment">// close the menu, since it gets open on any click</span>
+        <span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">menu</span>.<span class="hljs-property">isOpen</span>) {
+          <span class="hljs-variable language_">this</span>.<span class="hljs-property">menu</span>.<span class="hljs-property">actor</span>.<span class="hljs-property">visible</span> = <span class="hljs-literal">false</span>;
+        }
+        <span class="hljs-comment">// toggle DND state</span>
+        <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">dndToggle</span>();
+        <span class="hljs-comment">// reload dnd status</span>
+        <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">loadDndStatus</span>();
+
+        <span class="hljs-keyword">return</span>;
+
+      }
+
+  }</code></pre>
+<p>Lo primero que veo es que <strong data-start="223" data-end="261">nuestra hipótesis principal acertó</strong>. El
+    <code data-start="267" data-end="303">connect('button-press-event', ...)</code> escuchaba <strong data-start="314"
+        data-end="323">todos</strong> los botones del mouse.
+</p>
+<p>Y ahora entendemos ¿por qué?. Porque el método decide qué hacer según:</p>
+<pre><code><span class="ͼg">switch</span><span>(</span><span class="ͼm">event</span><span class="ͼg">.</span><span>get_button()) {</span></code></pre>
+<p>Es decir:</p>
+<pre><samp>¿Qué botón presionó el usuario?
+↓
+
+Izquierdo
+↓
+
+Derecho
+↓
+
+Central
+↓
+
+...</samp></pre>
+<p>Pero... Aquí ocurre algo curioso, solo existe:&nbsp;<b><i>case 2:</i></b></p>
+<h3>¿Qué significa eso?</h3>
+<p>Aquí es donde me parece elegante la solución Selenium-H <strong data-start="855" data-end="878">no quiso
+        reemplazar</strong> el comportamiento normal, solo quiso añadir uno nuevo.</p>
+<pre><samp>Click izquierdo
+↓
+
+GNOME hace lo de siempre.</samp></pre>
+<p>La extensión no interviene, en cambio:</p>
+<pre><samp>Click central
+↓
+
+Ahora sí...
+↓
+
+La extensión hace algo especial.</samp></pre>
+<h3>Ahora viene la sorpresa...</h3>
+<hr>
+<pre><code><span class="ͼe">// close the menu, since it gets open on any click</span></code></pre>
+<p>¡Habíamos apostado durante semanas! Y aquí Selenium-H nos deja la respuesta escrita en un comentario. Traducción:</p>
+<blockquote>"Cerrar el menú, porque se abre con cualquier clic."</blockquote>
+<p>Dibujemos la secuencia:&nbsp;</p>
+<pre><samp>Usuario
+↓
+
+Click central
+↓
+
+GNOME abre el menú
+(eso ocurre automáticamente)
+↓
+
+middleClickDndToggle()
+↓
+
+Oculta inmediatamente el menú
+↓
+
+Activa o desactiva DND
+↓
+
+Actualiza el estado del indicador</samp></pre>
+<h3>Mira qué curioso.</h3>
+<hr>
+<pre><code><span class="ͼg">if</span><span> (</span><span class="ͼj">this</span><span class="ͼg">.</span><span>menu</span><span class="ͼg">.</span><span>isOpen) {
+    </span><span class="ͼj">this</span><span class="ͼg">.</span><span>menu</span><span class="ͼg">.</span><span>actor</span><span class="ͼg">.</span><span>visible </span><span class="ͼg">=</span><span> </span><span class="ͼj">false</span><span>;
+}</span></code></pre>
+<div class="row">
+    <div class="col"><span>No hace:</span>
+        <pre><samp>this.menu.close();</samp></pre>
+    </div>
+    <div class="col"><span>Hace:</span>
+        <pre><samp>visible = false;</samp></pre>
+    </div>
+</div>
+<p><b>¿Por qué?</b>&nbsp;No quiero afirmar nada, pero sí formular una hipótesis.</p>
+<blockquote>Creo que Selenium-H quería evitar que el usuario viera el menú abrirse durante una fracción de segundo.
+</blockquote>
+<p>Imagina esto si hiciera click:</p>
+<pre><samp>Click
+↓
+
+Menú abre
+↓
+
+close()
+↓
+
+Menú cierra</samp></pre>
+<p>Tal vez se alcanzaría a percibir un pequeño parpadeo. En cambio:</p>
+<pre><samp>Click
+↓
+
+visible = false
+↓
+
+El usuario prácticamente nunca llega a verlo.</samp></pre>
+<p><strong data-start="2596" data-end="2621">Es solo una hipótesis</strong>, pero me parece coherente con el comentario.
+</p>
+<hr>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>dndToggle();</span></code></pre>
+<p>El clic central sirve únicamente para:</p>
+<blockquote>Alternar el modo No Molestar.</blockquote>
+<hr>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>loadDndStatus();</span></code></pre>
+<p>Esto me parece muy elegante. Primero cambia el estado, luego actualiza la interfaz.&nbsp;</p>
+<pre><samp>Cambiar DND
+↓
+
+Actualizar icono
+↓
+
+Actualizar etiqueta
+↓
+
+Actualizar lo necesario</samp></pre>
+<hr>
+<pre><code><span class="ͼg">return</span><span>;</span></code></pre>
+<p>Sale del método. No necesita hacer nada más.</p>
+<h3>Observaciones</h3>
+<hr>
+<blockquote>¿Por qué escucha <code data-start="227" data-end="247">button-press-event</code> si solo le interesa el
+    botón central?</blockquote>
+<p>Esta sigue siendo una muy buena pregunta, el código nos dice:</p>
+<pre><samp>this.actor.connect('button-press-event', ...);</samp></pre>
+<p>Para luego:</p>
+<pre><samp>switch(event.get_button()) {
+    case 2:
+        ...
+}</samp></pre>
+<p>Lo único que podemos afirmar, GNOME le entrega <strong data-start="553" data-end="562">todos</strong> los clics
+    mediante ese evento, después, Selenium-H decide cuál le interesa. Hasta aquí, es un hecho.</p>
+<h4>¿Existía un evento solo para el botón central?</h4>
+<p>Podemos plantear varias posibilidades:</p>
+<h5>Hipótesis A:</h5>
+<p>GNOME/GObject simplemente ofrece un único evento:&nbsp;<i>button-press-event</i></p>
+<p>Y el botón se consulta mediante:&nbsp;<i>event.get_button()</i></p>
+<p>Si eso es así... No había otra opción.</p>
+<h5>Hipótesis B:&nbsp;</h5>
+<p>Sí existe otra forma, pero Selenium-H prefirió esta porque es el patrón habitual en GTK/GNOME.</p>
+<h5>Hipótesis C:</h5>
+<p>Existía otra forma, pero en GNOME 40 no funcionaba correctamente o era menos portable.</p>
+<h5>¿Cuál creo hoy?</h5>
+<p>Después de haber visto bastante código de esta extensión... Me inclino todavía más por la Hipótesis A.</p>
+<h6>¿Por qué?</h6>
+<p>Porque Selenium-H reutiliza muchísimo la API de GNOME, no da la impresión de ser alguien que haga rodeos
+    innecesarios. Si hubiera existido un elegante:&nbsp;<i>middle-button-press-event&nbsp;</i>me sorprendería que no lo
+    hubiera usado.</p>
+<p>Pero... Eso sigue siendo una hipótesis.&nbsp;Pero... Eso sigue siendo una hipótesis y eso ya sería una investigación
+    aparte.</p>

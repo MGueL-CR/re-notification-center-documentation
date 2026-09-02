@@ -1,0 +1,139 @@
+<h2>loadDndStatus()</h2>
+<hr>
+<pre><code><span class="hljs-attr">loadDndStatus</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) {
+
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">isDndOff</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">dndpref</span>.<span class="hljs-title function_">get_boolean</span>(<span class="hljs-string">"show-banners"</span>);
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">dndItem</span>.<span class="hljs-title function_">setToggleState</span>(!<span class="hljs-variable language_">this</span>.<span class="hljs-property">isDndOff</span>);
+    
+        <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">blinkIconStopIfBlinking</span>();
+        <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">manageAutohide</span>();
+    
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">notificationIcon</span>.<span class="hljs-property">icon_name</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">notificationIconName</span>;
+    
+        <span class="hljs-keyword">if</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">isDndOff</span>) {
+          <span class="hljs-variable language_">this</span>.<span class="hljs-property">notificationIcon</span>.<span class="hljs-title function_">set_opacity</span>(<span class="hljs-number">255</span>);
+          <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">manageLabel</span>();
+          <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+        }
+     
+        <span class="hljs-keyword">if</span>(<span class="hljs-title class_">Gtk</span>.<span class="hljs-property">IconTheme</span>.<span class="hljs-title function_">get_default</span>())  {
+          <span class="hljs-keyword">if</span>(<span class="hljs-title class_">Gtk</span>.<span class="hljs-property">IconTheme</span>.<span class="hljs-title function_">get_default</span>().<span class="hljs-title function_">has_icon</span>(<span class="hljs-string">"notifications-disabled-symbolic"</span>)) {
+            <span class="hljs-variable language_">this</span>.<span class="hljs-property">notificationIcon</span>.<span class="hljs-property">icon_name</span> = <span class="hljs-string">"notifications-disabled-symbolic"</span>;
+          }
+        }
+        <span class="hljs-keyword">else</span> {
+          <span class="hljs-variable language_">this</span>.<span class="hljs-property">notificationIcon</span>.<span class="hljs-title function_">set_opacity</span>(<span class="hljs-number">150</span>);
+        }
+    
+        [ <span class="hljs-variable language_">this</span>.<span class="hljs-property">notificationLabel</span>.<span class="hljs-property">visible</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">eventsLabel</span>.<span class="hljs-property">visible</span>] = [ <span class="hljs-literal">false</span>, <span class="hljs-literal">false</span> ];
+        
+        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+    
+      }</code></pre>
+<p>Debo decir que con esto&nbsp;<strong data-start="34" data-end="93">acabamos de confirmar varias hipótesis de un solo
+        golpe</strong>.</p>
+<p>Este método es mucho más rico de lo que esperaba. No solo carga el estado de DND, sino que <strong data-start="187"
+        data-end="218">sincroniza toda la interfaz</strong> con ese estado.</p>
+<p>Cuando uno lee&nbsp;<span class="ͼm"></span><code
+        class="inline-code"><span class="ͼm">loadDndStatus</span>()</code>&nbsp;piensa:</p>
+<blockquote>"Va a leer el estado."</blockquote>
+<p>Pero en realidad hace mucho más. Yo lo renombraría mentalmente como:&nbsp;</p>
+<blockquote>"Sincronizar la interfaz con el estado DND."</blockquote>
+<p>Porque eso es exactamente lo que hace.</p>
+<hr>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>isDndOff </span><span class="ͼg">=</span><span> </span><span class="ͼj">this</span><span class="ͼg">.</span><span>dndpref</span><span class="ͼg">.</span><span>get_boolean(</span><span class="ͼk">"show-banners"</span><span>);</span></code></pre>
+<p>¡Aquí está el famoso estado! Y además nos revela algo muy interesante, no existe una preferencia llamada:
+    <b><i>do-not-disturb&nbsp;</i></b>sino que utiliza: <i><b>show-banners</b></i>&nbsp;
+</p>
+<p>Eso tiene muchísimo sentido, porque GNOME realmente implementa el "No molestar" como:</p>
+<blockquote>"¿Mostrar banners?"</blockquote>
+<p>Si: <b>show-banners</b> = <i>true&nbsp;</i>Entonces... No molestar está <strong data-start="1022"
+        data-end="1037">desactivado</strong>, por eso la variable se llama:&nbsp;<b><i>isDndOff</i></b></p>
+<hr>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>dndItem</span><span class="ͼg">.</span><span>setToggleState(</span><span class="ͼg">!</span><span class="ͼj">this</span><span class="ͼg">.</span><span>isDndOff);</span></code></pre>
+<p>Aquí también aprendemos algo, hay un interruptor (toggle) dentro de la extensión y lo pone sincronizado con el estado
+    real.&nbsp;</p>
+<pre><samp>GNOME
+↓
+
+Preferencia
+↓
+
+Switch de la extensión</samp></pre>
+<p>Todo queda alineado.</p>
+<hr>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>blinkIconStopIfBlinking();</span></code></pre>
+<p>Imagina el escenario.</p>
+<pre><samp>Llegan notificaciones.
+↓
+
+La campana está parpadeando.
+↓
+
+El usuario activa DND.
+↓
+
+¿Tiene sentido seguir parpadeando?
+
+No. Entonces... blinkIconStopIfBlinking();</samp></pre>
+<hr>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>manageAutohide();</span></code></pre>
+<p>Esto también me parece lógico, porque activar DND puede cambiar si el indicador debe permanecer visible o no.</p>
+<p>Otra vez... No sabemos exactamente qué hace <code data-start="1942" data-end="1960">manageAutohide()</code>, pero
+    entendemos perfectamente por qué lo llama.</p>
+<hr>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>notificationIcon</span><span class="ͼg">.</span><span>icon_name </span><span class="ͼg">=</span><span> </span><span class="ͼj">this</span><span class="ͼg">.</span><span>notificationIconName;</span></code></pre>
+<p>Deja el icono normal.</p>
+<hr>
+<pre><code><span class="ͼg">if</span><span>(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>isDndOff)</span></code></pre>
+<p>Si DND está desactivado, hace&nbsp;<b><i>set_opacity(255);</i></b>&nbsp;y el icono queda completamente visible.
+    Luego&nbsp;<b><i>manageLabel();</i></b>&nbsp;Y termina.</p>
+<p>Pero... Cuando DND está activo... Aquí estaba la sorpresa.</p>
+<pre><code><span class="ͼg">if</span><span>(</span><span class="ͼm">Gtk</span><span class="ͼg">.</span><span>IconTheme</span><span class="ͼg">.</span><span>get_default()) {</span></code></pre>
+<p>Busca si el tema tiene un icono específico y pregunta:</p>
+<pre><samp>has_icon(
+"notifications-disabled-symbolic"
+)</samp></pre>
+<p>No asume que todos los temas lo tengan, pregunta primero.</p>
+<div class="row">
+    <div class="col"><span>Si existe... Lo utiliza.</span>
+        <pre><samp>notificationIcon.icon_name =
+"notifications-disabled-symbolic";</samp></pre>
+    </div>
+    <div class="col"><span>Y si NO existe... Hace un plan B.</span>
+        <pre><samp>set_opacity(150);</samp></pre><span>No cambia el icono, solo lo atenúa.</span>
+    </div>
+</div>
+<h5>¿Por qué pregunta?</h5>
+<p>Porque Selenium-H pensó en la compatibilidad.</p>
+<div class="row">
+    <div class="col"><span>No dijo:</span>
+        <blockquote>"Todos los temas tienen ese icono."</blockquote>
+    </div>
+    <div class="col"><span>Dijo:</span>
+        <blockquote>"Si existe, úsalo."</blockquote>
+    </div>
+</div>
+<p>Si no... Al menos el usuario verá una diferencia.</p>
+<hr>
+<pre><code><span>[
+</span><span class="ͼj">this</span><span class="ͼg">.</span><span>notificationLabel</span><span class="ͼg">.</span><span>visible,
+</span><span class="ͼj">this</span><span class="ͼg">.</span><span>eventsLabel</span><span class="ͼg">.</span><span>visible
+] </span><span class="ͼg">=</span><span> [ </span><span class="ͼj">false</span><span>, </span><span class="ͼj">false</span><span> ];</span></code></pre>
+<p>Otra sorpresa. No solo cambia la campana, también oculta las etiquetas. Es decir... El indicador queda mucho más
+    discreto cuando DND está activo.</p>
+<h3>En un resumen</h3>
+<hr>
+<p>Si tuviera que resumir <code data-start="4726" data-end="4743">loadDndStatus()</code> en una frase sería:</p>
+<blockquote>"Sincroniza completamente la interfaz del Notification Center con el estado real del modo No Molestar."
+</blockquote>
+<p>No solo consulta una preferencia, si no que actualiza:</p>
+<ul>
+    <li>el interruptor</li>
+    <li>la campana</li>
+    <li>la opacidad</li>
+    <li>las etiquetas</li>
+    <li>el parpadeo,</li>
+    <li>el autohide</li>
+</ul>
+<p>Todo queda coherente con un único estado.</p>
