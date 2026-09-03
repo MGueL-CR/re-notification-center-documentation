@@ -1,0 +1,157 @@
+<h2>manageEvents()</h2>
+<hr>
+<pre><code><span class="hljs-attr">manageEvents</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params">action</span>) {
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">eventsSection</span>.<span class="hljs-property">visible</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">showEventsSectionIfEmpty</span> || <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">shouldShowEventsSection</span>() ;       
+    <span class="hljs-keyword">if</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">showEventsInCalendarAlso</span> == <span class="hljs-literal">true</span>) {
+      <span class="hljs-keyword">switch</span>(action) {
+        <span class="hljs-keyword">case</span> <span class="hljs-number">0</span>:
+          <span class="hljs-keyword">if</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">eventsSectionhere</span> == <span class="hljs-literal">true</span>) {
+            <span class="hljs-keyword">return</span>;
+          }
+          <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">removeSection</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">eventsSection</span>);
+          <span class="hljs-variable language_">this</span>.<span class="hljs-property">box</span>.<span class="hljs-title function_">insert_child_at_index</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">eventsSection</span>,<span class="hljs-variable language_">this</span>.<span class="hljs-property">showingSections</span>.<span class="hljs-title function_">indexOf</span>(<span class="hljs-string">"events"</span>));
+          <span class="hljs-variable language_">this</span>.<span class="hljs-property">eventsSectionhere</span> = <span class="hljs-literal">true</span>;
+          <span class="hljs-keyword">return</span>;
+        <span class="hljs-keyword">case</span> <span class="hljs-number">1</span>:
+          <span class="hljs-keyword">if</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">eventsSectionhere</span> == <span class="hljs-literal">false</span>) {
+            <span class="hljs-keyword">return</span>;
+          }
+          <span class="hljs-variable language_">this</span>.<span class="hljs-property">box</span>.<span class="hljs-title function_">remove_child</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">box</span>.<span class="hljs-title function_">get_children</span>()[<span class="hljs-variable language_">this</span>.<span class="hljs-property">showingSections</span>.<span class="hljs-title function_">indexOf</span>(<span class="hljs-string">"events"</span>)]);
+          <span class="hljs-variable language_">this</span>.<span class="hljs-property">newEventsSectionParent</span>.<span class="hljs-title function_">insert_child_at_index</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">eventsSection</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">eventsSectionPosition</span>);
+          <span class="hljs-variable language_">this</span>.<span class="hljs-property">eventsSectionhere</span> = <span class="hljs-literal">false</span>;
+          <span class="hljs-keyword">return</span>;
+      }
+    }
+  }</code></pre>
+<p>A primera vista parece sencillo, pero en realidad <strong data-start="98" data-end="195">es el primer método donde la
+        extensión empieza a mover físicamente componentes de la interfaz</strong>. Hasta ahora habíamos visto cargar
+    datos (<code data-start="238" data-end="257">loadPreferences()</code>), cambiar un estado (<code data-start="279"
+        data-end="292">dndToggle()</code>) o sincronizar la interfaz (<code data-start="321"
+        data-end="338">loadDndStatus()</code>). Aquí ya estamos <strong data-start="357" data-end="394">reorganizando el
+        árbol de widgets</strong>.</p>
+<p>Y hay algo que quiero decir desde el principio. <i>Este método tiene un nombre... que se queda corto</i>.&nbsp;</p>
+<p>Si yo leo&nbsp;<span class="ͼm">manageEvents</span>() pienso:&nbsp;<span
+        style="color: rgb(71, 85, 105); background-color: rgb(248, 250, 252);"><i>"Va a gestionar los
+            eventos",&nbsp;</i></span>pero realmente hace algo mucho más específico:</p>
+<blockquote>Gestiona la posición y la visibilidad de la sección de eventos.</blockquote>
+<p>No gestiona los eventos del calendario en sí, gestiona <strong data-start="764" data-end="777">el widget</strong> que
+    los muestra.</p>
+<hr>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>eventsSection</span><span class="ͼg">.</span><span>visible </span><span class="ͼg">=</span><span>
+    </span><span class="ͼj">this</span><span class="ͼg">.</span><span>showEventsSectionIfEmpty </span><span class="ͼg">||</span><span>
+    </span><span class="ͼj">this</span><span class="ͼg">.</span><span>shouldShowEventsSection();</span></code></pre>
+<p>Traducida al español sería:</p>
+<blockquote>
+    <p data-start="998" data-end="1037" class="PDq2pG_selectionAnchorContainer">"La sección de eventos será visible
+        si:<span aria-hidden="true" class="PDq2pG_selectionAnchor"></span></p>
+    <ul data-start="1042" data-end="1136">
+        <li data-start="1042" data-end="1092">
+            el usuario quiere verla aunque esté vacía, <strong data-start="1087" data-end="1092">o</strong>
+        </li>
+        <li data-start="1095" data-end="1136">
+            realmente existen eventos que mostrar."</li>
+    </ul>
+</blockquote>
+<p>Es una condición muy natural.</p>
+<hr>
+<pre><code><span class="ͼg">if</span><span>(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>showEventsInCalendarAlso </span><span class="ͼg">==</span><span> </span><span class="ͼj">true</span><span>)</span></code></pre>
+<p>Aquí recordé inmediatamente algo que vimos en <code data-start="1321" data-end="1340">loadPreferences()</code>.
+    ¿Recuerdas?</p>
+<blockquote>
+    <div>this.showEventsInCalendarAlso =</div>
+    <div>(</div>
+    <div>&nbsp; &nbsp; this.eventsSectionToBeShown &amp;&amp;</div>
+    <div>&nbsp; &nbsp; this.eventsSectionPosition != 1</div>
+    <div>)</div>
+</blockquote>
+<p>Así que ya sabemos exactamente qué significa, si esta variable es falsa... Todo el resto del método ni siquiera se
+    ejecuta.</p>
+<hr>
+<pre><code><span class="ͼg">switch</span><span>(</span><span class="ͼm">action</span><span>)</span></code></pre>
+<p>Ahora viene el famoso <code data-start="1638" data-end="1646">action</code>&nbsp;y aquí quiero detenerme.</p>
+<h4>Primera observación</h4>
+<p>Este método recibe un parámetro&nbsp;<i><span class="ͼm">manageEvents</span>(<span class="ͼm">action</span>)</i>,
+    pero... No sabemos todavía quién lo llama con 0 y quién con 1.</p>
+<p>Y eso está bien, no hace falta inventarlo, solo podemos deducir lo que significan.</p>
+<h5>Case 0:</h5>
+<p><b>Primero pregunta:</b> Si ya está donde debe estar... No hace nada, eso evita trabajo innecesario.</p>
+<pre><code><span class="ͼg">if</span><span>(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>eventsSectionhere </span><span class="ͼg">==</span><span> </span><span class="ͼj">true</span><span>)</span></code></pre>
+<p>Aquí ocurre algo importante. No la destruye, no la elimina, solo la desacopla de donde estaba.</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>removeSection(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>eventsSection);</span></code></pre>
+<p>¡Ahora sí! La vuelve a insertar, pero en otro sitio.</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>box</span><span class="ͼg">.</span><span>insert_child_at_index(
+    </span><span class="ͼj">this</span><span class="ͼg">.</span><span>eventsSection,
+    ...
+);</span></code></pre>
+<p>Marca internamente:</p>
+<blockquote>"La sección ya está aquí."</blockquote>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>eventsSectionhere </span><span class="ͼg">=</span><span> </span><span class="ͼj">true</span><span>;</span></code></pre>
+<h5>Case 1:</h5>
+<p>Es exactamente el proceso inverso.</p>
+<pre><code><span class="ͼg">if</span><span>(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>eventsSectionhere </span><span class="ͼg">==</span><span> </span><span class="ͼj">false</span><span>)</span></code></pre>
+<p>Primero pregunta: Si ya no está aquí... No hace nada.</p>
+<p>Después, la saca.</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>box</span><span class="ͼg">.</span><span>remove_child(...)</span></code></pre>
+<p>Para luego insertarla en otro contenedor.</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>newEventsSectionParent</span><span class="ͼg">.</span><span>insert_child_at_index(...)</span></code></pre>
+<p>Y finalmente actualiza el estado.</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>eventsSectionhere </span><span class="ͼg">=</span><span> </span><span class="ͼj">false</span><span>;</span></code></pre>
+<hr>
+<h3>En resumen</h3>
+<hr>
+<p>Lo que realmente hace el método no crea una segunda sección. <b>Es exactamente el mismo widget moviéndose de un
+        contenedor a otro</b>. Y eso me parece una decisión muy inteligente.</p>
+<p>Si lo dibujo...</p>
+<pre><samp>Contenedor A
+
+──────────────
+
+Media
+
+Notificaciones
+
+Eventos   ← aquí
+
+──────────────</samp></pre>
+<p>Con una acción:&nbsp;</p>
+<pre><samp>remove
+↓
+
+Contenedor A
+──────────────
+
+Media
+
+Notificaciones
+
+──────────────
+
+↓
+
+Contenedor B
+──────────────
+
+Calendario
+
+Eventos   ← ahora aquí
+
+──────────────
+</samp></pre>
+<hr>
+<h4>Sobre <code data-start="4305" data-end="4313">action</code></h4>
+<p>Aquí sí quiero hacer una pequeña apuesta para el futuro, no sobre el código, sino sobre el diseño.&nbsp;</p>
+<p>Creo que: <i>action = 0</i> significa:</p>
+<blockquote>"Mover la sección al panel principal."</blockquote>
+<p>Y <i>action = 1</i> significa:</p>
+<blockquote>"Mover la sección junto al calendario."</blockquote>
+<p>No puedo afirmarlo todavía, pero me parece la interpretación más coherente con lo que vemos.</p>
+<hr>
+<h4>Una pequeña crítica constructiva</h4>
+<p>Este es el primer método donde quizá habría usado un <code data-start="4779" data-end="4785">enum</code> o
+    constantes.</p>
+<p>Porque leer:&nbsp;<span class="ͼm">manageEvents</span>(<span class="ͼj">0</span>) no dice absolutamente nada.
+    Mientras que algo como:&nbsp;<span class="ͼm">manageEvents</span>(<span class="ͼm">MOVE_TO_MAIN_BOX</span>);
+    o&nbsp;<span class="ͼm">manageEvents</span>(<span class="ͼm">MOVE_TO_CALENDAR</span>); haría el código mucho más
+    expresivo.</p>
+<p>Claro, estamos hablando de un proyecto escrito hace varios años y en el estilo de GJS de aquella época. No es un
+    error, simplemente una decisión de diseño que hoy probablemente escribiríamos de otra manera.</p>

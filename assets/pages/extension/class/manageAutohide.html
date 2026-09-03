@@ -1,0 +1,196 @@
+<h2>manageAutohide</h2>
+<hr>
+<pre><code><span class="hljs-attr">manageAutohide</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+
+    <span class="hljs-keyword">if</span>(!<span class="hljs-variable language_">this</span>.<span class="hljs-property">menu</span>.<span class="hljs-property">isOpen</span>) {
+      <span class="hljs-variable language_">this</span>.<span class="hljs-property">mediaIcon</span>.<span class="hljs-property">visible</span>        = <span class="hljs-variable language_">this</span>.<span class="hljs-property">mediaSection</span>.<span class="hljs-title function_">_shouldShow</span>() &amp;&amp; <span class="hljs-variable language_">this</span>.<span class="hljs-property">showThreeIcons</span> &amp;&amp; <span class="hljs-variable language_">this</span>.<span class="hljs-property">mediaSectionToBeShown</span>;
+      <span class="hljs-variable language_">this</span>.<span class="hljs-property">eventsIcon</span>.<span class="hljs-property">visible</span>       = (<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">shouldShowEventsSection</span>()) &amp;&amp; <span class="hljs-variable language_">this</span>.<span class="hljs-property">showThreeIcons</span> &amp;&amp; <span class="hljs-variable language_">this</span>.<span class="hljs-property">eventsSectionToBeShown</span>;
+      <span class="hljs-variable language_">this</span>.<span class="hljs-property">notificationIcon</span>.<span class="hljs-property">visible</span> = (<span class="hljs-variable language_">this</span>.<span class="hljs-property">notificationSection</span>.<span class="hljs-property">_list</span>.<span class="hljs-title function_">get_children</span>().<span class="hljs-property">length</span> &amp;&amp; <span class="hljs-variable language_">this</span>.<span class="hljs-property">notificationSectionToBeShown</span>) ||
+                                      (<span class="hljs-variable language_">this</span>.<span class="hljs-property">mediaSection</span>.<span class="hljs-title function_">_shouldShow</span>() &amp;&amp; <span class="hljs-variable language_">this</span>.<span class="hljs-property">mediaSectionToBeShown</span> &amp;&amp; !<span class="hljs-variable language_">this</span>.<span class="hljs-property">showThreeIcons</span>) ||
+                                      ((<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">shouldShowEventsSection</span>()) &amp;&amp; <span class="hljs-variable language_">this</span>.<span class="hljs-property">eventsSectionToBeShown</span> &amp;&amp; !<span class="hljs-variable language_">this</span>.<span class="hljs-property">showThreeIcons</span>) ||
+                                      ((!<span class="hljs-variable language_">this</span>.<span class="hljs-property">isDndOff</span>)*<span class="hljs-variable language_">this</span>.<span class="hljs-property">autohide</span> &gt; <span class="hljs-number">1</span>);
+      <span class="hljs-keyword">if</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">mediaIcon</span>.<span class="hljs-property">visible</span> || <span class="hljs-variable language_">this</span>.<span class="hljs-property">eventsIcon</span>.<span class="hljs-property">visible</span> || <span class="hljs-variable language_">this</span>.<span class="hljs-property">notificationIcon</span>.<span class="hljs-property">visible</span> || !<span class="hljs-variable language_">this</span>.<span class="hljs-property">autohide</span>) {
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">visible</span> = <span class="hljs-literal">true</span>;
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">notificationIcon</span>.<span class="hljs-property">visible</span> = (<span class="hljs-variable language_">this</span>.<span class="hljs-property">mediaIcon</span>.<span class="hljs-property">visible</span> || <span class="hljs-variable language_">this</span>.<span class="hljs-property">eventsIcon</span>.<span class="hljs-property">visible</span>) ? <span class="hljs-variable language_">this</span>.<span class="hljs-property">notificationIcon</span>.<span class="hljs-property">visible</span> : <span class="hljs-literal">true</span>;
+        <span class="hljs-keyword">return</span>;
+      }
+      <span class="hljs-variable language_">this</span>.<span class="hljs-property">visible</span> = <span class="hljs-literal">false</span>;
+    }
+    <span class="hljs-keyword">else</span> {
+      <span class="hljs-variable language_">this</span>.<span class="hljs-property">noNotificationLabel</span>.<span class="hljs-property">visible</span> = !((<span class="hljs-variable language_">this</span>.<span class="hljs-property">mediaSection</span>.<span class="hljs-title function_">_shouldShow</span>() &amp;&amp; <span class="hljs-variable language_">this</span>.<span class="hljs-property">mediaSectionToBeShown</span>) || (<span class="hljs-variable language_">this</span>.<span class="hljs-property">notificationSection</span>.<span class="hljs-property">_list</span>.<span class="hljs-title function_">get_children</span>().<span class="hljs-property">length</span> &amp;&amp; <span class="hljs-variable language_">this</span>.<span class="hljs-property">notificationSectionToBeShown</span>) || ((<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">shouldShowEventsSection</span>() || <span class="hljs-variable language_">this</span>.<span class="hljs-property">showEventsSectionIfEmpty</span>) &amp;&amp; <span class="hljs-variable language_">this</span>.<span class="hljs-property">eventsSectionToBeShown</span>))
+      <span class="hljs-variable language_">this</span>.<span class="hljs-property">box</span>.<span class="hljs-property">style_class</span> = (<span class="hljs-variable language_">this</span>.<span class="hljs-property">noNotificationLabel</span>.<span class="hljs-property">visible</span>) ? <span class="hljs-string">"notification-center-message-list-empty"</span> : <span class="hljs-string">"notification-center-message-list"</span>;      
+    }
+
+  }</code></pre>
+<pre><code><span class="ͼg">if</span><span>(</span><span class="ͼg">!</span><span class="ͼj">this</span><span class="ͼg">.</span><span>menu</span><span class="ͼg">.</span><span>isOpen) {</span></code></pre>
+<p>Esta línea ya nos dice muchísimo. Todo el método está dividido en <strong data-start="487" data-end="525">dos mundos
+        completamente distintos</strong>. Eso me parece un diseño muy limpio.</p>
+<pre><samp>Menú cerrado
+        │
+        ▼
+Ocultar/mostrar el indicador del panel superior
+
+----------------------------
+
+Menú abierto
+        │
+        ▼
+Ocultar/mostrar elementos dentro del Notification Center</samp></pre>
+<h4>Cuando el menú está cerrado</h4>
+<p>Aquí toda la lógica gira alrededor del <strong data-start="855" data-end="873">panel superior</strong>. Por ejemplo:
+</p>
+<pre><samp>this.mediaIcon.visible = ...
+
+this.eventsIcon.visible = ...
+
+this.notificationIcon.visible = ...
+</samp></pre>
+<p>Ya no está tocando:</p>
+<ul>
+    <li>la lista de notificaciones;</li>
+    <li>el calendario;</li>
+    <li>los eventos.</li>
+</ul>
+<p>Está tocando únicamente los iconos pequeños del panel.</p>
+<h5>Primer icono</h5>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>mediaIcon</span><span class="ͼg">.</span><span>visible </span><span class="ͼg">=</span></code></pre>
+<p>Solo será visible si se cumplen <strong data-start="1280" data-end="1288">tres</strong> condiciones.</p>
+<pre><samp>Existe contenido multimedia
+
+Y
+
+El usuario quiere tres iconos
+
+Y
+
+La sección multimedia está habilitada</samp></pre>
+<h5>Segundo icono</h5>
+<p>Exactamente el mismo patrón.</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>eventsIcon</span><span class="ͼg">.</span><span>visible </span><span class="ͼg">=</span></code></pre>
+<p>Solo aparece si:</p>
+<ul>
+    <li>hay eventos;</li>
+    <li>el usuario quiere tres iconos;</li>
+    <li>la sección está habilitada.</li>
+</ul>
+<h5>Tercer icono</h5>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>notificationIcon</span><span class="ͼg">.</span><span>visible </span><span class="ͼg">=</span></code></pre>
+<p>Este sí merece un café. Porque está diciendo:</p>
+<blockquote>"La campana será visible si ocurre cualquiera de estas situaciones."</blockquote>
+<p>Y luego encadena cuatro condiciones con <code data-start="1875" data-end="1879">||</code>. Vamos una por una.</p>
+<h6>Primera:</h6>
+<p>Hay notificaciones. Perfecto.</p>
+<pre><code><span>(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>notificationSection</span><span class="ͼg">.</span><span>_list</span><span class="ͼg">.</span><span>get_children()</span><span class="ͼg">.</span><span>length
+ </span><span class="ͼg">&amp;&amp;</span><span>
+ </span><span class="ͼj">this</span><span class="ͼg">.</span><span>notificationSectionToBeShown)</span></code></pre>
+<h6>Segunda:</h6>
+<p>Si el usuario <strong data-start="2158" data-end="2164">no</strong> quiere tres iconos... La campana representará
+    también la parte multimedia.</p>
+<pre><code><span class="ͼm">mediaSection</span><span class="ͼg">...</span><span>
+
+</span><span class="ͼg">&amp;&amp;</span><span>
+
+</span><span class="ͼg">!</span><span class="ͼj">this</span><span class="ͼg">.</span><span>showThreeIcons</span></code></pre>
+<h6>Tercera:</h6>
+<p>Lo mismo, pero para eventos.</p>
+<br>
+<h6>Cuarta:</h6>
+<p>Aquí sí me detuve.</p>
+<pre><code><span>(</span><span class="ͼg">!</span><span class="ͼj">this</span><span class="ͼg">.</span><span>isDndOff)</span><span class="ͼg">*</span><span class="ͼj">this</span><span class="ͼg">.</span><span>autohide </span><span class="ͼg">&gt;</span><span> </span><span class="ͼj">1</span></code></pre>
+<p>Esta línea es curiosísima, normalmente escribiríamos algo como:</p>
+<pre><samp>if (!this.isDndOff &amp;&amp; this.autohide &gt; 1)</samp></pre>
+<p>Pero Selenium-H hace otra cosa.&nbsp;</p>
+<p>Convierte el booleano:</p>
+<pre><samp>true
+↓
+
+1
+
+false
+↓
+
+0</samp></pre>
+<p>Y luego multiplica: <i>1 × autohide</i> o <i>0 × autohide.</i>&nbsp;Funciona, pero personalmente me parece menos
+    legible. No está mal, solo cuesta más leerla.</p>
+<hr>
+<p>Aquí aparece la verdadera decisión.</p>
+<pre><code><span class="ͼg">if</span><span>(
+</span><span class="ͼj">this</span><span class="ͼg">.</span><span>mediaIcon</span><span class="ͼg">.</span><span>visible </span><span class="ͼg">||</span><span>
+
+</span><span class="ͼj">this</span><span class="ͼg">.</span><span>eventsIcon</span><span class="ͼg">.</span><span>visible </span><span class="ͼg">||</span><span>
+
+</span><span class="ͼj">this</span><span class="ͼg">.</span><span>notificationIcon</span><span class="ͼg">.</span><span>visible </span><span class="ͼg">||</span><span>
+
+</span><span class="ͼg">!</span><span class="ͼj">this</span><span class="ͼg">.</span><span>autohide
+)</span></code></pre>
+<p>Traducción:</p>
+<blockquote>"¿Existe alguna razón para mantener visible el indicador?"</blockquote>
+<div class="row">
+    <div class="col"><span>Si sí...</span>
+        <pre><samp><span>this</span><span>.</span>visible <span>=</span> <span>true</span>;</samp></pre>
+    </div>
+    <div class="col"><span>Si no...</span>
+        <pre><samp><span>this</span><span>.</span>visible <span>=</span> <span>false</span>;</samp></pre>
+    </div>
+</div>
+<p>Aquí está el famoso <strong data-start="3170" data-end="3182">autohide</strong>.</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>notificationIcon</span><span class="ͼg">.</span><span>visible </span><span class="ͼg">=</span><span>
+(
+</span><span class="ͼj">this</span><span class="ͼg">.</span><span>mediaIcon</span><span class="ͼg">.</span><span>visible </span><span class="ͼg">||</span><span>
+
+</span><span class="ͼj">this</span><span class="ͼg">.</span><span>eventsIcon</span><span class="ͼg">.</span><span>visible
+)
+
+</span><span class="ͼg">?</span><span>
+
+</span><span class="ͼj">this</span><span class="ͼg">.</span><span>notificationIcon</span><span class="ͼg">.</span><span>visible
+
+</span><span class="ͼg">:</span><span>
+
+</span><span class="ͼj">true</span><span>;</span></code></pre>
+<p>Esto me hizo pensar un momento y Me llamó la atención esta línea.</p>
+<p>Creo que está evitando quedarse sin ningún icono.&nbsp;</p>
+<p>Imagina:</p>
+<ul>
+    <li>no hay multimedia;</li>
+    <li>no hay eventos;</li>
+    <li>tampoco tres iconos.</li>
+</ul>
+<p>Entonces... La campana debe seguir visible, Si no... El indicador desaparecería completamente.</p>
+<blockquote>Es una especie de red de seguridad.</blockquote>
+<h4>Cuando el menú está abierto</h4>
+<pre><code><span class="ͼg">else</span></code></pre>
+<p>Ahora cambia completamente el escenario, es decir... El menú está abierto, ya no toca el panel superior, ahora toca
+    el contenido interno.</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>noNotificationLabel</span><span class="ͼg">.</span><span>visible </span><span class="ͼg">=</span></code></pre>
+<p>Esta línea es enorme, pero la idea es sencilla. Está diciendo:</p>
+<blockquote>"Mostrar el mensaje 'No hay notificaciones' únicamente cuando realmente no haya nada."</blockquote>
+<p>Y "nada" significa:</p>
+<ul>
+    <li>ni multimedia;</li>
+    <li>ni notificaciones;</li>
+    <li>ni eventos.</li>
+</ul>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>box</span><span class="ͼg">.</span><span>style_class </span><span class="ͼg">=</span></code></pre>
+<p>Aquí cambia la clase CSS. Eso me gusta mucho, porque en lugar de hacer:</p>
+<pre><samp>set_margin
+
+set_padding
+
+set_background</samp></pre>
+<p>Simplemente cambia la clase y deja que el CSS haga el resto. Muy GNOME.</p>
+<h3>En comparación con&nbsp;manageEvents()</h3>
+<hr>
+<p>A primera vista ambos parecen "gestionar" algo, pero creo que su responsabilidad es distinta.</p>
+<ul>
+    <li><code>manageEvents()</code> → <strong>reorganiza</strong> la interfaz.</li>
+    <li><code>manageAutohide()</code> → <strong>decide qué mostrar y qué ocultar</strong>.</li>
+</ul>
+<p>Es como si uno fuera el arquitecto que organiza la casa y el otro el encargado de encender y apagar las luces.</p>
+<hr>
+<h4>manageEvents()</h4>
+<p>Se preocupa por:</p>
+<blockquote>¿Dónde está la sección de eventos?</blockquote>
+<h4>manageAutohide()</h4>
+<p>Se preocupa por:</p>
+<blockquote>¿Qué debe ser visible en este momento?</blockquote>
