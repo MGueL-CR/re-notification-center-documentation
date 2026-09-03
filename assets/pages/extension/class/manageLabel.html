@@ -1,0 +1,122 @@
+<h2>manageLabel()</h2>
+<hr>
+<pre><code><span class="hljs-attr">manageLabel</span>:<span class="hljs-keyword">function</span>(<span class="hljs-params">nCount,eCount</span>) {
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">notificationLabel</span>.<span class="hljs-property">visible</span> = nCount*<span class="hljs-variable language_">this</span>.<span class="hljs-property">newNotificationAction</span>;
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">eventsLabel</span>.<span class="hljs-property">visible</span> = eCount*<span class="hljs-variable language_">this</span>.<span class="hljs-property">newNotificationAction</span> &amp;&amp; (<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">shouldShowEventsSection</span>() &gt; <span class="hljs-number">0</span>);
+
+    <span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">changeIcons</span>) {
+      <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">manageIconChange</span>(nCount &gt; <span class="hljs-number">0</span> || eCount &gt; <span class="hljs-number">0</span>);
+    }
+
+    <span class="hljs-keyword">if</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">newNotificationAction</span> == <span class="hljs-number">2</span>) {
+      <span class="hljs-keyword">if</span>(nCount&gt;<span class="hljs-number">0</span>) {
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">notificationLabel</span>.<span class="hljs-property">text</span>=nCount.<span class="hljs-title function_">toString</span>();
+      }
+      <span class="hljs-keyword">if</span>(eCount &gt; <span class="hljs-number">0</span> ) {
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">eventsLabel</span>.<span class="hljs-property">text</span>=eCount.<span class="hljs-title function_">toString</span>();
+      }
+    }
+  }</code></pre>
+<hr>
+<pre><code><span class="ͼo">manageLabel</span><span>:</span><span class="ͼg">function</span><span>(</span><span class="ͼm">nCount</span><span>,</span><span class="ͼm">eCount</span><span>)</span></code></pre>
+<p>Este método ya no consulta nada, No pregunta:&nbsp;<i><span class="ͼj">this</span><span
+            class="ͼg">.</span>notificationSection</i><span class="ͼg"><i>...</i>&nbsp;</span>Ni:&nbsp;<span class="ͼj"
+        style="font-style: italic;">this</span><span class="ͼg" style="font-style: italic;">.</span><i>prefs</i><span
+        class="ͼg"><i>... </i></span></p>
+<p>Porque todo eso ya ocurrió antes. Él simplemente recibe dos datos:</p>
+<ul>
+    <li><code>nCount</code> → cantidad de notificaciones.</li>
+    <li><code>eCount</code> → cantidad de eventos.</li>
+</ul>
+<p>Eso me gusta porque convierte a <code data-start="637" data-end="652">manageLabel()</code> en un método bastante
+    independiente.</p>
+<hr>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>notificationLabel</span><span class="ͼg">.</span><span>visible </span><span class="ͼg">=</span><span>
+    </span><span class="ͼm">nCount</span><span> </span><span class="ͼg">*</span><span> </span><span class="ͼj">this</span><span class="ͼg">.</span><span>newNotificationAction;</span></code></pre>
+<p>Aquí Selenium-H vuelve a hacer uno de sus "trucos". En lugar de escribir:&nbsp;<i><span class="ͼm">nCount</span>
+        <span class="ͼg">&gt;</span> <span class="ͼj">0</span> <span class="ͼg">&amp;&amp;</span> <span
+            class="ͼj">this</span><span class="ͼg">.</span>newNotificationAction</i>&nbsp;utiliza la multiplicación.</p>
+<p>Si imaginamos:</p>
+<pre><samp>nCount = 3
+
+newNotificationAction = 1</samp></pre>
+<p>Resultado: <i>3</i>&nbsp;JavaScript lo interpreta como verdadero.</p>
+<p>Si: <i>nCount = 0</i> Resultado: <i>0.</i> Que es falso. Funciona perfectamente, aunque personalmente me cuesta un
+    poco más leerlo.</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>eventsLabel</span><span class="ͼg">.</span><span>visible </span><span class="ͼg">=</span></code></pre>
+<p>Después hace exactamente lo mismo, pero añade una condición extra: <span class="ͼj">this</span><span
+        class="ͼg">.</span>shouldShowEventsSection() <span class="ͼg">&gt;</span> <span class="ͼj">0</span> tiene
+    lógica.</p>
+<p>Aunque existan eventos... Si esa sección no debe mostrarse... No tiene sentido enseñar el contador.</p>
+<hr>
+<pre><code><span class="ͼg">if</span><span> (</span><span class="ͼj">this</span><span class="ͼg">.</span><span>changeIcons) { ... }</span></code></pre>
+<p>¡Ya encontramos el puente con el siguiente método!</p>
+<p>Si la preferencia está activada...&nbsp;<i><span class="ͼj">this</span><span
+            class="ͼg">.</span>manageIconChange(...)</i> y además le pasa:&nbsp;<i><span class="ͼm">nCount</span> <span
+            class="ͼg">&gt;</span> <span class="ͼj">0</span> <span class="ͼg">||</span> <span class="ͼm">eCount</span>
+        <span class="ͼg">&gt;</span> <span class="ͼj">0</span></i>, no le pasa los números, solo le pasa un booleano.
+</p>
+<pre><samp>¿Existe algo nuevo?
+↓
+
+Sí / No</samp></pre>
+<p>Eso me gusta mucho. porque <code data-start="1976" data-end="1996">manageIconChange()</code> no necesita saber si
+    hay:</p>
+<ul>
+    <li>2 notificaciones,</li>
+    <li>15 notificaciones,</li>
+    <li>1 evento.</li>
+</ul>
+<p>Solo necesita saber:</p>
+<blockquote>¿Debo cambiar el icono o no?</blockquote>
+<p>Muy buena separación de responsabilidades.</p>
+<hr>
+<pre><code><span class="ͼg">if</span><span>(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>newNotificationAction </span><span class="ͼg">==</span><span> </span><span class="ͼj">2</span><span>)</span></code></pre>
+<p>Aquí descubrimos algo que antes solo intuíamos. Parece que <code data-start="2323"
+        data-end="2346">newNotificationAction</code> tiene distintos modos. Uno de ellos es: 2 y&nbsp; cuando vale 2...
+</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>notificationLabel</span><span class="ͼg">.</span><span>text </span><span class="ͼg">=</span><span>
+    </span><span class="ͼm">nCount</span><span class="ͼg">.</span><span>toString();</span></code></pre>
+<p>En lugar de mostrar un simple indicador, muestra el número y lo mismo para eventos.</p>
+<h4>Observa el flujo.</h4>
+<hr>
+<pre><samp>manageLabel()
+
+│
+
+├── Mostrar u ocultar etiquetas
+
+│
+
+├── (opcional)
+
+│      llamar a manageIconChange()
+
+│
+
+└── (opcional)
+
+       actualizar el texto</samp></pre>
+<p>Me gusta una cosa del diseño</p>
+<ul>
+    <li>No hace nada más.</li>
+    <li>No toca el autohide.</li>
+    <li>No toca eventos.</li>
+    <li>No mueve widgets.</li>
+    <li>Solo administra las etiquetas.</li>
+</ul>
+<h4>Hay un pequeño detalle&nbsp;</h4>
+<hr>
+<p>Cuando hace:&nbsp;<span class="ͼg">if</span>(<span class="ͼm">nCount</span> <span class="ͼg">&gt;</span> <span
+        class="ͼj">0</span>) no escribe:&nbsp;<span class="ͼj">this</span><span
+        class="ͼg">.</span>notificationLabel<span class="ͼg">.</span>text <span class="ͼg">=</span> <span
+        class="ͼk">"0"</span>;&nbsp;</p>
+<p>Simplemente deja el texto anterior y eso está bien, porque cuando el contador deja de ser visible... El contenido ya
+    no importa.</p>
+<h4>Mi única observación</h4>
+<hr>
+<p>Aquí sí habría usado nombres un poco más expresivos.</p>
+<p>Por ejemplo: <i>nCount</i> y <i>eCount</i> se entienden.</p>
+<p>Pero quizá: <i>notificationCount</i> y <i>eventCount</i> serían todavía más claros.</p>
+<p>No es una crítica, solo una mejora de legibilidad que encaja perfectamente en esa futura etapa de refactorización que
+    ya tenemos anotada.</p>

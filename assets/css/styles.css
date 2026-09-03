@@ -142,7 +142,9 @@ body {
 }
 
 hr+pre,
-hr+p {
+hr+p,
+p+hr,
+pre+hr {
     margin-top: 1.75rem;
 }
 
