@@ -1,0 +1,113 @@
+<h2>resetIndicator()</h2>
+<hr>
+<pre><code><span class="hljs-attr">resetIndicator</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+
+    <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">manageAutohide</span>();
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">clearButton</span>.<span class="hljs-property">visible</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">notificationSection</span>.<span class="hljs-property">_canClear</span> &amp;&amp; <span class="hljs-variable language_">this</span>.<span class="hljs-property">notificationSectionToBeShown</span>;
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">eventsCount</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">eventsCount</span>*<span class="hljs-variable language_">this</span>.<span class="hljs-property">includeEventsCount</span>;   
+    <span class="hljs-keyword">if</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">isDndOff</span> ) {
+      <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">manageLabel</span>((<span class="hljs-variable language_">this</span>.<span class="hljs-property">notificationCount</span> + (!<span class="hljs-variable language_">this</span>.<span class="hljs-property">showThreeIcons</span>)*<span class="hljs-variable language_">this</span>.<span class="hljs-property">eventsCount</span>) ,(<span class="hljs-variable language_">this</span>.<span class="hljs-property">showThreeIcons</span>)*<span class="hljs-variable language_">this</span>.<span class="hljs-property">eventsCount</span>);
+    }
+
+  }</code></pre>
+<p>El nombre: <span class="ͼm">resetIndicator</span>() me hace pensar en:</p>
+<blockquote>"Vuelve a calcular el estado completo del indicador."</blockquote>
+<p>No en "poner todo a cero" y el código confirma esa impresión.</p>
+<hr>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>manageAutohide();</code></pre>
+<p>Nuestro viejo conocido. Cada vez me convenzo más de que <code data-start="664" data-end="682">manageAutohide()</code>
+    es el <strong data-start="689" data-end="717">centro de control visual</strong> del indicador.</p>
+<p>Cada vez que algo cambia... Se vuelve a preguntar:</p>
+<blockquote>"¿Debo mostrarme?"</blockquote>
+<hr>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>clearButton<span class="ͼg">.</span>visible <span class="ͼg">=</span>
+    <span class="ͼj">this</span><span class="ͼg">.</span>notificationSection<span class="ͼg">.</span>_canClear <span class="ͼg">&amp;&amp;</span>
+    <span class="ͼj">this</span><span class="ͼg">.</span>notificationSectionToBeShown;</code></pre>
+<p>Aquí ocurre algo muy interesante, el botón <strong data-start="1029" data-end="1047">"Limpiar todo"</strong> no
+    siempre está visible.</p>
+<p>Solo cuando se cumplen ambas condiciones:</p>
+<ol>
+    <li>Existen notificaciones que pueden borrarse.<span></span>
+    </li>
+    <li>El usuario decidió mostrar esa sección.</li>
+</ol>
+<p>Es una lógica muy natural.</p>
+<hr>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>eventsCount <span class="ͼg">=</span>
+    <span class="ͼj">this</span><span class="ͼg">.</span>eventsCount <span class="ͼg">*</span> <span class="ͼj">this</span><span class="ͼg">.</span>includeEventsCount;</code></pre>
+<p>Aparece una línea curiosa, esta me hizo detenerme un momento. Porque al principio parece rara.</p>
+<h4>¿Qué está haciendo?</h4>
+<p>Recordemos que: <span class="ͼj">this</span><span class="ͼg">.</span>includeEventsCount es un booleano.</p>
+<p>En JavaScript:</p>
+<pre><samp>true  -&gt; 1
+
+false -&gt; 0</samp></pre>
+<p>Entonces ocurre esto. Si: <i><b>eventsCount</b> = 8</i> y <i><b>includeEventsCount</b> =
+        true </i>Resultado: <i><b>8 × 1 = 8</b></i></p>
+<p>Ahora, si: <i><b>includeEventsCount</b> = false</i> Resultado: <i><b>8 × 0 = 0</b></i></p>
+<p>Es una forma bastante ingeniosa de escribir:</p>
+<pre><samp><span>if</span> (<span>!</span><span>includeEventsCount</span>)
+    <span>eventsCount</span> <span>=</span> <span>0</span>;</samp></pre>
+<p>Aunque personalmente creo que el <code data-start="1962" data-end="1966">if</code> sería más legible. No está mal,
+    solo es un estilo diferente.</p>
+<hr>
+<pre><code><span class="ͼg">if</span>(<span class="ͼj">this</span><span class="ͼg">.</span>isDndOff)</code></pre>
+<p>Si DND está activado... No actualiza etiquetas. Tiene sentido. Ya vimos que el modo "No molestar" cambia bastante el
+    comportamiento visual.</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>manageLabel(...)</code></pre>
+<p>Y otra vez aparece el patrón que llevamos viendo desde hace horas. Este método no modifica etiquetas directamente.
+    Delegó esa responsabilidad.</p>
+<h4>Los parámetros</h4>
+<p>Lo interesante está en los parámetros:</p>
+<h5>Primer parámetro:</h5>
+<p>Aquí hay una pequeña decisión de diseño. Si <strong data-start="2666" data-end="2672">no</strong> se usan tres
+    iconos... Los eventos se suman al contador principal.</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>notificationCount <span class="ͼg">+</span>
+(<span class="ͼg">!</span><span class="ͼj">this</span><span class="ͼg">.</span>showThreeIcons) <span class="ͼg">*</span> <span class="ͼj">this</span><span class="ͼg">.</span>eventsCount</code></pre>
+<h5>Segundo parámetro:</h5>
+<p>En cambio... Si hay tres iconos independientes... Los eventos tienen su propio contador.</p>
+<pre><code>(<span class="ͼj">this</span><span class="ͼg">.</span>showThreeIcons) <span class="ͼg">*</span> <span class="ͼj">this</span><span class="ͼg">.</span>eventsCount</code></pre>
+<h4>Si lo traduzco</h4>
+<h5>Con un solo icono:</h5>
+<p>Las notificaciones y eventos aparecen juntos.</p>
+<pre><samp>🔔 12</samp></pre>
+<h5>Con tres iconos:</h5>
+<p>Cada uno tiene su número. Eso me parece bastante elegante.</p>
+<pre><samp>📬 8
+
+📅 4</samp></pre>
+<h3>Mi observación</h3>
+<hr>
+<p>Creo que el nombre <code data-start="3175" data-end="3193">resetIndicator()</code> está muy bien elegido.</p>
+<p>Porque realmente hace eso, no crea nada, no destruye nada. </p>
+<p>Simplemente dice:</p>
+<blockquote>"Ha cambiado el estado del sistema."</blockquote>
+<p>Y vuelve a calcular:</p>
+<ul>
+    <li>visibilidad,<span></span>
+    </li>
+    <li>
+        botón de limpiar,
+    </li>
+    <li>
+        contador de eventos,
+    </li>
+    <li>
+        etiquetas.</li>
+</ul>
+<h3>Mi conclusión</h3>
+<hr>
+<p>Este método me parece un <strong data-start="3480" data-end="3495">coordinador</strong>, no hace el trabajo pesado,
+    solo sincroniza varias piezas. Eso explica por qué sospecho que será llamado muchas veces por <code
+        data-start="3623" data-end="3635">newNotif()</code> y <code data-start="3638" data-end="3650">remNotif()</code>.
+</p>
+<p>Este detalle también me llamó la atención, porque si el autor ya estaba usando abreviaciones en otras partes del
+    código, aquí parecía haber una oportunidad muy clara.</p>
+<p>Tenemos:</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>eventsCount <span class="ͼg">=</span>
+    <span class="ͼj">this</span><span class="ͼg">.</span>eventsCount <span class="ͼg">*</span> <span class="ͼj">this</span><span class="ͼg">.</span>includeEventsCount;</code></pre>
+<p>Y perfectamente podría haber escrito, el resultado es exactamente el mismo:</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>eventsCount <span class="ͼg">*=</span> <span class="ͼj">this</span><span class="ͼg">.</span>includeEventsCount;</code></pre>
+<p>¿Hay alguna diferencia de comportamiento? Ninguna.</p>
+<p>Ambas expresiones hacen esto: <i><b>eventsCount</b> = <b>eventsCount</b> × <b>includeEventsCount</b></i>. El
+    operador compuesto es simplemente azúcar sintáctico.</p>

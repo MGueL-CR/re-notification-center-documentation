@@ -1,0 +1,140 @@
+<h2>animateOnNewNotification()</h2>
+<hr>
+<pre><code><span class="hljs-attr">animateOnNewNotification</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params"> times, op=<span class="hljs-number">254</span>, angle=<span class="hljs-number">3</span> </span>) {
+
+    [ <span class="hljs-variable language_">this</span>.<span class="hljs-property">visible</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">notificationIcon</span>.<span class="hljs-property">visible</span> ] = [ <span class="hljs-literal">true</span>, <span class="hljs-literal">true</span> ];
+    <span class="hljs-keyword">if</span>(times == <span class="hljs-number">0</span> || <span class="hljs-variable language_">this</span>.<span class="hljs-property">notAnimateIcon</span>) {
+      <span class="hljs-variable language_">this</span>.<span class="hljs-property">notificationIcon</span>.<span class="hljs-title function_">ease</span>({
+        <span class="hljs-attr">duration</span>:         <span class="hljs-number">150</span>,
+        <span class="hljs-attr">scale_x</span>:          <span class="hljs-number">1.0</span>,
+        <span class="hljs-attr">scale_y</span>:          <span class="hljs-number">1.0</span>,
+        <span class="hljs-attr">translation_y</span>:    <span class="hljs-number">0</span>,
+        <span class="hljs-attr">opacity</span>:          <span class="hljs-number">255</span>,
+        <span class="hljs-attr">rotation_angle_z</span>: <span class="hljs-number">0</span>,
+        <span class="hljs-attr">onComplete</span>: <span class="hljs-function">()=&gt;</span>  <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">blinkIcon</span>(!<span class="hljs-variable language_">this</span>.<span class="hljs-property">menu</span>.<span class="hljs-property">isOpen</span>*<span class="hljs-variable language_">this</span>.<span class="hljs-property">blinkCount</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">blinkTime</span>, <span class="hljs-number">100</span>)
+      });
+      <span class="hljs-keyword">return</span>;
+    }
+  
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">notificationIcon</span>.<span class="hljs-title function_">ease</span>({
+      <span class="hljs-attr">duration</span>:         <span class="hljs-number">150</span>,
+      <span class="hljs-attr">scale_x</span>:          <span class="hljs-number">1.2</span>,
+      <span class="hljs-attr">scale_y</span>:          <span class="hljs-number">1.2</span>,
+      <span class="hljs-attr">translation_y</span>:    -<span class="hljs-number">4</span>,
+      <span class="hljs-attr">opacity</span>:          op,
+      <span class="hljs-attr">rotation_angle_z</span>: angle,
+      <span class="hljs-attr">onComplete</span>: <span class="hljs-function">()=&gt;</span>  <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">animateOnNewNotification</span>(--times, op-<span class="hljs-number">1</span>, -angle)
+    });
+      
+  }</code></pre>
+<p>El nombre era: <span class="ͼm">animateOnNewNotification</span>() y yo pensaba que iba a contener varios <code
+        data-start="278" data-end="282">if</code>, varios <code data-start="291" data-end="299">ease()</code> y quizá
+    algún temporizador.</p>
+<p>Pero no, tiene una idea muy clara:</p>
+<blockquote>Construir una animación mediante recursión.</blockquote>
+<p>Eso me sorprendió gratamente.</p>
+<hr>
+<pre><code><span class="ͼo">animateOnNewNotification</span>: <span class="ͼg">function</span>(<span class="ͼm">times</span>, <span class="ͼm">op</span><span class="ͼg">=</span><span class="ͼj">254</span>, <span class="ͼm">angle</span><span class="ͼg">=</span><span class="ͼj">3</span>)</code></pre>
+<p>Ya nos da tres pistas:</p>
+<p><b>times:</b> Es evidente, controla cuántos pasos de la animación quedan.</p>
+<p><b>op:</b> <span class="ͼm">op</span> <span class="ͼg">=</span> <span class="ͼj">254</span>. Esto es la opacidad
+    y va disminuyendo poco a poco.</p>
+<p><b>angle:</b> <span class="ͼm">angle</span> <span class="ͼg">=</span> <span class="ͼj">3</span>. No mueve
+    únicamente el icono, también lo inclina.</p>
+<hr>
+<pre><code>[ <span class="ͼj">this</span><span class="ͼg">.</span>visible, <span class="ͼj">this</span><span class="ͼg">.</span>notificationIcon<span class="ͼg">.</span>visible ] <span class="ͼg">=</span> [ <span class="ͼj">true</span>, <span class="ͼj">true</span> ];</code></pre>
+<p>Muy lógico, antes de animar... Asegúrate de que exista algo para ver.</p>
+<hr>
+<pre><code><span class="ͼg">if</span>(<span class="ͼm">times</span> <span class="ͼg">==</span> <span class="ͼj">0</span> <span class="ͼg">||</span> <span class="ͼj">this</span><span class="ͼg">.</span>notAnimateIcon)</code></pre>
+<p>Esto es prácticamente un algoritmo recursivo clásico. Si ya no quedan pasos... o el usuario desactivó las
+    animaciones... termina.</p>
+<p>Pero terminar no significa detenerse en seco, hace una última animación:</p>
+<pre><code><span class="ͼo">scale_x</span>: <span class="ͼj">1.0</span>
+<span class="ͼo">scale_y</span>: <span class="ͼj">1.0</span>
+<span class="ͼo">translation_y</span>: <span class="ͼj">0</span>
+<span class="ͼo">opacity</span>: <span class="ͼj">255</span>
+<span class="ͼo">rotation_angle_z</span>: <span class="ͼj">0</span></code></pre>
+<p>Es decir... Devuelve el icono exactamente a su estado normal. Eso evita que quede torcido, agrandado o
+    semitransparente.</p>
+<p>Y entonces aparece el enlace con el resto del grupo</p>
+<pre><code><span class="ͼo">onComplete</span>:
+    <span class="ͼj">this</span><span class="ͼg">.</span>blinkIcon(...)</code></pre>
+<p>¡Ya encontramos al segundo integrante del equipo!</p>
+<hr>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>notificationIcon<span class="ͼg">.</span>ease(...)</code></pre>
+<p>Ahora viene la parte que más me gustó. Cuando todavía quedan pasos, hace una animación hacia:</p>
+<p>El icono crece:</p>
+<pre><code><span class="ͼo">scale_x</span>: <span class="ͼj">1.2</span>
+<span class="ͼo">scale_y</span>: <span class="ͼj">1.2</span></code></pre>
+<p>Sube unos píxeles: <span class="ͼo">translation_y</span>: <span class="ͼg">-</span><span class="ͼj">4</span></p>
+<p>Se inclina: <span class="ͼo">rotation_angle_z</span>: <span class="ͼm">angle</span></p>
+<p>Y aquí aparece un detalle muy bonito: El signo cambia.</p>
+<p>Mira esto: <span class="ͼg">-</span><span class="ͼm">angle</span> eso significa que hará algo como:</p>
+<pre><samp>+3°
+
+↓
+
+-3°
+
+↓
+
++3°
+
+↓
+
+-3°</samp></pre>
+<p>No gira siempre hacia el mismo lado. Oscila, eso hace que la animación parezca mucho más natural.</p>
+<p>También baja la opacidad: <span class="ͼm">op</span><span class="ͼg">-</span><span class="ͼj">1</span> No
+    creo que visualmente se note muchísimo, pero sí hace que cada paso tenga un ligero cambio.</p>
+<p>Lo mejor de todo, aquí está la llamada recursiva.</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>animateOnNewNotification(
+    <span class="ͼg">--</span><span class="ͼm">times</span>,
+    <span class="ͼm">op</span><span class="ͼg">-</span><span class="ͼj">1</span>,
+    <span class="ͼg">-</span><span class="ͼm">angle</span>
+)</code></pre>
+<p>Cada <code data-start="2707" data-end="2715">ease()</code> termina llamando al siguiente. No necesita:</p>
+<ul>
+    <li>timers,</li>
+    <li>loops,</li>
+    <li>intervalos.</li>
+</ul>
+<p>La propia animación encadena la siguiente.</p>
+<h3>¿Por qué existe otro método para el parpadeo?</h3>
+<hr>
+<p>Y esto responde la duda, porque este no hace el parpadeo. Hace una especie de... <b>animación de entrada</b>. Después
+    entrega el control a: <i>blinkIcon().</i></p>
+<pre><samp>Nueva notificación
+
+↓
+
+"¡Mírame!"
+
+(crece, sube, gira)
+
+↓
+
+Parpadeo</samp></pre>
+<p>Son dos efectos distintos y por eso hay dos métodos.</p>
+<h3>Una observación para el futuro</h3>
+<hr>
+<p>Este es uno de esos métodos donde sí veo posible modernizar un poco el código, pero <strong data-start="3558"
+        data-end="3591">sin cambiar el comportamiento</strong>.</p>
+<p>Por ejemplo, los números:</p>
+<pre><code><span class="ͼj">150</span>
+<span class="ͼj">1.2</span>
+<span class="ͼg">-</span><span class="ͼj">4</span>
+<span class="ͼj">3</span>
+<span class="ͼj">254</span>
+<span class="ͼj">255</span></code></pre>
+<p>Son "números mágicos". Más adelante podríamos pensar en constantes con nombres descriptivos, algo como:</p>
+<pre><code>ANIMATION_DURATION
+ICON_SCALE
+ICON_BOUNCE
+ICON_ROTATION</code></pre>
+<p>No porque el código esté mal, sino porque facilitaría ajustar la animación sin buscar valores sueltos por el método.
+</p>
+<pre><code><span class="ͼg">const</span> <span class="ͼm">ICON_SCALE</span> <span class="ͼg">=</span> <span class="ͼj">1.2</span>;
+<span class="ͼg">const</span> <span class="ͼm">ICON_ROTATION</span> <span class="ͼg">=</span> <span class="ͼj">3</span>;
+<span class="ͼg">const</span> <span class="ͼm">ICON_TRANSLATION_Y</span> <span class="ͼg">=</span> <span class="ͼg">-</span><span class="ͼj">4</span>;
+<span class="ͼg">const</span> <span class="ͼm">ICON_ANIMATION_DURATION</span> <span class="ͼg">=</span> <span class="ͼj">150</span>;</code></pre>
+<p>El comportamiento seguiría siendo idéntico, pero el código sería más expresivo.</p>

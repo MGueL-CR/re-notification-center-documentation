@@ -1,0 +1,63 @@
+<h2>blinkIconStopIfBlinking()</h2>
+<hr>
+<pre><code><span class="ͼo">blinkIconStopIfBlinking</span>: <span class="ͼg">function</span>() {
+
+    <span class="ͼj">this</span><span class="ͼg">.</span>notificationIcon<span class="ͼg">.</span>remove_all_transitions();
+    <span class="ͼj">this</span><span class="ͼg">.</span>notificationIcon<span class="ͼg">.</span>set_opacity(<span class="ͼj">255</span>);
+
+}</code></pre>
+<p>El método completo son cinco líneas y cumple una misión muy importante.</p>
+<hr>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>notificationIcon<span class="ͼg">.</span>remove_all_transitions();</code></pre>
+<p>Esta me parece la más interesante, porque no dice: <span class="ͼm">stopCurrentAnimation</span>(); Ni: <span
+        class="ͼm">cancelBlink</span>(); Dice: <span class="ͼm">remove_all_transitions</span>();</p>
+<p>Eso significa algo muy potente, no le importa cuál transición esté ejecutándose. Simplemente dice:</p>
+<blockquote>"Elimina cualquier animación que este actor tenga pendiente."</blockquote>
+<p>Eso incluye:</p>
+<ul>
+    <li>la animación de entrada,</li>
+    <li>el parpadeo,</li>
+    <li>o cualquier otra transición futura que se le haya agregado.</li>
+</ul>
+<p>Es una limpieza completa.</p>
+<hr>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>notificationIcon<span class="ͼg">.</span>set_opacity(<span class="ͼj">255</span>);</code></pre>
+<p>Y aquí está el detalle que completa el trabajo.</p>
+<p>Imagina que el icono quedó justo aquí:</p>
+<pre><samp>255
+
+↓
+
+100
+
+↓
+
+255
+
+↓
+
+100</samp></pre>
+<p>Y en ese instante el usuario: </p>
+<ul>
+    <li>abre el menú,</li>
+    <li>activa "No molestar",</li>
+    <li>desactiva la extensión.</li>
+</ul>
+<p>Si solo hiciera: <span class="ͼm">remove_all_transitions</span>(); El icono podría quedarse en: <i>100</i>. Es
+    decir... Semitransparente.</p>
+<p>Por eso inmediatamente después hace: <span class="ͼm">set_opacity</span>(<span class="ͼj">255</span>); Y garantiza:
+</p>
+<pre><samp>Estado final:
+
+Opacidad normal.</samp></pre>
+<h3>Mi conclusión</h3>
+<hr>
+<p>Creo que este ha sido el grupo de métodos más fácil de entender de toda la extensión y eso no es casualidad.</p>
+<p>Es consecuencia de una buena separación de responsabilidades:</p>
+<ul>
+    <li><strong><code>animateOnNewNotification()</code></strong> → inicia el efecto visual.</li>
+    <li><strong><code>blinkIcon()</code></strong> → mantiene la atención mediante el parpadeo.</li>
+    <li><strong><code>blinkIconStopIfBlinking()</code></strong> → cancela cualquier animación y devuelve el icono a un
+        estado limpio.</li>
+</ul>
+<p>Los tres juntos implementan un comportamiento completo, pero cada uno tiene una responsabilidad muy concreta.</p>

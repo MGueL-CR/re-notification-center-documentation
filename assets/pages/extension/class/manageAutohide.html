@@ -99,7 +99,7 @@ La sección multimedia está habilitada</samp></pre>
 <pre><code><span>(</span><span class="ͼg">!</span><span class="ͼj">this</span><span class="ͼg">.</span><span>isDndOff)</span><span class="ͼg">*</span><span class="ͼj">this</span><span class="ͼg">.</span><span>autohide </span><span class="ͼg">&gt;</span><span> </span><span class="ͼj">1</span></code></pre>
 <p>Esta línea es curiosísima, normalmente escribiríamos algo como:</p>
 <pre><samp>if (!this.isDndOff &amp;&amp; this.autohide &gt; 1)</samp></pre>
-<p>Pero Selenium-H hace otra cosa.&nbsp;</p>
+<p>Pero Selenium-H hace otra cosa. </p>
 <p>Convierte el booleano:</p>
 <pre><samp>true
 ↓
@@ -110,7 +110,7 @@ false
 ↓
 
 0</samp></pre>
-<p>Y luego multiplica: <i>1 × autohide</i> o <i>0 × autohide.</i>&nbsp;Funciona, pero personalmente me parece menos
+<p>Y luego multiplica: <i>1 × autohide</i> o <i>0 × autohide.</i> Funciona, pero personalmente me parece menos
     legible. No está mal, solo cuesta más leerla.</p>
 <hr>
 <p>Aquí aparece la verdadera decisión.</p>
@@ -149,7 +149,7 @@ false
 
 </span><span class="ͼj">true</span><span>;</span></code></pre>
 <p>Esto me hizo pensar un momento y Me llamó la atención esta línea.</p>
-<p>Creo que está evitando quedarse sin ningún icono.&nbsp;</p>
+<p>Creo que está evitando quedarse sin ningún icono. </p>
 <p>Imagina:</p>
 <ul>
     <li>no hay multimedia;</li>
@@ -179,7 +179,7 @@ set_padding
 
 set_background</samp></pre>
 <p>Simplemente cambia la clase y deja que el CSS haga el resto. Muy GNOME.</p>
-<h3>En comparación con&nbsp;manageEvents()</h3>
+<h3>En comparación con manageEvents()</h3>
 <hr>
 <p>A primera vista ambos parecen "gestionar" algo, pero creo que su responsabilidad es distinta.</p>
 <ul>
@@ -194,3 +194,51 @@ set_background</samp></pre>
 <h4>manageAutohide()</h4>
 <p>Se preocupa por:</p>
 <blockquote>¿Qué debe ser visible en este momento?</blockquote>
+<h3>Sus conexiones</h3>
+<hr>
+<p>Este método conecta muchísimas piezas que ya conocíamos.</p>
+<p>Utiliza:</p>
+<ul>
+    <li><code>showThreeIcons</code><span></span>
+    </li>
+    <li>
+        <code>mediaSectionToBeShown</code>
+    </li>
+    <li>
+        <code>eventsSectionToBeShown</code>
+    </li>
+    <li>
+        <code>notificationSectionToBeShown</code>
+    </li>
+    <li>
+        <code>autohide</code>
+    </li>
+    <li>
+        <code>isDndOff</code>
+    </li>
+</ul>
+<p><b>¿De dónde vienen todas esas variables?</b> ¡De <code data-start="5148" data-end="5167">loadPreferences()</code>!
+</p>
+<p>Y eso demuestra por qué analizamos primero ese método. Ahora, al leer <code data-start="5240"
+        data-end="5258">manageAutohide()</code>, ya no tenemos que preguntarnos qué significa cada propiedad; ya sabemos
+    de dónde salió y qué representa.</p>
+<h4>Hay una pequeña cosa que anotaría</h4>
+<p>Hay varias condiciones muy largas, por ejemplo la de <code data-start="5462"
+        data-end="5488">notificationIcon.visible</code> y la de <code data-start="5497"
+        data-end="5526">noNotificationLabel.visible</code>.</p>
+<p>No son incorrectas, pero creo que ganarían mucha legibilidad si Selenium-H hubiera hecho algo como:</p>
+<pre><code><span class="ͼg">let</span> <span class="ͼm">hasNotifications</span> <span class="ͼg">=</span> ...;
+<span class="ͼg">let</span> <span class="ͼm">hasMedia</span> <span class="ͼg">=</span> ...;
+<span class="ͼg">let</span> <span class="ͼm">hasEvents</span> <span class="ͼg">=</span> ...;</code></pre>
+<p>Y luego escribir:</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>notificationIcon<span class="ͼg">.</span>visible <span class="ͼg">=</span>
+    <span class="ͼm">hasNotifications</span> <span class="ͼg">||</span>
+    (<span class="ͼm">hasMedia</span> <span class="ͼg">&amp;&amp;</span> <span class="ͼg">!</span><span class="ͼj">this</span><span class="ͼg">.</span>showThreeIcons) <span class="ͼg">||</span>
+    (<span class="ͼm">hasEvents</span> <span class="ͼg">&amp;&amp;</span> <span class="ͼg">!</span><span class="ͼj">this</span><span class="ͼg">.</span>showThreeIcons) <span class="ͼg">||</span>
+    (...);</code></pre>
+<p>El comportamiento sería idéntico, pero sería más fácil de leer y depurar.</p>
+<p>En conjunto, este método me parece uno de los más importantes que hemos visto hasta ahora. No porque haga algo
+    espectacular, sino porque es el "director de escena": decide qué ve el usuario tanto en el panel superior como
+    dentro del Notification Center según el estado actual de la extensión y las preferencias cargadas previamente. Y eso
+    explica por qué ya lo habíamos encontrado varias veces durante nuestro recorrido: es un método que necesita
+    ejecutarse cada vez que cambia algo que pueda afectar la visibilidad de la interfaz. </p>

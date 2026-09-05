@@ -1,0 +1,67 @@
+<h2>blinkIcon()</h2>
+<hr>
+<pre><code><span class="hljs-attr">blinkIcon</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params"> blinkTimes, interval, opacity </span>) {
+  
+    <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">manageAutohide</span>();
+    <span class="hljs-keyword">if</span>(blinkTimes &gt; <span class="hljs-number">0</span>) {
+      <span class="hljs-variable language_">this</span>.<span class="hljs-property">notificationIcon</span>.<span class="hljs-title function_">ease</span>({
+        <span class="hljs-attr">duration</span>:   interval,
+        <span class="hljs-attr">opacity</span>:    opacity,
+        <span class="hljs-attr">onComplete</span>: <span class="hljs-function">()=&gt;</span> <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">blinkIcon</span>(--blinkTimes,interval,(opacity==<span class="hljs-number">255</span>)?<span class="hljs-number">100</span>:<span class="hljs-number">255</span>)
+      });
+    }
+
+  }</code></pre>
+<p>Cuando vimos que era uno de los tres métodos del "Escuadrón de Animaciones", pensé que sería el más complejo y
+    resulta que es el más sencillo de todos.</p>
+<hr>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>manageAutohide();</code></pre>
+<p>Antes de empezar a parpadear... Pregunta:</p>
+<blockquote>"¿El icono debería estar visible?"</blockquote>
+<p>Porque no tendría sentido animar algo que está oculto y además mantiene la lógica centralizada.</p>
+<p>No vuelve a calcular visibilidad. Reutiliza: <span class="ͼm">manageAutohide</span>()</p>
+<hr>
+<pre><code><span class="ͼg">if</span>(<span class="ͼm">blinkTimes</span> <span class="ͼg">&gt;</span> <span class="ͼj">0</span>)</code></pre>
+<p>Otra vez, tenemos el mismo patrón. Un caso base.</p>
+<p>Y otra vez aparece <code data-start="904" data-end="912">ease()</code>, Pero ahora... Muchísimo más simple, solo
+    modifica: opacity.</p>
+<p>Nada de:</p>
+<ol>
+    <li>escala</li>
+    <li>rotación</li>
+    <li>desplazamiento</li>
+</ol>
+<p>Solo:</p>
+<pre><samp>visible
+↓
+
+casi invisible
+↓
+
+visible
+↓
+
+casi invisible</samp></pre>
+<p>Más simple imposible.</p>
+<pre><code>(<span class="ͼm">opacity</span><span class="ͼg">==</span><span class="ͼj">255</span>)
+    <span class="ͼg">?</span><span class="ͼj">100</span>
+    <span class="ͼg">:</span><span class="ͼj">255</span></code></pre>
+<p>Si estaba totalmente visible... El siguiente paso será: <i>100</i></p>
+<p>Si estaba en: <i>100</i>, el siguiente será: <i>255</i>.</p>
+<h4>Otra vez recursión</h4>
+<pre><code><span class="ͼo">onComplete</span>:
+    <span class="ͼj">this</span><span class="ͼg">.</span>blinkIcon(...)</code></pre>
+<p>Y vuelve a aparecer el mismo patrón que vimos en animateOnNewNotification().</p>
+<p>Eso confirma que Selenium-H realmente prefería encadenar animaciones mediante callbacks en lugar de temporizadores.
+</p>
+<h3>Observa la firma.</h3>
+<hr>
+<p>Me llama la atención una cosa: <b><i>interval</i></b>, no está fijado. Lo recibe como parámetro.</p>
+<p>Eso significa que otro método decide la velocidad y ya sabemos quién: <span
+        class="ͼm">animateOnNewNotification</span>(...)</p>
+<p>Al terminar decía: </p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>blinkIcon(
+    ...,
+    <span class="ͼj">this</span><span class="ͼg">.</span>blinkTime,
+    <span class="ͼj">100</span>
+)</code></pre>
