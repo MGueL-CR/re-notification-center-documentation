@@ -369,21 +369,10 @@ pre>.cm-line {
 *
 */
 
-.ͼl {
-    color: #ac4f23;
-}
-
-.ͼn {
-    color: #b8802b;
-}
-
-.ͼk {
-    color: #3a843f;
-}
-
-.ͼj {
-    color: var(--clink);
-    filter: sepia(40%)
+.ͼe {
+    color: var(--cemph);
+    font-style: italic;
+    filter: sepia(55%)
 }
 
 .ͼf,
@@ -399,19 +388,38 @@ pre>.cm-line {
     font-weight: bold;
 }
 
+.ͼj {
+    color: var(--clink);
+    filter: sepia(40%)
+}
+
+.ͼk {
+    color: #3a843f;
+}
+
+.ͼl {
+    color: #ac4f23;
+}
+
 .ͼm {
     color: var(--cemph);
     filter: brightness(65%);
 }
 
-.ͼe {
-    color: var(--cemph);
-    font-style: italic;
-    filter: sepia(55%)
+.ͼn {
+    color: #b8802b;
+}
+
+.ͼv {
+    color: #f8a6c8;
 }
 
 .ͼz {
     color: #83d197;
+}
+
+.ͼy {
+    color: #f1a275;
 }
 
 .cm-line {

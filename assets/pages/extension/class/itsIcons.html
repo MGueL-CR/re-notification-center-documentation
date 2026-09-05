@@ -1,0 +1,146 @@
+<h2>Iconos en <code data-start="2845" data-end="2865">manageIconChange</code></h2>
+<hr>
+<p>Durante la revisión del método de <code data-start="2845" data-end="2865">manageIconChange</code> se
+    mencionaron el nombre de 2 iconos: <i>notification-center-full</i> y <i>notification-center-empty</i>.</p>
+<blockquote>
+    <div><b>Otra cosa interesante</b></div>
+    <div><b><br></b></div>
+    <div>Aquí ya descubrimos por fin el significado de: <i>notification-center-full</i> y
+        <i>notification-center-empty</i> son los nombres de los iconos del tema. Eso significa que en assets o donde
+        estén definidos existirán al menos esos dos iconos.
+    </div>
+</blockquote>
+<p>Se planteó la idea que la extensión utiliza iconos propios que se encuentran en la carpeta <b>assets</b>, pero ni el
+    repositorio ni la propia posee dicha carpeta.</p>
+<p><b>¿Dónde esta assets?</b> Buena pregunta, porque ahí me adelanté un poco y di por hecho algo que todavía no
+    hemos comprobado. Cuando dije <strong data-start="116" data-end="128">"assets"</strong>, me refería a una <strong
+        data-start="147" data-end="201">posible carpeta de recursos de la propia extensión</strong>, no de GNOME.</p>
+<p>Normalmente, una extensión puede tener una estructura como esta:</p>
+<pre><samp>notification-center@Selenium-H/
+│
+├── extension.js
+├── prefs.js
+├── stylesheet.css
+├── metadata.json
+├── assets/
+│   ├── notification-center-empty.svg
+│   ├── notification-center-full.svg
+│   └── ...</samp></pre>
+<p>O a veces: <code class="inline-code">icons/</code> en lugar de <code data-start="540" data-end="549">assets/</code>.
+    Pero... en nuestro caso <strong data-start="609" data-end="669">creo que no
+        hemos visto ninguna carpeta llamada <code data-start="659" data-end="667">assets</code></strong> cuando
+    recorrimos el repositorio.</p>
+<p>Recuerdo que vimos algo parecido a:</p>
+<pre><samp>notification-center@Selenium-H/
+│
+├── extension.js
+├── prefs.js
+├── prefsGtk3.js
+├── prefsGtk4.js
+├── stylesheet.css
+├── metadata.json
+├── LICENSE
+└── eicon.png</samp></pre>
+<h3>Entonces, ¿de dónde salen estos nombres?</h3>
+<hr>
+<div class="row">
+    <div class="col">
+        <pre><code>"notification-center-full"</code></pre>
+    </div>
+    <div class="col">
+        <pre><code>"notification-center-empty"</code></pre>
+    </div>
+</div>
+<p>Hay varias posibilidades y la opción 1 me parece más probable. </p>
+<h4>Opción 1 </h4>
+<hr>
+<p>La extensión registra un tema de iconos propio en otra parte del código.</p>
+<p>Por ejemplo, algo como:</p>
+<pre><code><span class="ͼ11">Gtk</span><span class="ͼv">.</span>IconTheme<span class="ͼv">.</span>get_default()<span class="ͼv">.</span>append_search_path(...);</code></pre>
+<p>o</p>
+<pre><code><span class="ͼ11">St</span><span class="ͼv">.</span>IconTheme<span class="ͼv">...</span></code></pre>
+<p>Y esos nombres corresponden a archivos SVG o PNG incluidos en la extensión.</p>
+<h4>Opción 2</h4>
+<hr>
+<p>Los iconos ya existen en el tema del sistema. Aunque, sinceramente... Lo dudo muchísimo ya que eso suena mucho más a
+    nombres creados por Selenium-H.</p>
+<p>Sería demasiada casualidad que GNOME tuviera iconos llamados exactamente:</p>
+<pre><samp>notification-center-full
+notification-center-empty</samp></pre>
+<h4>Opción 3</h4>
+<hr>
+<p>La carpeta existe, pero todavía no la hemos visto. Y aquí viene lo divertido, porque no hemos inspeccionado
+    absolutamente todos los archivos del proyecto.</p>
+<p>Puede existir perfectamente una carpeta: <i><b>icons/</b></i> o <i><b>data/icons/</b></i> que todavía no
+    hemos abierto.</p>
+<h3>Así que rectifico lo que dije</h3>
+<hr>
+<p>Cuando mencioné <strong data-start="2129" data-end="2139">assets</strong>, no era porque recordara haber visto esa
+    carpeta. </p>
+<div class="row">
+    <div class="col"><span>Fue una forma genérica de referirme a: </span></div>
+    <div class="col">
+        <blockquote>"Los recursos gráficos de la extensión."</blockquote>
+    </div>
+</div>
+<div class="row">
+    <div class="col"><span>Y creo que lo correcto era decir simplemente:</span></div>
+    <div class="col">
+        <blockquote>"En algún lugar del proyecto deben existir esos iconos."</blockquote>
+    </div>
+</div>
+<h3>Investigación pendiente</h3>
+<p>Como ya estamos casi terminando <code data-start="2473" data-end="2487">extension.js</code>, cuando lleguemos al
+    punto donde revisemos el resto del proyecto, una de las primeras cosas que me gustaría hacer es localizar:</p>
+<pre><samp>notification-center-full
+notification-center-empty</samp></pre>
+<p>Porque eso nos responderá varias preguntas:</p>
+<ul>
+    <li>¿Son SVG o PNG?</li>
+    <li>¿Dónde están almacenados?</li>
+    <li>¿Cómo los registra la extensión?</li>
+    <li>¿Será ahí donde en el futuro añadiremos nuestros propios iconos para <strong>RE: Notification Center</strong>?
+    </li>
+</ul>
+<h3>Investigación en proceso</h3>
+<hr>
+<p>¡Muy bien! Y esta vez nos basaremos con argumentos del propio código, que es exactamente como debemos razonar.</p>
+<h4>Primera evidencia</h4>
+<p>Como bien vimos, al inicio de <code data-start="252" data-end="266">extension.js</code> ya revisamos:</p>
+<ul>
+    <li>los <code>imports</code>;</li>
+    <li>las constantes;</li>
+    <li>la inicialización.</li>
+</ul>
+<p>Y nunca vimos algo parecido a: <span class="ͼ11">Gtk</span><span class="ͼv">.</span>IconTheme<span
+        class="ͼv">.</span>get_default()<span class="ͼv">.</span>append_search_path(...) ni <span
+        class="ͼ11">theme</span><span class="ͼv">.</span>add_resource_path(...) ni ninguna carga de recursos. Eso
+    ya hace sospechar que la extensión <strong data-start="564" data-end="594">no registra iconos propios</strong>.</p>
+<h4>Segunda evidencia</h4>
+<p>Revisamos <code data-start="634" data-end="646">INSTALL.sh</code> y tampoco había algo como: <span
+        class="ͼ10">cp</span> *.svg ... o gtk-update-icon-cache, ni copiaba iconos al sistema. Si hubiera iconos propios
+    instalados globalmente, el instalador tendría que hacer algo y no lo hace.</p>
+<h4>Tercera evidencia</h4>
+<p>Hay una pista que pasé por alto, en <code data-start="963" data-end="980">loadDndStatus()</code> vimos esto:</p>
+<pre><code><span class="ͼ11">Gtk</span><span class="ͼv">.</span><span>IconTheme</span><span class="ͼv">.</span><span>get_default()</span><span class="ͼv">.</span><span>has_icon(
+    </span><span class="ͼz">"notifications-disabled-symbolic"</span><span>
+)</span></code></pre>
+<p>Eso sí sabemos que es un icono del sistema y Selenium-H lo consulta exactamente igual que usa: <span
+        class="ͼy">this</span><span class="ͼv">.</span>notificationIcon<span class="ͼv">.</span>icon_name <span
+        class="ͼv">=</span> ... Eso significa que <strong data-start="1264" data-end="1314">está trabajando con el tema
+        de iconos de GNOME</strong>, no con archivos individuales.</p>
+<h3>¿Cómo existen estos nombres?</h3>
+<hr>
+<p>Aquí aparece una pregunta interesante. Si son del sistema... <b>¿Cómo existen estos nombres?</b></p>
+<pre><samp>notification-center-full
+notification-center-empty</samp></pre>
+<p>Porque yo, sinceramente, no recuerdo haber visto esos nombres entre los iconos estándar de GNOME. Entonces se abren
+    dos posibilidades.</p>
+<h4>Opción 1</h4>
+<p>Existen realmente en GNOME 3.38/40 y simplemente nunca me crucé con ellos. Perfectamente posible.</p>
+<h4>Opción 2</h4>
+<p>Y esta es la que ahora me genera curiosidad. Podría ser que esos nombres <strong data-start="1860" data-end="1885">no
+        fueran del sistema</strong>, pero tampoco de la extensión. Podrían provenir de otra dependencia instalada por
+    GNOME, aunque, con las pruebas que acabas de mencionar, esa posibilidad empieza a verse menos probable.</p>
+<hr>
+<p></p>

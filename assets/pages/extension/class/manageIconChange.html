@@ -1,0 +1,199 @@
+<h2>manageIconChange()</h2>
+<hr>
+<pre><code>manageIconChange: <span class="hljs-keyword">function</span>(statusIcon) {
+  <span class="hljs-built_in">let</span> iconName = statusIcon ? <span class="hljs-string">"notification-center-full"</span> : <span class="hljs-string">"notification-center-empty"</span>;
+  this.notificationIcon.icon_name = iconName;
+}</code></pre>
+<p>Son solo dos líneas, el parámetro <b>statusIcon</b>, no se llama: notificationCount, ni eventCount,
+    ni hasNotification.</p>
+<p>Se llama simplemente: <b>statusIcon</b> y eso es suficiente, porque el método no necesita saber absolutamente nada
+    más.</p>
+<h4>¿Qué hace?</h4>
+<div class="row">
+    <div class="col"><span>Si recibe <i>true</i></span>
+        <pre><code>notification-center-full</code></pre>
+    </div>
+    <div class="col"><span>Si recibe <i>false</i></span>
+        <pre><code>notification-center-empty</code></pre>
+    </div>
+</div>
+<p>Y finalmente:</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>notificationIcon<span class="ͼv">.</span>icon_name <span class="ͼv">=</span> <span class="ͼ11">iconName</span>;</code></pre>
+<hr>
+<p>Lo curioso es lo bien desacoplado que está, observa toda la cadena.</p>
+<pre><samp>Hay notificaciones
+↓
+
+manageLabel()
+↓
+
+¿Hay algo nuevo?
+↓
+
+true
+↓
+
+manageIconChange(true)
+↓
+
+notification-center-full</samp></pre>
+<p><code data-start="1221" data-end="1241">manageIconChange()</code> jamás pregunta:&nbsp;<span
+        class="ͼ11">notificationSection</span><span class="ͼv">.</span>_list o eventsSection o prefs.&nbsp;</p>
+<p>Solo recibe una respuesta si o no y eso es un desacoplamiento excelente.</p>
+<div class="row">
+    <div class="col">
+        <pre><samp>Sí
+
+↓
+
+Icono lleno</samp></pre>
+    </div>
+    <div class="col">
+        <pre><samp>No
+
+↓
+
+Icono vacío</samp></pre>
+    </div>
+</div>
+<hr>
+<h4>Otra cosa interesante</h4>
+<p>Aquí ya descubrimos por fin el significado de:&nbsp;notification-center-full y&nbsp;notification-center-empty son los
+    nombres de los iconos del tema. Eso significa que en <code data-start="1749" data-end="1757">assets</code> o donde
+    estén definidos existirán al menos esos dos iconos.</p>
+<hr>
+<h4>¿Recuerdas esto?</h4>
+<p>Recuerdas que en <code data-start="1874" data-end="1891">loadDndStatus()</code> aparecía:&nbsp;</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>notificationIcon<span class="ͼv">.</span>icon_name <span class="ͼv">=</span>
+    <span class="ͼz">"notifications-disabled-symbolic"</span>;</code></pre>
+<p>¡Ahora todo encaja! Tenemos tres estados distintos:</p>
+<ul>
+    <li>Estado normal sin novedades: <i>notification-center-empty</i></li>
+    <li>Estado normal con novedades: <i>notification-center-full</i></li>
+    <li>Modo No Molestar: <i>notifications-disabled-symbolic</i></li>
+</ul>
+<p>Es decir...&nbsp;<code data-start="2288" data-end="2308">manageIconChange()</code> nunca toca DND. Y está bien,
+    porque DND pertenece a otro responsable.</p>
+<p>Ya podemos ver claramente la separación.</p>
+<blockquote>
+    <div>loadDndStatus(): Decide el icono cuando DND cambia</div>
+</blockquote>
+<blockquote>
+    <div>manageIconChange(): Decide el icono cuando cambian las notificaciones</div>
+</blockquote>
+<p>Cada uno controla un contexto distinto. Muy limpio.</p>
+<hr>
+<h4>Una&nbsp;observación</h4>
+<blockquote>Si consideramos que <code class="inline-code">manageIconChange()</code> es el encargado de cambiar el icono
+    según el estado,, también debería haber sido llamado desde <code class="inline-code">loadDndStatus()</code>
+</blockquote>
+<p>Muy buena observación. Y esta vez sí creo que vale la pena discutirlo, porque aquí ya no estamos hablando de sintaxis
+    sino de <strong data-start="128" data-end="138">diseño</strong>.</p>
+<p>Mi primera reacción fue exactamente la misma que la tuya:</p>
+<blockquote>"Si existe <code data-start="213" data-end="233">manageIconChange()</code>, ¿por qué <code data-start="244"
+        data-end="261">loadDndStatus()</code> cambia el icono directamente?"</blockquote>
+<p>Parecería que está duplicando la responsabilidad, pero luego me puse a pensar en algo.</p>
+<h5>¿Qué hace realmente <code data-start="411" data-end="431">manageIconChange()</code>?</h5>
+<hr>
+<p>No cambia <strong data-start="444" data-end="457">cualquier</strong> icono, cambia entre únicamente dos estados:</p>
+<pre><samp>notification-center-empty
+
+↓
+
+notification-center-full</samp></pre>
+<p>Es decir, responde a una sola pregunta y nada más.</p>
+<blockquote>¿Hay elementos nuevos o no?</blockquote>
+<h5>¿Y qué hace <code data-start="679" data-end="696">loadDndStatus()</code>?</h5>
+<hr>
+<p>Cuando DND está activado, hace esto:&nbsp;<span class="ͼy">this</span><span class="ͼv">.</span>notificationIcon<span
+        class="ͼv">.</span>icon_name <span class="ͼv">=</span> <span
+        class="ͼz">"notifications-disabled-symbolic"</span>;</p>
+<div class="row">
+    <div class="col"><span>Ese icono no significa:</span>
+        <blockquote>"Hay notificaciones."</blockquote>
+    </div>
+    <div class="col"></div>
+</div>
+<div class="row">
+    <div class="col"><span>Ni significa:</span>
+        <blockquote>"No hay notificaciones."</blockquote>
+    </div>
+    <div class="col"></div>
+</div>
+<div class="row">
+    <div class="col"><span>Significa:</span>
+        <blockquote>"El modo No Molestar está activado."</blockquote>
+    </div>
+    <div class="col"></div>
+</div>
+<p>Es otro concepto completamente distinto.</p>
+<h5>Hoy el código está así</h5>
+<hr>
+<p><code data-start="363" data-end="380">loadDndStatus()</code>:</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>notificationIcon<span class="ͼv">.</span>icon_name <span class="ͼv">=</span> <span class="ͼz">"notifications-disabled-symbolic"</span>;</code></pre>
+<p><code data-start="471" data-end="491">manageIconChange()</code>:</p>
+<pre><code><span class="ͼv">let</span> <span class="ͼ11">iconName</span> <span class="ͼv">=</span> <span class="ͼ11">statusIcon</span>
+    <span class="ͼv">?</span> <span class="ͼz">"notification-center-full"</span>
+    <span class="ͼv">:</span> <span class="ͼz">"notification-center-empty"</span>;</code></pre>
+<p>Aquí tenemos dos lugares que modifican:&nbsp;<span class="ͼy">this</span><span
+        class="ͼv">.</span>notificationIcon<span class="ͼv">.</span>icon_name. Eso rompe un poco la idea de tener una
+    única puerta de entrada para cambiar el icono.</p>
+<h5>La propuesta</h5>
+<hr>
+<p>Esta sería algo parecido a esto:</p>
+<h6><code data-start="835" data-end="852">loadDndStatus()</code></h6>
+<div class="row">
+    <div class="col"><span>Ya no haría:</span>
+        <pre><code><span>this</span><span>.</span>notificationIcon<span>.</span>icon_name <span>=</span> ...</code></pre>
+    </div>
+    <div class="col"><span>Sino algo como:</span>
+        <pre><code><span>this</span><span>.</span>manageIconChange(<span>DND_ICON</span>);</code></pre>
+    </div>
+</div>
+<h6><code data-start="995" data-end="1010">manageLabel()</code></h6>
+<div class="row">
+    <div class="col"><span>Seguiría haciendo:</span>
+        <pre><code><span>this</span><span>.</span>manageIconChange(<span>FULL_ICON</span>);</code></pre>
+    </div>
+    <div class="col"><span>o:</span>
+        <pre><code><span>this</span><span>.</span>manageIconChange(<span>EMPTY_ICON</span>);</code></pre>
+    </div>
+</div>
+<p>Entonces <code data-start="1150" data-end="1170">manageIconChange()</code> pasaría de esto:&nbsp;<span
+        class="ͼy">true</span> <span class="ͼv">/</span> <span class="ͼy">false</span>&nbsp;a algo más expresivo:</p>
+<pre><code><span class="ͼv">switch</span>(<span class="ͼ11">iconState</span>) {
+
+    <span class="ͼv">case</span> <span class="ͼ11">EMPTY</span>:
+        ...
+        <span class="ͼv">break</span>;
+
+    <span class="ͼv">case</span> <span class="ͼ11">FULL</span>:
+        ...
+        <span class="ͼv">break</span>;
+
+    <span class="ͼv">case</span> <span class="ͼ11">DND</span>:
+        ...
+        <span class="ͼv">break</span>;
+}</code></pre>
+<p>Y aquí es donde me gusta más la idea, porque ya no sería un método que responde:</p>
+<blockquote>"¿Hay notificaciones?"</blockquote>
+<p>Ahora respondería a otra pregunta mucho más general:</p>
+<blockquote>¿Qué icono debe mostrar la extensión?</blockquote>
+<p>Ese nombre (<code data-start="1641" data-end="1659">manageIconChange</code>) incluso empezaría a tener más sentido.
+</p>
+<p>Lo único que cambiaría, evitaría seguir usando números mágicos.&nbsp;</p>
+<div class="row">
+    <div class="col"><span>En lugar de:</span>
+        <pre><code><span>manageIconChange</span>(<span>0</span>);
+<span>manageIconChange</span>(<span>1</span>);
+<span>manageIconChange</span>(<span>2</span>);</code></pre>
+    </div>
+    <div class="col"><span>Preferiría constantes como:</span>
+        <pre><code><span>ICON_EMPTY</span>
+<span>ICON_FULL</span>
+<span>ICON_DND</span></code></pre>
+    </div>
+</div>
+<p>Porque cuando uno lea: <span class="ͼy">this</span><span class="ͼv">.</span><span>manageIconChange(</span><span
+        class="ͼ11">ICON_DND</span><span>);</span>,
+    no necesita ir a buscar qué significa el <code data-start="2075" data-end="2078">2</code>.<br></p>
