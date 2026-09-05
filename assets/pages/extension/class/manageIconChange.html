@@ -1,9 +1,9 @@
 <h2>manageIconChange()</h2>
 <hr>
-<pre><code>manageIconChange: <span class="hljs-keyword">function</span>(statusIcon) {
-  <span class="hljs-built_in">let</span> iconName = statusIcon ? <span class="hljs-string">"notification-center-full"</span> : <span class="hljs-string">"notification-center-empty"</span>;
-  this.notificationIcon.icon_name = iconName;
-}</code></pre>
+<pre><code><span class="hljs-attr">manageIconChange</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params">statusIcon</span>) {
+    <span class="hljs-keyword">let</span> iconName = statusIcon ? <span class="hljs-string">"notification-center-full"</span> : <span class="hljs-string">"notification-center-empty"</span>;
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">notificationIcon</span>.<span class="hljs-property">icon_name</span> = iconName;
+  }</code></pre>
 <p>Son solo dos líneas, el parámetro <b>statusIcon</b>, no se llama: notificationCount, ni eventCount,
     ni hasNotification.</p>
 <p>Se llama simplemente: <b>statusIcon</b> y eso es suficiente, porque el método no necesita saber absolutamente nada

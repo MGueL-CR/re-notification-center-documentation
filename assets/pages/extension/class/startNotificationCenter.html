@@ -1,5 +1,40 @@
 <h2>startNotificationCenter()</h2>
 <hr>
+<p>Ahora lo podemos describir como un <strong data-start="701" data-end="725">director de orquesta</strong>.&nbsp;</p>
+<p>Él no hace todo el trabajo. Más bien:</p>
+<ul>
+    <li>crea los widgets;</li>
+    <li>conecta señales (<code>connect()</code>);</li>
+    <li>carga preferencias;</li>
+    <li>mueve secciones;</li>
+    <li>inicializa estados;</li>
+    <li>y delega el resto a métodos especializados.</li>
+</ul>
+<p>Es decir, pasó de ser un "monstruo de 300 líneas" a un mapa donde ya conocemos casi todas las habitaciones.</p>
+<h3>¿Qué hace <code data-start="1115" data-end="1142">startNotificationCenter()</code>?</h3>
+<hr>
+<blockquote>"Inicializa completamente la extensión: construye la interfaz, conecta los eventos del usuario, carga la
+    configuración, sincroniza el estado visual y deja preparado el Notification Center para empezar a funcionar."
+</blockquote>
+<h3>Llamadas a estos métodos:</h3>
+<hr>
+<p>Durante <code data-start="156" data-end="183">startNotificationCenter()</code> fuimos encontrando llamadas a estos
+    métodos. Hagamos un pequeño repaso para asegurarnos de que no se nos escapó ninguno y los fuimos analizando uno por
+    uno..</p>
+<ul>
+    <li><code>middleClickDndToggle()</code> </li>
+    <li><code>loadDndStatus()</code> </li>
+    <li><code>dndToggle()</code> </li>
+    <li><code>loadPreferences()</code> </li>
+    <li><code>manageEvents()</code> </li>
+    <li><code>manageAutohide()</code> </li>
+    <li><code>manageLabel()</code> </li>
+    <li><code>manageIconChange()</code> </li>
+    <li><code>iconThemeChanged()</code> </li>
+    <li><code>setNotificationIconName()</code></li>
+</ul>
+<h3>Lo organizado</h3>
+<hr>
 <p>Me encanta cómo está organizado. Sin leer comentarios ya puedo dividirlo mentalmente.</p>
 <pre><samp class="samp-block">1.
 Verificación de actualización
@@ -33,8 +68,8 @@ Conectar señales
 
 11.
 Aplicar preferencias visuales</samp></pre>
-<hr>
 <h3>La propuesta</h3>
+<hr>
 <p>Analizar las 170 líneas de golpe no es conveniente. Creo que perderíamos la oportunidad de entenderlas. Hagamos
     exactamente lo mismo que hicimos con <code data-start="3890" data-end="3899">_init()</code>. Dividámoslo y vayamos
     bloque por bloque.</p>

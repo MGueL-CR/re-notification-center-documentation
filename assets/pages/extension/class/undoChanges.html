@@ -1,0 +1,205 @@
+<h2>undoChanges()</h2>
+<hr>
+<p>Antes de leer una línea ya me imaginaba cuál era su función.</p>
+<p>El nombre: undoChanges() es perfecto. No dice:</p>
+<ul>
+    <li><code>destroy()</code></li>
+    <li><code>cleanup()</code></li>
+    <li><code>disable()</code></li>
+</ul>
+<p>Dice exactamente lo que hace:</p>
+<blockquote>"Deshacer todos los cambios que la extensión hizo sobre GNOME."</blockquote>
+<p>Y eso ya nos conecta inmediatamente con <code data-start="574" data-end="601">startNotificationCenter()</code>. Creo
+    que este método es el espejo de <code data-start="648" data-end="675">startNotificationCenter()</code>. Si uno
+    construía... El otro desmonta. Es como ver el viaje de ida y luego el de regreso.</p>
+<hr>
+<pre><code><span class="ͼg">if</span>(<span class="ͼj">this</span><span class="ͼg">.</span>_indicator<span class="ͼg">.</span>get_children()<span class="ͼg">.</span>length <span class="ͼg">==</span> <span class="ͼj">0</span>) {
+    <span class="ͼg">return</span>;
+}</code></pre>
+<p>Esto me gustó mucho, es una protección. Si el indicador ya no existe... No intenta deshacer nada. Evita errores.</p>
+<hr>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>blinkIconStopIfBlinking();</code></pre>
+<p>Si existe una animación... Lo primero es detenerla. No destruye un objeto mientras sigue ejecutándose.</p>
+<p>Muy buen orden, luego empieza el verdadero desmontaje</p>
+<hr>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>_messageListParent<span class="ͼg">.</span>remove_actor(...)
+
+<span class="ͼm">    ...insert_child_at_index</span>(...)</code></pre>
+<p>Esto ya lo conocemos, está devolviendo widgets exactamente al lugar donde estaban originalmente y aquí se nota algo
+    que aprendimos durante <code data-start="1495" data-end="1522">startNotificationCenter()</code>.</p>
+<blockquote>Selenium-H nunca perdió la referencia del padre original.</blockquote>
+<hr>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>dateMenuVbox<span class="ͼg">.</span>style<span class="ͼg">=</span><span class="ͼk">""</span>;
+
+    ...<span class="ͼm">remove_style_class_name</span>(...)</code></pre>
+<p>Otra pieza que vuelve a su estado inicial. No deja estilos "pegados".</p>
+<hr>
+<pre><code>[
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">_messageList</span>.<span class="hljs-property">_dndSwitch</span>.<span class="hljs-property">visible</span>,
+	<span class="hljs-variable language_">this</span>.<span class="hljs-property">_messageList</span>.<span class="hljs-property">_dndButton</span>.<span class="hljs-property">label_actor</span>.<span class="hljs-property">visible</span>
+]  = [ <span class="hljs-literal">true</span>, <span class="hljs-literal">true</span> ];</code></pre>
+<p>Si estaban ocultos, los vuelve visibles o bien, a su estado habitual.</p>
+<hr>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>manageEvents(<span class="ͼj">0</span>);</code></pre>
+<p>Aquí me hizo sonreír. Hace unas horas analizábamos ese método y ahora aparece reutilizado para ayudar durante la
+    restauración. </p>
+<p>En lugar de repetir código... Lo reutiliza.</p>
+<hr>
+<pre><code><span class="hljs-keyword">let</span> len=<span class="hljs-variable language_">this</span>.<span class="hljs-property">showingSections</span>.<span class="hljs-property">length</span>;
+<span class="hljs-keyword">while</span>(len!=<span class="hljs-number">0</span>) { ... }</code></pre>
+<p>Creo que es este <b>el corazón del método</b>. Aquí empieza a deshacer prácticamente todo lo que <code
+        data-start="2140" data-end="2167">startNotificationCenter()</code> hizo y lo interesante es que no lo hace "a
+    mano".</p>
+<p>Utiliza: <span class="ͼj">this</span><span class="ͼg">.</span>showingSections Es decir... Desmonta
+    exactamente las secciones que fueron montadas. Ni más, ni menos.</p>
+<p>Otra cosa elegante <span class="ͼm">disconnect</span>(...) ¡Esto era obligatorio!</p>
+<p>Durante <code data-start="2460" data-end="2487">startNotificationCenter()</code> conectamos muchísimas señales. Si no
+    las desconectara... Los objetos destruidos seguirían teniendo callbacks registrados y eso sería una receta
+    para errores.</p>
+<p>Más adelante <span class="ͼm">removeSection</span>(...) Otra vez reutilización, no reescribe la lógica, la
+    llama. Eso mantiene el código coherente.</p>
+<p>Después llegan las conexiones globales</p>
+<ul>
+    <li><span class="ͼm">disconnect</span>(<span class="ͼj">this</span><span class="ͼg">.</span>dmSig)</li>
+    <li><span class="ͼm">disconnect</span>(<span class="ͼj">this</span><span class="ͼg">.</span>unFreezeSig)</li>
+    <li><span class="ͼm">disconnect</span>(<span class="ͼj">this</span><span class="ͼg">.</span>cmsig)</li>
+    <li><span class="ͼm">disconnect</span>(<span class="ͼj">this</span><span class="ͼg">.</span>dndSig)</li>
+    <li><span class="ͼm">disconnect</span>(<span class="ͼj">this</span><span class="ͼg">.</span>iconThemeChangeSig)
+    </li>
+</ul>
+<p>Esto transmite una idea muy clara. La extensión quiere desaparecer completamente, Como si nunca hubiera estado
+    instalada.</p>
+<p>Ahora <span class="ͼm">Main</span><span class="ͼg">.</span>wm<span class="ͼg">.</span>removeKeybinding(...) esto
+    me hizo recordar toda nuestra conversación sobre los atajos y confirma algo importante. Cuando en el futuro
+    agreguemos nuevos keybindings... <b>Aquí también habrá que eliminarlos</b>. </p>
+<p>Empieza a destruir: <span class="ͼm">destroy</span>() a todos los widgets creados por la extensión.</p>
+<p>Y finalmente: <span class="ͼj">this</span><span class="ͼg">.</span>prefs<span class="ͼg">.</span>disconnect(...),
+    hasta las preferencias quedan desconectadas.</p>
+<h3>En conclusión</h3>
+<hr>
+<p>Si <code data-start="4016" data-end="4043">startNotificationCenter()</code> era: </p>
+<blockquote>Construir una casa.</blockquote>
+<p><code data-start="4077" data-end="4092">undoChanges()</code> es:</p>
+<blockquote>Dejar el terreno exactamente como estaba antes de construirla.</blockquote>
+<p>Y eso me parece una señal de una extensión bien escrita. Porque una extensión de GNOME no debería dejar "huellas"
+    cuando se desactiva.</p>
+<p>Hay algo que me encantó descubrir, durante todo el recorrido vimos muchas variables como:</p>
+<ul>
+    <li><code>connectedSignals</code></li>
+    <li><code>dtActors</code></li>
+    <li><code>originalEventsSectionParent</code></li>
+    <li><code>newEventsSectionParent</code></li>
+    <li><code>dmSig</code></li>
+    <li><code>reloadSignal</code></li>
+</ul>
+<p>En su momento parecían solo "almacenamientos". Ahora entendemos por qué existían, <b>no eran para facilitar la
+        inicialización</b> eran para poder deshacerla correctamente después.</p>
+<p>Eso demuestra que Selenium-H pensó en el ciclo de vida completo de la extensión, no solo en el momento de activarla.
+</p>
+<h3>¿Que sucede si no desconectara los callbacks?</h3>
+<hr>
+<p>Entender esto ayuda muchísimo a comprender cómo funciona una extensión de GNOME.</p>
+<p>La respuesta corta es:</p>
+<blockquote>
+    <p data-start="142" data-end="225" class="PDq2pG_selectionAnchorContainer"><strong data-start="142"
+            data-end="225">Sí. Permanecen vivos mientras la extensión siga cargada en esa sesión de GNOME.</strong><span
+            aria-hidden="true" class="PDq2pG_selectionAnchor"></span></p>
+    <p data-start="230" data-end="298"><strong data-start="230" data-end="298">No. No sobreviven a cerrar la sesión o
+            reiniciar el GNOME Shell.</strong></p>
+</blockquote>
+<h4>Imagina esta escena</h4>
+<p>Cuando haces algo como: <span class="ͼm">objeto</span><span class="ͼg">.</span>connect(<span
+        class="ͼk">"evento"</span>, <span class="ͼm">callback</span>); </p>
+<p>GNOME registra internamente algo parecido a esto (simplificando mucho):</p>
+<pre><samp>Objeto A
+
+├── Callback #1
+├── Callback #2
+└── Callback #3</samp></pre>
+<p>Mientras <strong data-start="588" data-end="607">Objeto A exista</strong>, esos callbacks también existen. Ahora
+    imagina que destruyes la interfaz</p>
+<p>Supongamos que haces: <span class="ͼj">this</span><span class="ͼg">.</span>notificationIcon<span
+        class="ͼg">.</span>destroy(); Pero nunca hiciste: <span class="ͼm">disconnect</span>(...)</p>
+<p>Entonces puede pasar algo como esto:</p>
+<ol>
+    <li>El sistema genera un evento.</li>
+    <li>El objeto que emitía ese evento todavía intenta ejecutar el callback.</li>
+    <li>El callback intenta acceder a un widget que ya fue destruido.</li>
+</ol>
+<p>Y ahí empiezan errores del tipo:</p>
+<ul>
+    <li>objeto nulo,</li>
+    <li>propiedad inexistente,</li>
+    <li>actor destruido,</li>
+    <li>etc.</li>
+</ul>
+<p>Por eso siempre decimos que <strong data-start="1160" data-end="1221">conectar implica asumir la responsabilidad de
+        desconectar</strong>.</p>
+<h4>¿Hasta cuándo viven esos callbacks?</h4>
+<p>Mientras la extensión siga cargada. Por ejemplo:</p>
+<pre><samp>Inicias sesión
+↓
+
+GNOME carga la extensión
+↓
+
+Los callbacks existen
+↓
+
+Desactivas la extensión SIN desconectarlos
+↓
+
+Siguen registrados</samp></pre>
+<p>Ese es el problema que Selenium-H evita con <code data-start="1517" data-end="1532">undoChanges()</code>.</p>
+<h4>¿Qué pasa al cerrar sesión o reiniciar?</h4>
+<p>Ahí cambia todo, cuando cierras la sesión (o reinicias GNOME Shell), el proceso del Shell termina.</p>
+<p>Y con él desaparecen:</p>
+<ul>
+    <li>Los objetos,</li>
+    <li>Los widgets,</li>
+    <li>Las conexiones,</li>
+    <li>Los callbacks,</li>
+    <li>La memoria utilizada.</li>
+</ul>
+<p>La próxima vez que inicias sesión, GNOME empieza desde cero. Es como abrir un programa otra vez.</p>
+<h4>¿Por qué molestarse en desconectarlos?</h4>
+<p>Porque el caso importante no es apagar el equipo. El caso importante es este:</p>
+<pre><samp>Sesión iniciada
+↓
+
+Extensión activada
+↓
+
+Extensión desactivada
+↓
+
+Extensión activada otra vez
+↓
+
+Extensión desactivada otra vez</samp></pre>
+<p>Todo eso ocurre <strong data-start="2196" data-end="2219">sin reiniciar GNOME</strong> y ahí es donde una
+    extensión mal escrita empieza a acumular problemas.</p>
+<p>Por ejemplo:</p>
+<pre><samp>Primera activación
+↓
+
+1 callback</samp></pre>
+<p>Después:</p>
+<pre><samp>Segunda activación
+↓
+
+2 callbacks</samp></pre>
+<p>Y después:</p>
+<pre><samp>Tercera activación
+↓
+
+3 callbacks</samp></pre>
+<p> Y entonces presionas un botón una sola vez... ...¡y el callback se ejecuta tres veces!</p>
+<p>Ese tipo de errores son muy difíciles de diagnosticar.</p>
+<p>Así que el alcance es este:</p>
+<ul>
+    <li><strong>Durante la misma sesión de GNOME</strong>, los callbacks permanecen vivos hasta que se desconectan o el
+        objeto que los contiene desaparece correctamente. Por eso <code>undoChanges()</code> es tan importante.</li>
+    <li><strong>Al cerrar sesión, reiniciar el GNOME Shell o apagar el equipo</strong>, todo ese estado en memoria
+        desaparece. La siguiente sesión empieza completamente desde cero.</li>
+</ul>

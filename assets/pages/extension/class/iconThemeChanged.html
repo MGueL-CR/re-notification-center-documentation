@@ -1,0 +1,46 @@
+<h2>iconThemeChanged()</h2>
+<hr>
+<pre><code><span class="hljs-attr">iconThemeChanged</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">setNotificationIconName</span>();
+  <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">loadDndStatus</span>();
+}</code></pre>
+<p>Yo imaginaba un método con un poco más de lógica y Selenium-H volvió a sorprendernos con uno de sus métodos
+    "puente".</p>
+<p>Son solo dos llamadas, y eso, lejos de ser malo, me gusta bastante.</p>
+<hr>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>setNotificationIconName();</code></pre>
+<p>Este nombre ya nos dice muchísimo.</p>
+<ul>
+    <li>No cambia el icono.</li>
+    <li>No lo muestra.</li>
+    <li>No decide si está lleno o vacío.</li>
+</ul>
+<p>Solo hace una cosa:</p>
+<blockquote>Determinar cuál debe ser el nombre del icono que utilizará la extensión.</blockquote>
+<p>Y eso tiene todo el sentido del mundo cuando cambia el tema de iconos.</p>
+<hr>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>loadDndStatus();</code></pre>
+<p>Aquí fue donde entendí el diseño completo.</p>
+<p>Cuando cambia el tema:</p>
+<ol>
+    <li>Primero averigua qué iconos existen.</li>
+    <li>Luego vuelve a cargar el estado visual del DND.</li>
+</ol>
+<p><b>¿Por qué?</b> Porque <code data-start="961" data-end="978">loadDndStatus()</code> termina haciendo cosas como:</p>
+<pre><code>this.notificationIcon.icon_name = ...</code></pre>
+<p>Es decir, una vez que conoce el nombre correcto del icono, vuelve a aplicarlo.</p>
+<p>Lo que más me gusta, es que <code data-start="1574" data-end="1594">iconThemeChanged()</code> no intenta hacer el
+    trabajo de otros métodos. No contiene:</p>
+<pre><code><span class="ͼg">if</span> (...)
+
+<span class="ͼg">else</span> (...)</code></pre>
+<p>No modifica widgets, ni consulta preferencias. Solo coordina, es como un director de orquesta, nada más.</p>
+<pre><samp>El tema cambió
+
+↓
+
+actualiza nombres
+
+↓
+
+recarga estado visual</samp></pre>

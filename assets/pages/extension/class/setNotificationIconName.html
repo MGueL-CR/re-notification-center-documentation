@@ -1,0 +1,77 @@
+<h2>setNotificationIconName()</h2>
+<hr>
+<pre><code><span class="ͼo">setNotificationIconName</span>: <span class="ͼg">function</span> () {
+    <span class="ͼg">if</span>(<span class="ͼm">Gtk</span><span class="ͼg">.</span>IconTheme<span class="ͼg">.</span>get_default()) {
+      <span class="ͼj">this</span><span class="ͼg">.</span>notificationIconName <span class="ͼg">=</span>
+          <span class="ͼm">Gtk</span><span class="ͼg">.</span>IconTheme<span class="ͼg">.</span>get_default()<span class="ͼg">.</span>has_icon(<span class="ͼk">"notification-symbolic"</span>)
+          <span class="ͼg">?</span> <span class="ͼk">"notification-symbolic"</span>
+          <span class="ͼg">:</span> <span class="ͼk">"preferences-system-notifications-symbolic"</span>;
+    }
+    <span class="ͼg">else</span> {
+      <span class="ͼj">this</span><span class="ͼg">.</span>notificationIconName <span class="ͼg">=</span> <span class="ͼk">"preferences-system-notifications-symbolic"</span>;
+    }
+}</code></pre>
+<p>Lo primero que descubrimos, ¡Que ya resolvimos una parte del misterio de los iconos!</p>
+<p>Mira el nombre que busca: "<i>notification-symbolic</i>" y si no existe... usa:
+    "<i>preferences-system-notifications-symbolic</i>"</p>
+<p>¡Esos sí son claramente iconos del sistema GNOME! Entonces... Aquí se cae una de mis teorías anteriores. Yo pensaba
+    que:</p>
+<pre><samp>notification-center-full
+notification-center-empty</samp></pre>
+<p>Podían formar parte del mismo mecanismo, pero ahora veo que <strong data-start="1160" data-end="1166">no</strong>.
+    Este método utiliza únicamente iconos estándar de GNOME.</p>
+<h3>¿Qué está haciendo realmente?</h3>
+<hr>
+<pre><code><span class="ͼm">Gtk</span><span class="ͼg">.</span>IconTheme<span class="ͼg">.</span>get_default()<span class="ͼg">.</span>has_icon(...)</code></pre>
+<p>Hace una comprobación muy elegante, es decir:</p>
+<blockquote>"¿El tema actual tiene este icono?"</blockquote>
+<p>Si sí... <i>úsalo</i>. Si no... <i>usa otro</i>. Eso hace la extensión mucho más compatible entre distintas versiones
+    o temas de iconos.</p>
+<h4>¿Por qué existe notificationIconName?</h4>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>notificationIconName</code></pre>
+<p>No cambia el icono inmediatamente, simplemente guarda: <i>notification-symbolic</i>
+    o <i>preferences-system-notifications-symbolic</i> para que otro método lo utilice.</p>
+<p>Y efectivamente... <b>¿Quién lo usa?</b> Nuestro viejo conocido: <b><i>loadDndStatus()</i></b>.
+    <b>¿Cuando?</b> Aquí:
+</p>
+<pre><code>this.notificationIcon.icon_name =
+    this.notificationIconName;</code></pre>
+<p>Ahora todo encaja perfectamente.</p>
+<h4>Lo curioso</h4>
+<p>Fíjate en la responsabilidad.</p>
+<div class="row">
+    <div class="col">
+        <pre><samp>setNotificationIconName()
+
+↓
+
+¿Qué nombre debo usar?</samp></pre>
+    </div>
+    <div class="col" <pre><samp>loadDndStatus()
+
+            ↓
+
+            ¿Cuál debo mostrar ahora?</samp></pre>
+    </div>
+</div>
+<p>Son dos preguntas completamente distintas y por eso están separadas.</p>
+<h4>Hay algo más</h4>
+<p>Mira este código: <span class="ͼg">if</span>(<span class="ͼm">Gtk</span><span class="ͼg">.</span>IconTheme<span
+        class="ͼg">.</span>get_default()) Luego: <span class="ͼm">has_icon</span>(...) Y si no existe un tema...
+    todavía tiene un valor por defecto.</p>
+<pre><code>preferences-system-notifications-symbolic</code></pre>
+<p>Eso demuestra que Selenium-H estaba pensando en no dejar nunca la variable sin inicializar. </p>
+<h4>Observación de diseño</h4>
+<p>Además, me gusta mucho que este método <strong data-start="3692" data-end="3714">no toque el widget</strong>. Solo
+    hace: <span class="ͼj">this</span><span class="ͼg">.</span>notificationIconName <span class="ͼg">=</span> ...
+    Nada más.</p>
+<p>Eso significa que incluso puede ejecutarse varias veces sin producir efectos visuales inmediatos. Después otro método
+    decidirá cuándo aplicar ese nombre, es un detalle pequeño, pero hace que el código sea más limpio.</p>
+<h3>Conclusión del método</h3>
+<hr>
+<p>Es otro ejemplo perfecto del estilo de Selenium-H: métodos cortos, con una única responsabilidad y sin efectos
+    secundarios innecesarios y además nos deja una investigación pendiente muy interesante:</p>
+<blockquote>¿Dónde salen <code data-start="4800" data-end="4826">notification-center-full</code> y <code
+        data-start="4829" data-end="4856">notification-center-empty</code>?</blockquote>
+<p>Porque ahora sabemos con certeza que <strong data-start="4898" data-end="4934">no pertenecen al mismo
+        mecanismo</strong> que <code data-start="4939" data-end="4962">notification-symbolic</code>.</p>
