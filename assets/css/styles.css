@@ -28,6 +28,10 @@ body {
     scroll-margin-top: 4rem;
 }
 
+#show-content {
+    position: relative;
+}
+
 #bloque01,
 #bloque02,
 #bloque03,
@@ -123,22 +127,59 @@ body {
     background-color: var(--cemphbg);
 }
 
+.float-banner {
+    position: absolute;
+    margin: 0;
+    display: flex;
+    gap: 0.25rem;
+    left: 0;
+    right: 0;
+    counter-reset: bloque;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
 
 .float-span {
-    position: absolute;
+    flex: 1 0 1rem;
+    cursor: pointer;
     padding: 0.5em;
     background-color: var(--cemphbg);
-    border-top: 2px solid var(--clink);
+    border-top: 2px solid var(--cfg);
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
     font-size: medium;
-    font-weight: bold;
     text-transform: uppercase;
+    text-align: center;
     color: var(--cfg);
+    transition: all 300ms ease-out;
+}
+
+.float-span.select {
+    flex: 2;
+    background-color: var(--cmed);
+    border-top: 2px solid var(--clink);
+    font-weight: bold;
+}
+
+.float-span:hover {
+    flex: 3;
+    color: var(--cemph);
+    background-color: var(--cmed);
+    border-top: 2px solid var(--clink);
+    font-weight: bold;
 }
 
 .float-span::after {
-    content: ":";
+    counter-increment: bloque;
+    content: "B0" counter(bloque);
+}
+
+.float-span:hover::after {
+    content: "bloque 0" counter(bloque);
+}
+
+.float-span.select::after {
+    content: "bloque 0" counter(bloque) ":";
 }
 
 hr+pre,

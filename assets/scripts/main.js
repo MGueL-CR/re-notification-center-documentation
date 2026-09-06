@@ -34,7 +34,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function loadContentPage(pagina, contenido, contenedor) {
 
-
     const urlDestino = pagina
         ? `/assets/pages/${pagina}.html`
         : "/assets/pages/pag404.html";
@@ -58,14 +57,49 @@ async function loadContentPage(pagina, contenido, contenedor) {
 }
 
 function activateLinksSideMenu() {
-    const menuMain = document.getElementById("menu-main");
     const contenedor = document.getElementById("mainContent");
     const contenido = document.getElementById("show-content");
+    const menuMain = document.getElementById("menu-main");
+
     menuMain.addEventListener("click", (evento) => {
         const elemento = evento.target;
-        if (elemento.classList.contains("list-item")) {
-            const pagina = elemento.dataset.name;
-            loadContentPage(pagina, contenido, contenedor);
-        }
+        const pagina = elemento.dataset.name;
+        if (!elemento.classList.contains("list-item")) { return; }
+
+        loadContentPage(pagina, contenido, contenedor).then(() => {
+            activateBlockSection();
+        });
     });
+}
+
+function bannerBlockSections() {
+    const header = document.createElement('header');
+    header.id = "floatBaner";
+    header.className = "float-banner";
+
+    for (let i = 1; i <= 8; i++) {
+        const element = document.createElement('span');
+        element.className = "float-span";
+        element.setAttribute("data-name", `extension/bloques/bloque0${i}`);
+        header.append(element);
+    }
+    return header;
+}
+
+function activateBlockSection() {
+    const contenedor = document.getElementById("mainContent");
+    const contenido = document.getElementById("show-content");
+    const banner = document.getElementById("floatBaner");
+    if (banner) {
+        banner.addEventListener('click', (eve) => {
+            const bloque = eve.target;
+            const pagina = bloque.dataset.name;
+            if (!bloque.classList.contains("float-span")) { return; }
+
+            loadContentPage(pagina, contenido, contenedor).finally(() => {
+                contenido.prepend(banner)
+                //activateBlockSection();
+            });
+        });
+    }
 }
