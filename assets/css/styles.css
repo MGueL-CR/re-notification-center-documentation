@@ -23,6 +23,7 @@ body {
     grid-template-rows: auto 1fr auto;
 }
 
+
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -35,7 +36,7 @@ body {
     }
 }
 
-.fade-in {
+.fade-in :not(aside) {
     animation: fadeIn 600ms ease-in-out forwards;
 }
 
