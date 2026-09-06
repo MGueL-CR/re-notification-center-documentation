@@ -4,10 +4,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const menuTop = document.getElementById("menuTop");
 
     menuTop.addEventListener("click", (evento) => {
+        contenedor.classList.remove('fade-in');
+        contenedor.offsetWidth;
         const elemento = evento.target;
         if (elemento.classList.contains("menu-item")) {
             const pagina = elemento.dataset.name;
             loadContentPage(pagina, contenedor, headerPage).then(() => {
+                contenedor.classList.add('fade-in');
                 if (elemento.dataset.section) {
                     activateLinksSideMenu();
                 }
@@ -62,28 +65,25 @@ function activateLinksSideMenu() {
     const menuMain = document.getElementById("menu-main");
 
     menuMain.addEventListener("click", (evento) => {
+        contenido.classList.remove('fade-in');
+        contenido.offsetWidth;
         const elemento = evento.target;
         const pagina = elemento.dataset.name;
         if (!elemento.classList.contains("list-item")) { return; }
 
         loadContentPage(pagina, contenido, contenedor).then(() => {
+            contenido.classList.add('fade-in');
             activateBlockSection();
         });
     });
 }
 
-function bannerBlockSections() {
-    const header = document.createElement('header');
-    header.id = "floatBaner";
-    header.className = "float-banner";
-
-    for (let i = 1; i <= 8; i++) {
-        const element = document.createElement('span');
-        element.className = "float-span";
-        element.setAttribute("data-name", `extension/bloques/bloque0${i}`);
-        header.append(element);
-    }
-    return header;
+function markBlockSelected(banner, block) {
+    const blocks = Array.from(banner.children);
+    blocks.forEach(block => {
+        if (block.classList.contains("select")) { block.classList.remove("select") }
+    });
+    block.classList.add("select");
 }
 
 function activateBlockSection() {
@@ -92,13 +92,15 @@ function activateBlockSection() {
     const banner = document.getElementById("floatBaner");
     if (banner) {
         banner.addEventListener('click', (eve) => {
+            contenido.classList.remove('fade-in');
+            contenido.offsetWidth;
             const bloque = eve.target;
             const pagina = bloque.dataset.name;
             if (!bloque.classList.contains("float-span")) { return; }
-
             loadContentPage(pagina, contenido, contenedor).finally(() => {
-                contenido.prepend(banner)
-                //activateBlockSection();
+                markBlockSelected(banner, bloque);
+                contenido.classList.add('fade-in');
+                contenido.prepend(banner);
             });
         });
     }
