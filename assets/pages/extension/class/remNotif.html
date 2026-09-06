@@ -1,0 +1,137 @@
+<h2>remNotif()</h2>
+<hr>
+<pre><code><span class="hljs-attr">remNotif</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params">messageType</span>) {
+    
+    <span class="hljs-keyword">switch</span>(messageType) {
+      <span class="hljs-keyword">case</span> <span class="hljs-string">"media"</span> :
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">mediaCount</span>--;
+        <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">"notification"</span> :
+        (<span class="hljs-variable language_">this</span>.<span class="hljs-property">notificationCount</span>&gt;<span class="hljs-number">0</span>)? <span class="hljs-variable language_">this</span>.<span class="hljs-property">notificationCount</span>-- : <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">"events"</span> :
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">eventsCount</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">shouldShowEventsSection</span>();
+        <span class="hljs-keyword">break</span>;
+    }
+    <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">resetIndicator</span>();
+
+  }</code></pre>
+<p>Lo primero que hice fue compararlo mentalmente con:</p>
+<pre><samp>newNotif()
+
+↓
+
+remNotif()</samp></pre>
+<p>Y casi parece un espejo.</p>
+<hr>
+<pre><code><span class="hljs-keyword">case</span> <span class="hljs-string">"media"</span> :
+  <span class="hljs-variable language_">this</span>.<span class="hljs-property">mediaCount</span>--;</code></pre>
+<p>Nada raro. Llegó un contenido multimedia: <i>mediaCount+</i>+ Desapareció: <i>mediaCount--</i> Perfecta simetría.</p>
+<hr>
+<pre><code><span class="hljs-keyword">case</span> <span class="hljs-string">"notification"</span> :
+  (<span class="hljs-variable language_">this</span>.<span class="hljs-property">notificationCount</span>&gt;<span class="hljs-number">0</span>)?
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">notificationCount</span>-- 
+    :<span class="hljs-number">0</span>;</code></pre>
+<p>Aquí Selenium-H sí fue un poco más cuidadoso que en <code data-start="812" data-end="824">newNotif()</code>.</p>
+<p>¿Por qué? Porque cuando entra una notificación... Siempre existe una nueva. Pero cuando desaparece...</p>
+<p>Puede ocurrir algo como esto: <i>notificationCount = 0</i> Y no quiere terminar en: <i>-1</i> Así que protege el
+    contador.</p>
+<p>Aunque... Aquí sí tengo una pequeña observación de estilo.</p>
+
+<div class="row">
+    <div class="col">
+        <span>Personalmente creo que esto:</span>
+        <pre><code>(<span class="ͼj">this</span><span class="ͼg">.</span>notificationCount<span class="ͼg">&gt;</span><span class="ͼj">0</span>)<span class="ͼg">?</span>
+    <span class="ͼj">this</span><span class="ͼg">.</span>notificationCount<span class="ͼg">--</span>
+    <span class="ͼg">:</span><span class="ͼj">0</span>;</code></pre>
+    </div>
+    <div class="col"><span>Lo escribiría como:</span>
+        <pre><code><span class="ͼg">if</span> (<span class="ͼj">this</span><span class="ͼg">.</span>notificationCount <span class="ͼg">&gt;</span> <span class="ͼj">0</span>) {
+    <span class="ͼj">this</span><span class="ͼg">.</span>notificationCount<span class="ͼg">--</span>;
+}</code></pre>
+    </div>
+</div>
+<p>No porque funcione mejor, sino porque el operador ternario suele expresar un valor, no ejecutar una acción. Es una
+    cuestión de legibilidad.</p>
+<hr>
+<pre><code><span class="hljs-keyword">case</span> <span class="hljs-string">"events"</span> :
+  <span class="hljs-variable language_">this</span>.<span class="hljs-property">eventsCount</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">shouldShowEventsSection</span>();</code></pre>
+<p>Aquí me llamó la atención una diferencia con los otros dos. </p>
+<p>No hace: <span class="ͼm">eventsCount</span><span class="ͼg">--</span> Sino que recalcula completamente el valor y
+    creo que tiene sentido.</p>
+<p>Los eventos no funcionan exactamente igual que las notificaciones, una notificación desaparece, pero los eventos
+    dependen del calendario.</p>
+<p>Entonces es más seguro preguntar otra vez:</p>
+<blockquote>"¿Cuántos eventos deberían mostrarse?"</blockquote>
+<p>Que intentar llevar un contador manual, eso evita inconsistencias.</p>
+<hr>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>resetIndicator();</code></pre>
+<p>Y otra vez... Nuestro viejo amigo. Ya se volvió completamente predecible.</p>
+<p>Y eso es bueno. Porque significa que el flujo está bien diseñado.</p>
+<h3>Si comparo ambos métodos</h3>
+<hr>
+<p>La única diferencia importante es que aquí no hay animación y es lógico. Una notificación que desaparece no necesita
+    llamar la atención.</p>
+<div class="row">
+    <div class="col"><span><code>newNotif()</code></span>
+        <pre><samp>Modificar estado
+↓
+
+Animación (si aplica)
+↓
+
+resetIndicator()</samp></pre>
+    </div>
+    <div class="col"><span><code>remNotif()</code></span>
+        <pre><samp>Modificar estado
+
+↓
+
+resetIndicator()</samp></pre>
+    </div>
+</div>
+<p>Entonces... Creo que ya puedo decir cuál es el patrón.</p>
+<div class="row">
+    <div class="col">
+        <pre><samp>newNotif()
+↓
+
+Actualizar estado
+↓
+
+Avisar al usuario
+↓
+
+Sincronizar interfaz</samp></pre>
+    </div>
+    <div class="col">
+        <pre><samp>remNotif()
+
+↓
+
+Actualizar estado
+
+↓
+
+Sincronizar interfaz</samp></pre>
+    </div>
+</div>
+<h3>Lo curioso</h3>
+<hr>
+<p>Este método termina confirmando algo que sospechábamos desde hace varios capítulos. <code data-start="2970"
+        data-end="2988">resetIndicator()</code> era el verdadero coordinador.</p>
+<p>Y ahora vemos por qué. Tanto cuando entra como cuando sale una notificación... Siempre terminan llamándolo.</p>
+<p>Eso evita repetir:</p>
+<ul>
+    <li>etiquetas,</li>
+    <li>iconos,</li>
+    <li>visibilidad.</li>
+</ul>
+<p>Y, mientras escribía esta explicación, me di cuenta de otra cosa: <strong data-start="4006" data-end="4073"><code
+            data-start="4008" data-end="4020">newNotif()</code> y <code data-start="4023"
+            data-end="4035">remNotif()</code> no son realmente opuestos perfectos</strong>. <code data-start="4075"
+        data-end="4087">newNotif()</code> tiene más responsabilidades porque una notificación nueva puede desencadenar
+    acciones adicionales (animación, ejecución de scripts, lista negra, DND...). En cambio, <code data-start="4253"
+        data-end="4265">remNotif()</code> solo necesita mantener el estado consistente. Eso me parece una decisión
+    acertada: la llegada de una notificación es un evento "rico" en comportamiento; su desaparición es, simplemente, una
+    actualización del estado.</p>

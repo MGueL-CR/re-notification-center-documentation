@@ -1,0 +1,127 @@
+<h2>removeSection()</h2>
+<hr>
+<pre><code><span class="ͼm">removeSection</span>(<span class="ͼm">section</span>) {
+
+    <span class="ͼg">if</span>(<span class="ͼm">section</span> <span class="ͼg">==</span> <span class="ͼj">this</span><span class="ͼg">.</span>eventsSection) {
+      <span class="ͼj">this</span><span class="ͼg">.</span>newEventsSectionParent<span class="ͼg">.</span>remove_actor(<span class="ͼj">this</span><span class="ͼg">.</span>eventsSection);
+      <span class="ͼg">return</span> ;
+    } 
+
+    <span class="ͼj">this</span><span class="ͼg">.</span>_messageList<span class="ͼg">.</span>_sectionList<span class="ͼg">.</span>remove_actor(<span class="ͼm">section</span>);
+    <span class="ͼj">this</span><span class="ͼg">.</span>_messageList<span class="ͼg">.</span>_sync();
+
+}</code></pre>
+<p>El nombre es perfecto. No dice: "<i>DestroySection</i>", Ni: "<i>DeleteSection</i>". Dice: "<b>RemoveSection</b>"</p>
+<p>Y eso ya nos da una pista importante. No destruye nada, solo <strong data-start="726" data-end="752">la quita de
+        donde está</strong>.</p>
+<hr>
+<pre><code><span class="ͼg">if</span>(<span class="ͼm">section</span> <span class="ͼg">==</span> <span class="ͼj">this</span><span class="ͼg">.</span>eventsSection)</code></pre>
+<p>Aquí vuelve a aparecer nuestro viejo conocido: La sección de eventos siempre es la diferente. Ya lo habíamos visto en
+    <code data-start="956" data-end="972">manageEvents()</code>.
+</p>
+<p>Mientras media, notifications viven dentro de: <i>MessageList</i>. Los eventos viven en otro contenedor, por eso
+    necesitan un tratamiento especial.</p>
+<p>Entonces hace esto y termina.</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>newEventsSectionParent<span class="ͼg">.</span>remove_actor(<span class="ͼj">this</span><span class="ͼg">.</span>eventsSection);</code></pre>
+<hr>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>_messageList<span class="ͼg">.</span>_sectionList<span class="ͼg">.</span>remove_actor(<span class="ͼm">section</span>);</code></pre>
+<p>Si no son eventos... Hace esto. Es decir:</p>
+<blockquote>"Quita esta sección de la lista."</blockquote>
+<p>Hasta aquí todo es bastante normal, pero luego aparece esto</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>_messageList<span class="ͼg">.</span>_sync();</code></pre>
+<p>Esta línea me parece la más importante del método, porque no se conforma con quitar el actor. Después dice:</p>
+<blockquote>"Sincroniza el MessageList."</blockquote>
+<h3>¿Qué significa <code data-start="1709" data-end="1718">_sync()</code>?</h3>
+<hr>
+<p>La llamada es esta: <span class="ͼj">this</span><span class="ͼg">.</span>_messageList<span
+        class="ͼg">.</span>_sync(); Lo primero que debemos observar es el objeto sobre el que se invoca: <span
+        class="ͼj">this</span><span class="ͼg">.</span>_messageList</p>
+<p>Ese objeto <strong data-start="263" data-end="297">no fue creado por la extensión</strong>. Durante <code
+        data-start="307" data-end="334">startNotificationCenter()</code> vimos algo como: <span
+        class="ͼj">this</span><span class="ͼg">.</span>_messageList <span class="ͼg">=</span>
+    <span class="ͼm">Main</span><span class="ͼg">.</span>panel<span class="ͼg">.</span>statusArea<span
+        class="ͼg">.</span>dateMenu<span class="ͼg">.</span>_messageList;
+</p>
+<p>Es decir, la extensión <strong data-start="464" data-end="481">toma prestado</strong> el <code data-start="485"
+        data-end="498">MessageList</code> que ya existe dentro del menú de fecha de GNOME. Por lo tanto: <span
+        class="ͼj">this</span><span class="ͼg">.</span>_messageList<span class="ͼg">.</span>_sync(); es un método de la
+    propia implementación de <strong data-start="654" data-end="669">GNOME Shell</strong>, no de la extensión.</p>
+<p>De hecho, eso explica muchas cosas, la extensión hace: </p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>_messageList<span class="ͼg">.</span>_sectionList<span class="ͼg">.</span>remove_actor(<span class="ͼm">section</span>);</code></pre>
+<p>Eso modifica internamente una estructura de GNOME. Entonces inmediatamente dice: </p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>_messageList<span class="ͼg">.</span>_sync();</code></pre>
+<p>Como diciendo:</p>
+<blockquote>"Acabo de tocar una de tus estructuras internas. Ahora actualízate."</blockquote>
+<p>Es casi una cortesía hacia GNOME. Aunque no tengamos el código delante, por el contexto podemos inferir bastante.</p>
+<p>Cuando modificas una interfaz:</p>
+<pre><samp>Antes
+
+Media
+
+Notifications
+
+Events</samp></pre>
+<p>y eliminas: <i>Media. </i>La interfaz interna necesita actualizar:</p>
+<ul>
+    <li>posiciones,</li>
+    <li>espaciados,</li>
+    <li>botones,</li>
+    <li>estados vacíos,</li>
+    <li>etc.</li>
+</ul>
+<p>Eso probablemente lo hace <code data-start="2048" data-end="2057">_sync()</code>.</p>
+<hr>
+<p>Y ahora entiendo mejor por qué existía <code data-start="2106" data-end="2123">removeSection()</code>, podría haber
+    repetido esto en todos lados:</p>
+<pre><code><span class="ͼm">_sectionList</span><span class="ͼg">.</span>remove_actor(...)
+
+<span class="ͼm">_sync</span>();</code></pre>
+<p>Pero prefirió encapsularlo. Muy buena decisión.</p>
+<h3>Lo interesante</h3>
+<hr>
+<p>Ahora entiendo varias llamadas que vimos antes. Por ejemplo:</p>
+<p>En <code data-start="2368" data-end="2383">undoChanges()</code> aparecía: <span class="ͼj">this</span><span
+        class="ͼg">.</span>removeSection(<span class="ͼj">this</span><span class="ͼg">.</span>mediaSection); Ahora
+    sabemos exactamente qué hace.</p>
+<p>También en <code data-start="2506" data-end="2522">manageEvents()</code> y seguramente en <code data-start="2547"
+        data-end="2574">startNotificationCenter()</code>.</p>
+<h3>Lo único curioso</h3>
+<hr>
+<p>Hay una pequeña asimetría. Eventos:</p>
+<pre><samp><span>remove_actor</span>()
+
+<span>return</span></samp></pre>
+<p>No llama: <span class="ͼm">_sync</span>() Eso me hizo pensar un momento.</p>
+<p><b>¿Por qué?</b> Mi hipótesis es: Los eventos <strong data-start="2801" data-end="2818">no pertenecen</strong> al
+    <code data-start="2822" data-end="2836">_sectionList</code>. Por lo tanto... No necesitan sincronizar el <code
+        data-start="2884" data-end="2897">MessageList</code>. Porque nunca estuvieron dentro de él. Eso encaja
+    perfectamente con todo lo que vimos durante el recorrido.
+</p>
+<p>Entonces... Este método terminó siendo más importante de lo que parecía.</p>
+<p>No hace mucho código, pero encapsula una operación delicada:</p>
+<blockquote>"Quitar correctamente una sección del lugar donde vive."</blockquote>
+<p>Y además recuerda una diferencia arquitectónica fundamental:</p>
+<div class="row">
+    <div class="col">
+        <pre><samp>Media
+
+↓
+
+MessageList</samp></pre>
+    </div>
+    <div class="col">
+        <pre><samp>Notifications
+
+↓
+
+MessageList</samp></pre>
+    </div>
+    <div class="col">
+        <pre><samp>Events
+
+↓
+
+Otro contenedor</samp></pre>
+    </div>
+</div>
+<p>Ya casi lo había olvidado, pero Selenium-H nos lo vuelve a recordar.</p>

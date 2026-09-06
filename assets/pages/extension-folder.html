@@ -41,9 +41,9 @@
                         <li class="list-item" data-name="extension/class/blinkIconStopIfBlinking">
                             blinkIconStopIfBlinking()</li>
                         <li class="list-item" data-name="extension/class/resetIndicator">resetIndicator()</li>
-                        <li class="list-item" data-name="extension/class/">SubItem</li>
-                        <li class="list-item" data-name="extension/class/">SubItem</li>
-                        <li class="list-item" data-name="extension/class/">SubItem</li>
+                        <li class="list-item" data-name="extension/class/newNotif">newNotif()</li>
+                        <li class="list-item" data-name="extension/class/remNotif">remNotif()</li>
+                        <li class="list-item" data-name="extension/class/removeSection">removeSection()</li>
                         <li class="list-item" data-name="extension/class/">SubItem</li>
                     </ol>
                     <li class="list-item" data-name="extension/">SubItem</li>
@@ -60,16 +60,12 @@
     </div>
     <div class="col">
         <article id="show-content" class="card borderless fade-in">
-            <h2 data-start="229" data-end="268">La anatomía de una extensión de GNOME</h2>
-            <hr data-start="224" data-end="227">
-            <p data-start="270" data-end="349">Piensa en una extensión como una pequeña aplicación que GNOME carga al
-                iniciar.
-            </p>
-            <p data-start="351" data-end="390">Cada archivo tiene una responsabilidad.</p>
-
-            <pre>
-<code><span>
-metadata.json     → Identidad
+            <h2>La anatomía de una extensión de GNOME</h2>
+            <hr>
+            <p>Piensa en una extensión como una pequeña aplicación que GNOME carga al
+                iniciar. </p>
+            <p>Cada archivo tiene una responsabilidad.</p>
+            <pre><code><span>metadata.json     → Identidad
 
 extension.js      → Inicio de la extensión
 
@@ -86,15 +82,78 @@ schemas/          → Configuración persistente
 locale/           → Traducciones
 
 INSTALL.sh        → Instalación</span>
-</code>
-</pre>
-            <h3 data-start="2907" data-end="2960">Entonces, ¿qué archivos son realmente obligatorios?</h3>
-            <hr data-start="2902" data-end="2905">
-            <p data-start="2962" data-end="2991">Prácticamente solo estos dos:</p>
-            <pre class="cm-content q9tKkq_readonly m-0">
-    <code><span>    metadata.json</span><br>    <span>extension.js</span></code>
-</pre>
-            <p data-start="3033" data-end="3083">*** Todo lo demás depende de lo que haga la extensión.</p>
+</code></pre>
+            <h3>Entonces, ¿qué archivos son realmente obligatorios?</h3>
+            <hr>
+            <p>Prácticamente solo estos dos:</p>
+            <pre><code><span>metadata.json</span><br>
+<span>extension.js</span></code></pre>
+            <p>*** Todo lo demás depende de lo que haga la extensión.</p>
+            <h3>¡Muy Importante!</h3>
+            <hr>
+            <p>Esta extensión no construye un Notification Center desde cero.</p>
+            <p>Hace algo mucho más delicado:</p>
+            <pre><samp>GNOME Shell
+        │
+        ▼
+Notification Center original
+        │
+        ▼
+RE: Notification Center toma piezas,
+las mueve, las reorganiza
+y luego las devuelve.</samp></pre>
+            <p>Por eso aparecen métodos privados de GNOME como:</p>
+            <pre><samp><span class="ͼm">_messageList</span>
+<span class="ͼm">_sectionList</span>
+<span class="ͼm">_sync</span>()</samp></pre>
+            <p>Fíjate en el detalle: Todos empiezan con: _</p>
+            <p>Eso, por convención, significa: </p>
+            <blockquote>"Esto es interno."</blockquote>
+            <p>No forma parte de la API pública.</p>
+            <h4>Y esto nos recuerda algo </h4>
+            <hr>
+            <p>Aquí hay una pequeña enseñanza, cuando en el futuro modernicemos la extensión para versiones recientes de
+                GNOME, estos son precisamente los puntos que habrá que revisar primero.</p>
+            <h5>¿Por qué?</h5>
+            <p>Porque los métodos privados son los que más cambian entre versiones.</p>
+            <p>Si GNOME decide que <code data-start="1967" data-end="1976">_sync()</code> pasa a llamarse: <span
+                    class="ͼm">_update</span>() o desaparece por completo... La extensión dejaría de funcionar, no
+                porque el código esté mal, sino porque estaba utilizando una parte interna de GNOME.</p>
+            <p>Así que este pequeño <code data-start="2208" data-end="2217">_sync()</code> nos deja otra pista
+                importante para el futuro: cuando llegue el momento de portar <strong data-start="2300"
+                    data-end="2327">RE: Notification Center</strong> a versiones nuevas de GNOME, convendrá revisar
+                todas las llamadas a métodos y propiedades que comienzan con <code data-start="2436"
+                    data-end="2439">_</code>. Esas son las que tienen más probabilidades de haber cambiado con el tiempo
+                y, por tanto, serán nuestros primeros candidatos durante la adaptación. </p>
+            <h4>Zonas de riesgo</h4>
+            <hr>
+            <p>De hecho, yo diría que ya tenemos una <strong data-start="53" data-end="90">lista mental de "zonas de
+                    riesgo"</strong> para cuando llegue el momento de portar la extensión.</p>
+            <p>No son necesariamente errores; son los lugares donde es más probable que GNOME haya cambiado algo con el
+                paso de las versiones.</p>
+            <p>Por ejemplo:</p>
+            <div class="row">
+                <div class="col"><span>Propiedades internas:</span>
+                    <pre><samp><span class="ͼm">_messageList</span>
+<span class="ͼm">_sectionList</span>
+<span class="ͼm">_calendar</span>
+<span class="ͼm">_clocksItem</span>
+<span class="ͼm">_weatherItem</span></samp></pre>
+                </div>
+                <div class="col"><span>Métodos internos:</span>
+                    <pre><samp><span class="ͼm">_sync</span>()
+<span class="ͼm">_addSection</span>()
+<span class="ͼm">_shouldShow</span>()</samp></pre>
+                </div>
+                <div class="col">
+                    <span>Objetos internos de GNOME:</span>
+                    <pre><samp><span class="ͼm">Main</span><span class="ͼg">.</span>panel<span class="ͼg">.</span>statusArea<span class="ͼg">.</span>dateMenu
+<span class="ͼm">Main</span><span class="ͼg">.</span>messageTray</samp></pre>
+                </div>
+            </div>
+            <p>Todos ellos tienen algo en común: <strong data-start="628" data-end="695">empiezan con <code
+                        data-start="643" data-end="646">_</code> o pertenecen a objetos internos de GNOME
+                    Shell</strong>.</p>
         </article>
     </div>
 </div>

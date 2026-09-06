@@ -1,0 +1,232 @@
+<h2>newNotif()</h2>
+<hr>
+<p>Creo que acabamos de llegar a uno de los <strong data-start="59" data-end="86">métodos más importantes</strong> de la
+    extensión.</p>
+<pre><code><span class="hljs-attr">newNotif</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params">messageType</span>) {
+  
+    <span class="hljs-keyword">switch</span>(messageType) {
+      <span class="hljs-keyword">case</span> <span class="hljs-string">"media"</span>:
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">mediaCount</span>++;
+        <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">"notification"</span> :
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">notificationCount</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">notificationCount</span>+ !<span class="hljs-variable language_">this</span>.<span class="hljs-property">menu</span>.<span class="hljs-property">isOpen</span>;
+        <span class="hljs-comment">//this.filterNotifications();</span>
+        <span class="hljs-keyword">let</span> source = <span class="hljs-title class_">Main</span>.<span class="hljs-property">messageTray</span>.<span class="hljs-title function_">getSources</span>();
+        <span class="hljs-keyword">let</span> applicationIndex = <span class="hljs-variable language_">this</span>.<span class="hljs-property">appBlackList</span>.<span class="hljs-title function_">indexOf</span>(source[source.<span class="hljs-property">length</span>-<span class="hljs-number">1</span>].<span class="hljs-property">title</span>);
+        <span class="hljs-keyword">if</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">allowRunningScript</span> &amp;&amp; applicationIndex &gt; <span class="hljs-number">0</span> &amp;&amp; <span class="hljs-variable language_">this</span>.<span class="hljs-property">scriptList</span>[applicationIndex]!=<span class="hljs-string">""</span>) {
+          <span class="hljs-title function_">utilspawn</span>([<span class="hljs-string">"sh"</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">scriptList</span>[applicationIndex]]);         
+        }
+        <span class="hljs-keyword">if</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">isDndOff</span>) {
+          <span class="hljs-keyword">if</span>(applicationIndex &gt; -<span class="hljs-number">1</span>) {
+            <span class="hljs-keyword">switch</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">blackListAction</span>) {
+              <span class="hljs-keyword">case</span> <span class="hljs-number">3</span>:  
+              <span class="hljs-keyword">case</span> <span class="hljs-number">2</span>:
+                <span class="hljs-variable language_">this</span>.<span class="hljs-property">notificationCount</span>--;
+            }
+          }
+          <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">animateOnNewNotification</span>(<span class="hljs-number">5</span>);
+        }
+        <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">"events"</span> :  
+        [ <span class="hljs-variable language_">this</span>.<span class="hljs-property">seenEvents</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">eventsCount</span> ] = [ (<span class="hljs-title class_">Main</span>.<span class="hljs-property">panel</span>.<span class="hljs-property">statusArea</span>.<span class="hljs-property">dateMenu</span>.<span class="hljs-property">menu</span>.<span class="hljs-property">isOpen</span>)? <span class="hljs-variable language_">this</span>.<span class="hljs-property">seenEvents</span>: <span class="hljs-literal">false</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">shouldShowEventsSection</span>()*(!<span class="hljs-variable language_">this</span>.<span class="hljs-property">menu</span>.<span class="hljs-property">isOpen</span>) ];
+        <span class="hljs-keyword">break</span>;
+    }
+    <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">resetIndicator</span>();
+
+  }</code></pre>
+<p>Hasta ahora habíamos visto muchos "obreros especializados":</p>
+<ul>
+    <li>uno animaba,</li>
+    <li>otro actualizaba etiquetas,</li>
+    <li>otro cambiaba iconos,</li>
+    <li>otro administraba la visibilidad.</li>
+</ul>
+<p>Pero <strong data-start="277" data-end="341"><code data-start="279" data-end="291">newNotif()</code> es quien da la
+        orden de empezar todo el proceso</strong>.</p>
+<pre><code><span class="ͼo">newNotif</span>: <span class="ͼg">function</span>(<span class="ͼm">messageType</span>)</code></pre>
+<p>Me gusta muchísimo el diseño. No hizo tres métodos:</p>
+<pre><samp>newMedia()
+
+newNotification()
+
+newEvent()</samp></pre>
+<p>Hizo uno solo y delega el comportamiento mediante: <span class="ͼg">switch</span>(<span
+        class="ͼm">messageType</span>)</p>
+<hr>
+<pre><code><span class="ͼg">case</span> <span class="ͼk">"media"</span>:</code></pre>
+<p>Qué sencillez, <span class="ͼj">this</span><span class="ͼg">.</span>mediaCount<span class="ͼg">++</span>; Nada
+    más.</p>
+<p>Porque seguramente el resto ya lo hace: <span class="ͼj">this</span><span class="ͼg">.</span>resetIndicator();
+    al final. No necesita repetir código.</p>
+<hr>
+<pre><code><span class="ͼg">case</span> <span class="ͼk">"notification"</span>:</code></pre>
+<p>El contador</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>notificationCount <span class="ͼg">=</span>
+    <span class="ͼj">this</span><span class="ͼg">.</span>notificationCount <span class="ͼg">+</span> <span class="ͼg">!</span><span class="ͼj">this</span><span class="ͼg">.</span>menu<span class="ͼg">.</span>isOpen;</code></pre>
+<p>Aquí volvió Selenium-H con sus pequeñas expresiones ingeniosas.</p>
+<div class="row">
+    <div class="col"><span>Si el menú está abierto:</span>
+        <pre><samp>!true
+
+↓
+
+false
+
+↓
+
+0</samp></pre><span>No aumenta el contador.</span>
+    </div>
+    <div class="col"><span>Si está cerrado:</span>
+        <pre><samp>!false
+
+↓
+
+true
+
+↓
+
+1</samp></pre><span>Sí aumenta.</span>
+    </div>
+</div>
+<h5>¿Por qué?</h5>
+<p>Porque si el usuario tiene abierto el Notification Center... La notificación ya fue vista. No tendría sentido
+    marcarla como "nueva", eso me parece una decisión muy acertada.</p>
+<pre><code><span class="ͼg">let</span> <span class="ͼm">source</span> <span class="ͼg">=</span>
+    <span class="ͼm">Main</span><span class="ͼg">.</span>messageTray<span class="ͼg">.</span>getSources();</code></pre>
+<p>Luego aparece algo nuevo, aparece el origen de la notificación.</p>
+<pre><code><span class="ͼm">applicationIndex</span> <span class="ͼg">=</span>
+    <span class="ͼj">this</span><span class="ͼg">.</span>appBlackList<span class="ͼg">.</span>indexOf(...)</code></pre>
+<p>Y luego busca esa aplicación en la lista negra.</p>
+<p>No pregunta: ¿Es Firefox? ¿Es Telegram? No, busca en una lista configurable. Eso hace que la extensión sea flexible.
+</p>
+<pre><code><span class="ͼg">if</span>(<span class="ͼj">this</span><span class="ͼg">.</span>allowRunningScript <span class="ͼg">...</span>)</code></pre>
+<p>Luego aparece una sorpresa... ¡Scripts!</p>
+<div class="row">
+    <div class="col"><span>Si:</span>
+        <ul>
+            <li>el usuario lo permitió,</li>
+            <li>la aplicación está en la lista,</li>
+            <li>existe un script asociado,</li>
+        </ul>
+    </div>
+    <div class="col"><span>entonces: ejecuta un script.</span>
+        <pre><samp><span>utilspawn</span>(...)</samp></pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col"><span>Esto es bastante potente.</span>
+    </div>
+    <div class="col">
+        <pre><code><span class="ͼg">if</span>(<span class="ͼj">this</span><span class="ͼg">.</span>isDndOff)</code></pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col"><span>Recordemos aquí significa:</span>
+    </div>
+    <div class="col">
+        <blockquote>DND está desactivado.</blockquote>
+    </div>
+</div>
+<p>Es decir... Las notificaciones sí deben comportarse normalmente.</p>
+<pre><code><span class="ͼg">switch</span>(<span class="ͼj">this</span><span class="ͼg">.</span>blackListAction)</code></pre>
+<p>Si la aplicación está en la lista negra, pero aquí todavía no sabemos exactamente qué representan esos números.</p>
+<p>Pero ya vemos: <span class="ͼg">case</span> <span class="ͼj">3</span> o <span class="ͼg">case</span>
+    <span class="ͼj">2</span> terminan haciendo: <span class="ͼj">this</span><span
+        class="ͼg">.</span>notificationCount<span class="ͼg">--</span>;
+</p>
+<p>Es decir... La notificación llegó, pero decide que no debe contarse.</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>animateOnNewNotification(<span class="ͼj">5</span>);</code></pre>
+<p>Nuestro viejo amigo, ¡Ahora sabemos quién lo llamaba!</p>
+<p>Y eso me encanta. Porque el flujo queda clarísimo.</p>
+<hr>
+<pre><code><span class="ͼg">case</span> <span class="ͼk">"events"</span></code></pre>
+<p>Aquí aparece otra asignación múltiple. Ya estamos acostumbrados.</p>
+<pre><code>[
+    this.seenEvents,
+    this.eventsCount
+]</code></pre>
+<p>La idea parece ser:</p>
+<ul>
+    <li>actualizar si los eventos ya fueron vistos,</li>
+    <li>recalcular el contador.</li>
+</ul>
+<hr>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>resetIndicator();</code></pre>
+<p>Y finalmente, el gran coordinador. Tal como sospechábamos.</p>
+<div class="row">
+    <div class="col"><span>No importa qué llegó. Al final:</span></div>
+    <div class="col">
+        <blockquote>"Recalcula todo."</blockquote>
+    </div>
+</div>
+<hr>
+<p>Todo empieza a encajar.</p>
+<pre><samp>Nueva notificación
+↓
+
+newNotif()
+↓
+
+¿Media?
+↓
+
+¿Notificación?
+↓
+
+¿Evento?
+↓
+
+Actualizar contadores
+↓
+
+Animación (si aplica)
+↓
+
+resetIndicator()
+↓
+
+manageAutohide()
+↓
+
+manageLabel()
+↓
+
+Icono actualizado</samp></pre>
+<p>Hay un detalle de diseño muy bueno, observa esto.</p>
+<p><code data-start="3791" data-end="3803">newNotif()</code> nunca toca directamente:</p>
+<ul>
+    <li>iconos,</li>
+    <li>etiquetas,</li>
+    <li>visibilidad.</li>
+</ul>
+<p>Solo modifica el estado. Después dice: <span class="ͼm">resetIndicator</span>(); Y deja que otro método
+    sincronice toda la interfaz. Eso evita duplicar lógica.</p>
+<h3>Una pequeña observación</h3>
+<hr>
+<p>Hay una línea que sí me hizo levantar una ceja.</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>notificationCount </span><span class="ͼg">=</span><span>
+    </span><span class="ͼj">this</span><span class="ͼg">.</span><span>notificationCount </span><span class="ͼg">+</span><span> </span><span class="ͼg">!</span><span class="ͼj">this</span><span class="ͼg">.</span><span>menu</span><span class="ͼg">.</span><span>isOpen;</span></code></pre>
+<p>Funciona perfectamente, pero creo que hoy la escribiría así:</p>
+<pre><code><span class="ͼg">if</span> (<span class="ͼg">!</span><span class="ͼj">this</span><span class="ͼg">.</span>menu<span class="ͼg">.</span>isOpen) {
+    <span class="ͼj">this</span><span class="ͼg">.</span>notificationCount<span class="ͼg">++</span>;
+}</code></pre>
+<p>No porque la original esté mal, sino porque expresa la intención de forma más directa.</p>
+<p>El lector no tiene que recordar que <code data-start="4467" data-end="4473">true</code> vale <code data-start="4479"
+        data-end="4482">1</code> y <code data-start="4485" data-end="4492">false</code> vale <code data-start="4498"
+        data-end="4501">0</code> en una suma. Es una cuestión de legibilidad, no de funcionamiento.</p>
+<h3>Mi conclusión</h3>
+<hr>
+<p>Creo que este método confirma una idea que veníamos formando desde hace rato. Si <code data-start="4676"
+        data-end="4703">startNotificationCenter()</code> era el <strong data-start="4711"
+        data-end="4725">arquitecto</strong> que construía el Notification Center, entonces <code data-start="4773"
+        data-end="4785">newNotif()</code> es el <strong data-start="4792" data-end="4803">portero</strong> que recibe
+    todo lo que entra. No hace todo el trabajo él mismo, solo recibe la novedad, actualiza el estado correspondiente y
+    pone en marcha el resto del mecanismo.</p>
+<p>Y eso me parece una responsabilidad muy bien definida.</p>
+<p>Hay algo que me gustó especialmente: ahora entendemos por qué Selenium-H dividió tanto el código. Cuando <code
+        data-start="5142" data-end="5154">newNotif()</code> necesita una animación, no sabe cómo animar; llama a <code
+        data-start="5208" data-end="5236">animateOnNewNotification()</code>. Cuando necesita actualizar la interfaz, no
+    sabe cómo hacerlo; llama a <code data-start="5308" data-end="5326">resetIndicator()</code>. Cada método conoce
+    únicamente su pequeña parte del trabajo. </p>
+<p>Ese nivel de desacoplamiento es precisamente lo que hace que, después de tantos años, podamos seguir el flujo sin
+    sentir que estamos atrapados en un único bloque gigantesco de código.</p>
