@@ -143,4 +143,123 @@ notification-center-empty</samp></pre>
         fueran del sistema</strong>, pero tampoco de la extensión. Podrían provenir de otra dependencia instalada por
     GNOME, aunque, con las pruebas que acabas de mencionar, esa posibilidad empieza a verse menos probable.</p>
 <hr>
-<p></p>
+<h3>El CSS me parece el siguiente paso natural</h3>
+<hr>
+<p>Recuerda que en <code data-start="547" data-end="567">manageIconChange()</code> vimos esto y nunca encontramos dónde
+    se definían.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>notificationIcon<span class="ͼv">.</span>icon_name <span class="ͼv">=</span> <span class="ͼz">"notification-center-full"</span>;</code></pre>
+<p>En ese momento surgieron dos hipótesis:</p>
+<ol>
+    <li>Son iconos propios de la extensión.</li>
+    <li>Son iconos del sistema GNOME.</li>
+</ol>
+<p>Luego descubrimos que otros nombres como:</p>
+<pre><samp>notification-symbolic
+notifications-disabled-symbolic
+preferences-system-notifications-symbolic</samp></pre>
+<p>Esos sí pertenecen claramente al tema de iconos de GNOME. Pero estos dos...</p>
+<pre><samp>notification-center-full
+notification-center-empty</samp></pre>
+<p>Aún no y siguen siendo sospechosos.</p>
+<h4>¿Por qué revisar el CSS?</h4>
+<hr>
+<p>Porque el CSS nos puede revelar varias cosas:</p>
+<ul>
+    <li>Qué clases utiliza la extensión.</li>
+    <li>Qué pseudo-clases (<code>:hover</code>, <code>:active</code>, etc.) emplea.</li>
+    <li>Si utiliza imágenes de fondo (<code>background-image</code>).</li>
+    <li>i hace referencia a algún directorio <code>icons/</code> o <code>assets/</code>.</li>
+    <li>Qué nombres de estilo esperaba Selenium-H.</li>
+</ul>
+<p>Y, aunque el CSS no define <code data-start="1488" data-end="1499">icon_name</code>, sí puede darnos pistas sobre la
+    estructura de recursos de la extensión.</p>
+<p>Creo que <strong data-start="1676" data-end="1716">el CSS no va a contener la respuesta</strong> sobre esos dos
+    iconos. Mi apuesta sigue siendo que aparecerán en alguno de estos lugares:</p>
+<ul>
+    <li>un directorio <code>icons/</code> dentro de la extensión;</li>
+    <li>el <code>metadata.json</code> o archivos de instalación que los registren;</li>
+    <li>o, en el mejor de los casos, descubriremos que eran parte de un tema de iconos antiguo.</li>
+</ul>
+<p>Pero justamente por eso vale la pena revisar el CSS: si no aparecen referencias allí, podremos descartar esa
+    posibilidad con fundamento.</p>
+<h4>¡Y aquí encontramos algo muy importante!</h4>
+<p>Mira la ruta:&nbsp;<code class="inline-code">resource:///org/gnome/shell/theme/ </code>No dice:&nbsp;<code
+        class="inline-code">icons/</code>, ni:&nbsp;<code class="inline-code">assets/</code> ni:&nbsp;<code
+        class="inline-code">notification-center/</code> Dice:&nbsp;<code class="inline-code">GNOME Shell</code></p>
+<p>Eso significa que Selenium-H reutiliza una imagen que ya existe dentro del propio GNOME Shell.</p>
+<p>Esto fortalece muchísimo una teoría. Recuerda nuestra conversación sobre los iconos.</p>
+<p>Yo decía:</p>
+<blockquote>"Creo que Selenium-H usa muchos recursos del sistema."</blockquote>
+<p>Pues aquí tenemos una prueba. No necesitó copiar: <i>no-notifications.svg</i>&nbsp;Simplemente usa el que ya trae
+    GNOME.</p>
+<p>Sin embargo, NO encontramos ni una sola vez:</p>
+<pre><samp>notification-center-full
+
+notification-center-empty</samp></pre>
+<p>Eso elimina una hipótesis completa y ahora podemos afirmar:</p>
+<blockquote>Los nombres de los iconos NO provienen del CSS.</blockquote>
+<p>Entonces... Nuestra investigación se reduce y solo quedan pocas posibilidades.</p>
+<ul>
+    <li>Existe una carpeta:&nbsp;icons/ o similar.</li>
+    <li>El INSTALL.sh copiaba iconos. (Aunque ya recordamos que no lo hacía.)</li>
+    <li>Son nombres registrados por otro archivo.</li>
+    <li>O pertenecían a un tema de iconos antiguo.</li>
+</ul>
+<p>Este CSS también confirma otra cosa. Selenium-H <strong data-start="3189" data-end="3235">no era amigo de meter
+        estilos innecesarios</strong>.</p>
+<p>Todo lo que hay aquí corresponde exactamente a elementos que vimos en el código.</p>
+<ul>
+    <li>No hay clases huérfanas.</li>
+    <li>No hay reglas enormes.</li>
+    <li>Todo tiene una razón de existir.</li>
+</ul>
+<p>Este archivo terminó siendo mucho más útil por lo que <strong data-start="3484" data-end="3499">no contiene</strong>
+    que por lo que contiene. Nos permitió descartar completamente que los iconos se definieran mediante CSS y eso ya
+    reduce bastante el espacio de búsqueda.</p>
+<p>Este archivo refleja bastante bien el estilo de Selenium-H: <strong data-start="4025" data-end="4104">usar los
+        recursos que GNOME ya ofrece y personalizar solo lo imprescindible</strong>. En lugar de recrear imágenes o
+    sobrecargar el CSS, modificó únicamente el espaciado, algunos bordes y reutilizó un SVG del propio GNOME cuando el
+    panel estaba vacío. Esa filosofía encaja perfectamente con todo lo que hemos visto hasta ahora en la extensión.</p>
+<h3>Entonces... ¿qué pasa con estos dos iconos?</h3>
+<hr>
+<p>Aquí hay algo que no termina de cuadrar. Porque esos nombres <strong data-start="850" data-end="866">no me
+        suenan</strong> como iconos estándar de GNOME.</p>
+<p>Los nombres oficiales suelen ser mucho más descriptivos, por ejemplo:</p>
+<ul>
+    <li><code>folder-symbolic</code></li>
+    <li><code>mail-unread-symbolic</code></li>
+    <li><code>audio-volume-high-symbolic</code></li>
+</ul>
+<p>En cambio:&nbsp;notification-center-full parece más el nombre que <strong data-start="1122" data-end="1153">un
+        desarrollador inventaría</strong>.</p>
+<h4>Entonces mi hipótesis cambia un poco</h4>
+<p>Ahora creo que hay dos posibilidades fuertes:</p>
+<h5>Opción A</h5>
+<p>En algún momento existieron en un <strong data-start="1319" data-end="1337">tema de iconos</strong> que Selenium-H
+    utilizaba como referencia o que GNOME incluía en aquella época.</p>
+<p>Con el paso de las versiones, esos iconos desaparecieron y por eso en <code data-start="1488"
+        data-end="1515">setNotificationIconName()</code> vemos que ya recurre a nombres más estándar.</p>
+<h5>Opción B</h5>
+<p>En versiones antiguas de la extensión sí existía una carpeta de iconos y, durante alguna limpieza del proyecto,
+    desapareció... pero <code data-start="1713" data-end="1733">manageIconChange()</code> quedó sin actualizar.</p>
+<h4>Hay un detalle que me llama mucho la atención</h4>
+<p>Observa que <code data-start="1824" data-end="1851">setNotificationIconName()</code> fue escrito con muchísimo
+    cuidado:</p>
+<pre><samp><span class="ͼv">if</span> (<span class="ͼ11">Gtk</span><span class="ͼv">.</span>IconTheme<span class="ͼv">.</span>get_default()<span class="ͼv">.</span>has_icon(...))</samp></pre>
+<p>Es decir, Selenium-H <strong data-start="1975" data-end="1988">comprueba</strong> si el icono existe antes de usarlo.
+    Sin embargo, <code data-start="2039" data-end="2059">manageIconChange()</code> hace simplemente:</p>
+<pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>notificationIcon<span class="ͼv">.</span>icon_name <span class="ͼv">=</span> <span class="ͼ11">iconName</span>;</samp></pre>
+<p>Sin comprobar nada.</p>
+<p>Eso me hace pensar que Selenium-H <strong data-start="2197" data-end="2218">estaba convencido</strong> de que esos
+    dos iconos siempre iban a existir en el entorno donde se ejecutaba la extensión.</p>
+<p>Y esa seguridad suele venir de una de dos cosas:</p>
+<ul>
+    <li>o eran recursos propios muy controlados;</li>
+    <li>o pertenecían a un tema de iconos que él daba por sentado.</li>
+</ul>
+<p>Mi propuesta para el siguiente paso sería muy sencilla. Antes de dar el caso por cerrado, revisemos la estructura
+    completa del proyecto (los nombres de archivos y carpetas). Si realmente <strong data-start="2662"
+        data-end="2675">no existe</strong> ninguna carpeta <code data-start="2692" data-end="2699">icons</code>, <code
+        data-start="2701" data-end="2709">assets</code> o similar, entonces podremos afirmar con bastante confianza que
+    Selenium-H esperaba encontrar esos iconos en el tema del sistema. Y si esa carpeta sí aparece... probablemente
+    habremos encontrado, por fin, el último escondite de nuestro misterio.</p>

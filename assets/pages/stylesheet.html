@@ -1,16 +1,73 @@
-<div class="markdown prose dark:prose-invert wrap-break-word w-full light markdown-new-styling">
-    <h2 data-start="1646" data-end="1668">
-        <span role="text">¿Qué es <code data-start="1652" data-end="1668">stylesheet.css</code>?</span>
-    </h2>
-    <hr data-start="1641" data-end="1644">
-    <p data-start="1670" data-end="1689">Toda la apariencia.</p>
-    <p data-start="1691" data-end="1699">Colores.</p>
-    <p data-start="1701" data-end="1708">Bordes.</p>
-    <p data-start="1710" data-end="1721">Espaciados.</p>
-    <p data-start="1723" data-end="1735">Animaciones.</p>
-    <p data-start="1737" data-end="1745">Fuentes.</p>
-    <p data-start="1747" data-end="1836">Si mañana quieres que el panel tenga esquinas redondeadas, probablemente
-        terminarás
-        aquí.</p>
-
-</div>
+<h2> ¿Qué es <code>stylesheet.css</code>?</h2>
+<hr>
+<p>Toda la apariencia.</p>
+<ul>
+    <li>Colores.</li>
+    <li>Bordes.</li>
+    <li>Espaciados.</li>
+    <li>Animaciones.</li>
+    <li>Fuentes.</li>
+</ul>
+<p>Si mañana quieres que el panel tenga esquinas redondeadas, probablemente terminarás aquí.</p>
+<h4>¿Por qué revisar el CSS?</h4>
+<hr>
+<p>Porque el CSS nos puede revelar varias cosas:</p>
+<ul>
+    <li>Qué clases utiliza la extensión.</li>
+    <li>Qué pseudo-clases (<code>:hover</code>, <code>:active</code>, etc.) emplea.</li>
+    <li>Si utiliza imágenes de fondo (<code>background-image</code>).</li>
+    <li>Si hace referencia a algún directorio <code>icons/</code> o <code>assets/</code>.</li>
+    <li>Qué nombres de estilo esperaba Selenium-H.</li>
+</ul>
+<h3>Su contenido</h3>
+<hr>
+<pre><samp>/*
+Version 23.04
+=============
+*/</samp></pre>
+<p>El encabezado, eso ya nos da una pista. No dice:&nbsp;Version 1.0 Dice:&nbsp;23.04. Eso parece indicar que este CSS
+    fue revisado o incluso reescrito para esa versión de la extensión.</p>
+<hr>
+<pre><code>.<span class="ͼ10">notification-center-message-list</span></code></pre>
+<p>Ya sabemos perfectamente quién la usa. Durante <code data-start="712" data-end="739">startNotificationCenter()</code>
+    vimos algo parecido a:</p>
+<pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>box<span class="ͼv">.</span>style_class <span class="ͼv">=</span>
+        <span class="ͼz">"notification-center-message-list"</span>;</samp></pre>
+<p>Así que aquí no hay misterio, simplemente define:</p>
+<ul>
+    <li>padding</li>
+    <li>separación</li>
+</ul>
+<hr>
+<pre><code>.<span class="ͼ10">notification-center-message-list-empty</span></code></pre>
+<p>Esta sí me gusta, porque responde una pregunta que ni siquiera nos habíamos hecho.</p>
+<p>Cuando no hay nada... ¿qué se muestra? Y la respuesta es:</p>
+<pre><samp><span class="ͼ13">background-image</span>:
+    <span class="ͼy">url</span>(<span class="ͼz">"resource:///org/gnome/shell/theme/no-notifications.svg"</span>);</samp></pre>
+<h4>¡Y aquí encontramos algo muy importante!</h4>
+<p>Mira la ruta:&nbsp;<code class="inline-code">resource:///org/gnome/shell/theme/ </code>No dice:&nbsp;<code
+        class="inline-code">icons/</code>, ni:&nbsp;<code class="inline-code">assets/</code> ni:&nbsp;<code
+        class="inline-code">notification-center/</code> Dice:&nbsp;<code class="inline-code">GNOME Shell</code></p>
+<p>Eso significa que Selenium-H reutiliza una imagen que ya existe dentro del propio GNOME Shell.</p>
+<hr>
+<pre><code><span class="hljs-selector-class">.notification-center-clear-button</span></code></pre>
+<p>El botón Clear, nada raro, solo márgenes.</p>
+<hr>
+<pre><code>.<span class="ͼ10">notification-center-message-list-section</span></code></pre>
+<p>Solo elimina padding.</p>
+<hr>
+<pre><code>.<span class="ͼ10">notification-center-events-label</span>
+    
+    .<span class="ͼ10">notification-center-notification-label</span></code></pre>
+<p>Solo padding.</p>
+<hr>
+<pre><code>.<span class="ͼ10">notification-center-datemenu-vbox</span></code></pre>
+<p>Y la última regla también me hizo sonreír. Porque ya la habíamos visto, en <code data-start="2276"
+        data-end="2291">undoChanges()</code> aparecía:</p>
+<pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>dateMenuVbox<span class="ͼv">.</span>remove_style_class_name(
+        <span class="ͼz">"notification-center-datemenu-vbox"</span>
+    );</samp></pre>
+<p>Y ahora sabemos qué hacía esa clase. Simplemente:</p>
+<pre><samp>quita un borde
+    
+pone otro</samp></pre>
