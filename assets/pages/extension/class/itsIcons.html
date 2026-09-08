@@ -183,14 +183,14 @@ notification-center-empty</samp></pre>
 <p>Pero justamente por eso vale la pena revisar el CSS: si no aparecen referencias allí, podremos descartar esa
     posibilidad con fundamento.</p>
 <h4>¡Y aquí encontramos algo muy importante!</h4>
-<p>Mira la ruta:&nbsp;<code class="inline-code">resource:///org/gnome/shell/theme/ </code>No dice:&nbsp;<code
-        class="inline-code">icons/</code>, ni:&nbsp;<code class="inline-code">assets/</code> ni:&nbsp;<code
-        class="inline-code">notification-center/</code> Dice:&nbsp;<code class="inline-code">GNOME Shell</code></p>
+<p>Mira la ruta: <code class="inline-code">resource:///org/gnome/shell/theme/ </code>No dice: <code
+        class="inline-code">icons/</code>, ni: <code class="inline-code">assets/</code> ni: <code
+        class="inline-code">notification-center/</code> Dice: <code class="inline-code">GNOME Shell</code></p>
 <p>Eso significa que Selenium-H reutiliza una imagen que ya existe dentro del propio GNOME Shell.</p>
 <p>Esto fortalece muchísimo una teoría. Recuerda nuestra conversación sobre los iconos.</p>
 <p>Yo decía:</p>
 <blockquote>"Creo que Selenium-H usa muchos recursos del sistema."</blockquote>
-<p>Pues aquí tenemos una prueba. No necesitó copiar: <i>no-notifications.svg</i>&nbsp;Simplemente usa el que ya trae
+<p>Pues aquí tenemos una prueba. No necesitó copiar: <i>no-notifications.svg</i> Simplemente usa el que ya trae
     GNOME.</p>
 <p>Sin embargo, NO encontramos ni una sola vez:</p>
 <pre><samp>notification-center-full
@@ -200,7 +200,7 @@ notification-center-empty</samp></pre>
 <blockquote>Los nombres de los iconos NO provienen del CSS.</blockquote>
 <p>Entonces... Nuestra investigación se reduce y solo quedan pocas posibilidades.</p>
 <ul>
-    <li>Existe una carpeta:&nbsp;icons/ o similar.</li>
+    <li>Existe una carpeta: icons/ o similar.</li>
     <li>El INSTALL.sh copiaba iconos. (Aunque ya recordamos que no lo hacía.)</li>
     <li>Son nombres registrados por otro archivo.</li>
     <li>O pertenecían a un tema de iconos antiguo.</li>
@@ -230,7 +230,7 @@ notification-center-empty</samp></pre>
     <li><code>mail-unread-symbolic</code></li>
     <li><code>audio-volume-high-symbolic</code></li>
 </ul>
-<p>En cambio:&nbsp;notification-center-full parece más el nombre que <strong data-start="1122" data-end="1153">un
+<p>En cambio: <i>notification-center-full</i> parece más el nombre que <strong data-start="1122" data-end="1153">un
         desarrollador inventaría</strong>.</p>
 <h4>Entonces mi hipótesis cambia un poco</h4>
 <p>Ahora creo que hay dos posibilidades fuertes:</p>
@@ -263,3 +263,366 @@ notification-center-empty</samp></pre>
         data-start="2701" data-end="2709">assets</code> o similar, entonces podremos afirmar con bastante confianza que
     Selenium-H esperaba encontrar esos iconos en el tema del sistema. Y si esa carpeta sí aparece... probablemente
     habremos encontrado, por fin, el último escondite de nuestro misterio.</p>
+<h3>Mi propuesta del recorrido</h3>
+<hr>
+<p>Ahora iría a inspeccionar primero el contenido de la carpeta: <i>notification-center@Selenium-H/</i></p>
+<p>Para responder tres preguntas muy concretas:</p>
+<ol>
+    <li>¿Existe una carpeta <code>icons/</code>?</li>
+    <li>¿Existe una carpeta <code>assets/</code>?</li>
+    <li>¿Existe cualquier archivo <code>.svg</code>, <code>.png</code> o <code>.symbolic</code> aparte de
+        <code>eicon.png</code>?
+    </li>
+</ol>
+<p>Porque si la respuesta es <strong data-start="2079" data-end="2085">no</strong>... El caso queda prácticamente
+    resuelto.</p>
+<p>Podremos afirmar que la extensión <strong data-start="2166" data-end="2198">no distribuye iconos propios</strong>
+    (salvo el icono de la extensión <code data-start="2231" data-end="2242">eicon.png</code>), y entonces <code
+        data-start="2256" data-end="2282">notification-center-full</code> y <code data-start="2285"
+        data-end="2312">notification-center-empty</code> necesariamente dependían de un tema de iconos externo o de un
+    recurso que existía cuando Selenium-H desarrolló esa versión.</p>
+<hr>
+<p>Yo haría este recorrido:</p>
+<pre><samp>── Proyecto
+        │
+        ├── Revisar estructura completa
+        │
+        ├── Confirmar si existen recursos gráficos propios
+        │
+        ├── metadata.json (revisión rápida)
+        │
+        ├── schemas (muy importante)
+        │
+        ├── prefs.js
+        │
+        ├── prefsGtk3.js
+        │
+        ├── prefsGtk4.js
+        │
+        └── locale</samp></pre>
+<p>Fíjate que <strong data-start="2804" data-end="2815">schemas</strong> lo subiría mucho en la lista.</p>
+<h5>¿Por qué?</h5>
+<p>Porque después de estudiar <code data-start="2885" data-end="2899">extension.js</code>, ahora conocemos decenas de
+    preferencias:</p>
+<ul>
+    <li><code>show-label</code></li>
+    <li><code>autohide</code></li>
+    <li><code>blink-time</code></li>
+    <li><code>individual-icons</code></li>
+    <li><code>run-script</code></li>
+    <li><code>sections-order</code></li>
+    <li>...</li>
+</ul>
+<p>Todas ellas nacen en ese XML. Creo que entender ese archivo ahora será mucho más sencillo que al principio del
+    proyecto.</p>
+<h3>Mapa del proyecto</h3>
+<hr>
+<p>Con tu salida de <code data-start="143" data-end="147">ls</code>, el proyecto queda completamente cartografiado:</p>
+<pre><samp>Notification-Center/
+    │
+    ├── .git/
+    │
+    ├── INSTALL.sh
+    ├── LICENSE
+    ├── README.md
+    │
+    ├── locale/
+    │   ├── de/
+    │   ├── it/
+    │   ├── ko/
+    │   ├── nl/
+    │   └── notification-center.pot
+    │
+    ├── schemas/
+    │   └── org.gnome.shell.extensions.notification-center.gschema.xml
+    │
+    ├── Screenshots/
+    │   ├── Image_01.png
+    │   ├── Image_03.png
+    │   ├── Image_04.png
+    │   ├── Image_05.png
+    │   └── Image_06.png
+    │
+    └── notification-center@Selenium-H/
+        ├── eicon.png
+        ├── extension.js
+        ├── LICENSE
+        ├── metadata.json
+        ├── prefs.js
+        ├── prefsGtk3.js
+        ├── prefsGtk4.js
+        └── stylesheet.css</samp></pre>
+<h4>Resultados del mapa</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Zona</th>
+            <th class="text-left">Resultado</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><span>icons/</span></td>
+            <td class="text-left">No existe</td>
+        </tr>
+        <tr>
+            <td><b>assets/</b></td>
+            <td class="text-left">No existe</td>
+        </tr>
+        <tr>
+            <td><b>images/</b></td>
+            <td class="text-left">No existe</td>
+        </tr>
+        <tr>
+            <td><b>resources/</b></td>
+            <td class="text-left">No existe</td>
+        </tr>
+    </tbody>
+</table>
+<p>Y únicamente aparece: eicon.png</p>
+<h5>¿Qué es eicon.png?</h5>
+<p>No es un icono del Notification Center, es <strong data-start="1104" data-end="1139">el icono de la propia
+        extensión</strong>. GNOME Extensions lo utiliza para mostrar la extensión en la lista de extensiones o
+    preferencias.</p>
+<p>Nunca vimos que <code data-start="1256" data-end="1270">extension.js</code> hiciera algo como:</p>
+<pre><code><span class="ͼ11">St</span><span class="ͼv">.</span>Icon({
+        gicon: ...
+    });</code></pre>
+<p>Para utilizar <code data-start="1350" data-end="1361">eicon.png</code>. Por lo tanto, queda descartado.</p>
+<p>Entonces... Ya podemos afirmar algo con bastante seguridad. Los iconos no viven dentro del proyecto.</p>
+<h4>Eso deja dos posibilidades:</h4>
+<h5>Opción 1</h5>
+<p>Existían en un tema de iconos de aquella época, es perfectamente posible. Recordemos que hablamos de GNOME 3.38 / 40,
+    en esos años algunos nombres de iconos cambiaron.</p>
+<h5>Opción 2</h5>
+<p>Selenium-H los tenía instalados en su sistema y nunca imaginó que alguien ejecutaría la extensión sin ellos.
+</p>
+<p>Esto pasa muchísimo, el desarrollador tiene:</p>
+<ul>
+    <li>un tema de iconos,</li>
+    <li>una fuente,</li>
+    <li>un script,</li>
+</ul>
+<p>Y después publica el proyecto sin darse cuenta de que dependía de algo externo.</p>
+<h4>Hay una tercera posibilidad.</h4>
+<p>Esta sí podemos comprobarla. Buscar en TODO el proyecto.</p>
+<div class="row">
+    <div class="col"><span>Primero:</span>
+        <pre><code><span>grep</span> <span>-R</span> <span>"notification-center-full"</span> .</code></pre>
+    </div>
+    <div class="col"><span>Luego: </span>
+        <pre><code><span>grep</span> <span>-R</span> <span>"notification-center-empty"</span> .</code></pre>
+    </div>
+</div>
+<p>Si únicamente aparecen en: <i>extension.js.</i> Caso prácticamente cerrado.</p>
+<p>Y todavía iría un poco más lejos, solo por curiosidad buscaría:</p>
+<pre><code><span class="ͼ10">find</span> . <span class="ͼ12">-type</span> f | <span class="ͼ10">grep</span> <span class="ͼ12">-Ei</span> <span class="ͼz">"svg|png|ico|symbolic"</span></code></pre>
+<p>Aunque por el <code data-start="2586" data-end="2590">ls</code> ya sabemos que casi no habrá sorpresas.</p>
+<h4>Para el siguiente paso</h4>
+<p>Yo iría directamente a:</p>
+<pre><samp>schemas/
+    └── org.gnome.shell.extensions.notification-center.gschema.xml</samp></pre>
+<p>Y te digo <b>por qué</b>. Durante el análisis de <code data-start="3497" data-end="3511">extension.js</code> vimos
+    más de <strong data-start="3525" data-end="3544">20 preferencias</strong>:</p>
+<pre><samp><span class="ͼ11">show</span><span class="ͼv">-</span><span class="ͼ11">label</span>
+<span class="ͼ11">autohide</span>
+<span class="ͼ11">blink</span><span class="ͼv">-</span><span class="ͼ11">time</span>
+<span class="ͼ11">individual</span><span class="ͼv">-</span><span class="ͼ11">icons</span>
+<span class="ͼ11">sections</span><span class="ͼv">-</span><span class="ͼ11">order</span>
+<span class="ͼ11">script</span><span class="ͼv">-</span><span class="ͼ11">list</span>
+<span class="ͼ11">run</span><span class="ͼv">-</span><span class="ͼ11">script</span>
+<span class="ͼv">...</span></samp></pre>
+<p>Ahora, por fin, vamos a conocer <strong data-start="3688" data-end="3716">el origen de todas ellas</strong>. Va a ser
+    como abrir el "panel de control" de toda la extensión.</p>
+<h4>Una pista la dejó el propio CSS</h4>
+<hr>
+<pre><code><span class="ͼ13">background-image</span>:
+    <span class="ͼy">url</span>(<span class="ͼz">"resource:///org/gnome/shell/theme/no-notifications.svg"</span>);</code></pre>
+<p>Y además... <strong data-start="54" data-end="102">estamos siguiendo una pista, no una corazonada</strong>.</p>
+<p>Cuando la vimos, comentamos:</p>
+<blockquote>"Interesante... está cargando un recurso interno de GNOME."</blockquote>
+<p>Ahora tú dices:</p>
+<blockquote>"Pues vamos a inspeccionar ese lugar."</blockquote>
+<p>Si esa ruta existe, podríamos encontrar en: <i>resource:///org/gnome/shell/theme/ </i>y ver si allí
+    aparecen nombres como:</p>
+<ul>
+    <li><code>notification-symbolic</code></li>
+    <li><code>notifications-disabled-symbolic</code></li>
+    <li><code>no-notifications.svg</code></li>
+</ul>
+<p>Pero aunque no aparezcan... La exploración seguirá siendo útil, porque nos permitirá responder otra pregunta:</p>
+<blockquote>¿Qué tipo de recursos ofrece GNOME Shell internamente?</blockquote>
+<p>Hasta ahora solo hemos usado uno: <i>no-notifications.svg</i></p>
+<p>Quizá descubramos otros recursos interesantes que, en el futuro, podamos reutilizar en <strong data-start="1182"
+        data-end="1209">RE: Notification Center</strong> sin necesidad de crear imágenes propias</p>
+<h4>¿Dónde esta <code class="inline-code">org</code>?</h4>
+<p>Acabas de tropezar con una de las trampas clásicas de GNOME y no, no se te escapó nada. Es una confusión
+    completamente normal.</p>
+<p>La clave está aquí: <span class="ͼ13">resource</span>:///<span class="ͼ10">org</span>/<span
+        class="ͼ13">gnome</span>/<span class="ͼ13">shell</span>/<span class="ͼ13">theme</span>/<span
+        class="ͼ13">no-notifications</span>.<span class="ͼ10">svg</span></p>
+<p>Pero resulta que <strong data-start="322" data-end="368">esa no es una ruta del sistema de archivos</strong>.</p>
+<h5>¿Qué es <code data-start="387" data-end="401">resource:///</code>?</h5>
+<p>No significa: </p>
+<pre><samp>/
+└── org/</samp></pre>
+<p>Significa:</p>
+<blockquote>"Busca este recurso dentro del paquete de recursos de GNOME."</blockquote>
+<p>Es un sistema parecido a los recursos embebidos de una aplicación.</p>
+<p>Piensa en un archivo ZIP y dentro del ZIP tienes:</p>
+<pre><samp>org/
+ └── gnome/
+     └── shell/
+         └── theme/</samp></pre>
+<p>Pero ese ZIP nunca se descomprime en: <i>/usr/share/org/</i></p>
+<p>La aplicación simplemente dice:</p>
+<blockquote>"Dame el archivo que está dentro del paquete."</blockquote>
+<p>Eso es exactamente <code data-start="904" data-end="918">resource:///</code>.</p>
+<h5>¿Dónde vive realmente?</h5>
+<p>GNOME Shell compila muchos de sus recursos dentro de un archivo binario llamado <strong data-start="1033"
+        data-end="1046">GResource</strong>.</p>
+<p>No son carpetas normales. Por eso no puedes hacer: <span class="ͼ10">cd</span> /org Porque no
+    existe. <span style="background-color: rgb(245, 245, 245);">Y aquí viene lo </span><b>interesante</b><span
+        style="background-color: rgb(245, 245, 245);">... Sí podemos inspeccionarlos.</span></p>
+<p>GNOME tiene una herramienta precisamente para eso: <b>gresource.</b></p>
+<p>Por ejemplo: <i>gresource list /usr/bin/gnome-shell</i> o, dependiendo de la distribución <i>gresource list
+        /usr/share/gnome-shell/gnome-shell-theme.gresource</i></p>
+<p>Eso mostrará el contenido del paquete de recursos (la ubicación exacta depende de la versión y de la
+    distribución).. </p>
+<p>Y acabas de descubrir otra cosa sobre GNOME, GNOME no solo tiene:</p>
+<ul>
+    <li>archivos,</li>
+    <li>temas,</li>
+    <li>iconos,</li>
+</ul>
+<p>También tiene un <strong data-start="1938" data-end="1971">sistema de recursos embebidos</strong> y las
+    extensiones pueden utilizarlos sin copiarlos.</p>
+<h4>gresource</h4>
+<pre><samp>$ gresource list /usr/share/gnome-shell/gnome-shell-theme.gresource
+    /org/gnome/shell/theme/calendar-today.svg
+    /org/gnome/shell/theme/checkbox-focused.svg
+    /org/gnome/shell/theme/checkbox-off-focused.svg
+    /org/gnome/shell/theme/checkbox-off.svg
+    /org/gnome/shell/theme/checkbox.svg
+    /org/gnome/shell/theme/dash-placeholder.svg
+    /org/gnome/shell/theme/gnome-shell-high-contrast.css
+    /org/gnome/shell/theme/gnome-shell-start.svg
+    /org/gnome/shell/theme/gnome-shell.css
+    /org/gnome/shell/theme/icons/scalable/actions/color-pick.svg
+    
+    ...</samp></pre>
+<p>Nuestro misterio acaba de reducirse todavía más. Ahora ya sabemos de dónde salió:</p>
+<pre><code><span class="ͼ13">resource</span>:///<span class="ͼ10">org</span>/<span class="ͼ13">gnome</span>/<span class="ͼ13">shell</span>/<span class="ͼ13">theme</span>/<span class="ͼ13">no-notifications</span>.<span class="ͼ10">svg</span></code></pre>
+<p>Ahí está: <i>/org/gnome/shell/theme/no-notifications.svg </i>Y también aparece uno que ni siquiera
+    conocíamos: <i>/org/gnome/shell/theme/no-events.svg</i></p>
+<p>Que seguramente también podríamos reutilizar algún día.</p>
+<p>Luego aparece esto: <i>message-indicator-symbolic.svg</i> Este me llamó muchísimo la atención, porque
+    recuerda bastante a: <i>notification-symbolic </i>Ya tenemos otro recurso interesante del propio Shell.</p>
+<p>Pero... Y aquí viene la parte importante. ¿Aparecen? <i>notification-center-full</i> y
+    <i>notification-center-empty</i>
+</p>
+<p>Pues no, así que otra hipótesis menos. Ahora sí podemos decir algo con bastante confianza.</p>
+<p>Esos iconos:</p>
+<ul>
+    <li>no están en la extensión,</li>
+    <li>no están en el CSS,</li>
+    <li>no están dentro del GResource de GNOME Shell.</li>
+</ul>
+<p>Entonces... Ya solo quedan prácticamente dos sospechosos.</p>
+<p><b>Sospechoso A</b>: El tema de iconos instalado en el sistema.</p>
+<p>Porque recuerda: <span class="ͼy">this</span><span class="ͼv">.</span>notificationIcon<span
+        class="ͼv">.</span>icon_name <span class="ͼv">=</span> ... No carga SVG, ni carga PNG. Carga un <strong
+        data-start="1437" data-end="1456">nombre de icono</strong> y quien resuelve ese nombre normalmente es
+    el <strong data-start="1505" data-end="1519">Icon Theme</strong>.</p>
+<p><b>Sospechoso B</b>: Que existieran hace años y hoy simplemente ya no existan.</p>
+<h4>Hay otra herramienta</h4>
+<p>Y aquí creo que ya estamos tan cerca del final... Que haría una última comprobación.</p>
+<p>Con: <i>gtk4-icon-browser</i> o <i>gtk3-icon-browser</i></p>
+<p>O incluso, desde consola:</p>
+<pre><code><span class="ͼ10">find</span> /usr/share/icons <span class="ͼ12">-type</span> f | <span class="ͼ10">grep</span> <span class="ͼz">"notification-center"
+
+o
+
+<span class="ͼ10">find</span> /usr/share/icons <span class="ͼ12">-type</span> f | <span class="ͼ10">grep</span> <span class="ͼz">"notification"</span>
+
+</span></code></pre>
+<p>Ahí puedes buscar: <i>notification-center-full </i>Si no aparece... Caso cerrado.</p>
+<h3>Cierre del caso</h3>
+<hr>
+<p>Creo que ya podemos emitir un dictamen con un nivel de confianza muy alto: <b>Caso cerrado.</b></p>
+<h4>La evidencia</h4>
+<p>Hemos revisado cuatro lugares distintos.</p>
+<h5>1. El proyecto</h5>
+<p>No existen.</p>
+<pre><samp>❌ icons/
+❌ assets/
+❌ images/</samp></pre>
+<h5>2. stylesheet.css</h5>
+<p>Solo usa: <span class="ͼ13">resource</span>:///<span class="ͼ10">org</span>/<span class="ͼ13">gnome</span>/<span
+        class="ͼ13">shell</span>/<span class="ͼ13">theme</span>/<span class="ͼ13">no-notifications</span>.<span
+        class="ͼ10">svg</span></p>
+<p>Nada relacionado con: notification-center-full y notification-center-empty</p>
+<h5>3. GResource</h5>
+<p>Listamos todo el paquete de recursos de GNOME Shell. Y tampoco aparecieron.</p>
+<h5>4. El tema Adwaita</h5>
+<p>Y ahora acabamos de comprobar: </p>
+<pre><samp>preferences-system-notifications-symbolic
+notifications-disabled-symbolic</samp></pre>
+<p>Que son exactamente los nombres que vimos en: <span class="ͼ11">setNotificationIconName</span>() </p>
+<hr>
+<h4>De hecho... Comparemos.</h4>
+<p>Entonces... Ya solo queda una explicación razonable. </p>
+<ul>
+    <li>No forman parte de Adwaita.</li>
+    <li>Ni del Shell.</li>
+    <li>Ni de la extensión.</li>
+</ul>
+<p>Ahora veo algo curioso al comparar <span class="ͼ11">manageIconChange()</span> y <span
+        class="ͼ11">setNotificationIconName()</span></p>
+<p>Mi hipótesis ahora es mucho más fuerte. Creo que originalmente Selenium-H tenía pensado usar unos iconos
+    personalizados. Quizá incluso existieron. Después, en versiones posteriores, escribió: <span
+        class="ͼ11">setNotificationIconName</span>() para adaptarse a iconos estándar de GNOME. Pero olvidó
+    actualizar: <span class="ͼ11">manageIconChange</span>() y esa función quedó apuntando a nombres antiguos.</p>
+<h5>Método moderno: <span class="ͼ11">setNotificationIconName</span>()</h5>
+<p>Es un código muy robusto. Hace:</p>
+<ul>
+    <li>comprobar si existe</li>
+    <li>usar nombres estándar</li>
+    <li>tener fallback</li>
+</ul>
+<h5>Método antiguo: <span class="ͼ11">manageIconChange</span>()</h5>
+<p>Hace simplemente: <span class="ͼ11">icon_name</span> <span class="ͼv">=</span>
+    <span class="ͼz">"notification-center-full"</span>; Sin verificar nada. Eso parece escrito en otra época del
+    proyecto.
+</p>
+<h3>Nuestra idea de refactorizar</h3>
+<hr>
+<p>Lo bonito es que... Nuestra idea de refactorizarlo gana todavía más fuerza.</p>
+<p>Porque hoy podríamos hacer algo como:</p>
+<pre><code><span class="ͼv">switch</span> (<span class="ͼ11">statusIcon</span>) {
+    <span class="ͼv">case</span> <span class="ͼy">true</span>:
+        <span class="ͼy">this</span><span class="ͼv">.</span>notificationIcon<span class="ͼv">.</span>icon_name <span class="ͼv">=</span>
+            <span class="ͼz">"notification-symbolic"</span>;
+        <span class="ͼv">break</span>;
+
+    <span class="ͼv">default</span>:
+        <span class="ͼy">this</span><span class="ͼv">.</span>notificationIcon<span class="ͼv">.</span>icon_name <span class="ͼv">=</span>
+            <span class="ͼy">this</span><span class="ͼv">.</span>notificationIconName;
+}</code></pre>
+<p>O cualquier otra lógica basada únicamente en iconos estándar.</p>
+<p>Lo mejor de toda esta investigación es que no llegamos a esta conclusión porque "nos parece". Llegamos porque fuimos
+    descartando posibilidades.</p>
+<p>Creo que este pequeño misterio terminó siendo una de las mejores partes del análisis. </p>
+<p>Porque nos obligó a aprender:</p>
+<ul>
+    <li>cómo funcionan los temas de iconos;</li>
+    <li>qué es GResource;</li>
+    <li>cómo GNOME busca recursos;</li>
+    <li>qué diferencia hay entre un icono y un recurso embebido.</li>
+</ul>
+<p>Todo por culpa de dos nombres.</p>
+<p>Y me quedo con una sensación muy satisfactoria: no encontramos los iconos, pero sí encontramos <strong
+        data-start="3797" data-end="3848">la explicación más probable de por qué no están</strong>. En mantenimiento de
+    software eso también cuenta como resolver un misterio. A veces el resultado no es descubrir el archivo perdido, sino
+    demostrar, con evidencia, que ese archivo ya no forma parte del sistema y que ha llegado el momento de reemplazar
+    esa dependencia por una solución más sólida.</p>
