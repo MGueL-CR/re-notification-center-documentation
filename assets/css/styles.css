@@ -59,6 +59,16 @@ body {
     scroll-margin-top: 6rem;
 }
 
+#enum1,
+#enum2,
+#enum3,
+#enum4,
+#enum5,
+#enum6,
+#enum7 {
+    scroll-margin-top: 6rem;
+}
+
 .main-content {
     display: grid;
     grid-area: 1fr;

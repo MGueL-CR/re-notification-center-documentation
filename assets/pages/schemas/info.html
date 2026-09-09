@@ -1,78 +1,53 @@
 <h2>Todo sobre Schemas</h2>
 <hr>
-<h3>Dinámica para este nuevo capítulo.</h3>
+<h3>Los id de los enums son largos</h3>
 <hr>
-<p>En <code data-start="962" data-end="976">extension.js</code> fuimos método por método porque era la forma natural de
-    entender la lógica. Con el <code data-start="1061" data-end="1074">gschema.xml</code> creo que podemos hacerlo de
-    otra manera: <strong data-start="1116" data-end="1135">clave por clave</strong>.</p>
-<p>Por cada <code data-start="1147" data-end="1154">&lt;key&gt;</code> veremos:</p>
-<ol>
-    <li><strong>Nombre</strong> (<code>show-label</code>, <code>autohide</code>, etc.).</li>
-    <li><strong>Tipo</strong> (<code>b</code>, <code>i</code>, <code>s</code>, <code>as</code>, <code>enum</code>...).
-    </li>
-    <li><strong>Valor por defecto</strong>.</li>
-    <li>Dónde la vimos usar en <code>extension.js</code>.</li>
-    <li>Qué efecto produce en la extensión.</li>
-</ol>
-<p>Así, no solo leeremos un XML, sino que construiremos el puente entre la configuración y el comportamiento que ya
-    conocemos.</p>
-<h3>Antes de entrar al contenido:</h3>
-<hr>
-<p>Hay algo que quiero destacar. Este archivo tiene <strong data-start="405" data-end="428">dos grandes
-        bloques</strong>.</p>
-<h4>Definiciones de enumeraciones (<code data-start="467" data-end="473">enum</code>)</h4>
-<p>Aquí Selenium-H crea sus propios tipos.</p>
-<p>Por ejemplo: <span class="ͼ13">&lt;enum</span> <span class="ͼ12">id</span><span class="ͼv">=</span><span
-        class="ͼz">"...events-position"</span><span class="ͼ13">&gt;</span> Es decir:</p>
-<blockquote>"Esta preferencia no aceptará cualquier número. Solo estos valores."</blockquote>
-<h4>El <code data-start="670" data-end="680">&lt;schema&gt;</code></h4>
-<p>Aquí vive la configuración propiamente dicha.</p>
-<p>Cada: <span class="ͼ13">&lt;key</span> ...&gt; equivale a una preferencia que luego vimos en: <span
-        class="ͼy">this</span><span class="ͼv">.</span>prefs<span class="ͼv">.</span>get_boolean(...) o <span
-        class="ͼy">this</span><span class="ͼv">.</span>prefs<span class="ͼv">.</span>get_int(...)</p>
-<h3>Un pequeño diccionario</h3>
-<hr>
-<p>Porque vamos a verlo muchas veces, quiero crear un pequeño "diccionario".</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Tipo</th>
-            <th class="text-left">Significado</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td><code>b</code></td>
-            <td class="text-left">Boolean (<code>true</code> / <code>false</code>)</td>
-        </tr>
-        <tr>
-            <td><code>i</code></td>
-            <td class="text-left">Integer</td>
-        </tr>
-        <tr>
-            <td><code>d</code></td>
-            <td class="text-left">Double</td>
-        </tr>
-        <tr>
-            <td><code>s</code></td>
-            <td class="text-left">String</td>
-        </tr>
-        <tr>
-            <td><code>as</code></td>
-            <td class="text-left">Array de Strings</td>
-        </tr>
-        <tr>
-            <td><code>enum</code></td>
-            <td class="text-left">Enumeración definida arriba</td>
-        </tr>
-    </tbody>
-</table>
-<p>Con esto ya podremos leer cualquier clave sin detenernos a pensar qué significa el tipo.</p>
-<h3>Orden propuesto</h3>
-<hr>
-<p>Entonces propongo este orden:</p>
-<h4>Capítulo 1: Las enumeraciones</h4>
-<p>Son solamente <strong data-start="1719" data-end="1724">7</strong>. Las entendemos todas y ya nunca más tendremos que
-    volver sobre ellas.</p>
-<h4>Capítulo 2: Las claves.</h4>
-<p>Vamos una por una, con nuestra dinámica.</p>
+<p><b>¿Los id de los enums pueden ser cortos? </b></p>
+<blockquote>No, en este caso no. El <code data-start="170" data-end="174">id</code> debe ser completo (fully qualified).
+</blockquote>
+<p>Y hay una razón bastante lógica.</p>
+<pre><samp><span class="ͼ13">&lt;enum</span> <span class="ͼ12">id</span><span class="ͼv">=</span><span class="ͼz">"org.gnome.shell.extensions.notification-center.new-notification"</span><span class="ͼ13">&gt;</span></samp></pre>
+<p>Luego más abajo aparece algo como:</p>
+<pre><samp><span class="ͼ13">&lt;key</span> <span class="ͼ12">name</span><span class="ͼv">=</span><span class="ͼz">"new-notification"</span>
+     <span class="ͼ12">enum</span><span class="ͼv">=</span><span class="ͼz">"org.gnome.shell.extensions.notification-center.new-notification"</span><span class="ͼ13">&gt;</span></samp></pre>
+<p>Fíjate que el <code data-start="533" data-end="538">key</code> hace referencia al <strong data-start="558"
+        data-end="573">id completo</strong>. No hace referencia únicamente a: <b><i>new-notification</i></b></p>
+<h4>¿Por qué GNOME lo hace así?</h4>
+<p>Porque los <code data-start="688" data-end="694">enum</code> viven en un espacio global. Imagina dos extensiones:</p>
+<div class="row">
+    <div class="col"><span><b>Extensión A</b></span>
+        <pre><samp><span class="ͼ13">&lt;enum</span><span> </span><span class="ͼ12">id</span><span class="ͼv">=</span><span class="ͼz">"new-notification"</span><span class="ͼ13">&gt;</span></samp></pre>
+    </div>
+    <div class="col"><span><b>Extensión B</b></span>
+        <pre><samp><span class="ͼ13">&lt;enum</span><span> </span><span class="ͼ12">id</span><span class="ͼv">=</span><span class="ͼz">"new-notification"</span><span class="ͼ13">&gt;</span></samp></pre>
+    </div>
+</div>
+<p>¿Cuál debe usar GSettings? No tendría forma de saberlo.</p>
+<p>En cambio con nombres completos, nunca habrá conflicto.</p>
+<pre><samp>org.gnome.shell.extensions.notification-center.new-notification
+
+org.gnome.shell.extensions.my-extension.new-notification</samp></pre>
+<p>Es exactamente el mismo principio que... Los nombres de paquetes en Java. </p>
+<pre><samp><span class="ͼ11">com</span><span class="ͼv">.</span><span class="ͼ11">oracle</span>...
+
+<span class="ͼ11">org</span><span class="ͼv">.</span><span class="ͼ11">apache</span>...
+
+<span class="ͼ11">org</span><span class="ͼv">.</span><span class="ͼ11">gnome</span>...</samp></pre>
+<p>O los identificadores D-Bus. O los schemas de GSettings. Todos usan nombres largos para garantizar unicidad.</p>
+<p>Y fíjate en otro detalle curioso, <code data-start="1417" data-end="1425">schema</code> también tiene un nombre
+    largo. Algo parecido a:</p>
+<pre><samp><span class="ͼ13">&lt;schema</span>
+    <span class="ͼ12">id</span><span class="ͼv">=</span><span class="ͼz">"org.gnome.shell.extensions.notification-center"</span></samp></pre>
+<p>Luego desde JavaScript haces:</p>
+<pre><samp><span class="ͼ11">ExtensionUtils</span><span class="ͼv">.</span>getSettings(
+    <span class="ͼz">"org.gnome.shell.extensions.notification-center"</span>
+)</samp></pre>
+<p>No haces: <span class="ͼ11">getSettings</span>(<span class="ͼz">"notification-center"</span>) Por exactamente el
+    mismo motivo.</p>
+<h4>¿Podría GNOME haber permitido ids relativos?</h4>
+<p>Sí, podría haber inventado algo como: <span class="ͼ13">&lt;enum</span> <span class="ͼ12">id</span><span
+        class="ͼv">=</span><span class="ͼz">"new-notification"</span><span class="ͼ13">&gt; </span> y que
+    automáticamente perteneciera al schema actual.</p>
+<p>Pero los diseñadores de GSettings decidieron que:</p>
+<blockquote>Todo recurso debe ser identificable globalmente.</blockquote>
+<p>Es una filosofía bastante común dentro de GLib.</p>
