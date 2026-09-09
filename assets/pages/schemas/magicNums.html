@@ -1,0 +1,289 @@
+<h2>Los números mágicos</h2>
+<hr>
+
+<p>Recordemos esta condición:</p>
+<pre><samp>(<span class="ͼg">!</span><span class="ͼj">this</span><span class="ͼg">.</span>isDndOff) <span class="ͼg">*</span> <span class="ͼj">this</span><span class="ͼg">.</span>autohide <span class="ͼg">&gt;</span> <span class="ͼj">1</span></samp></pre>
+<p>Cuando la vimos dijimos:</p>
+<blockquote>"Está un poco extraña..."</blockquote>
+<p>Ahora ya sabemos por qué.</p>
+<div class="row">
+    <div class="col"><span>Si sustituimos los valores del enum:</span>
+        <pre><samp>false = 0
+true  = 1
+dnd   = 2</samp></pre>
+    </div>
+    <div class="col"><span>Queda así:</span>
+        <table>
+            <thead>
+                <tr>
+                    <th>autohide</th>
+                    <th>Resultado</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>0</td>
+                    <td>Nunca entra.</td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Tampoco cumple <code>&gt; 1</code>.</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Sí cumple cuando DND está activo.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<p>Es decir, Selenium-H aprovechó el valor numérico del <code data-start="1546" data-end="1552">enum</code> para
+    distinguir el tercer comportamiento sin escribir otro <code data-start="1612" data-end="1620">switch</code>.</p>
+<h4>¿Me gusta esa implementación?</h4>
+<blockquote><strong data-start="1665" data-end="1677">Funciona</strong>, pero aquí sí haría una observación para
+    nuestras notas.</blockquote>
+<p>Desde el punto de vista de la legibilidad, hoy probablemente escribiríamos algo como:</p>
+<pre><samp><span class="ͼg">switch</span> (<span class="ͼj">this</span><span class="ͼg">.</span>autohide) {
+    <span class="ͼg">case</span> <span class="ͼm">AUTOHIDE</span><span class="ͼg">.</span>FALSE:
+        ...
+        <span class="ͼg">break</span>;
+
+    <span class="ͼg">case</span> <span class="ͼm">AUTOHIDE</span><span class="ͼg">.</span>TRUE:
+        ...
+        <span class="ͼg">break</span>;
+
+    <span class="ͼg">case</span> <span class="ͼm">AUTOHIDE</span><span class="ͼg">.</span>DND:
+        ...
+        <span class="ͼg">break</span>;
+}</samp></pre>
+<p>Porque expresa la intención mucho mejor.</p>
+<p>La implementación actual depende de recordar que: <i>2 = dnd</i> y eso solo lo sabemos porque acabamos de
+    leer el <code data-start="2187" data-end="2200">gschema.xml</code>.</p>
+<h4>Algo interesante</h4>
+<p>Este es el primer caso donde el <code data-start="2261" data-end="2269">schema</code> explica una decisión que en
+    <code data-start="2298" data-end="2312">extension.js</code> parecía un poco "mágica".
+</p>
+<p>Sin conocer el enum, la condición: <span class="ͼj">this</span><span class="ͼg">.</span>autohide <span
+        class="ͼg">&gt;</span> <span class="ͼj">1</span> era un número sacado de la nada.</p>
+<p>Ahora sabemos que <strong data-start="2465" data-end="2495">no es un número arbitrario</strong>, sino el tercer valor
+    de una enumeración y eso elimina bastante misterio.</p>
+<p>Y aquí me pasó algo curioso: cuando estudiamos <code data-start="2952" data-end="2970">manageAutohide()</code> pensé
+    <em data-start="2977" data-end="3022">"esa comparación con <code data-start="2999" data-end="3004">&gt; 1</code> es
+        un poco rara"</em>. Resultó que Selenium-H no estaba haciendo un truco extraño; simplemente estaba aprovechando
+    la codificación numérica del <code data-start="3145" data-end="3151">enum</code>. Sin el <code data-start="3160"
+        data-end="3173">gschema.xml</code> eso parecía una "constante mágica". Con el <code data-start="3217"
+        data-end="3225">schema</code>, la pieza encaja perfectamente. Esa es justamente la ventaja de recorrer ahora la
+    configuración: estamos iluminando zonas de <code data-start="3351" data-end="3365">extension.js</code> que antes
+    parecían un poco oscuras.
+</p>
+<h3>Un patrón muy claro</h3>
+<hr>
+<p>Y ya empezamos a notar un patrón muy claro de Selenium-H: <strong data-start="3568" data-end="3626">le gustaba que
+        sus enumeraciones fueran "inteligentes"</strong>. No las usaba solo para nombrar estados; también escogía
+    cuidadosamente los valores (<code data-start="3712" data-end="3715">0</code>, <code data-start="3717"
+        data-end="3720">1</code>, <code data-start="3722" data-end="3725">2</code>) para simplificar ciertas condiciones
+    matemáticas dentro del código. Es un estilo muy característico y, ahora que lo identificamos, seguramente volveremos
+    a verlo en los siguientes <code data-start="3907" data-end="3913">enum</code>.</p>
+<p>Durante el recorrido por <code data-start="111" data-end="125">extension.js</code>, varias veces vimos cosas como:
+</p>
+<div class="row">
+    <div class="col">
+        <pre><samp><span class="ͼj">this</span><span class="ͼg">.</span>eventsSectionPosition <span class="ͼg">!=</span> <span class="ͼj">1</span></samp></pre>
+    </div>
+    <div class="col">
+        <pre><samp><span class="ͼj">this</span><span class="ͼg">.</span>autohide <span class="ͼg">&gt;</span> <span class="ͼj">1</span></samp></pre>
+    </div>
+    <div class="col">
+        <pre><samp><span class="ͼg">if</span> (<span class="ͼj">this</span><span class="ͼg">.</span>newNotificationAction <span class="ͼg">==</span> <span class="ͼj">2</span>)</samp></pre>
+    </div>
+</div>
+<p>En ese momento parecían "números mágicos". Ahora el <code data-start="370" data-end="383">gschema.xml</code> nos está
+    diciendo que <strong data-start="406" data-end="425">no eran mágicos</strong>, sino referencias directas a los
+    valores de los <code data-start="474" data-end="480">enum</code>.</p>
+<p>Por ejemplo:</p>
+<table>
+    <thead>
+        <tr>
+            <th>Código en <code>extension.js</code></th>
+            <th>Traducción después de leer el <code>schema</code></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>== 0</code></td>
+            <td>"El usuario eligió la primera opción."</td>
+        </tr>
+        <tr>
+            <td><code>== 1</code></td>
+            <td>"El usuario eligió la segunda opción."</td>
+        </tr>
+        <tr>
+            <td><code>== 2</code></td>
+            <td>"El usuario eligió la tercera opción."</td>
+        </tr>
+    </tbody>
+</table>
+<p>De hecho... Empiezo a pensar que Selenium-H tenía una filosofía bastante clara.</p>
+<p>En lugar de escribir:</p>
+<pre><samp><span class="ͼg">switch</span> (<span class="ͼj">this</span><span class="ͼg">.</span>newNotificationAction) {
+    <span class="ͼg">case</span> <span class="ͼm">NONE</span>:
+    <span class="ͼg">case</span> <span class="ͼm">EMPTY</span>:
+    <span class="ͼg">case</span> <span class="ͼm">COUNT</span>:
+}</samp></pre>
+<p>Prefería diseñar el <code data-start="1034" data-end="1040">enum</code> para luego hacer: <span class="ͼg">if</span>
+    (<span class="ͼj">this</span><span class="ͼg">.</span>newNotificationAction <span class="ͼg">==</span> <span
+        class="ͼj">2</span>) o <span class="ͼj">this</span><span class="ͼg">.</span>newNotificationAction <span
+        class="ͼg">*</span> <span class="ͼm">valor</span></p>
+<p>Es decir, <strong data-start="1183" data-end="1263">primero pensaba el valor del enum y luego escribía el código
+        alrededor de él</strong>.</p>
+<p>Eso tiene una consecuencia interesante, el <code data-start="1317" data-end="1330">gschema.xml</code> deja de ser un
+    simple archivo de configuración. Se convierte casi en parte del algoritmo.</p>
+<div class="row">
+    <div class="col">
+        <p>Porque si alguien cambiara:</p>
+        <pre><samp>none  = 0
+empty = 1
+count = 2</samp></pre>
+    </div>
+    <div class="col">
+        <p>Por:</p>
+        <pre><samp>none  = 10
+empty = 20
+count = 30</samp></pre>
+    </div>
+</div>
+<p>La extensión seguiría compilando... pero dejaría de funcionar correctamente.</p>
+<h3>Una nota para RE: Notification Center</h3>
+<hr>
+<p>Aquí sí anotaría una observación para el futuro, no como un cambio urgente, sino como un principio de diseño:</p>
+<blockquote>Evitar que la lógica dependa de los valores numéricos de un <code data-start="1851"
+        data-end="1857">enum</code> cuando esos valores representan conceptos, no cantidades.</blockquote>
+<p>Es decir, preferir: <span class="ͼg">switch</span> (<span class="ͼj">this</span><span
+        class="ͼg">.</span>newNotificationAction) sobre: <span class="ͼg">if</span> (<span class="ͼj">this</span><span
+        class="ͼg">.</span>newNotificationAction <span class="ͼg">==</span> <span class="ͼj">2</span>)</p>
+<p>No porque la implementación actual sea incorrecta, sino porque desacopla el algoritmo de la codificación interna del
+    <code data-start="2176" data-end="2182">enum</code>.
+</p>
+<h4><strong data-start="2193" data-end="2231">Nueva observación</strong></h4>
+<blockquote><strong data-start="2235" data-end="2259">Patrón identificado:</strong> Selenium-H aprovecha los valores
+    enteros de los <code data-start="2308" data-end="2314">enum</code> como parte de la lógica del programa, no solo
+    como identificadores de opciones.</blockquote>
+<p>Eso es exactamente el tipo de patrón que queríamos descubrir al leer el código. No aparece documentado en ningún
+    sitio, pero ahora que lo vimos dos veces (<code data-start="2551" data-end="2561">autohide</code> y <code
+        data-start="2564" data-end="2582">new-notification</code>), ya sabemos que no es una casualidad, sino una
+    decisión de diseño del autor. </p>
+<h3>Primera mejora de refactorización</h3>
+<hr>
+<p>Y aquí creo que acabamos de encontrar <strong data-start="51" data-end="128">la primera mejora de refactorización con
+        una justificación técnica sólida</strong>, no una cuestión de gustos y esa diferencia es muy importante.</p>
+<p>Hoy el código dice...</p>
+<pre><samp><span class="ͼg">if</span> (<span class="ͼj">this</span><span class="ͼg">.</span>newNotificationAction <span class="ͼg">==</span> <span class="ͼj">2</span>) {
+    ...
+}</samp></pre>
+<p>La pregunta que se hace cualquier persona que lo lea es:</p>
+<blockquote>¿Qué representa el 2?</blockquote>
+<p>Y la respuesta es... "<i>Depende de que hayas leído antes el <code data-start="438"
+            data-end="451">gschema.xml</code>.</i>" Eso crea una dependencia innecesaria.</p>
+<p>En cambio, imagina algo así en <code data-start="534" data-end="553">loadPreferences()</code>:</p>
+<pre><samp><span class="ͼg">const</span> <span class="ͼm">NewNotificationAction</span> <span class="ͼg">=</span> {
+    NONE: <span class="ͼj">0</span>,
+    EMPTY: <span class="ͼj">1</span>,
+    COUNT: <span class="ͼj">2</span>
+};</samp></pre>
+<p>Y luego:</p>
+<pre><samp><span class="ͼg">if</span> (<span class="ͼj">this</span><span class="ͼg">.</span>newNotificationAction <span class="ͼg">==</span> <span class="ͼm">NewNotificationAction</span><span class="ͼg">.</span>COUNT) {
+    ...
+}</samp></pre>
+<p>Ahora la lectura cambia completamente.</p>
+<p>Ya no preguntas: <i>¿Qué es el 2?</i></p>
+<p>Ahora lees directamente: "<i>Ah, esta condición solo aplica cuando la acción es <strong data-start="909"
+            data-end="918">COUNT</strong>.</i>"</p>
+<p>O incluso mejor, como es una extensión pequeña, podría declararse una sección de constantes al inicio del archivo.
+</p>
+<pre><samp><span class="ͼg">const</span> <span class="ͼm">EventsPosition</span> <span class="ͼg">=</span> {
+    BELOW: <span class="ͼj">0</span>,
+    DONTSHOW: <span class="ͼj">1</span>,
+    BESIDE: <span class="ͼj">2</span>
+};
+
+<span class="ͼg">const</span> <span class="ͼm">DndPosition</span> <span class="ͼg">=</span> {
+    NONE: <span class="ͼj">0</span>,
+    TOP: <span class="ͼj">1</span>,
+    BOTTOM: <span class="ͼj">2</span>
+};
+
+<span class="ͼg">const</span> <span class="ͼm">AutohideMode</span> <span class="ͼg">=</span> {
+    NEVER: <span class="ͼj">0</span>,
+    AUTO: <span class="ͼj">1</span>,
+    DND: <span class="ͼj">2</span>
+};
+
+<span class="ͼg">const</span> <span class="ͼm">NotificationMode</span> <span class="ͼg">=</span> {
+    NONE: <span class="ͼj">0</span>,
+    EMPTY: <span class="ͼj">1</span>,
+    COUNT: <span class="ͼj">2</span>
+};</samp></pre>
+<p>Y a partir de ahí todo el código se vuelve muchísimo más expresivo.</p>
+<h4>La gran ventaja</h4>
+<p>Fíjate en este ejemplo.</p>
+<div class="row">
+    <div class="col">
+        <p>Hoy vemos:</p>
+        <pre><samp><span>if</span> (<span>this</span><span>.</span>autohide <span>&gt;</span> <span>1</span>)</samp></pre>
+    </div>
+    <div class="col">
+        <p>Nosotros ya sabemos que significa:</p>
+        <blockquote>"Modo DND."</blockquote>
+    </div>
+</div>
+<p>Pero dentro de un año... Ni tú ni yo nos vamos a acordar.</p>
+<div class="row">
+    <div class="col">
+        <p>En cambio:</p>
+        <pre><samp><span>if</span> (<span>this</span><span>.</span>autohide <span>==</span> <span>AutohideMode</span><span>.</span>DND)</samp></pre>
+    </div>
+    <div class="col">
+        <p>No necesita comentarios.</p>
+        <p>No necesita abrir el XML.</p>
+        <p>No necesita memoria.</p>
+    </div>
+</div>
+<p>Y lo mejor esto:</p>
+<ul>
+    <li><strong>No cambia absolutamente nada del comportamiento</strong>.</li>
+    <li>No rompe compatibilidad.</li>
+    <li>No modifica el <code>gschema.xml</code>.</li>
+    <li>No cambia GSettings.</li>
+    <li>No cambia las preferencias.</li>
+</ul>
+<p>Solo mejora la legibilidad y esas son mis mejoras favoritas.</p>
+<h3>REF-001 — Eliminar números mágicos asociados a <code data-start="2145" data-end="2151">enum</code></h3>
+<hr>
+<h4><u>Problema</u></h4>
+<p>En varios lugares de <code data-start="2188" data-end="2202">extension.js</code> se comparan directamente valores
+    enteros provenientes de <code data-start="2260" data-end="2271">GSettings</code>. Ejemplos:</p>
+<pre><samp><span class="ͼg">==</span> <span class="ͼj">0</span>
+<span class="ͼg">==</span> <span class="ͼj">1</span>
+<span class="ͼg">==</span> <span class="ͼj">2</span>
+<span class="ͼg">&gt;</span> <span class="ͼj">1</span></samp></pre>
+<p>Su significado solo puede entenderse consultando <code data-start="2372" data-end="2385">gschema.xml</code>.</p>
+<h4><u>Propuesta</u></h4>
+<p>Crear constantes descriptivas para cada enumeración y sustituir las comparaciones numéricas por nombres. </p>
+<p>Ejemplo: <span class="ͼm">NotificationMode</span><span class="ͼg">.</span>COUNT en lugar de 2</p>
+<h4><u>Beneficios</u></h4>
+<ul>
+    <li>Código más legible.</li>
+    <li>Menor dependencia del <code>gschema.xml</code> para entender la lógica.</li>
+    <li>Evita errores si algún día cambian los valores del <code>enum</code>.</li>
+    <li>Facilita el mantenimiento futuro.</li>
+</ul>
+<p>Esta propuesta <strong data-start="2841" data-end="2872">nació de entender el código</strong>, no de querer
+    modernizarlo porque sí. Si hubiéramos abierto el proyecto el primer día, probablemente habríamos dicho:</p>
+<blockquote>"Vamos a cambiar todos los números por constantes."</blockquote>
+<p>Hoy la razón es mucho mejor. Sabemos exactamente:</p>
+<ul>
+    <li>por qué existen esos números;</li>
+    <li>de dónde vienen;</li>
+    <li>cuándo conviene sustituirlos;</li>
+    <li>y qué beneficio concreto aporta hacerlo.</li>
+</ul>

@@ -40,3 +40,79 @@
         data-end="2787">autohide</code>, <code data-start="2789" data-end="2801">blink-time</code>, <code
         data-start="2803" data-end="2819">sections-order</code>...), ahora solo falta conocer dónde fueron registrados
     oficialmente. ¡Zarpemos hacia <code data-start="2905" data-end="2918">gschema.xml</code>!</p>
+<h3>Dinámica para este nuevo capítulo.</h3>
+<hr>
+<p>En <code data-start="962" data-end="976">extension.js</code> fuimos método por método porque era la forma natural de
+    entender la lógica. Con el <code data-start="1061" data-end="1074">gschema.xml</code> creo que podemos hacerlo de
+    otra manera: <strong data-start="1116" data-end="1135">clave por clave</strong>.</p>
+<p>Por cada <code data-start="1147" data-end="1154">&lt;key&gt;</code> veremos:</p>
+<ol>
+    <li><strong>Nombre</strong> (<code>show-label</code>, <code>autohide</code>, etc.).</li>
+    <li><strong>Tipo</strong> (<code>b</code>, <code>i</code>, <code>s</code>, <code>as</code>, <code>enum</code>...).
+    </li>
+    <li><strong>Valor por defecto</strong>.</li>
+    <li>Dónde la vimos usar en <code>extension.js</code>.</li>
+    <li>Qué efecto produce en la extensión.</li>
+</ol>
+<p>Así, no solo leeremos un XML, sino que construiremos el puente entre la configuración y el comportamiento que ya
+    conocemos.</p>
+<h3>Antes de entrar al contenido:</h3>
+<hr>
+<p>Hay algo que quiero destacar. Este archivo tiene <strong data-start="405" data-end="428">dos grandes
+        bloques</strong>.</p>
+<h4>Definiciones de enumeraciones (<code data-start="467" data-end="473">enum</code>)</h4>
+<p>Aquí Selenium-H crea sus propios tipos.</p>
+<p>Por ejemplo: <span class="ͼ13">&lt;enum</span> <span class="ͼ12">id</span><span class="ͼv">=</span><span
+        class="ͼz">"...events-position"</span><span class="ͼ13">&gt;</span> Es decir:</p>
+<blockquote>"Esta preferencia no aceptará cualquier número. Solo estos valores."</blockquote>
+<h4>El <code data-start="670" data-end="680">&lt;schema&gt;</code></h4>
+<p>Aquí vive la configuración propiamente dicha.</p>
+<p>Cada: <span class="ͼ13">&lt;key</span> ...&gt; equivale a una preferencia que luego vimos en: <span
+        class="ͼy">this</span><span class="ͼv">.</span>prefs<span class="ͼv">.</span>get_boolean(...) o <span
+        class="ͼy">this</span><span class="ͼv">.</span>prefs<span class="ͼv">.</span>get_int(...)</p>
+<h3>Un pequeño diccionario</h3>
+<hr>
+<p>Porque vamos a verlo muchas veces, quiero crear un pequeño "diccionario".</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Tipo</th>
+            <th class="text-left">Significado</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>b</code></td>
+            <td class="text-left">Boolean (<code>true</code> / <code>false</code>)</td>
+        </tr>
+        <tr>
+            <td><code>i</code></td>
+            <td class="text-left">Integer</td>
+        </tr>
+        <tr>
+            <td><code>d</code></td>
+            <td class="text-left">Double</td>
+        </tr>
+        <tr>
+            <td><code>s</code></td>
+            <td class="text-left">String</td>
+        </tr>
+        <tr>
+            <td><code>as</code></td>
+            <td class="text-left">Array de Strings</td>
+        </tr>
+        <tr>
+            <td><code>enum</code></td>
+            <td class="text-left">Enumeración definida arriba</td>
+        </tr>
+    </tbody>
+</table>
+<p>Con esto ya podremos leer cualquier clave sin detenernos a pensar qué significa el tipo.</p>
+<h3>Orden propuesto</h3>
+<hr>
+<p>Entonces propongo este orden:</p>
+<h4>Capítulo 1: Las enumeraciones</h4>
+<p>Son solamente <strong data-start="1719" data-end="1724">7</strong>. Las entendemos todas y ya nunca más tendremos que
+    volver sobre ellas.</p>
+<h4>Capítulo 2: Las claves.</h4>
+<p>Vamos una por una, con nuestra dinámica.</p>

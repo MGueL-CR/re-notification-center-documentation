@@ -1,6 +1,6 @@
 <h2>Las enumeraciones.</h2>
 <hr>
-<h3>Enumeración N.º 1</h3>
+<h3 id="Emum1">Enumeración N.º 1</h3>
 <pre><code><span class="ͼ13">&lt;enum</span> <span class="ͼ12">id</span><span class="ͼv">=</span><span class="ͼz">"...events-position"</span><span class="ͼ13">&gt;</span>
 
 below      = 0
@@ -8,6 +8,7 @@ dontshow   = 1
 beside     = 2
 
 <span class="ͼ13">&lt;/enum&gt;</span></code></pre>
+<h4>¿Qué representa?</h4>
 <p>Aquí inmediatamente ocurre algo bonito. Nosotros ya conocíamos esto, en <code data-start="2085"
         data-end="2104">loadPreferences()</code> vimos:</p>
 <pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>eventsSectionPosition <span class="ͼv">=</span>
@@ -76,12 +77,13 @@ beside     = 2
     </tbody>
 </table>
 <hr>
-<h3>Enumeración N.º 2</h3>
+<h3 id="Emum2">Enumeración N.º 2</h3>
 <pre><code><span class="ͼ13">&lt;enum</span> <span class="ͼ12">id</span><span class="ͼv">=</span><span class="ͼz">"org.gnome.shell.extensions.notification-center.dnd-position"</span><span class="ͼ13">&gt;</span>
     <span class="ͼ13">&lt;value</span> <span class="ͼ12">nick</span><span class="ͼv">=</span><span class="ͼz">"none"</span> <span class="ͼ12">value</span><span class="ͼv">=</span><span class="ͼz">"0"</span><span class="ͼ13">/&gt;</span>
     <span class="ͼ13">&lt;value</span> <span class="ͼ12">nick</span><span class="ͼv">=</span><span class="ͼz">"top"</span> <span class="ͼ12">value</span><span class="ͼv">=</span><span class="ͼz">"1"</span><span class="ͼ13">/&gt;</span>
     <span class="ͼ13">&lt;value</span> <span class="ͼ12">nick</span><span class="ͼv">=</span><span class="ͼz">"bottom"</span> <span class="ͼ12">value</span><span class="ͼv">=</span><span class="ͼz">"2"</span><span class="ͼ13">/&gt;</span>
 <span class="ͼ13">&lt;/enum&gt;</span></code></pre>
+<h4>¿Qué representa?</h4>
 <p>Esta enumeración controla <strong data-start="327" data-end="381">la posición del interruptor "Do Not Disturb"
         (DND)</strong> dentro del Notification Center. No controla si DND está activado o desactivado, únicamente
     <strong data-start="474" data-end="502">dónde aparece el control</strong>.
@@ -165,12 +167,13 @@ Abajo</samp></pre>
     </tbody>
 </table>
 <hr>
-<h3>Enumeración N.º 3</h3>
+<h3 id="Emum3">Enumeración N.º 3</h3>
 <pre><code><span class="ͼ13">&lt;enum</span> <span class="ͼ12">id</span><span class="ͼv">=</span><span class="ͼz">"org.gnome.shell.extensions.notification-center.autohide"</span><span class="ͼ13">&gt;</span>
     <span class="ͼ13">&lt;value</span> <span class="ͼ12">nick</span><span class="ͼv">=</span><span class="ͼz">"false"</span> <span class="ͼ12">value</span><span class="ͼv">=</span><span class="ͼz">"0"</span><span class="ͼ13">/&gt;</span>
     <span class="ͼ13">&lt;value</span> <span class="ͼ12">nick</span><span class="ͼv">=</span><span class="ͼz">"true"</span> <span class="ͼ12">value</span><span class="ͼv">=</span><span class="ͼz">"1"</span><span class="ͼ13">/&gt;</span>
     <span class="ͼ13">&lt;value</span> <span class="ͼ12">nick</span><span class="ͼv">=</span><span class="ͼz">"dnd"</span> <span class="ͼ12">value</span><span class="ͼv">=</span><span class="ͼz">"2"</span><span class="ͼ13">/&gt;</span>
 <span class="ͼ13">&lt;/enum&gt;</span></code></pre>
+<h4>¿Qué representa?</h4>
 <p>Esta enumeración controla <strong data-start="339" data-end="387">el comportamiento del autohide del
         indicador</strong>. No decide si la extensión existe o no, sino <strong data-start="434" data-end="487">cuándo
         debe ocultarse el icono del panel superior</strong>.</p>
@@ -210,11 +213,17 @@ Abajo</samp></pre>
 <p>Cuando la vimos dijimos: <i>"Está un poco extraña..." </i>Ahora ya sabemos por qué.</p>
 <div class="row">
     <div class="col"><span>Si sustituimos los valores del enum:</span>
+    </div>
+    <div class="col">
         <pre><samp>false = 0
 true  = 1
 dnd   = 2</samp></pre>
     </div>
-    <div class="col"><span>queda así:</span>
+    <div class="col"></div>
+</div>
+<div class="row">
+    <div class="col"><span>Queda así:</span></div>
+    <div class="col">
         <table>
             <thead>
                 <tr>
@@ -238,6 +247,7 @@ dnd   = 2</samp></pre>
             </tbody>
         </table>
     </div>
+    <div class="col"></div>
 </div>
 <p>Es decir, Selenium-H aprovechó el valor numérico del <code data-start="1546" data-end="1552">enum</code> para
     distinguir el tercer comportamiento sin escribir otro <code data-start="1612" data-end="1620">switch</code>.</p>
@@ -276,6 +286,184 @@ dnd   = 2</samp></pre>
         <tr>
             <td>Observación</td>
             <td>Explica el famoso <code>this.autohide &gt; 1</code></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+        </tr>
+    </tbody>
+</table>
+<hr>
+<h3 id="Emum4">Enumeración N.º 4</h3>
+<pre><code><span class="ͼo">&lt;enum</span> <span class="ͼn">id</span><span class="ͼg">=</span><span class="ͼk">"org.gnome.shell.extensions.notification-center.new-notification"</span><span class="ͼo">&gt;</span>
+    <span class="ͼo">&lt;value</span> <span class="ͼn">nick</span><span class="ͼg">=</span><span class="ͼk">"none"</span> <span class="ͼn">value</span><span class="ͼg">=</span><span class="ͼk">"0"</span><span class="ͼo">/&gt;</span>
+    <span class="ͼo">&lt;value</span> <span class="ͼn">nick</span><span class="ͼg">=</span><span class="ͼk">"empty"</span> <span class="ͼn">value</span><span class="ͼg">=</span><span class="ͼk">"1"</span><span class="ͼo">/&gt;</span>
+    <span class="ͼo">&lt;value</span> <span class="ͼn">nick</span><span class="ͼg">=</span><span class="ͼk">"count"</span> <span class="ͼn">value</span><span class="ͼg">=</span><span class="ͼk">"2"</span><span class="ͼo">/&gt;</span>
+<span class="ͼo">&lt;/enum&gt;</span></code></pre>
+<h4>¿Qué representa?</h4>
+<p>Esta enumeración define <strong data-start="438" data-end="523">cómo debe reaccionar visualmente el indicador cuando
+        llegan nuevas notificaciones</strong>.</p>
+<p>No controla las notificaciones en sí, controla <strong data-start="574" data-end="614">qué información muestra el
+        indicador</strong>.</p>
+<h4>Valores posibles</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Valor</th>
+            <th>Significado</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>none</code></td>
+            <td>No mostrar ninguna indicación adicional.</td>
+        </tr>
+        <tr>
+            <td><code>empty</code></td>
+            <td>Mostrar únicamente el indicador (sin número).</td>
+        </tr>
+        <tr>
+            <td><code>count</code></td>
+            <td>Mostrar el contador de notificaciones.</td>
+        </tr>
+    </tbody>
+</table>
+<h4>¿Dónde lo vimos?</h4>
+<p>Aquí sí lo recordamos inmediatamente.</p>
+<p>En <code data-start="927" data-end="946">loadPreferences()</code>: <span class="ͼj">this</span><span
+        class="ͼg">.</span>newNotificationAction <span class="ͼg">=</span>
+    <span class="ͼj">this</span><span class="ͼg">.</span>prefs<span class="ͼg">.</span>get_enum(<span
+        class="ͼk">"new-notification"</span>);
+</p>
+<p>Después apareció en <strong data-start="1067" data-end="1082">dos métodos:</strong></p>
+<h5><u>1. <code data-start="1091" data-end="1106">manageLabel()</code></u></h5>
+<pre><samp><span class="ͼj">this</span><span class="ͼg">.</span>notificationLabel<span class="ͼg">.</span>visible <span class="ͼg">=</span>
+    <span class="ͼm">nCount</span> <span class="ͼg">*</span> <span class="ͼj">this</span><span class="ͼg">.</span>newNotificationAction;
+
+<span class="ͼj">this</span><span class="ͼg">.</span>eventsLabel<span class="ͼg">.</span>visible <span class="ͼg">=</span>
+    <span class="ͼm">eCount</span> <span class="ͼg">*</span> <span class="ͼj">this</span><span class="ͼg">.</span>newNotificationAction</samp></pre>
+<p>Cuando lo estudiamos dijimos: </p>
+<blockquote>"¿Por qué multiplica un booleano por un enum?"</blockquote>
+<p>Ahora sabemos exactamente por qué.</p>
+<div class="row">
+    <div class="col"><span>Si sustituimos los valores:</span>
+        <pre><samp>none  = 0
+empty = 1
+count = 2</samp></pre>
+    </div>
+    <div class="col">
+    </div>
+</div>
+<div class="row">
+    <div class="col"><span>Nos queda:</span>
+        <table>
+            <thead>
+                <tr>
+                    <th>Acción</th>
+                    <th>Resultado</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>0<br></td>
+                    <td>Nunca muestra la etiqueta.</td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>La etiqueta es visible, pero no cambia el texto.</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Visible y además muestra el número.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col"></div>
+</div>
+<p>Y luego aparece esta condición: <span class="ͼg">if</span> (<span class="ͼj">this</span><span
+        class="ͼg">.</span>newNotificationAction <span class="ͼg">==</span> <span class="ͼj">2</span>)</p>
+<p>Que ahora se traduce perfectamente como:</p>
+<blockquote>"Solo si el usuario eligió 'count'."</blockquote>
+<h5><u>2. <code data-start="1866" data-end="1884">resetIndicator()</code></u></h5>
+<p>También vimos que <code data-start="1904" data-end="1919">manageLabel()</code> era llamado desde aquí. Así que esta
+    preferencia termina influyendo en todo el comportamiento del indicador.</p>
+<h4>Una decisión de Selenium-H</h4>
+<p>Esto explica otra decisión de Selenium-H, cuando analizamos <code data-start="2098"
+        data-end="2113">manageLabel()</code> dijimos algo parecido a:</p>
+<blockquote>"Podría haber escrito un <code data-start="2167" data-end="2175">switch</code>."</blockquote>
+<p>Ahora entiendo por qué no lo hizo. </p>
+<div class="row">
+    <div class="col"><span>Como el enum está codificado:</span></div>
+    <div class="col">
+        <pre><samp>0
+1
+2</samp></pre>
+    </div>
+    <div class="col"></div>
+</div>
+<div class="row">
+    <div class="col"><span>Le permitió reutilizar el mismo valor tanto para:</span></div>
+    <div class="col">
+        <ul>
+            <li>Decidir si mostrar la etiqueta;</li>
+        </ul>
+    </div>
+    <div class="col"></div>
+</div>
+<div class="row">
+    <div class="col"><span>Como para:</span></div>
+    <div class="col">
+        <ul>
+            <li>Decidir si debía escribir el número.</li>
+        </ul>
+    </div>
+    <div class="col"></div>
+</div>
+<p>Es una implementación bastante ingeniosa.</p>
+<h4>¿La haríamos igual hoy?</h4>
+<p>Yo probablemente no. No porque esté mal, sino porque prefiero escribir código cuya intención sea evidente.</p>
+<p>Algo como: <span class="ͼg">switch</span> (<span class="ͼj">this</span><span
+        class="ͼg">.</span>newNotificationAction) es más largo... pero seis meses después se entiende en cinco segundos.
+</p>
+<h4>Lo curioso</h4>
+<p>Ya llevamos dos enums seguidos donde Selenium-H aprovecha el valor numérico. Eso empieza a decirnos algo sobre su
+    estilo de programar.</p>
+<p>Le gustaba que:</p>
+<pre><samp>0
+1
+2</samp></pre>
+<p>No fueran solamente identificadores. También fueran útiles para hacer pequeñas operaciones. No es una mala práctica;
+    simplemente es un estilo que hoy se ve menos.</p>
+<h4>Resumen</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Elemento</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td>new-notification</td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td>enum</td>
+        </tr>
+        <tr>
+            <td>Opciones</td>
+            <td><code>none</code>, <code>empty</code>, <code>count</code></td>
+        </tr>
+        <tr>
+            <td>Usada en</td>
+            <td><code>loadPreferences()</code> → <code>manageLabel()</code> → <code>resetIndicator()</code></td>
+        </tr>
+        <tr>
+            <td>Observación</td>
+            <td>Explica por qué <code>manageLabel()</code> multiplicaba por <code>this.newNotificationAction</code> y
+                comprobaba <code>== 2</code>.</td>
         </tr>
         <tr>
             <td></td>
