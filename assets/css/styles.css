@@ -239,6 +239,13 @@ pre>.cm-line {
     padding: .2em;
 }
 
+table th {
+    background-color: var(--clight);
+}
+
+table :is(th, td) {
+    text-align: start;
+}
 
 /**
 * Seccion para complementar el menu superior <nav>
@@ -495,4 +502,8 @@ pre>.cm-line {
 
 .ͼ12 {
     color: #f9dc78;
+}
+
+.ͼ13 {
+    color: #63a8f8;
 }

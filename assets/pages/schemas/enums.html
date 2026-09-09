@@ -1,0 +1,286 @@
+<h2>Las enumeraciones.</h2>
+<hr>
+<h3>Enumeración N.º 1</h3>
+<pre><code><span class="ͼ13">&lt;enum</span> <span class="ͼ12">id</span><span class="ͼv">=</span><span class="ͼz">"...events-position"</span><span class="ͼ13">&gt;</span>
+
+below      = 0
+dontshow   = 1
+beside     = 2
+
+<span class="ͼ13">&lt;/enum&gt;</span></code></pre>
+<p>Aquí inmediatamente ocurre algo bonito. Nosotros ya conocíamos esto, en <code data-start="2085"
+        data-end="2104">loadPreferences()</code> vimos:</p>
+<pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>eventsSectionPosition <span class="ͼv">=</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>prefs<span class="ͼv">.</span>get_enum(<span class="ͼz">"events-position"</span>);</samp></pre>
+<p>Y más adelante: <span class="ͼv">switch</span>(<span class="ͼ11">action</span>) dentro de <code data-start="2266"
+        data-end="2282">manageEvents()</code>. Ahora entendemos de dónde venía.</p>
+<h4>Significado</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Valor</th>
+            <th>Efecto</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>below</code></td>
+            <td>Los eventos aparecen debajo del calendario.</td>
+        </tr>
+        <tr>
+            <td><code>dontshow</code></td>
+            <td>No mostrar la sección de eventos.</td>
+        </tr>
+        <tr>
+            <td><code>beside</code></td>
+            <td>Mostrar los eventos al lado del calendario.</td>
+        </tr>
+    </tbody>
+</table>
+<p>Y recordemos que Selenium-H incluso guardó: <span class="ͼy">this</span><span
+        class="ͼv">.</span>showEventsInCalendarAlso basándose en esto.</p>
+<p>Aquí ya vemos una buena práctica.</p>
+<p>En lugar de escribir: <span class="ͼv">if</span>(<span class="ͼ11">position</span> <span class="ͼv">==</span>
+    <span class="ͼy">2</span>) escribe: 'default' = 'beside' y luego GNOME traduce eso al entero correspondiente,
+    muchísimo más legible.
+</p>
+<h4>Resumen</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Elemento</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>events-position</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td><code>enum</code></td>
+        </tr>
+        <tr>
+            <td>Opciones</td>
+            <td><code>below</code>, <code>dontshow</code>, <code>beside</code></td>
+        </tr>
+        <tr>
+            <td>Usada en</td>
+            <td><code>loadPreferences()</code> → <code>manageEvents()</code></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+        </tr>
+    </tbody>
+</table>
+<hr>
+<h3>Enumeración N.º 2</h3>
+<pre><code><span class="ͼ13">&lt;enum</span> <span class="ͼ12">id</span><span class="ͼv">=</span><span class="ͼz">"org.gnome.shell.extensions.notification-center.dnd-position"</span><span class="ͼ13">&gt;</span>
+    <span class="ͼ13">&lt;value</span> <span class="ͼ12">nick</span><span class="ͼv">=</span><span class="ͼz">"none"</span> <span class="ͼ12">value</span><span class="ͼv">=</span><span class="ͼz">"0"</span><span class="ͼ13">/&gt;</span>
+    <span class="ͼ13">&lt;value</span> <span class="ͼ12">nick</span><span class="ͼv">=</span><span class="ͼz">"top"</span> <span class="ͼ12">value</span><span class="ͼv">=</span><span class="ͼz">"1"</span><span class="ͼ13">/&gt;</span>
+    <span class="ͼ13">&lt;value</span> <span class="ͼ12">nick</span><span class="ͼv">=</span><span class="ͼz">"bottom"</span> <span class="ͼ12">value</span><span class="ͼv">=</span><span class="ͼz">"2"</span><span class="ͼ13">/&gt;</span>
+<span class="ͼ13">&lt;/enum&gt;</span></code></pre>
+<p>Esta enumeración controla <strong data-start="327" data-end="381">la posición del interruptor "Do Not Disturb"
+        (DND)</strong> dentro del Notification Center. No controla si DND está activado o desactivado, únicamente
+    <strong data-start="474" data-end="502">dónde aparece el control</strong>.
+</p>
+<h4>Valores posibles</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Valor</th>
+            <th>Significado</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>none</code></td>
+            <td>No mostrar el interruptor DND.</td>
+        </tr>
+        <tr>
+            <td><code>top</code></td>
+            <td>Mostrarlo en la parte superior.</td>
+        </tr>
+        <tr>
+            <td><code>bottom</code></td>
+            <td>Mostrarlo en la parte inferior.</td>
+        </tr>
+    </tbody>
+</table>
+<h4>¿Dónde lo vimos?</h4>
+<p>En <code data-start="743" data-end="757">extension.js</code> Curiosamente... Todavía no.</p>
+<p>Durante todo el recorrido vimos:</p>
+<ul>
+    <li><code>loadDndStatus()</code></li>
+    <li><code>dndToggle()</code></li>
+    <li><code>middleClickDndToggle()</code></li>
+</ul>
+<p>Pero <strong data-start="897" data-end="915">nunca apareció</strong> algo como: <span class="ͼy">this</span><span
+        class="ͼv">.</span>prefs<span class="ͼv">.</span>get_enum(<span class="ͼz">"dnd-position"</span>); ni tampoco:
+    <span class="ͼy">this</span><span class="ͼv">.</span>dndPosition.
+</p>
+<p>Algo que me llama la atención comparándola con la anterior, aquí Selenium-H hizo algo inteligente.</p>
+<p>En lugar de usar un booleano: <i>Mostrar DND:
+        Sí / No</i> Creó una enumeración:</p>
+<pre><samp>No mostrarlo
+Arriba
+Abajo</samp></pre>
+<p>Eso hace que la preferencia sea mucho más escalable. Si en el futuro quisiera añadir: <i>En el encabezado</i>
+    solo tendría que agregar un cuarto valor al <code data-start="1789" data-end="1795">enum</code>.</p>
+<h4>Resumen</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Elemento</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>dnd-position</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td><code>enum</code></td>
+        </tr>
+        <tr>
+            <td>Opciones</td>
+            <td><code>none</code>, <code>top</code>, <code>bottom</code></td>
+        </tr>
+        <tr>
+            <td>Propósito</td>
+            <td>Posición del interruptor "Do Not Disturb"</td>
+        </tr>
+        <tr>
+            <td>Vista en <code>extension.js</code></td>
+            <td>❓ Aún no localizada</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+        </tr>
+    </tbody>
+</table>
+<hr>
+<h3>Enumeración N.º 3</h3>
+<pre><code><span class="ͼ13">&lt;enum</span> <span class="ͼ12">id</span><span class="ͼv">=</span><span class="ͼz">"org.gnome.shell.extensions.notification-center.autohide"</span><span class="ͼ13">&gt;</span>
+    <span class="ͼ13">&lt;value</span> <span class="ͼ12">nick</span><span class="ͼv">=</span><span class="ͼz">"false"</span> <span class="ͼ12">value</span><span class="ͼv">=</span><span class="ͼz">"0"</span><span class="ͼ13">/&gt;</span>
+    <span class="ͼ13">&lt;value</span> <span class="ͼ12">nick</span><span class="ͼv">=</span><span class="ͼz">"true"</span> <span class="ͼ12">value</span><span class="ͼv">=</span><span class="ͼz">"1"</span><span class="ͼ13">/&gt;</span>
+    <span class="ͼ13">&lt;value</span> <span class="ͼ12">nick</span><span class="ͼv">=</span><span class="ͼz">"dnd"</span> <span class="ͼ12">value</span><span class="ͼv">=</span><span class="ͼz">"2"</span><span class="ͼ13">/&gt;</span>
+<span class="ͼ13">&lt;/enum&gt;</span></code></pre>
+<p>Esta enumeración controla <strong data-start="339" data-end="387">el comportamiento del autohide del
+        indicador</strong>. No decide si la extensión existe o no, sino <strong data-start="434" data-end="487">cuándo
+        debe ocultarse el icono del panel superior</strong>.</p>
+<h4>Valores posibles</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Valor</th>
+            <th>Significado</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>false</code></td>
+            <td>Nunca ocultar el indicador.</td>
+        </tr>
+        <tr>
+            <td><code>true</code></td>
+            <td>Ocultarlo automáticamente cuando no haya nada que mostrar.</td>
+        </tr>
+        <tr>
+            <td><code>dnd</code></td>
+            <td>Ocultarlo, pero teniendo en cuenta el estado de "No molestar" (Do Not Disturb).</td>
+        </tr>
+    </tbody>
+</table>
+<h4>¿Dónde lo vimos?</h4>
+<p>Aquí sí tenemos la respuesta inmediatamente. </p>
+<p>En <code data-start="846" data-end="865">loadPreferences()</code> vimos: <span class="ͼy">this</span><span
+        class="ͼv">.</span>autohide <span class="ͼv">=</span> <span class="ͼy">this</span><span
+        class="ͼv">.</span>prefs<span class="ͼv">.</span>get_int(<span class="ͼz">"autohide"</span>); Y luego en uno de
+    los métodos que analizamos casi línea por línea: <span class="ͼ11">manageAutohide</span>()</p>
+<p>Ahora muchas líneas cobran sentido, recordemos esta condición: (<span class="ͼv">!</span><span
+        class="ͼy">this</span><span class="ͼv">.</span>isDndOff) <span class="ͼv">*</span> <span
+        class="ͼy">this</span><span class="ͼv">.</span>autohide <span class="ͼv">&gt;</span> <span class="ͼy">1</span>
+</p>
+<p>Cuando la vimos dijimos: <i>"Está un poco extraña..." </i>Ahora ya sabemos por qué.</p>
+<div class="row">
+    <div class="col"><span>Si sustituimos los valores del enum:</span>
+        <pre><samp>false = 0
+true  = 1
+dnd   = 2</samp></pre>
+    </div>
+    <div class="col"><span>queda así:</span>
+        <table>
+            <thead>
+                <tr>
+                    <th>autohide</th>
+                    <th>Resultado</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>0</td>
+                    <td>Nunca entra.</td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Tampoco cumple <code>&gt; 1</code>.</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Sí cumple cuando DND está activo.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<p>Es decir, Selenium-H aprovechó el valor numérico del <code data-start="1546" data-end="1552">enum</code> para
+    distinguir el tercer comportamiento sin escribir otro <code data-start="1612" data-end="1620">switch</code>.</p>
+<p><b>Algo interesante</b>: Este es el primer caso donde el <code data-start="2261" data-end="2269">schema</code>
+    explica una decisión que en <code data-start="2298" data-end="2312">extension.js</code> parecía un poco "mágica".
+</p>
+<p>Sin conocer el enum, la condición: <span class="ͼy">this</span><span class="ͼv">.</span>autohide <span
+        class="ͼv">&gt;</span> <span class="ͼy">1</span> era un número sacado de la nada. Ahora sabemos que <strong
+        data-start="2465" data-end="2495">no es un número arbitrario</strong>, sino el tercer valor de una enumeración.
+    Eso elimina bastante misterio.</p>
+<h4>Resumen</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Elemento</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td>autohide</td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td>enum</td>
+        </tr>
+        <tr>
+            <td>Opciones</td>
+            <td><code>false</code>, <code>true</code>, <code>dnd</code></td>
+        </tr>
+        <tr>
+            <td>Usada en</td>
+            <td><code>loadPreferences()</code> → <code>manageAutohide()</code></td>
+        </tr>
+        <tr>
+            <td>Observación</td>
+            <td>Explica el famoso <code>this.autohide &gt; 1</code></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+        </tr>
+    </tbody>
+</table>
+<hr>
