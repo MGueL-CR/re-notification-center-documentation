@@ -287,3 +287,35 @@ count = 30</samp></pre>
     <li>cuándo conviene sustituirlos;</li>
     <li>y qué beneficio concreto aporta hacerlo.</li>
 </ul>
+<h3>REF-002 - Crear un archivo (o sección) de constantes descriptivas.</h3>
+<hr>
+<p>Como en el REF-001, yo añadiría una nueva sección.</p>
+<p>Algo parecido a:</p>
+<pre><code><span class="ͼv">const</span> <span class="ͼ11">BannerPosition</span> <span class="ͼv">=</span> <span class="ͼ11">Object</span><span class="ͼv">.</span>freeze({
+    LEFT: <span class="ͼy">0</span>,
+    CENTER: <span class="ͼy">1</span>,
+    RIGHT: <span class="ͼy">2</span>
+});
+
+<span class="ͼv">const</span> <span class="ͼ11">ClearButtonAlignment</span> <span class="ͼv">=</span> <span class="ͼ11">Object</span><span class="ͼv">.</span>freeze({
+    LEFT: <span class="ͼy">0</span>,
+    CENTER: <span class="ͼy">1</span>,
+    RIGHT: <span class="ͼy">2</span>,
+    HIDE: <span class="ͼy">3</span>
+});
+
+<span class="ͼv">const</span> <span class="ͼ11">NotificationMode</span> <span class="ͼv">=</span> <span class="ͼ11">Object</span><span class="ͼv">.</span>freeze({
+    NONE: <span class="ͼy">0</span>,
+    EMPTY: <span class="ͼy">1</span>,
+    COUNT: <span class="ͼy">2</span>
+});</code></pre>
+<p>Y conforme vayamos leyendo el <code data-start="2434" data-end="2447">gschema.xml</code>, iremos agregando los demás.
+</p>
+<p>Esta mejora <strong data-start="2516" data-end="2563">no altera el comportamiento de la extensión</strong>. Si
+    alguien hace un <code data-start="2585" data-end="2595">git diff</code>, verá que:</p>
+<ul>
+    <li>no cambió la lógica,</li>
+    <li>no cambió el algoritmo,</li>
+    <li>no cambió la interfaz.</li>
+</ul>
+<p>Solo cambió <strong data-start="2695" data-end="2736">la forma de expresar las mismas ideas</strong>.</p>

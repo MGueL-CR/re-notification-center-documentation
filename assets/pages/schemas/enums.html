@@ -713,3 +713,245 @@ hide</samp></pre>
         </tr>
     </tbody>
 </table>
+<hr>
+<h3 id="enum7">Enumeración N.º 7</h3>
+<pre><code><span class="ͼ13">&lt;enum</span> <span class="ͼ12">id</span><span class="ͼv">=</span><span class="ͼz">"org.gnome.shell.extensions.notification-center.indicator-pos"</span><span class="ͼ13">&gt;</span>
+    <span class="ͼ13">&lt;value</span> <span class="ͼ12">nick</span><span class="ͼv">=</span><span class="ͼz">"left"</span> <span class="ͼ12">value</span><span class="ͼv">=</span><span class="ͼz">"0"</span><span class="ͼ13">/&gt;</span>
+    <span class="ͼ13">&lt;value</span> <span class="ͼ12">nick</span><span class="ͼv">=</span><span class="ͼz">"center"</span> <span class="ͼ12">value</span><span class="ͼv">=</span><span class="ͼz">"1"</span><span class="ͼ13">/&gt;</span>
+    <span class="ͼ13">&lt;value</span> <span class="ͼ12">nick</span><span class="ͼv">=</span><span class="ͼz">"right"</span> <span class="ͼ12">value</span><span class="ͼv">=</span><span class="ͼz">"2"</span><span class="ͼ13">/&gt;</span>
+<span class="ͼ13">&lt;/enum&gt;</span></code></pre>
+<h4>¿Qué representa?</h4>
+<p>Este enum controla <strong data-start="332" data-end="407">la posición del indicador de la extensión en el panel
+        superior de GNOME</strong>. Es decir, el pequeño icono (y eventualmente el contador) que aparece en la barra
+    superior.</p>
+<p>No controla el banner, ni el centro de notificaciones. Controla únicamente <strong data-start="578"
+        data-end="610">dónde se coloca el indicador</strong>.</p>
+<h4>Valores posibles</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Valor</th>
+            <th>Significado</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>left</code></td>
+            <td>Panel izquierdo.</td>
+        </tr>
+        <tr>
+            <td><code>center</code></td>
+            <td>Panel central.</td>
+        </tr>
+        <tr>
+            <td><code>right</code></td>
+            <td>Panel derecho.</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+        </tr>
+    </tbody>
+</table>
+<h4>¿Dónde lo vimos?</h4>
+<p>Durante <code data-start="819" data-end="846">startNotificationCenter()</code> vimos exactamente esta parte:</p>
+<pre><samp><span class="ͼv">let</span> <span class="ͼ11">pos</span> <span class="ͼv">=</span> <span class="ͼy">this</span><span class="ͼv">.</span>indicatorPosition;
+<span class="ͼv">let</span> <span class="ͼ11">index</span> <span class="ͼv">=</span> <span class="ͼy">this</span><span class="ͼv">.</span>indicatorIndex;
+
+<span class="ͼ11">Main</span><span class="ͼv">.</span>panel<span class="ͼv">.</span>addToStatusArea(
+    <span class="ͼz">"notification-center"</span>,
+    <span class="ͼy">this</span><span class="ͼv">.</span>_indicator,
+    <span class="ͼ11">index</span>,
+    <span class="ͼ11">pos</span>
+);</samp></pre>
+<p>En aquel momento dijimos algo como: "¿<i>Qué será <code data-start="1113" data-end="1118">pos</code></i>?" Ahora ya
+    lo sabemos. Proviene de este enum.</p>
+<p>Hay un detalle interesante, GNOME utiliza tres cajas (<code data-start="1230" data-end="1244">St.BoxLayout</code>)
+    dentro del panel:</p>
+<pre><samp>┌────────────────────────────────────────────────────────────┐
+│  Left      Center                    Right                 │
+└────────────────────────────────────────────────────────────┘</samp></pre>
+<p>Simplemente permite al usuario elegir en cuál de las tres zonas insertar el indicador.</p>
+<p><b>Recordemos</b> que también existe: <b><i>indicator-index.</i></b> Que vimos durante <code data-start="1723"
+        data-end="1750">startNotificationCenter()</code>.</p>
+<p>Eso significa que el usuario puede controlar dos cosas independientes:</p>
+<pre><samp>Zona del panel
+        +
+Índice dentro de esa zona</samp></pre>
+<p>Por ejemplo: <b><i>índice 0</i></b> o <b><i>índice 3</i></b>, es una configuración bastante flexible.</p>
+<h4>Una observación de diseño</h4>
+<p>Hasta ahora llevamos varios enums de posición:</p>
+<ul>
+    <li><code>banner-pos</code></li>
+    <li><code>indicator-pos</code><span></span></li>
+    <li><code>clear-button-alignment</code><span></span></li>
+</ul>
+<p>Y todos reutilizan exactamente el mismo patrón:</p>
+<pre><samp>LEFT   = 0
+CENTER = 1
+RIGHT  = 2</samp></pre>
+<p>Eso me hace pensar que Selenium-H fue consistente, no cambió arbitrariamente el significado de los valores entre
+    preferencias. Eso reduce muchísimo los errores.</p>
+<h4>Resumente</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Elemento</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>indicator-pos</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td><code>enum</code></td>
+        </tr>
+        <tr>
+            <td>Opciones</td>
+            <td><code>left</code>, <code>center</code>, <code>right</code></td>
+        </tr>
+        <tr>
+            <td>Propósito</td>
+            <td>Definir en qué zona del panel superior se inserta el indicador de la extensión.</td>
+        </tr>
+        <tr>
+            <td>Relación encontrada</td>
+            <td><code>Main.panel.addToStatusArea(..., pos)</code> en <code>startNotificationCenter()</code>.</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+        </tr>
+    </tbody>
+</table>
+<p>Y hay algo curioso que estoy empezando a notar. Selenium-H reutiliza mucho los mismos conceptos (<code
+        data-start="3236" data-end="3242">left</code>, <code data-start="3244" data-end="3252">center</code>, <code
+        data-start="3254" data-end="3261">right</code>) en distintas partes de la interfaz, pero <strong
+        data-start="3304" data-end="3346">cada enum describe un objeto diferente</strong>. Es decir:</p>
+<ul>
+    <li><code>banner-pos</code> → ¿Dónde aparece el banner?</li>
+    <li><code>indicator-pos</code> → ¿Dónde aparece el indicador?</li>
+    <li><code>clear-button-alignment</code> → ¿Dónde aparece el botón de limpiar?</li>
+</ul>
+<p>Aunque compartan los mismos valores, cada uno representa una decisión distinta del usuario. Eso hace que el <code
+        data-start="3625" data-end="3638">gschema.xml</code> sea muy coherente y evita mezclar configuraciones que
+    conceptualmente no pertenecen al mismo elemento.</p>
+<hr>
+<h3 id="enum8">Enumeración N.º 8</h3>
+<pre><code><span class="ͼ13">&lt;enum</span> <span class="ͼ12">id</span><span class="ͼv">=</span><span class="ͼz">"org.gnome.shell.extensions.notification-center.for-list"</span><span class="ͼ13">&gt;</span>
+    <span class="ͼ13">&lt;value</span> <span class="ͼ12">nick</span><span class="ͼv">=</span><span class="ͼz">"none"</span> <span class="ͼ12">value</span><span class="ͼv">=</span><span class="ͼz">"0"</span><span class="ͼ13">/&gt;</span>
+    <span class="ͼ13">&lt;value</span> <span class="ͼ12">nick</span><span class="ͼv">=</span><span class="ͼz">"count"</span> <span class="ͼ12">value</span><span class="ͼv">=</span><span class="ͼz">"1"</span><span class="ͼ13">/&gt;</span>
+    <span class="ͼ13">&lt;value</span> <span class="ͼ12">nick</span><span class="ͼv">=</span><span class="ͼz">"banner"</span> <span class="ͼ12">value</span><span class="ͼv">=</span><span class="ͼz">"2"</span><span class="ͼ13">/&gt;</span>
+    <span class="ͼ13">&lt;value</span> <span class="ͼ12">nick</span><span class="ͼv">=</span><span class="ͼz">"both"</span> <span class="ͼ12">value</span><span class="ͼv">=</span><span class="ͼz">"3"</span><span class="ͼ13">/&gt;</span>
+<span class="ͼ13">&lt;/enum&gt;</span></code></pre>
+<h4>¿Qué representa?</h4>
+<p>El nombre por sí solo es bastante ambiguo: <i>for-list</i>. Si únicamente viéramos este enum, yo diría:</p>
+<blockquote>"No tengo idea de qué lista está hablando."</blockquote>
+<p>Todavía no debemos intentar adivinarlo. Necesitamos esperar a ver el <code data-start="670"
+        data-end="677">&lt;key&gt;</code> que utiliza este enum.</p>
+<h4>Valores posibles</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Valor</th>
+            <th>Significado literal</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>none</code></td>
+            <td>Ninguno.</td>
+        </tr>
+        <tr>
+            <td><code>count</code></td>
+            <td>Conteo.</td>
+        </tr>
+        <tr>
+            <td><code>banner</code></td>
+            <td>Banner.</td>
+        </tr>
+        <tr>
+            <td><code>both</code></td>
+            <td>Ambos.</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+        </tr>
+    </tbody>
+</table>
+<h4> Una pequeña diferencia</h4>
+<p>Hay una pequeña diferencia con los enums anteriores.</p>
+<p>Hasta ahora vimos muchos enums de posición:</p>
+<pre><samp>left
+center
+right</samp></pre>
+<p>Este ya representa una <strong data-start="1423" data-end="1454">selección de comportamiento</strong>.</p>
+<div class="row">
+    <div class="col"><span>Es decir, no responde a:</span>
+        <blockquote>"¿Dónde?"</blockquote>
+    </div>
+    <div class="col"><span>Sino más bien a:</span>
+        <blockquote>"¿Sobre qué elementos?"</blockquote>
+    </div>
+</div>
+<p>Me gusta una cosa, el autor eligió:</p>
+<pre><samp>none
+count
+banner
+both</samp></pre>
+<p>En lugar de crear dos booleanos, podría haber hecho algo así:</p>
+<pre><samp>apply-count = true
+apply-banner = false</samp></pre>
+<p>Pero eso genera combinaciones, con un enum, las cuatro posibilidades quedan perfectamente definidas.</p>
+<h4>Resumen</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Elemento</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>for-list</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td>enum</td>
+        </tr>
+        <tr>
+            <td>Opciones</td>
+            <td><code>none</code>, <code>count</code>, <code>banner</code>, <code>both</code></td>
+        </tr>
+        <tr>
+            <td>Propósito</td>
+            <td><strong>Aún no determinado.</strong> Se necesita ver el <code>&lt;key&gt;</code> que lo utiliza antes de
+                interpretarlo.</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+        </tr>
+    </tbody>
+</table>
+<h3>Fin del primer bloque</h3>
+<hr>
+<p>Creo que este primer bloque nos dio una base muy sólida para entender el resto del esquema.</p>
+<p>Ahora ya sabemos varias cosas:</p>
+<ul>
+    <li>cómo piensa Selenium-H al diseñar preferencias;</li>
+    <li>cuándo usa un <code>enum</code> en lugar de varios booleanos;</li>
+    <li>que mantiene una nomenclatura consistente (<code>left</code>, <code>center</code>, <code>right</code>);</li>
+    <li>y ya tenemos identificadas varias futuras refactorizaciones para eliminar números mágicos en
+        <code>extension.js</code>.
+    </li>
+</ul>
+<p><strong data-start="2807" data-end="2831">Capítulo completado.</strong> Ahora sí, cuando reanudemos la travesía,
+    entraremos en la parte donde realmente empieza la unión entre configuración y código: los <strong data-start="2963"
+        data-end="2974"><code data-start="2965" data-end="2972">&lt;key&gt;</code></strong>. Ahí será donde muchas de
+    las piezas que hemos ido viendo empezarán a encajar unas con otras. </p>
