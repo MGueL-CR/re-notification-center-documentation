@@ -852,6 +852,11 @@ RIGHT  = 2</samp></pre>
 <blockquote>"No tengo idea de qué lista está hablando."</blockquote>
 <p>Todavía no debemos intentar adivinarlo. Necesitamos esperar a ver el <code data-start="670"
         data-end="677">&lt;key&gt;</code> que utiliza este enum.</p>
+<p>Lo que probablemente representa cada aplicación podía tener un perfil asociado. Por ejemplo:</p>
+<pre><code><span>Firefox
+LibreOffice
+Terminal
+Telegram</span></code></pre>
 <h4>Valores posibles</h4>
 <table>
     <thead>
@@ -863,19 +868,19 @@ RIGHT  = 2</samp></pre>
     <tbody>
         <tr>
             <td><code>none</code></td>
-            <td>Ninguno.</td>
+            <td>Ninguno: Ignorar completamente las notificaciones de esa aplicación.</td>
         </tr>
         <tr>
             <td><code>count</code></td>
-            <td>Conteo.</td>
+            <td>Conteo: No mostrar banner, pero incrementar el contador del indicador.</td>
         </tr>
         <tr>
             <td><code>banner</code></td>
-            <td>Banner.</td>
+            <td>Banner: Mostrar el banner, pero no incrementar el contador.</td>
         </tr>
         <tr>
             <td><code>both</code></td>
-            <td>Ambos.</td>
+            <td>Ambos: Mostrar el banner y además incrementar el contador.</td>
         </tr>
         <tr>
             <td></td>
@@ -883,6 +888,42 @@ RIGHT  = 2</samp></pre>
         </tr>
     </tbody>
 </table>
+<h4>¿Dónde lo vimos?</h4>
+<p>Y si recuerdas, eso encaja muy bien con algo que vimos en <code data-start="1083" data-end="1095">newNotif()</code>:
+</p>
+<pre><samp><span class="ͼv">let</span> <span class="ͼ11">applicationIndex</span> <span class="ͼv">=</span> <span class="ͼy">this</span><span class="ͼv">.</span>appBlackList<span class="ͼv">.</span>indexOf(<span class="ͼ11">source</span>[<span class="ͼ11">source</span><span class="ͼv">.</span>length<span class="ͼv">-</span><span class="ͼy">1</span>]<span class="ͼv">.</span>title);</samp></pre>
+<p>Después aparecía:</p>
+<pre><samp><span class="ͼv">switch</span>(<span class="ͼy">this</span><span class="ͼv">.</span>blackListAction) {
+    <span class="ͼv">case</span> <span class="ͼy">3</span>:
+    <span class="ͼv">case</span> <span class="ͼy">2</span>:
+        <span class="ͼy">this</span><span class="ͼv">.</span>notificationCount<span class="ͼv">--</span>;
+}</samp></pre>
+<p>En aquel momento dijimos:&nbsp;</p>
+<blockquote>"No sabemos todavía qué significa ese 2 o ese 3."</blockquote>
+<p>Ahora empezamos a tener contexto. Probablemente <code data-start="1456" data-end="1473">blackListAction</code> sea
+    precisamente un valor de este enum (o uno muy relacionado).</p>
+<p>Y ahora todo empieza a conectar, recuerdo otro fragmento de <code data-start="1607"
+        data-end="1619">newNotif()</code>:</p>
+<pre><samp><span class="ͼv">if</span>(<span class="ͼy">this</span><span class="ͼv">.</span>allowRunningScript <span class="ͼv">&amp;&amp;</span>
+   <span class="ͼ11">applicationIndex</span> <span class="ͼv">&gt;</span> <span class="ͼy">0</span> <span class="ͼv">&amp;&amp;</span>
+   <span class="ͼy">this</span><span class="ͼv">.</span>scriptList[<span class="ͼ11">applicationIndex</span>] <span class="ͼv">!=</span> <span class="ͼz">""</span>) {
+    <span class="ͼ11">utilspawn</span>([<span class="ͼz">"sh"</span>, <span class="ͼy">this</span><span class="ͼv">.</span>scriptList[<span class="ͼ11">applicationIndex</span>]]);
+}</samp></pre>
+<p>Eso significa que Selenium-H había construido un sistema bastante completo por aplicación:</p>
+<ul>
+    <li>ejecutar un script,</li>
+    <li>decidir si cuenta la notificación,</li>
+    <li>decidir si muestra el banner.</li>
+</ul>
+<p>No era simplemente una lista negra, era casi un <strong data-start="2037" data-end="2065">perfil de
+        comportamiento</strong>.</p>
+<p>Esto también explica el nombre: <i>for-list.</i> Al principio nos sonó extraño, ahora tiene mucho sentido. No es una
+    lista cualquiera, es la lista de aplicaciones (o perfiles).</p>
+<p>Para cada elemento de esa lista se escoge:</p>
+<pre><samp>none
+count
+banner
+both</samp></pre>
 <h4> Una pequeña diferencia</h4>
 <p>Hay una pequeña diferencia con los enums anteriores.</p>
 <p>Hasta ahora vimos muchos enums de posición:</p>
@@ -898,14 +939,24 @@ right</samp></pre>
         <blockquote>"¿Sobre qué elementos?"</blockquote>
     </div>
 </div>
-<p>Me gusta una cosa, el autor eligió:</p>
-<pre><samp>none
+<div class="row">
+    <div class="col">
+        <p>Me gusta una cosa, el autor eligió:</p>
+        <pre><samp>none
 count
 banner
 both</samp></pre>
-<p>En lugar de crear dos booleanos, podría haber hecho algo así:</p>
-<pre><samp>apply-count = true
+    </div>
+    <div class="col"></div>
+</div>
+<div class="row">
+    <div class="col">
+        <p>En lugar de crear dos booleanos, podría haber hecho algo así:</p>
+        <pre><samp>apply-count = true
 apply-banner = false</samp></pre>
+    </div>
+    <div class="col"></div>
+</div>
 <p>Pero eso genera combinaciones, con un enum, las cuatro posibilidades quedan perfectamente definidas.</p>
 <h4>Resumen</h4>
 <table>
