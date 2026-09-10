@@ -1,8 +1,322 @@
-<h2>Todo sobre Schemas</h2>
+<h2>¿Qué es Schema?</h2>
 <hr>
-<h3>Los id de los enums son largos</h3>
+<h3>¿En gschema se almacenan las configuraciones?</h3>
 <hr>
-<p><b>¿Los id de los enums pueden ser cortos? </b></p>
+<p>El <code data-start="107" data-end="120">gschema.xml</code> no almacena la configuración del usuario. Define
+    cómo es la configuración, es decir, es como un "contrato" o una "plantilla".</p>
+<p>Una analogía con una clase Java, imagina esto:</p>
+<pre><samp><span class="ͼg">class</span> <span class="ͼm">Settings</span> {
+    <span class="ͼm">boolean</span> <span class="ͼm">showLabel</span> <span class="ͼg">=</span> <span class="ͼj">true</span>;
+    <span class="ͼm">int</span> <span class="ͼm">bannerPosition</span> <span class="ͼg">=</span> <span class="ͼj">2</span>;
+}</samp></pre>
+<p>Esta clase <strong data-start="408" data-end="418">define</strong>:</p>
+<ul>
+    <li>qué variables existen;</li>
+    <li>de qué tipo son;</li>
+    <li>cuál es su valor inicial.</li>
+</ul>
+<p>Pero cuando creas un objeto: <code
+        class="inline-code"><span class="ͼm">Settings</span> <span class="ͼm">s</span> <span class="ͼg">=</span> <span class="ͼg">new</span> <span class="ͼm">Settings</span>();</code>
+    los cambios que hagas: <span class="ͼm"></span><code
+        class="inline-code"><span class="ͼm">s</span><span class="ͼg">.</span><span class="ͼm">showLabel</span> <span class="ͼg">=</span> <span class="ͼj">false</span>;</code>
+    <strong data-start="624" data-end="649">no modifican la clase</strong>.
+</p>
+<p>Solo modifican la instancia. El <code data-start="685" data-end="698">gschema.xml</code> es muy parecido a esa clase.
+</p>
+<h4>Entonces, ¿dónde se guardan los cambios?</h4>
+<p>Aquí entra <strong data-start="790" data-end="803">GSettings</strong>.</p>
+<p>Cuando el usuario cambia una preferencia desde <code data-start="853" data-end="863">prefs.js</code>, GNOME ya no
+    vuelve a escribir el <code data-start="898" data-end="911">gschema.xml</code>.</p>
+<p>Lo que hace es guardar <strong data-start="937" data-end="975">únicamente los valores modificados</strong> en una
+    base de datos de configuración llamada <strong data-start="1022" data-end="1031">dconf</strong>. Es decir:</p>
+<pre><samp>gschema.xml
+        │
+        │ define
+        ▼
+GSettings
+        │
+        │ guarda cambios
+        ▼
+dconf</samp></pre>
+<h5>Ejemplo:</h5>
+<p>En el <code data-start="1191" data-end="1204">gschema.xml</code> tienes: <code
+        class="inline-code"><span class="ͼo">&lt;default&gt;</span>2<span class="ͼo">&lt;/default&gt;</span></code>,
+    pero el usuario nunca toca esa opción.</p>
+<p>Entonces GSettings simplemente usa: <code class="inline-code">2</code> y no hace falta guardar nada.</p>
+<p>Pero si el usuario cambia el valor a: <code class="inline-code">0</code> Entonces dconf guarda únicamente: <code
+        class="inline-code">show-notification = 0</code></p>
+<p>El resto de preferencias siguen usando los valores por defecto del <code data-start="1559"
+        data-end="1572">gschema.xml</code>.</p>
+<p>Eso tiene <b>una ventaja enorme</b>, imagina que existen 80 preferencias. Si solo cambias dos... <b>dconf</b> solo
+    almacena esas dos.</p>
+<p>Las otras 78 se leen directamente del valor por defecto definido en el esquema. Es un sistema muy eficiente.</p>
+<p>Conceptos a considerar:</p>
+<ul>
+    <li><strong><code>gschema.xml</code></strong> → Define la estructura de las preferencias (tipos, nombres y valores
+        por defecto). Es de solo lectura durante la ejecución.</li>
+    <li><strong>GSettings</strong> → API que lee el esquema y proporciona acceso a las preferencias.</li>
+    <li><strong>dconf</strong> → Almacena los cambios realizados por el usuario. Si una preferencia nunca se modifica,
+        simplemente se utiliza el valor por defecto del <code>gschema.xml</code>.</li>
+</ul>
+<p>Y si en algún momentos nos preguntamos o nos decimos:</p>
+<blockquote>"Veamos dónde está almacenado ese dconf."</blockquote>
+<p>Ahí seguramente terminaremos usando comandos como:</p>
+<pre><samp>gsettings list-recursively org.gnome.shell.extensions.notification-center</samp></pre>
+<pre><samp>dconf dump /org/gnome/shell/extensions/notification-center/</samp></pre>
+<p>Para ver exactamente qué está guardado.</p>
+<p>Y hay un detalle que me gusta mucho de este diseño: <strong data-start="2741" data-end="2773">el esquema nunca se
+        modifica</strong>. Eso significa que puedes actualizar la extensión, reinstalarla o incluso compartir el mismo
+    <code data-start="2867" data-end="2880">gschema.xml</code> con miles de usuarios, mientras que cada uno conserva su
+    propia configuración personal en dconf. Es una separación muy limpia entre <strong data-start="3013"
+        data-end="3030">la definición</strong> y <strong data-start="3033" data-end="3058">los datos del
+        usuario</strong>.
+</p>
+<h3>La estructura de Schemas</h3>
+<hr>
+<p>La estructura tiene mucho sentido si la comparas con la programación orientada a objetos o incluso con una base de
+    datos.</p>
+<pre><code><span class="ͼo">&lt;schemalist&gt;</span>
+
+    <span class="ͼo">&lt;enum&gt;</span>...<span class="ͼo">&lt;/enum&gt;</span>
+
+    <span class="ͼo">&lt;schema&gt;</span>
+
+        <span class="ͼo">&lt;key&gt;</span>...<span class="ͼo">&lt;/key&gt;</span>
+
+    <span class="ͼo">&lt;/schema&gt;</span>
+
+<span class="ͼo">&lt;/schemalist&gt;</span></code></pre>
+<p>Creo que entender esto te va a facilitar muchísimo leer cualquier <code data-start="88"
+        data-end="101">gschema.xml</code>, no solo el de esta extensión.</p>
+<p>Podríamos resumir la arquitectura del archivo así:</p>
+<pre><samp>gschema.xml
+
+    ┌─────────────────────────────────────┐
+    │ schemalist                          │
+    │                                     │
+    │   enum  ← definición reutilizable   │
+    │   enum                              │
+    │   enum                              │
+    │                                     │
+    │   schema                            │
+    │      key ───────────────┐           │
+    │      key ───────┐       │           │
+    │      key ───┐   │       │           │
+    │             │   │       │           │
+    └─────────────┼───┼───────┼───────────┘
+                  ▼   ▼       ▼
+                enum enum   enum</samp></pre>
+
+<h3>Nivel 1: <code data-start="273" data-end="287">&lt;schemalist&gt;</code></h3>
+<hr>
+<p>Es simplemente el <strong data-start="436" data-end="460">contenedor principal</strong>.</p>
+<pre><code><span class="ͼf">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+
+<span class="ͼo">&lt;schemalist</span> <span class="ͼn">gettext-domain</span><span class="ͼg">=</span><span class="ͼk">"gnome-shell-extensions"</span><span class="ͼo">&gt;</span>
+
+    ...
+
+<span class="ͼo">&lt;/schemalist&gt;</span></code></pre>
+<p>Podría contener uno o varios <code data-start="492" data-end="502">&lt;schema&gt;</code> y todos los elementos
+    auxiliares (como los <code data-start="546" data-end="552">enum</code>) que esos esquemas necesiten.</p>
+<div class="row">
+    <div class="col"><span>Piensa en él como una carpeta.</span></div>
+    <div class="col">
+        <pre><samp>Proyecto
+│
+├── enums
+└── schemas</samp></pre>
+    </div>
+    <div class="col"></div>
+</div>
+<h3>Nivel 2: Los <code data-start="678" data-end="686">&lt;enum&gt;</code></h3>
+<hr>
+<p>Estos <strong data-start="771" data-end="814">no pertenecen todavía a ningún <code data-start="804"
+            data-end="812">schema</code></strong>.</p>
+<pre><code><span class="ͼo">&lt;enum</span> <span class="ͼn">id</span><span class="ͼg">=</span><span class="ͼk">"..."</span><span class="ͼo">&gt;</span>
+    ...
+<span class="ͼo">&lt;/enum&gt;</span>
+
+<span class="ͼo">&lt;enum</span> <span class="ͼn">id</span><span class="ͼg">=</span><span class="ͼk">"..."</span><span class="ͼo">&gt;</span>
+    ...
+<span class="ͼo">&lt;/enum&gt;</span></code></pre>
+<p>Son definiciones reutilizables. Es como decir:</p>
+<pre><samp><span class="ͼg">const</span> <span class="ͼm">BannerPosition</span> <span class="ͼg">=</span> {
+    LEFT: <span class="ͼj">0</span>,
+    CENTER: <span class="ͼj">1</span>,
+    RIGHT: <span class="ͼj">2</span>
+};</samp></pre>
+<p>Todavía nadie la usa. Simplemente existe.</p>
+<h4>Una analogía en Java</h4>
+<p>Imagina:</p>
+<pre><samp><span class="ͼg">public</span> <span class="ͼg">enum</span> <span class="ͼm">BannerPosition</span> {
+    <span class="ͼm">LEFT</span>,
+    <span class="ͼm">CENTER</span>,
+    <span class="ͼm">RIGHT</span>
+}</samp></pre>
+<p>La clase existe, pero ninguna otra clase la está utilizando todavía.</p>
+<p>Al principio los enums pareceran una simple lista de valores; más adelante los estaremos viendo como lo que realmente
+    son: <b>tipos reutilizables</b> , exactamente igual que una <code>enum</code> en Java o un <code>enum</code> en C#.
+    Esa forma de pensarlo te va a facilitar muchísimo entender los siguientes <code>key</code>.
+</p>
+<h3>Nivel 3: El <code data-start="1204" data-end="1214">&lt;schema&gt;</code></h3>
+<hr>
+<p>Aquí empieza el verdadero esquema.</p>
+<pre><code><span class="ͼo">&lt;schema</span>
+    <span class="ͼn">id</span><span class="ͼg">=</span><span class="ͼk">"org.gnome.shell.extensions.notification-center"</span>
+    <span class="ͼn">path</span><span class="ͼg">=</span><span class="ͼk">"/org/gnome/shell/extensions/notification-center/"</span><span class="ͼo">&gt;</span></code></pre>
+<p>Yo lo compararía con una clase.</p>
+<pre><samp>NotificationCenterSettings
+{
+    ...
+}</samp></pre>
+<p>Todo lo que esté dentro pertenece a este conjunto de preferencias.</p>
+<h4>¿Qué es un <code data-start="338" data-end="348">&lt;schema&gt;</code>?</h4>
+<p>Es la <strong data-start="357" data-end="402">definición de un conjunto de preferencias</strong>. Podríamos decir que
+    representa una "colección" o "espacio de configuración" para una aplicación o componente.</p>
+<p>En este caso, todo lo que esté dentro de este <code data-start="548" data-end="558">&lt;schema&gt;</code> pertenece a
+    la extensión <strong data-start="584" data-end="607">Notification Center</strong>.</p>
+<h4>El atributo <code data-start="630" data-end="634">id</code></h4>
+<p>Es el <strong data-start="718" data-end="753">identificador único del esquema</strong>.</p>
+<pre><code>id=<span class="hljs-string">"org.gnome.shell.extensions.notification-center"</span></code></pre>
+<p>Es el nombre que utilizará el programa para acceder a estas preferencias. Por ejemplo, en GJS suele verse algo
+    equivalente a:</p>
+<pre><samp><span class="ͼg">new</span> <span class="ͼm">Gio</span><span class="ͼg">.</span>Settings({
+    schema_id: <span class="ͼk">"org.gnome.shell.extensions.notification-center"</span>
+});</samp></pre>
+<p>Es decir:</p>
+<blockquote>"Quiero trabajar con el esquema de configuración llamado <code data-start="1072"
+        data-end="1120">org.gnome.shell.extensions.notification-center</code>."</blockquote>
+<p>Este nombre <b>debe ser único</b> para evitar conflictos con otras aplicaciones o extensiones.</p>
+<h4>El atributo <code data-start="1233" data-end="1239">path</code></h4>
+<p>Define la <strong data-start="1331" data-end="1346">ruta lógica</strong> donde GNOME almacenará estas preferencias.
+</p>
+<pre><code><span class="hljs-built_in">path</span>=<span class="hljs-string">"/org/gnome/shell/extensions/notification-center/"</span></code></pre>
+<p>No es una carpeta del disco. Es una ruta dentro del sistema de configuración de GSettings. Todas las claves (<code
+        data-start="1502" data-end="1507">key</code>) de este esquema vivirán bajo esa ruta.</p>
+<h4>¿Por qué ambos?</h4>
+<p>Porque cumplen funciones distintas:</p>
+<ul>
+    <li><strong><code>id</code></strong> → identifica el esquema.</li>
+    <li><strong><code>path</code></strong> → indica dónde residen sus valores dentro del árbol de configuración.</li>
+</ul>
+<h5>Analogía: Si fuera una biblioteca:</h5>
+<p>El <code data-start="1926" data-end="1930">id</code> sería el nombre de la sección.</p>
+<p>El <code data-start="1966" data-end="1972">path</code> sería la ubicación donde están guardados los libros.</p>
+<pre><samp>Biblioteca
+│
+├── Sección:
+│   "Notification Center"
+│
+└── Estantería:
+    /org/gnome/shell/extensions/notification-center/</samp></pre>
+<hr>
+<table>
+    <thead>
+        <tr>
+            <th>Concepto</th>
+            <th>Definición</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Elemento</td>
+            <td>&lt;schema&gt;</td>
+        </tr>
+        <tr>
+            <td>Función</td>
+            <td>Agrupa todas las preferencias (<code>key</code>) de una misma aplicación o extensión.</td>
+        </tr>
+        <tr>
+            <td><code>id</code></td>
+            <td>Identificador único del esquema, utilizado por el código para abrir y acceder a la configuración.</td>
+        </tr>
+        <tr>
+            <td><code>path</code></td>
+            <td>Ruta lógica dentro del sistema de configuración de GSettings donde se almacenan los valores.</td>
+        </tr>
+        <tr>
+            <td><span>Origen</span></td>
+            <td><code>&lt;schema&gt;</code>, <code>id</code> y <code>path</code>: estándar de GSettings.<br>Nombre y
+                ruta concretos: decisión del autor siguiendo las convenciones del ecosistema GNOME.</td>
+        </tr>
+    </tbody>
+</table>
+<h3>Nivel 4: Los <code data-start="1558" data-end="1565">&lt;key&gt;</code></h3>
+<hr>
+<p>Aquí sí aparece lo interesante. Cada <code data-start="1605" data-end="1610">key</code> representa una preferencia
+    concreta.</p>
+<pre><code><span class="ͼo">&lt;key</span>
+    <span class="ͼn">name</span><span class="ͼg">=</span><span class="ͼk">"banner-pos"</span>
+    <span class="ͼn">enum</span><span class="ͼg">=</span><span class="ͼk">"org.gnome.shell.extensions.notification-center.banner-pos"</span><span class="ͼo">&gt;</span></code></pre>
+<p>Es equivalente a decir: <span class="ͼg">private</span> <span class="ͼm">BannerPosition</span> <span
+        class="ͼm">bannerPos</span>; o en JavaScript: <span class="ͼm">settings</span><span class="ͼg">.</span>bannerPos
+</p>
+<p>Los <code data-start="1138" data-end="1143">key</code> pueden ser de dos formas:</p>
+<h5>Tipo primitivo:</h5>
+<pre><samp><span class="ͼo">&lt;key</span><span> </span><span class="ͼn">type</span><span class="ͼg">=</span><span class="ͼk">"i"</span><span class="ͼo">&gt;</span></samp></pre>
+<p>Aquí GSettings sabe directamente que almacenará un entero.</p>
+<h5>Tipo enum:</h5>
+<pre><samp><span class="ͼo">&lt;key</span><span> </span><span class="ͼn">enum</span><span class="ͼg">=</span><span class="ͼk">"..."</span><span class="ͼo">&gt;</span></samp></pre>
+<p>Aquí GSettings entiende automáticamente:</p>
+<blockquote>"El tipo de este <code data-start="1386" data-end="1391">key</code> es el enum indicado."</blockquote>
+<p>Es decir, el <code data-start="1428" data-end="1438">type="i"</code> desaparece porque el tipo ya está implícito en
+    el enum.</p>
+<h3>Lo importante</h3>
+<hr>
+<p>El enum por sí solo no hace nada.</p>
+<div class="row">
+    <div class="col">
+        <p>El key es el que dice:</p>
+        <blockquote>"Yo utilizo este enum."</blockquote>
+    </div>
+    <div class="col">
+        <p>Es decir:</p>
+        <pre><samp>enum
+     ↑
+     │
+key ─┘</samp></pre>
+    </div>
+    <div class="col"></div>
+</div>
+<h3>La jerarquía real</h3>
+<hr>
+<p>Algunos <code data-start="2218" data-end="2223">key</code> apuntarán a determinados <code data-start="2249"
+        data-end="2255">enum</code>.</p>
+<pre><samp>schemalist
+│
+├── enum
+├── enum
+├── enum
+│
+└── schema
+      │
+      ├── key
+      ├── key
+      ├── key
+      └── key</samp></pre>
+<h4>Analogía con una base de datos</h4>
+<p>Podría verse así:</p>
+<pre><samp>Tipos
+
+BannerPosition
+-------------
+LEFT
+CENTER
+RIGHT
+
+↓
+
+Configuración
+
+banner-pos → BannerPosition</samp></pre>
+<p>Primero defines el tipo, luego lo utilizas.</p>
+<h3>¿Y si un enum nunca se usa?</h3>
+<hr>
+<p>Recuerda lo que dijimos hace un rato. Tendríamos un... <b>enum huérfano</b>.</p>
+<p>Este existe, se complia, pero ningún key hace referencia a él.</p>
+<h3>¿Los id de los enums pueden ser cortos?</h3>
+<hr>
 <blockquote>No, en este caso no. El <code data-start="170" data-end="174">id</code> debe ser completo (fully qualified).
 </blockquote>
 <p>Y hay una razón bastante lógica.</p>

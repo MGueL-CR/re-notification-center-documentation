@@ -70,6 +70,10 @@ body {
     scroll-margin-top: 6rem;
 }
 
+.keys-schemas {
+    scroll-margin-top: 6rem;
+}
+
 .main-content {
     display: grid;
     grid-area: 1fr;

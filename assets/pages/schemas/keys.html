@@ -1,0 +1,558 @@
+<aside class="list-blocks">
+    <div class="symbol-tab">
+        <div class="symbol">
+            <div class="icon-bar"></div>
+        </div>
+    </div>
+    <div class="card">
+        <p>Lista de Keys:</p>
+        <a href="#intro">Introducción</a>
+        <a href="#key1">Key: show-media</a>
+        <a href="#key2">Key: show-notification</a>
+        <a href="#key3">Key: show-events</a>
+        <a href="#key4">Key: events-position</a>
+        <a href="#key5">Key: 05</a>
+        <a href="#key6">Key: 06</a>
+        <a href="#key7">Key: 07</a>
+        <a href="#key8">Key: 08</a>
+        <a href="#key9">Key: 09</a>
+        <a href="#key10">Key: 10</a>
+    </div>
+</aside>
+<h2 id="intro" class="keys-schemas">Las Keys</h2>
+<hr>
+<p>Ahora sí entramos en la parte que, personalmente, creo que será la más enriquecedora del <code data-start="184"
+        data-end="197">gschema.xml</code>.</p>
+<p>Hasta ahora vimos: <b><i>Enums</i></b>, es decir:</p>
+<blockquote>¿Qué tipos de valores existen?</blockquote>
+<p>Ahora vamos a ver: <b><i>Keys</i></b>, es decir:</p>
+<blockquote>¿Qué preferencias reales almacena la extensión?</blockquote>
+<p>Y precisamente aquí es donde empezarán a unirse todas las piezas.</p>
+<h4>Lo que espero encontrar en cada <code data-start="486" data-end="493">&lt;key&gt;</code></h4>
+<hr>
+<p>A partir de ahora, propongo que analicemos cada <code data-start="543" data-end="548">key</code> siempre con la misma
+    plantilla, igual que hicimos con los métodos de <code data-start="618" data-end="632">extension.js</code>.</p>
+<h5><b>Nombre:</b> ¿Qué representa esa preferencia?</h5>
+<pre><samp>name="..."</samp></pre>
+<h5><b>Tipo:</b> ¿Es?</h5>
+<ul>
+    <li>boolean</li>
+    <li>int</li>
+    <li>string</li>
+    <li>enum</li>
+    <li>otro</li>
+</ul>
+<h5><b>Valor por defecto:</b> ¿Qué ocurre si el usuario nunca modifica esa preferencia?</h5>
+<h5><b>Descripción:</b> La tomamos como la intención original del autor.</h5>
+<p>Si el archivo incluye: &lt;<i>summary</i>&gt; o &lt;<i>description</i>&gt;</p>
+<h5><b>Relación con el código</b></h5>
+<p>Aquí sí recordaremos cosas como:</p>
+<blockquote>"Este <code data-start="1097" data-end="1102">key</code> alimenta <code data-start="1112"
+        data-end="1136">this.notificationCount</code>."</blockquote>
+<p>O</p>
+<blockquote>"Este lo vimos en <code data-start="1163" data-end="1190">startNotificationCenter()</code>."</blockquote>
+<h5><b>Posibles mejoras:</b></h5>
+<p>No para implementarlas todavía, solo para anotarlas.</p>
+<p>Por ejemplo:</p>
+<ul>
+    <li>nombres más claros,</li>
+    <li>eliminar números mágicos,</li>
+    <li>simplificar lógica.</li>
+</ul>
+<p>Creo que ahora el estudio se volverá mucho más interesante, porque cada <code data-start="1446"
+        data-end="1451">key</code> será un puente entre:</p>
+<pre><samp>gschema.xml
+        ↓
+prefs.js
+        ↓
+extension.js</samp></pre>
+<p>Y, poco a poco, iremos entendiendo cómo fluye una preferencia desde que el usuario la cambia hasta que modifica el
+    comportamiento de la extensión.</p>
+<h3 id="key1" class="keys-schemas">Key: "show-media"</h3>
+<hr>
+<p>Este primer <code data-start="70" data-end="75">key</code> es una buena introducción porque es bastante sencillo.</p>
+<pre><code><span class="ͼo">&lt;key</span> <span class="ͼn">name</span><span class="ͼg">=</span><span class="ͼk">"show-media"</span> <span class="ͼn">type</span><span class="ͼg">=</span><span class="ͼk">"i"</span><span class="ͼo">&gt;</span>
+  <span class="ͼo">&lt;default&gt;</span>1<span class="ͼo">&lt;/default&gt;</span>
+  <span class="ͼo">&lt;summary&gt;</span>Show Media Section on Notification Center<span class="ͼo">&lt;/summary&gt;</span>
+  <span class="ͼo">&lt;description&gt;</span>Show Media Section on Notification Center<span class="ͼo">&lt;/description&gt;</span>
+<span class="ͼo">&lt;/key&gt;</span></code></pre>
+<h4>1. Nombre: </h4>
+<p>El nombre es bastante descriptivo.</p>
+<pre><samp>name="show-media"</samp></pre>
+<p>Representa una preferencia relacionada con:</p>
+<blockquote>Mostrar la sección multimedia dentro del Centro de Notificaciones.</blockquote>
+<h4>2. Tipo</h4>
+<p>Aquí aparece algo curioso.</p>
+<pre><samp>type="i"</samp></pre>
+<p>Es un <strong data-start="919" data-end="929">entero</strong> (<code data-start="931" data-end="934">i</code>), no un
+    booleano.</p>
+<h5>¿Por qué un entero?</h5>
+<p>Si únicamente leyéramos el nombre: <b><i>show-media</i></b> Uno esperaría: <b><i>type="b"</i></b> con:</p>
+<pre><samp><span class="ͼo">&lt;default&gt;</span>true<span class="ͼo">&lt;/default&gt;</span></samp></pre>
+<p>Pero no, eligió un entero. Eso nos hace sospechar que:</p>
+<ul>
+    <li>no es simplemente Mostrar / Ocultar;</li>
+</ul>
+<ul>
+    <li>probablemente utiliza alguno de los enums que vimos anteriormente.</li>
+</ul>
+<p>Todavía no podemos afirmarlo hasta encontrar el código que lo lee.</p>
+<h4>3. Valor por defecto</h4>
+<p>El valor inicial será: <b><i>1</i></b></p>
+<pre><samp><span class="ͼo">&lt;default&gt;</span>1<span class="ͼo">&lt;/default&gt;</span></samp></pre>
+<p>Y como todavía no sabemos su interpretación exacta, solo podemos afirmar eso.</p>
+<p>Más adelante veremos si corresponde a algún enum o a:</p>
+<ul>
+    <li>mostrar,</li>
+    <li>ocultar,</li>
+    <li>automático,</li>
+</ul>
+<h4>4. Summary</h4>
+<p>Aquí el propósito es claro.</p>
+<blockquote>Show Media Section on Notification Center</blockquote>
+<p>Es el texto que explica qué controla esta preferencia.</p>
+<h4>5. Description</h4>
+<p>Aquí Selenium-H fue bastante práctico, repitió exactamente el mismo texto.</p>
+<blockquote>Show Media Section on Notification Center</blockquote>
+<p>No añadió una explicación más extensa. Es totalmente válido, aunque muchos proyectos aprovechan el <code
+        data-start="2045" data-end="2060">&lt;description&gt;</code> para dar más contexto.</p>
+<h4>6. Relación con <code data-start="2108" data-end="2122">extension.js</code></h4>
+<p>Y esto nos recuerda inmediatamente a algo que vimos en <code data-start="599" data-end="613">extension.js</code>:
+    <span class="ͼj">this</span><span class="ͼg">.</span>mediaSection<span class="ͼg">.</span>visible <span
+        class="ͼg">=</span> <span class="ͼj">this</span><span class="ͼg">.</span>mediaSection<span
+        class="ͼg">.</span>_shouldShow(); y también existía: <span class="ͼj">this</span><span
+        class="ͼg">.</span>mediaCount<span class="ͼg">++</span>;
+</p>
+<p>Es decir, ya sabemos que la extensión tiene una sección dedicada a los controles multimedia.</p>
+<h4>7. Una pequeña observación</h4>
+<p>Aquí ya vemos una diferencia interesante entre <strong data-start="2673" data-end="2686">el nombre</strong> y <strong
+        data-start="2689" data-end="2700">el tipo</strong>.</p>
+<p>El nombre sugiere: Mostrar <i>multimedia</i> pero el tipo dice: <i>Entero</i></p>
+<p>Eso nos recuerda una regla que creo que será útil durante todo el estudio:</p>
+<blockquote>Nunca asumir el comportamiento por el nombre.</blockquote>
+<p>Siempre mirar:</p>
+<ul>
+    <li>el tipo,</li>
+    <li>el valor por defecto,</li>
+    <li>y dónde se utiliza en el código.</li>
+</ul>
+<h4>8. Resumen</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>show-media</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td><code>i</code> (entero)</td>
+        </tr>
+        <tr>
+            <td>Valor por defecto</td>
+            <td><code>1</code></td>
+        </tr>
+        <tr>
+            <td>Summary</td>
+            <td>Mostrar la sección multimedia en el Centro de Notificaciones.</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>Igual que el Summary.</td>
+        </tr>
+        <tr>
+            <td>Relación conocida</td>
+            <td>Asociado a <code>mediaSection</code> y su visibilidad en <code>extension.js</code>.</td>
+        </tr>
+        <tr>
+            <td>Pendiente</td>
+            <td>Confirmar qué representa exactamente el valor <code>1</code> y por qué se eligió un entero en lugar de
+                un booleano.</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+        </tr>
+    </tbody>
+</table>
+<hr>
+<h3 id="key2" class="keys-schemas">Key: "show-notification"</h3>
+<hr>
+<pre><code><span class="ͼo">&lt;key</span> <span class="ͼn">name</span><span class="ͼg">=</span><span class="ͼk">"show-notification"</span> <span class="ͼn">type</span><span class="ͼg">=</span><span class="ͼk">"i"</span><span class="ͼo">&gt;</span>
+  <span class="ͼo">&lt;default&gt;</span>2<span class="ͼo">&lt;/default&gt;</span>
+  <span class="ͼo">&lt;summary&gt;</span>Show Notifications list on Notification Center<span class="ͼo">&lt;/summary&gt;</span>
+  <span class="ͼo">&lt;description&gt;</span>Show Notifications list on Notification Center<span class="ͼo">&lt;/description&gt;</span>
+<span class="ͼo">&lt;/key&gt;</span></code></pre>
+<h4>1. Nombre</h4>
+<p>Controla la <strong data-start="380" data-end="407">lista de notificaciones</strong> que aparece dentro del Centro de
+    Notificaciones.</p>
+<pre><samp>name="show-notification"</samp></pre>
+<p>No habla del banner emergente. No habla del contador. Habla específicamente de la <strong data-start="542"
+        data-end="551">lista</strong>.</p>
+<h4>2. Tipo</h4>
+<p>Nuevamente tenemos un entero: <b><i>type="i"</i></b> y esto ya deja de parecer casualidad.</p>
+<p>Ahora tenemos:</p>
+<pre><samp>show-media         → entero
+show-notification  → entero</samp></pre>
+<p>Esto empieza a indicar que Selenium-H tenía un patrón de diseño.</p>
+<h4>3. Valor por defecto</h4>
+<p>Aquí aparece algo interesante. El anterior tenía: <i><code class="inline-code">1</code></i>. Este tiene: <i><code
+            class="inline-code">2</code></i>.</p>
+<pre><samp><span class="ͼo">&lt;default&gt;</span>2<span class="ͼo">&lt;/default&gt;</span></samp></pre>
+<p>Eso prácticamente confirma que <strong data-start="1000" data-end="1045">no estamos ante un simple
+        Mostrar/Ocultar</strong>.</p>
+<p>Porque si fuera un booleano disfrazado de entero esperaríamos:</p>
+<pre><samp>0 = ocultar
+1 = mostrar</samp></pre>
+<p>Pero aquí el valor inicial ya es <code data-start="1182" data-end="1185">2</code>. Eso nos dice que seguramente
+    existen varios estados posibles.</p>
+<h4>4. Summary</h4>
+<p>Muy claro.</p>
+<pre><samp>Show Notifications list on Notification Center</samp></pre>
+<p>Controla la visualización de la lista de notificaciones.</p>
+<h4>5. Description</h4>
+<p>Igual que el Summary. No añade información adicional.</p>
+<h4>6. Relación con <code data-start="1501" data-end="1515">extension.js</code></h4>
+<p>Aquí ya conocemos varios candidatos.</p>
+<p>Durante el análisis vimos: <span class="ͼj"></span><code
+        class="inline-code"><span class="ͼj">this</span><span class="ͼg">.</span>notificationSection</code>. También:
+    <span class="ͼj"></span><code
+        class="inline-code"><span class="ͼj">this</span><span class="ͼg">.</span>notificationSection<span class="ͼg">.</span>visible</code>
+</p>
+<p>Y en <code data-start="1694" data-end="1717">_onOpenStateChanged()</code>: </p>
+<pre><samp><span class="ͼj">this</span><span class="ͼg">.</span>notificationSection<span class="ͼg">.</span>visible <span class="ͼg">=</span>
+    <span class="ͼj">this</span><span class="ͼg">.</span>notificationSection<span class="ͼg">.</span>_list<span class="ͼg">.</span>get_children()<span class="ͼg">.</span>length;</samp></pre>
+<p>Así que seguramente este <code data-start="1857" data-end="1862">key</code> termina afectando esa parte del código.
+</p>
+<h4>7. Una pequeña observación</h4>
+<p>Empiezo a ver un patrón, los dos primeros <code data-start="1953" data-end="1958">key</code> son:</p>
+<pre><samp>show-media
+show-notification</samp></pre>
+<p>Y ambos:</p>
+<ul>
+    <li>usan <code>type="i"</code>;</li>
+    <li>tienen un valor por defecto distinto de 0.</li>
+</ul>
+<p>Eso me hace pensar que probablemente ambos compartan <strong data-start="2135" data-end="2152">el mismo
+        enum</strong>.</p>
+<p>Todavía no podemos afirmarlo porque aún no hemos llegado a la definición del <code data-start="2232"
+        data-end="2237">key</code> con <code data-start="2242" data-end="2254">enum="..."</code> (si existe), pero ya es
+    una hipótesis bastante fuerte.</p>
+<p>Y te comparto algo que me está dejando este bloque.</p>
+<p>Cuando empezamos los <code data-start="2888" data-end="2893">key</code>, pensé que cada uno sería independiente.
+    Ahora empiezo a sospechar que <strong data-start="2966" data-end="3019">los primeros <code data-start="2981"
+            data-end="2986">key</code> están organizados por familias</strong>.</p>
+<p>Por ejemplo:</p>
+<pre><samp>Familia "mostrar secciones"
+    
+    show-media
+    show-notification
+    ...</samp></pre>
+<p>Si el siguiente <code data-start="3127" data-end="3132">key</code> también resulta ser un entero relacionado con otra
+    sección de la interfaz, esa hipótesis empezará a tomar bastante fuerza.</p>
+<h4>8. Resumen</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>show-notification</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td><code>i</code> (entero)</td>
+        </tr>
+        <tr>
+            <td>Valor por defecto</td>
+            <td><code>2</code></td>
+        </tr>
+        <tr>
+            <td>Summary</td>
+            <td>Mostrar la lista de notificaciones en el Centro de Notificaciones.</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>Igual que el Summary.</td>
+        </tr>
+        <tr>
+            <td>Relación conocida</td>
+            <td>Asociado a <code>notificationSection</code> y su visibilidad.</td>
+        </tr>
+        <tr>
+            <td>Pendiente</td>
+            <td>Descubrir qué representan exactamente los valores enteros y si comparten un mismo enum con
+                <code>show-media</code>.
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+        </tr>
+    </tbody>
+</table>
+<hr>
+<h3 id="key3" class="keys-schemas">Key: "show-events" </h3>
+<hr>
+<p>Este tercer <code data-start="22" data-end="27">key</code> termina de reforzar la hipótesis que comenzamos a
+    construir con los dos anteriores.</p>
+<pre><code><span class="ͼo">&lt;key</span> <span class="ͼn">name</span><span class="ͼg">=</span><span class="ͼk">"show-events"</span> <span class="ͼn">type</span><span class="ͼg">=</span><span class="ͼk">"i"</span><span class="ͼo">&gt;</span>
+  <span class="ͼo">&lt;default&gt;</span>3<span class="ͼo">&lt;/default&gt;</span>
+  <span class="ͼo">&lt;summary&gt;</span>Show Events list on Notification Center<span class="ͼo">&lt;/summary&gt;</span>
+  <span class="ͼo">&lt;description&gt;</span>Show Events list on Notification Center<span class="ͼo">&lt;/description&gt;</span>
+<span class="ͼo">&lt;/key&gt;</span></code></pre>
+<h4>1. Nombre</h4>
+<p>Controla la sección de <strong data-start="391" data-end="402">eventos</strong> dentro del Centro de Notificaciones.
+</p>
+<pre><samp>name="show-events"</samp></pre>
+<p>Y aquí ya conocemos perfectamente esa sección porque durante <code data-start="502"
+        data-end="516">extension.js</code> vimos:</p>
+<ul>
+    <li><code>eventsSection</code></li>
+    <li><code>eventsCount</code></li>
+    <li><code>manageEvents()</code></li>
+    <li><code>shouldShowEventsSection()</code></li>
+    <li><code>seenEvents</code></li>
+</ul>
+<p>Así que ya sabemos que esta preferencia afecta una parte importante de la interfaz.</p>
+<h4>2. Tipo</h4>
+<p>Otra vez un entero.</p>
+<pre><samp>type="i"</samp></pre>
+<p>Ya no lo considero una casualidad.</p>
+<h4>3. Valor por defecto</h4>
+<p>Y aquí aparece algo muy interesante.</p>
+<pre><samp><span class="ͼo">&lt;default&gt;</span>3<span class="ͼo">&lt;/default&gt;</span></samp></pre>
+<p>Hasta ahora tenemos:</p>
+<table>
+    <thead>
+        <tr>
+            <th>Key</th>
+            <th>Default</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>show-media</td>
+            <td>1</td>
+        </tr>
+        <tr>
+            <td>show-notification</td>
+            <td>2</td>
+        </tr>
+        <tr>
+            <td>show-events</td>
+            <td>3</td>
+        </tr>
+    </tbody>
+</table>
+<p>Esto ya me está diciendo algo:</p>
+<pre><samp>1
+2
+3</samp></pre>
+<p>No creo que Selenium-H haya escogido estos valores porque sí.</p>
+<p>Empiezo a sospechar que estos tres <code data-start="1169" data-end="1174">key</code> <strong data-start="1175"
+        data-end="1202">comparten el mismo enum</strong> y simplemente eligió distintos estados iniciales para cada
+    sección.</p>
+<h4>4. Summary</h4>
+<p>Muy claro:</p>
+<blockquote>Mostrar la lista de eventos en el Centro de Notificaciones.</blockquote>
+<h4>5. Description</h4>
+<p>Igual que el Summary.</p>
+<h4>6. Relación con <code data-start="1435" data-end="1449">extension.js</code></h4>
+<p>Aquí ya tenemos mucha evidencia. Recordemos:</p>
+<ul>
+    <li><span></span><code><span>this</span><span>.</span>eventsSection</code></li>
+    <li><span></span><code><span>this</span><span>.</span>eventsCount</code></li>
+    <li><span></span><code><span>this</span><span>.</span>shouldShowEventsSection()</code></li>
+</ul>
+<p>Y especialmente:</p>
+<pre><samp><span class="ͼg">case</span> <span class="ͼk">"events"</span>:
+    <span class="ͼj">this</span><span class="ͼg">.</span>eventsCount <span class="ͼg">=</span> <span class="ͼj">this</span><span class="ͼg">.</span>shouldShowEventsSection();</samp></pre>
+<h4>7. Una observación importante</h4>
+<p>Aquí aparece algo que me gusta mucho del método que estamos usando. Si hubiéramos empezado por el <code
+        data-start="1984" data-end="1997">gschema.xml</code>, probablemente habríamos dicho:</p>
+<blockquote>"show-events... ok."</blockquote>
+<p>Pero como ya conocemos <code data-start="2078" data-end="2092">extension.js</code>, ahora sabemos exactamente qué
+    parte de la extensión controla. Eso hace que el <code data-start="2173" data-end="2178">key</code> deje de ser un
+    nombre abstracto.</p>
+<p>Empiezo a construir un mapa mental, hasta ahora veo este patrón:</p>
+<pre><samp>Secciones del Centro de Notificaciones
+
+show-media
+show-notification
+show-events</samp></pre>
+<p>Y todas:</p>
+<ul>
+    <li>usan enteros;</li>
+    <li>probablemente compartan un enum;</li>
+    <li>controlan una sección visible del panel.</li>
+</ul>
+<h4>8. Resumen</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>show-events</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td><code>i</code></td>
+        </tr>
+        <tr>
+            <td>Valor por defecto</td>
+            <td><code>3</code></td>
+        </tr>
+        <tr>
+            <td>Summary</td>
+            <td>Mostrar la lista de eventos en el Centro de Notificaciones.</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>Igual que el Summary.</td>
+        </tr>
+        <tr>
+            <td>Relación conocida</td>
+            <td><code>eventsSection</code>, <code>eventsCount</code>, <code>manageEvents()</code>,
+                <code>shouldShowEventsSection()</code>.
+            </td>
+        </tr>
+        <tr>
+            <td>Hipótesis</td>
+            <td>Pertenece a la misma familia de configuración que <code>show-media</code> y
+                <code>show-notification</code>, probablemente compartiendo un mismo enum.
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+        </tr>
+    </tbody>
+</table>
+<hr>
+<h3 id="key4" class="keys-schemas">Key: "events-position"</h3>
+<p>Este <code data-start="47" data-end="52">key</code> es el primero que rompe el patrón de los anteriores y
+    precisamente por eso es muy interesante.</p>
+<pre><code><span class="ͼo">&lt;key</span> <span class="ͼn">enum</span><span class="ͼg">=</span><span class="ͼk">"org.gnome.shell.extensions.notification-center.events-position"</span>
+     <span class="ͼn">name</span><span class="ͼg">=</span><span class="ͼk">"events-position"</span><span class="ͼo">&gt;</span>
+  <span class="ͼo">&lt;default&gt;</span>'below'<span class="ͼo">&lt;/default&gt;</span>
+  <span class="ͼo">&lt;summary&gt;</span>Also, Show Events List<span class="ͼo">&lt;/summary&gt;</span>
+  <span class="ͼo">&lt;description&gt;</span>Also, show Events List<span class="ͼo">&lt;/description&gt;</span>
+<span class="ͼo">&lt;/key&gt;</span></code></pre>
+<h4>1. Nombre</h4>
+<p>Ya lo conocemos.</p>
+<pre><samp>name="events-position"</samp></pre>
+<p>Durante <code data-start="478" data-end="492">extension.js</code> vimos: <code
+        class="inline-code"><span class="ͼj">his</span><span class="ͼg">.</span>eventsSectionPosition <span class="ͼg">=</span> <span class="ͼj">this</span><span class="ͼg">.</span>prefs<span class="ͼg">.</span>get_enum(<span class="ͼk">"events-position"</span>);</code>
+</p>
+<p>Y además analizamos el enum correspondiente:</p>
+<pre><samp><span class="ͼo">&lt;enum</span> <span class="ͼn">id</span><span class="ͼg">=</span><span class="ͼk">"org.gnome.shell.extensions.notification-center.events-position"</span><span class="ͼo">&gt;</span>
+    <span class="ͼo">&lt;value</span> <span class="ͼn">nick</span><span class="ͼg">=</span><span class="ͼk">"below"</span> <span class="ͼn">value</span><span class="ͼg">=</span><span class="ͼk">"0"</span><span class="ͼo">/&gt;</span>
+    <span class="ͼo">&lt;value</span> <span class="ͼn">nick</span><span class="ͼg">=</span><span class="ͼk">"hide"</span> <span class="ͼn">value</span><span class="ͼg">=</span><span class="ͼk">"1"</span><span class="ͼo">/&gt;</span>
+    <span class="ͼo">&lt;value</span> <span class="ͼn">nick</span><span class="ͼg">=</span><span class="ͼk">"beside"</span> <span class="ͼn">value</span><span class="ͼg">=</span><span class="ͼk">"2"</span><span class="ͼo">/&gt;</span>
+<span class="ͼo">&lt;/enum&gt;</span></samp></pre>
+<p>Así que este <code data-start="851" data-end="856">key</code> utiliza ese enum.</p>
+<h4>2. Tipo</h4>
+<p>Aquí aparece una novedad, observa que ya <strong data-start="927" data-end="939">no tiene</strong>: <code
+        class="inline-code">type="i"</code> Ahora tiene:</p>
+<pre><samp>enum="org.gnome.shell.extensions.notification-center.events-position"</samp></pre>
+<p>Es decir, este <code class="inline-code">key</code> es de <b>tipo enum</b></p>
+<h4>3. Valor por defecto</h4>
+<p>Aquí viene otra diferencia muy elegante.</p>
+<pre><samp><span class="ͼo">&lt;default&gt;</span>'below'<span class="ͼo">&lt;/default&gt;</span></samp></pre>
+<p>No aparece: <code
+        class="inline-code"><span class="ͼo">default&gt;</span>0<span class="ͼo">&lt;/default&gt;</span></code>, aparece
+    el <strong data-start="1663" data-end="1671">nick</strong>.</p>
+<p>Eso significa que el autor escribe: <code class="inline-code">below</code> y GSettings sabe convertirlo
+    internamente en: <code class="inline-code">0</code></p>
+<p>Me gusta muchísimo esto, porque el archivo queda mucho más legible.</p>
+<p>Compara: <code
+        class="inline-code"><span class="ͼo">default&gt;</span>0<span class="ͼo">&lt;/default&gt;</span></code>
+    <b>vs</b> <code
+        class="inline-code"><span class="ͼo">default&gt;</span>'below'<span class="ͼo">&lt;/default&gt;</span></code>
+</p>
+<p>No hay discusión, la segunda opción explica sola la intención.</p>
+<h4>4. Summary</h4>
+<p>Aquí sí tengo una observación, el texto me parece un poco ambiguo.</p>
+<pre><samp>Also, Show Events List</samp></pre>
+<p>Yo hubiera esperado algo como: <code class="inline-code">Events section position</code> o <code
+        class="inline-code">Position of the events section</code></p>
+<p>Porque el nombre del <code data-start="2281" data-end="2286">key</code> habla de posición. El summary habla de
+    mostrar, no son exactamente la misma idea.</p>
+<h5>5. Description</h5>
+<p>Igual que el Summary.</p>
+<h4>6. Relación con <code data-start="2441" data-end="2455">extension.js</code></h4>
+<p>Aquí ya no necesitamos hacer hipótesis.</p>
+<p>Ya vimos esto:</p>
+<pre><samp><span class="ͼj">this</span><span class="ͼg">.</span>eventsSectionPosition <span class="ͼg">=</span>
+    <span class="ͼj">this</span><span class="ͼg">.</span>prefs<span class="ͼg">.</span>get_enum(<span class="ͼk">"events-position"</span>);</samp></pre>
+<p>Y posteriormente aparecían decisiones como: <code
+        class="inline-code"><span class="ͼg">witch</span>(<span class="ͼj">this</span><span class="ͼg">.</span>eventsSectionPosition)</code>
+    o
+    comparaciones similares. Así que el recorrido ya lo conocemos.</p>
+<h4>7. Una observación </h4>
+<p>Este <code data-start="3481" data-end="3486">key</code> confirma una sospecha que tuvimos hace un rato.</p>
+<p>Los primeros <code data-start="3549" data-end="3554">key</code> eran: </p>
+<pre><samp>show-media
+show-notification
+show-events</samp></pre>
+<p>Y usaban: <code class="inline-code">type="i"</code> Ahora este utiliza: <code class="inline-code">enum="..."</code>
+</p>
+<p>Eso me hace pensar que los tres anteriores <strong data-start="3735" data-end="3762">no están usando un
+        enum</strong>, sino que realmente almacenan un entero cuyos valores interpreta el código. Es decir, ya no estoy
+    tan convencido de mi hipótesis anterior de que compartían un enum.</p>
+<h4>8. Resumen</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>events-position</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td><code>enum</code> (<code>events-position</code>)</td>
+        </tr>
+        <tr>
+            <td>Valor por defecto</td>
+            <td><code>below</code></td>
+        </tr>
+        <tr>
+            <td>Summary</td>
+            <td>"Also, Show Events List"</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>Igual que el Summary</td>
+        </tr>
+        <tr>
+            <td>Relación conocida</td>
+            <td><code>this.eventsSectionPosition</code> en <code>loadPreferences()</code> y posteriormente utilizada
+                para decidir dónde colocar la sección de eventos.</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+        </tr>
+    </tbody>
+</table>
+<hr>
