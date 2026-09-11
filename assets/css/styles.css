@@ -80,11 +80,32 @@ body {
 }
 
 .logo-web {
+    position: relative;
     background-image: url(/assets/images/favicon.ico);
     background-repeat: no-repeat;
     background-size: contain;
-    padding-left: 3.5rem !important;
+    padding-left: 3rem !important;
     font-weight: bold;
+}
+
+
+.logo-web::before {
+    content: "Re:";
+    position: absolute;
+    top: 0;
+    left: 2.75rem;
+    font-style: italic;
+    color: var(--cfg);
+}
+
+.logo-web::after {
+    content: "Documentación";
+    position: absolute;
+    right: 0.5rem;
+    bottom: -0.005rem;
+    font-size: smaller;
+    font-style: oblique;
+    color: var(--cmed);
 }
 
 .borderless {
