@@ -24,8 +24,8 @@
             <a href="#key14">Key: Hide-clock-section</a>
             <a href="#key15">Key: Hide-weather-section</a>
             <a href="#key16">Key: Hide-date-section</a>
-            <a href="#key17">Key: None</a>
-            <a href="#key18">Key: None</a>
+            <a href="#key17">Key: Banner-pos</a>
+            <a href="#key18">Key: Indicator-pos</a>
             <a href="#key19">Key: None</a>
         </div>
     </div>
@@ -1828,6 +1828,256 @@ Events
         <tr>
             <td>Función</td>
             <td>Determina si la sección de fecha debe ocultarse</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3 id="key17" class="keys-schemas">Key: "banner-pos"</h3>
+<hr>
+<p>Este <code data-start="241" data-end="246">key</code> <strong data-start="247" data-end="307">ya no pertenece al
+        bloque de configuración del Date Menu</strong>. Ahora volvemos a una parte propia del comportamiento visual de
+    las notificaciones.</p>
+<pre><code><span class="ͼ13">&lt;key</span> <span class="ͼ12">name</span><span class="ͼv">=</span><span class="ͼz">"banner-pos"</span> <span class="ͼ12">type</span><span class="ͼv">=</span><span class="ͼz">"s"</span><span class="ͼ13">&gt;</span>
+  <span class="ͼ13">&lt;default&gt;</span>"13"<span class="ͼ13">&lt;/default&gt;</span>
+  <span class="ͼ13">&lt;summary&gt;</span>Notification Banner position<span class="ͼ13">&lt;/summary&gt;</span>
+  <span class="ͼ13">&lt;description&gt;</span>Notification Banner position<span class="ͼ13">&lt;/description&gt;</span>
+<span class="ͼ13">&lt;/key&gt;</span></code></pre>
+<h4>1. Nombre</h4>
+<p>Controla la <strong data-start="444" data-end="480">posición del Notification Banner</strong>, es decir, el banner
+    que aparece cuando llega una notificación.</p>
+<pre><samp>banner-pos</samp></pre>
+<p>Esto conecta directamente con aquella parte que dejamos pendiente cuando encontramos en <code data-start="634"
+        data-end="648">extension.js</code>: <var class="inline-code"> <span class="ͼv">let</span> <span
+            class="ͼ11">bannerPos</span> <span class="ͼv">=</span> <span class="ͼy">this</span><span
+            class="ͼv">.</span>prefs<span class="ͼv">.</span>get_string(<span class="ͼz">'banner-pos'</span>);</var> y
+    posteriormente:</p>
+<pre><samp><span class="ͼ11">Main</span><span class="ͼv">.</span>messageTray<span class="ͼv">.</span>_bannerBin<span class="ͼv">.</span>set_y_align(<span class="ͼ11">bannerPos</span>[<span class="ͼy">0</span>]);
+<span class="ͼ11">Main</span><span class="ͼv">.</span>messageTray<span class="ͼv">.</span>bannerAlignment <span class="ͼv">=</span> <span class="ͼ11">bannerPos</span>[<span class="ͼy">1</span>];</samp></pre>
+<p>Ahora podemos volver a mirar ese código con nuevos ojos.</p>
+<h4>2. Tipo y Valor por defecto</h4>
+<pre><samp>type="s"</samp></pre>
+<p>La <code data-start="962" data-end="965">s</code> significa <strong data-start="976" data-end="986">String</strong> y
+    aquí aparece algo bastante curioso porque el valor no es algo como: <kbd class="inline-code"> <span
+            class="ͼ13">&lt;default&gt;</span>"right"<span class="ͼ13">&lt;/default&gt;</span> </kbd> sino:</p>
+<pre><samp><span class="ͼ13">&lt;default&gt;</span>"13"<span class="ͼ13">&lt;/default&gt;</span></samp></pre>
+<p>Así que <strong data-start="1150" data-end="1228">este <code data-start="1157" data-end="1162">key</code> no está
+        utilizando el enum <code data-start="1190" data-end="1202">banner-pos</code> que vimos anteriormente</strong>.
+    Eso es importante.</p>
+<div class="col">
+    <div class="col"><span>Tenemos dos cosas diferentes:</span>
+        <pre><samp>enum banner-pos
+        ↓
+left / center / right</samp></pre>
+    </div>
+    <div class="col"><span>y:</span>
+        <pre><samp>key banner-pos
+        ↓
+string "13"</samp></pre>
+    </div>
+</div>
+<p>El nombre coincide, pero <strong data-start="1422" data-end="1471">el mecanismo de almacenamiento no es el
+        mismo</strong>.</p>
+<h5>El famoso <code data-start="1496" data-end="1502">"13"</code></h5>
+<p>Aquí por fin volvemos a la pista que encontramos antes: <kbd class="inline-code"> <span class="ͼv">let</span> <span
+            class="ͼ11">bannerPos</span> <span class="ͼv">=</span> <span class="ͼy">this</span><span
+            class="ͼv">.</span>prefs<span class="ͼv">.</span>get_string(<span class="ͼz">'banner-pos'</span>); </kbd> y:
+</p>
+<pre><samp>bannerPos[0]
+bannerPos[1]</samp></pre>
+<p>Ahora sabemos que:</p>
+<pre><samp>"13"
+ ↑↑
+ │└── segundo carácter
+ └── primer carácter</samp></pre>
+<p>Por eso <code data-start="1776" data-end="1787">bannerPos</code> <strong data-start="1788" data-end="1815">sí tiene
+        dos caracteres</strong>. No son dos valores almacenados por separado. Es simplemente una cadena de dos
+    caracteres y eso explica perfectamente por qué el código podía hacer: <kbd class="inline-code"> <span
+            class="ͼ11">bannerPos</span>[<span class="ͼy">0</span>]</kbd> <kbd class="inline-code"> <span
+            class="ͼ11">bannerPos</span>[<span class="ͼy">1</span>]</kbd></p>
+<h5>¿Qué significa <code data-start="2041" data-end="2045">13</code>?</h5>
+<p>Aquí debemos ser cuidadosos. Por lo que ya investigamos, sabemos que esos dos caracteres representan <strong
+        data-start="2150" data-end="2194">dos configuraciones distintas del banner</strong>:</p>
+<pre><samp>bannerPos[0] → alineación vertical
+bannerPos[1] → alineación horizontal</samp></pre>
+<p>Pero el significado exacto de cada carácter depende de cómo Selenium-H haya definido esa codificación en las
+    preferencias y como justamente habíamos decidido <strong data-start="2442" data-end="2494">pausar esa investigación
+        para no romper el flujo</strong>, no voy a inventar ahora qué significa exactamente <code data-start="2546"
+        data-end="2549">1</code> y qué significa <code data-start="2566" data-end="2569">3</code>.</p>
+<p>Lo dejamos registrado como una pista ya confirmada:</p>
+<pre><samp>"13"
+ ││
+ │└── posición horizontal
+ └── posición vertical</samp></pre>
+<h4>3. Resumen</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>banner-pos</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td><code>s</code> (String)</td>
+        </tr>
+        <tr>
+            <td>Valor por defecto</td>
+            <td><code>"13"</code></td>
+        </tr>
+        <tr>
+            <td>Summary</td>
+            <td>Notification Banner position</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>Igual que el Summary</td>
+        </tr>
+        <tr>
+            <td>Área</td>
+            <td><strong>Notification Banner</strong>, no Date Menu</td>
+        </tr>
+        <tr>
+            <td>Relación conocida</td>
+            <td>Alimenta <code>bannerPos</code> en <code>extension.js</code></td>
+        </tr>
+        <tr>
+            <td>Particularidad</td>
+            <td>Una cadena de dos caracteres codifica dos posiciones</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3 id="key18" class="keys-schemas">Key: "indicator-pos"</h3>
+<hr>
+<p> Este segundo <code data-start="27" data-end="32">key</code> es justamente la pieza que nos faltaba.</p>
+<pre><code><span class="ͼ13">&lt;key</span> <span class="ͼ12">enum</span><span class="ͼv">=</span><span class="ͼz">"org.gnome.shell.extensions.notification-center.banner-pos"</span> <span class="ͼ12">name</span><span class="ͼv">=</span><span class="ͼz">"indicator-pos"</span><span class="ͼ13">&gt;</span>
+  <span class="ͼ13">&lt;default&gt;</span>'right'<span class="ͼ13">&lt;/default&gt;</span>
+  <span class="ͼ13">&lt;summary&gt;</span>Notification Center icon position on panel<span class="ͼ13">&lt;/summary&gt;</span>
+  <span class="ͼ13">&lt;description&gt;</span>Notifications Center icon position<span class="ͼ13">&lt;/description&gt;</span>
+<span class="ͼ13">&lt;/key&gt;</span></code></pre>
+<h4>Conceptos diferentes</h4>
+<p>Aquí hay dos conceptos diferentes, aunque el <code data-start="487" data-end="493">enum</code> utilizado se llama:
+</p>
+<pre><samp>org.gnome.shell.extensions.notification-center.banner-pos</samp></pre>
+<p>El <code data-start="589" data-end="594">key</code> se llama: <kbd class="inline-code">
+        indicator-pos </kbd> y eso es importante.</p>
+<p>Este <code data-start="660" data-end="665">key</code> <strong data-start="666" data-end="704">no controla la posición
+        del banner</strong>. Controla la posición del <strong data-start="732" data-end="796">icono/indicador del
+        Notification Center en el panel de GNOME</strong>.</p>
+<p>Su valor predeterminado es: <kbd class="inline-code">right</kbd> y el enum que ya habíamos estudiado era:
+</p>
+<pre><samp>left   = 0
+center = 1
+right  = 2</samp></pre>
+<h4>¿Que tenemos realmente?</h4>
+<p>Entonces tenemos realmente dos <code data-start="977" data-end="982">key</code> y quedan uno junto al otro:</p>
+<pre><samp>banner-pos
+indicator-pos</samp></pre>
+<p>Pero hacen cosas completamente diferentes:</p>
+<table>
+    <thead>
+        <tr>
+            <th>Key</th>
+            <th>Controla</th>
+            <th>Tipo</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>banner-pos</code></td>
+            <td>Posición del banner de notificación</td>
+            <td><code>string</code></td>
+        </tr>
+        <tr>
+            <td><code>indicator-pos</code></td>
+            <td>Posición del icono del Notification Center en el panel</td>
+            <td>enum</td>
+        </tr>
+    </tbody>
+</table>
+<p>Esto explica perfectamente por qué existen dos.</p>
+<h4>Algo muy interesante</h4>
+<p>El segundo <code data-start="2726" data-end="2731">key</code> nos revela algo todavía más interesante, tenemos:</p>
+<pre><samp>banner-pos
+    ↓
+posición del banner
+
+indicator-pos
+    ↓
+posición del icono del Notification Center</samp></pre>
+<p>Esto nos permite distinguir claramente dos elementos que podrían confundirse:</p>
+<pre><samp>GNOME
+│
+├── Notification Banner
+│     └── banner-pos
+│
+└── Notification Center Indicator
+      └── indicator-pos</samp></pre>
+<p>Y esto también explica por qué <code data-start="3133" data-end="3148">indicator-pos</code> utiliza un enum: ahí sí
+    tenemos una elección sencilla entre:</p>
+<pre><samp>left
+center
+right</samp></pre>
+<p>Mientras que <code data-start="3255" data-end="3267">banner-pos</code> necesita representar <strong data-start="3289"
+        data-end="3308">dos dimensiones</strong> de posición.</p>
+<h4>Una observacion</h4>
+<p>Ahora tenemos:</p>
+<pre><samp>banner-pos
+└── "13"
+    ├── [0] → alineación vertical
+    └── [1] → alineación horizontal
+
+indicator-pos
+└── right
+    └── posición del icono en el panel</samp></pre>
+<p><strong data-start="3910" data-end="3986">Y aquí sí podemos dar por resuelto el punto que nos estaba
+        confundiendo:</strong> los dos <code data-start="3995" data-end="4000">key</code> están juntos por temática,
+    pero <strong data-start="4033" data-end="4076">no son dos partes de una misma variable</strong>. Uno controla el
+    banner y el otro el indicador.</p>
+<p>Eso sí: todavía podemos ir un paso más allá y traducir exactamente qué significan <code data-start="4208"
+        data-end="4211">1</code> y <code data-start="4214" data-end="4217">3</code> dentro de <code data-start="4228"
+        data-end="4234">"13"</code> usando los valores que acepta <code data-start="4265"
+        data-end="4280">set_y_align()</code> y <code data-start="4283" data-end="4300">bannerAlignment</code>. Ahí
+    estaría la última pieza del rompecabezas, pero ya no necesitamos buscar otro <code data-start="4383"
+        data-end="4388">key</code>: <strong data-start="4390" data-end="4440" data-is-last-node="">la estructura de
+        configuración ya quedó clara.</strong></p>
+<h4>Resumen</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>indicator-pos</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td>Enum <code>banner-pos</code></td>
+        </tr>
+        <tr>
+            <td>Valor por defecto</td>
+            <td><code>right</code></td>
+        </tr>
+        <tr>
+            <td>Summary</td>
+            <td>Posición del icono del Notification Center en el panel</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>Posición del icono del Notification Center</td>
+        </tr>
+        <tr>
+            <td>Función</td>
+            <td>Determina dónde aparece el indicador de la extensión en el panel</td>
         </tr>
     </tbody>
 </table>
