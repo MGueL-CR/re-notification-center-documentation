@@ -267,13 +267,18 @@ table :is(th, td) {
 }
 
 .list-blocks .card .list-links {
+    position: relative;
     display: flex;
     flex-direction: column;
+    max-height: 80vh;
     margin: 0.6rem;
     margin-top: 0;
+    padding: 0.3rem;
     font-size: clamp(12px, 1.5vw, 18px);
     font-weight: 600;
     gap: 0.5rem;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .list-blocks .card .list-links a {
