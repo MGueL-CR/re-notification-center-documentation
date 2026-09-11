@@ -92,83 +92,6 @@ body {
     outline: none;
 }
 
-.list-blocks {
-    position: fixed;
-    display: flex;
-    justify-content: end;
-    min-width: 8rem;
-    width: fit-content;
-    top: 50%;
-    right: 1rem;
-    transform: translateY(-50%);
-    z-index: 1;
-    gap: 0;
-}
-
-.list-blocks .symbol-tab {
-    place-self: center;
-}
-
-.list-blocks .symbol-tab:hover+.card,
-.list-blocks .card:hover {
-    visibility: visible;
-    opacity: 1;
-    width: fit-content;
-    box-shadow: 0 0 6px 1px var(--cemphbg), 0 0 4px 0 var(--cmed), 0 0 3px 0 var(--cemph);
-}
-
-.list-blocks .symbol-tab .symbol {
-    cursor: pointer;
-    padding: 1rem 0.5rem;
-    border-start-start-radius: 6px;
-    border-end-start-radius: 6px;
-    background-color: var(--cbg);
-    border: 1px solid var(--cmed);
-}
-
-.list-blocks .symbol-tab .symbol .icon-bar {
-    height: 2rem;
-    border: 1px solid var(--clink);
-}
-
-.list-blocks .card {
-    visibility: collapse;
-    opacity: 0;
-    display: flex;
-    width: 0;
-    flex-direction: column;
-    margin: 0;
-    padding-bottom: 0.6rem;
-    background-color: var(--cbg);
-    gap: 0.25rem;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    transition: all 300ms ease-in-out;
-}
-
-.list-blocks .card p {
-    font-size: large;
-    font-weight: bold;
-}
-
-.list-blocks .card a {
-    padding: 0.25rem 0.6rem;
-    font-size: medium;
-    font-weight: 600;
-    border-radius: 0.25rem;
-    outline: 1px solid transparent;
-    outline-offset: -1px;
-    overflow: hidden;
-    transition: all 150ms ease-in-out;
-}
-
-.list-blocks .card a:hover {
-    background-color: var(--cemphbg);
-    outline-color: var(--cemph);
-    outline-offset: 2px;
-}
-
 .float-banner {
     position: absolute;
     margin: 0;
@@ -275,6 +198,96 @@ table th {
 
 table :is(th, td) {
     text-align: start;
+}
+
+/**
+*   Seccion para el menu flotante 
+*
+*/
+
+.list-blocks {
+    position: fixed;
+    display: flex;
+    justify-content: end;
+    min-width: 8rem;
+    width: fit-content;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    z-index: 1;
+    gap: 0;
+}
+
+.list-blocks .symbol-tab {
+    place-self: center;
+}
+
+.list-blocks .symbol-tab:hover+.card,
+.list-blocks .card:hover {
+    visibility: visible;
+    opacity: 1;
+    width: fit-content;
+    box-shadow: 0 0 6px 1px var(--cemphbg), 0 0 4px 0 var(--cmed), 0 0 3px 0 var(--cemph);
+}
+
+.list-blocks .symbol-tab .symbol {
+    cursor: pointer;
+    padding: 1rem 0.5rem;
+    border-start-start-radius: 6px;
+    border-end-start-radius: 6px;
+    background-color: var(--cbg);
+    border: 1px solid var(--cmed);
+}
+
+.list-blocks .symbol-tab .symbol .icon-bar {
+    height: 2rem;
+    border: 1px solid var(--clink);
+}
+
+.list-blocks .card {
+    visibility: collapse;
+    opacity: 0;
+    display: flex;
+    flex-direction: column;
+    width: 0;
+    margin: 0;
+    padding: 0;
+    background-color: var(--cbg);
+    gap: 0.25rem;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    transition: all 300ms ease-in-out;
+}
+
+.list-blocks .card p {
+    font-size: large;
+    font-weight: bold;
+    margin: 0.6rem;
+}
+
+.list-blocks .card .list-links {
+    display: flex;
+    flex-direction: column;
+    margin: 0.6rem;
+    margin-top: 0;
+    font-size: clamp(12px, 1.5vw, 18px);
+    font-weight: 600;
+    gap: 0.5rem;
+}
+
+.list-blocks .card .list-links a {
+    padding: 0.25rem 0.6rem;
+    border-radius: 0.25rem;
+    outline: 1px solid transparent;
+    outline-offset: -1px;
+    transition: all 150ms ease-in-out;
+}
+
+.list-blocks .card .list-links a:hover {
+    background-color: var(--cemphbg);
+    outline-color: var(--cemph);
+    outline-offset: 2px;
 }
 
 /**

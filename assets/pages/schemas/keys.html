@@ -6,17 +6,28 @@
     </div>
     <div class="card">
         <p>Lista de Keys:</p>
-        <a href="#intro">Introducción</a>
-        <a href="#key1">Key: Show-media</a>
-        <a href="#key2">Key: Show-notification</a>
-        <a href="#key3">Key: Show-events</a>
-        <a href="#key4">Key: Events-position</a>
-        <a href="#key5">Key: Autohide-space-beside-...</a>
-        <a href="#key6">Key: Calendar-on-left</a>
-        <a href="#key7">Key: Show-events-secction-...</a>
-        <a href="#key8">Key: Sections-order</a>
-        <a href="#key9">Key: Dnd-position</a>
-        <a href="#key10">Key: Clear-button-alignment</a>
+        <div class="list-links">
+            <a href="#intro">Introducción</a>
+            <a href="#key1">Key: Show-media</a>
+            <a href="#key2">Key: Show-notification</a>
+            <a href="#key3">Key: Show-events</a>
+            <a href="#key4">Key: Events-position</a>
+            <a href="#key5">Key: Autohide-space-beside-...</a>
+            <a href="#key6">Key: Calendar-on-left</a>
+            <a href="#key7">Key: Show-events-secction-...</a>
+            <a href="#key8">Key: Sections-order</a>
+            <a href="#key9">Key: Dnd-position</a>
+            <a href="#key10">Key: Clear-button-alignment</a>
+            <a href="#key11">Key: Autoclose-menu</a>
+            <a href="#key12">Key: Indicator-shortcut</a>
+            <a href="#key13">Key: Max-height</a>
+            <a href="#key14">Key: Hide-clock-section</a>
+            <a href="#key15">Key: Hide-weather-section</a>
+            <a href="#key16">Key: Hide-date-section</a>
+            <a href="#key17">Key: None</a>
+            <a href="#key18">Key: None</a>
+            <a href="#key19">Key: None</a>
+        </div>
     </div>
 </aside>
 <h2 id="intro" class="keys-schemas">Las Keys</h2>
@@ -1079,7 +1090,7 @@ events</samp></pre>
     </tbody>
 </table>
 
-<h3>Key: "clear-button-alignment"</h3>
+<h3 id="key10" class="keys-schemas">Key: "clear-button-alignment"</h3>
 <hr>
 <p>Este <code data-start="17" data-end="22">key</code> es otro ejemplo donde el diseño del esquema refleja muy bien el
     problema que intenta resolver.</p>
@@ -1184,6 +1195,639 @@ showButton</samp></pre>
         <tr>
             <td>Relación conocida</td>
             <td>Controla la alineación del botón <code>clearButton</code> dentro del Centro de Notificaciones.</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3 id="key11" class="keys-schemas">Key: "autoclose-menu"</h3>
+<hr>
+<pre><code><span class="ͼo">&lt;key</span> <span class="ͼn">name</span><span class="ͼg">=</span><span class="ͼk">"autoclose-menu"</span> <span class="ͼn">type</span><span class="ͼg">=</span><span class="ͼk">"b"</span><span class="ͼo">&gt;</span>
+  <span class="ͼo">&lt;default&gt;</span>false<span class="ͼo">&lt;/default&gt;</span>
+  <span class="ͼo">&lt;summary&gt;</span>Close Notification Center when focus is switched<span class="ͼo">&lt;/summary&gt;</span>
+  <span class="ͼo">&lt;description&gt;</span>Close Notification Center when focus is switched<span class="ͼo">&lt;/description&gt;</span>
+<span class="ͼo">&lt;/key&gt;</span></code></pre>
+<h4>1. Nombre</h4>
+<p>Controla si el <strong data-start="423" data-end="481">Centro de Notificaciones debe cerrarse
+        automáticamente</strong>.</p>
+<pre><samp>autoclose-menu</samp></pre>
+<p>La palabra <strong data-start="495" data-end="508">autoclose</strong> ya nos da la idea de que no depende de que el
+    usuario presione un botón, sino de un evento.</p>
+<h4>2. Tipo</h4>
+<p>Es un <strong data-start="645" data-end="657">booleano</strong>.</p>
+<pre><samp>type="b"</samp></pre>
+<p>Solo existen dos comportamientos:</p>
+<ul>
+    <li><code>true</code> → cerrar automáticamente.</li>
+    <li><code>false</code> → permanecer abierto.</li>
+</ul>
+<p>No requiere enum porque no existen posiciones ni múltiples estados.</p>
+<h4>3. Valor por defecto</h4>
+<pre><samp><span class="ͼo">&lt;default&gt;</span>false<span class="ͼo">&lt;/default&gt;</span></samp></pre>
+<p>Por defecto: <q class="inline-code">El menú permanece abierto.</q></p>
+<p>Es decir, Selenium-H decidió no modificar el comportamiento salvo que el usuario lo solicite.</p>
+<h4>4. Summary</h4>
+<p>Aquí encontramos algo interesante.</p>
+<pre><samp>Close Notification Center when focus is switched</samp></pre>
+<p>El nombre dice: <kbd class="inline-code">autoclose-menu</kbd>, pero el Summary aclara <strong data-start="1226"
+        data-end="1236">cuándo</strong> ocurre ese cierre automático.</p>
+<div class="row">
+    <div class="col"><span>No es:</span>
+        <blockquote>"cerrar después de X segundos"</blockquote>
+    </div>
+    <div class="col"><span>ni</span>
+        <blockquote>"cerrar al abrir una notificación"</blockquote>
+    </div>
+    <div class="col"><span>Sino:</span>
+        <blockquote><strong>cuando cambia el foco</strong>.</blockquote>
+    </div>
+</div>
+<p>Ese detalle no estaba presente en el nombre y justamente aquí el Summary aporta información útil.</p>
+<h4>5. Description</h4>
+<p>Es idéntico al Summary.</p>
+<h4>6. Relación con el proyecto</h4>
+<p>Durante el análisis de <code data-start="1597" data-end="1611">extension.js</code> vimos que la extensión reaccionaba
+    a distintos eventos del Shell, entre ellos cambios de estado del menú.</p>
+<p>Este <code data-start="1724" data-end="1729">key</code> no controla la apertura del menú. Controla el comportamiento
+    <strong data-start="1792" data-end="1803">después</strong> de abierto, cuando el usuario cambia el foco hacia otra
+    ventana o componente. Por lo tanto, pertenece al grupo de preferencias de <strong data-start="1935"
+        data-end="1953">comportamiento</strong>, más que al de apariencia.
+</p>
+<h4>7. Observación</h4>
+<p>Hasta ahora habíamos visto preferencias relacionadas con:</p>
+<ul>
+    <li>visibilidad,</li>
+    <li>posición,</li>
+    <li>alineación.</li>
+</ul>
+<p>Esta es diferente. Aquí la preferencia modifica una <strong data-start="2156" data-end="2183">interacción del
+        usuario</strong>.</p>
+<p>Además este <code data-start="2695" data-end="2700">key</code> me hizo notar otra forma de clasificar las
+    preferencias del
+    proyecto. Hasta ahora habíamos identificado varias categorías:</p>
+<ul>
+    <li><strong>Apariencia</strong> (alineación, posición, orden).</li>
+    <li><strong>Visibilidad</strong> (mostrar u ocultar elementos).</li>
+    <li><strong>Comportamiento</strong> (cómo responde la extensión a las acciones del usuario).</li>
+</ul>
+<p><code data-start="3001" data-end="3017">autoclose-menu</code> pertenece claramente a esta última categoría. No cambia
+    cómo se ve el Centro de Notificaciones, sino <strong data-start="3119" data-end="3137">cómo reacciona</strong> ante
+    una interacción del usuario. Me parece una separación bastante natural y, hasta el momento, consistente con la forma
+    en que Selenium-H organizó sus preferencias.</p>
+<h4>8. Resumen</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>autoclose-menu</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td><code>boolean</code> (<code>b</code>)</td>
+        </tr>
+        <tr>
+            <td>Valor por defecto</td>
+            <td><code>false</code></td>
+        </tr>
+        <tr>
+            <td>Summary</td>
+            <td>Cerrar el Centro de Notificaciones cuando cambia el foco.</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>Igual que el Summary.</td>
+        </tr>
+        <tr>
+            <td>Relación conocida</td>
+            <td>Controla el comportamiento del menú cuando el usuario deja de interactuar con él y cambia el foco a otro
+                elemento.</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3 id="key12" class="keys-schemas">Key: "indicator-shortcut"</h3>
+<hr>
+<p>Este <code data-start="7" data-end="12">key</code> me gusta bastante porque introduce dos cosas nuevas al mismo
+    tiempo:</p>
+<ul>
+    <li>un <strong>atajo de teclado</strong>;</li>
+    <li>una sintaxis XML que no habíamos encontrado (<code>CDATA</code>).</li>
+</ul>
+<pre><code><span class="ͼo">&lt;key</span> <span class="ͼn">name</span><span class="ͼg">=</span><span class="ͼk">"indicator-shortcut"</span> <span class="ͼn">type</span><span class="ͼg">=</span><span class="ͼk">"as"</span><span class="ͼo">&gt;</span>
+  <span class="ͼo">&lt;default&gt;</span>
+    <span class="ͼk">&lt;![CDATA[['&lt;Super&gt;c']]]&gt;</span>
+  <span class="ͼo">&lt;/default&gt;</span>
+  <span class="ͼo">&lt;summary&gt;</span>Shortcut key combiation to show Notification Center<span class="ͼo">&lt;/summary&gt;</span>
+  <span class="ͼo">&lt;description&gt;</span>Shortcut key combiation to show Notification Center<span class="ͼo">&lt;/description&gt;</span>
+<span class="ͼo">&lt;/key&gt;</span></code></pre>
+<h4>1. Nombre</h4>
+<p>El nombre nos dice:</p>
+<blockquote>Atajo de teclado asociado al indicador.</blockquote>
+<pre><samp>indicator-shortcut</samp></pre>
+<p>Y gracias a que ya estudiamos <code data-start="583" data-end="597">extension.js</code>, sabemos exactamente para qué
+    sirve.</p>
+<p>No abre cualquier cosa. Abre el <strong data-start="669" data-end="692">Notification Center</strong>.</p>
+<h4>2. Tipo</h4>
+<pre><samp>type="as"</samp></pre>
+<p>Aquí vuelve nuestro viejo conocido: <kbd class="inline-code">as</kbd> --&gt; <var class="inline-code">Array of
+        Strings</var></p>
+<h5>¿Por qué un arreglo si solo existe un atajo?</h5>
+<p>Muy buena pregunta. Aquí Selenium-H está siguiendo el estándar de GNOME.</p>
+<p>Aunque actualmente exista un único atajo: <kbd class="inline-code">Super</kbd> + <kbd class="inline-code">C</kbd>
+    GSettings permite almacenar varios.</p>
+<p>Por ejemplo:</p>
+<pre><samp>[
+    "&lt;Super&gt;c",
+    "&lt;Ctrl&gt;&lt;Alt&gt;n"
+]</samp></pre>
+<p>Así que usar un arreglo hace la configuración más flexible.</p>
+<h4>3. Valor por defecto</h4>
+<p>Aquí aparece la primera novedad.</p>
+<pre><samp><code><span class="ͼk">&lt;![CDATA[['&lt;Super&gt;c']]]&gt;</span></code></samp></pre>
+<h5>¿Qué es CDATA?</h5>
+<p>Hasta ahora no lo habíamos visto, en XML existe un problema con los caracteres:</p>
+<pre><samp>&lt;
+&gt;
+&amp;</samp></pre>
+<p>Tienen significado especial. Por ejemplo:</p>
+<pre><samp><code><span class="ͼo">&lt;Super&gt;</span></code></samp></pre>
+<p>XML podría intentar interpretarlo como otra etiqueta. Para evitar eso existe:</p>
+<pre><samp><code><span class="ͼk">&lt;![CDATA[ ... ]]&gt;</span></code></samp></pre>
+<p>Que significa: <dfn class="inline-code">Todo lo que está aquí adentro es texto literal</dfn>. No lo interpretes
+    como XML.</p>
+<p>Entonces: <code><span class="ͼk">&lt;![CDATA[['&lt;Super&gt;c']]]&gt;</span></code> equivale a
+    decir: <kbd class="inline-code">['&lt;Super&gt;c']</kbd> pero protegido para que XML no intente leer <code
+        data-start="1813" data-end="1822">&lt;Super&gt;</code> como una etiqueta.</p>
+<p>Esto me parece una buena decisión, sin CDATA probablemente habría que escribir algo como:</p>
+<pre><samp><code><span class="ͼk">&amp;lt;</span>Super<span class="ͼk">&amp;gt;</span>c</code></samp></pre>
+<p>Mucho menos legible.</p>
+<h4>4. El contenido</h4>
+<pre><samp>['&lt;Super&gt;c']</samp></pre>
+<p>Representa: <kbd class="inline-code">Super + C</kbd> como atajo por defecto.</p>
+<h4>5. Summary</h4>
+<p>Describe correctamente la finalidad.</p>
+<pre><samp>Shortcut key combination to show Notification Center</samp></pre>
+<h4>6. Description</h4>
+<p>Igual que el Summary.</p>
+<h4>7. Relación con el proyecto</h4>
+<p>Ya vimos durante <code data-start="2401" data-end="2415">extension.js</code> que la extensión registraba un atajo
+    global.</p>
+<p>Este <code data-start="2467" data-end="2472">key</code> contiene precisamente la combinación que posteriormente se
+    registra mediante GNOME Shell.</p>
+<p>No es el código quien decide: <kbd class="inline-code">Super + C</kbd> Es el esquema quien lo define y eso
+    permite cambiar el atajo desde las preferencias sin modificar el código.</p>
+<h4>8. Una observación </h4>
+<p>Este <code data-start="2771" data-end="2776">key</code> confirma algo que ya habíamos empezado a notar. El <code
+        data-start="2829" data-end="2842">gschema.xml</code> no solo guarda opciones visuales. También guarda:</p>
+<ul>
+    <li>posiciones;</li>
+    <li>comportamiento;</li>
+    <li><strong>atajos de teclado</strong>.</li>
+</ul>
+<p>Es decir, prácticamente toda la configuración configurable de la extensión vive aquí.</p>
+<p>Una pequeña observación (fuera del análisis técnico), esta es la primera vez que encontramos <code data-start="4193"
+        data-end="4200">CDATA</code> en todo el archivo. No es una característica de GSettings, sino del propio
+    XML. </p>
+<p>Y aparece únicamente porque el valor contiene caracteres (<code data-start="4339" data-end="4342">&lt;</code> y <code
+        data-start="4345" data-end="4348">&gt;</code>) que el parser XML podría interpretar como etiquetas. Es un buen
+    ejemplo de cómo, además de aprender la arquitectura de la extensión, de vez en cuando el propio formato XML nos
+    obliga a conocer algunas de sus reglas.</p>
+<h4>9. Resumen</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>indicator-shortcut</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td><code>as</code> (Array de Strings)</td>
+        </tr>
+        <tr>
+            <td>Valor por defecto</td>
+            <td><code>["&lt;Super&gt;c"]</code></td>
+        </tr>
+        <tr>
+            <td>Summary</td>
+            <td>Combinación de teclas para mostrar el Notification Center.</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>Igual que el Summary.</td>
+        </tr>
+        <tr>
+            <td>Relación conocida</td>
+            <td>Define el atajo global que la extensión registra para abrir el Centro de Notificaciones.</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3 id="key13" class="keys-schemas">Key: "max-height" </h3>
+<hr>
+<p>Este <code data-start="20" data-end="25">key</code> vuelve al patrón de <strong data-start="46"
+        data-end="56">entero</strong>, pero aquí el número tiene un significado bastante concreto: representa un
+    porcentaje.</p>
+<pre><code><span class="ͼo">&lt;key</span> <span class="ͼn">name</span><span class="ͼg">=</span><span class="ͼk">"max-height"</span> <span class="ͼn">type</span><span class="ͼg">=</span><span class="ͼk">"i"</span><span class="ͼo">&gt;</span>
+  <span class="ͼo">&lt;default&gt;</span>80<span class="ͼo">&lt;/default&gt;</span>
+  <span class="ͼo">&lt;summary&gt;</span>Maximum height of Notification Center ( in % )<span class="ͼo">&lt;/summary&gt;</span>
+  <span class="ͼo">&lt;description&gt;</span>Maximum height of Notification Center ( in % )<span class="ͼo">&lt;/description&gt;</span>
+<span class="ͼo">&lt;/key&gt;</span></code></pre>
+<h4>1. Nombre</h4>
+<p>Define la <strong data-start="414" data-end="455">altura máxima del Notification Center</strong>.</p>
+<pre><samp>max-height</samp></pre>
+<h4>2. Tipo</h4>
+<p>Es un entero.</p>
+<pre><samp>type="i"</samp></pre>
+<p>Aquí tiene sentido porque estamos almacenando un valor numérico que representa un porcentaje.</p>
+<h4>3. Valor por defecto</h4>
+<p>El valor predeterminado es: <b>80 %</b></p>
+<pre><samp><span class="ͼo">&lt;default&gt;</span>80<span class="ͼo">&lt;/default&gt;</span></samp></pre>
+<p>Es decir, la extensión permite que el Centro de Notificaciones ocupe como máximo aproximadamente el 80 % de la altura
+    disponible.</p>
+<h4>4. Summary y Description</h4>
+<p>Ambos dicen:</p>
+<blockquote>Maximum height of Notification Center (in %)</blockquote>
+<p>Por lo tanto, no hay ninguna ambigüedad sobre la unidad: <strong data-start="996" data-end="1034">el entero
+        representa un porcentaje</strong>.</p>
+<h4>5. Relación con <code data-start="1062" data-end="1076">extension.js</code></h4>
+<p>Aquí podemos relacionarlo con lo que ya estudiamos del código que controla el tamaño y la distribución del <code
+        data-start="1185" data-end="1206">Notification Center</code>.</p>
+<p>Lo importante es distinguir:</p>
+<pre><samp>gschema
+   │
+   └── 80
+       ↓
+     "80 %"</samp></pre>
+<p>El <code data-start="1299" data-end="1308">gschema</code> <strong data-start="1309" data-end="1346">no está
+        calculando ninguna altura</strong>. Simplemente establece:</p>
+<blockquote>"Esta preferencia es un entero y su valor predeterminado es 80."</blockquote>
+<p>La conversión de ese <code data-start="1462" data-end="1466">80</code> en una dimensión real de la interfaz
+    corresponde al código de <code data-start="1529" data-end="1543">extension.js</code> y/o a los componentes de GNOME
+    que vimos durante nuestro recorrido.</p>
+<h4>6. Observación</h4>
+<p>Este es un buen ejemplo para nuestra regla de <strong data-start="2033" data-end="2097">"no asumir el significado del
+        tipo únicamente por su nombre"</strong>. <code data-start="2100" data-end="2110">type="i"</code> solamente
+    nos dice: <q class="inline-code">Aquí hay un entero.</q></p>
+<p>Es el propio <code data-start="2170" data-end="2175">key</code> y su descripción lo que nos dice que ese entero debe
+    interpretarse como <strong data-start="2248" data-end="2262">porcentaje</strong>.</p>
+<p>Por eso: <var class="inline-code">80</var> no significa necesariamente "80 píxeles". Significa <strong
+        data-start="2344" data-end="2352">80 %</strong>, porque así lo establece la descripción de la preferencia.</p>
+<h4>7. Resumen</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>max-height</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td><code>i</code> (entero)</td>
+        </tr>
+        <tr>
+            <td>Valor por defecto</td>
+            <td><code>80</code></td>
+        </tr>
+        <tr>
+            <td>Unidad</td>
+            <td>Porcentaje (%)</td>
+        </tr>
+        <tr>
+            <td>Summary</td>
+            <td>Altura máxima del Notification Center</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>Igual que el Summary</td>
+        </tr>
+        <tr>
+            <td>Función</td>
+            <td>Establece el límite máximo de altura del Centro de Notificaciones</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3 id="key14" class="keys-schemas">Key: "hide-clock-section"</h3>
+<hr>
+<p>Este vuelve a ser de los sencillos y mantiene el patrón que ya conocemos.</p>
+<pre><code><span class="ͼo">&lt;key</span> <span class="ͼn">name</span><span class="ͼg">=</span><span class="ͼk">"hide-clock-section"</span> <span class="ͼn">type</span><span class="ͼg">=</span><span class="ͼk">"b"</span><span class="ͼo">&gt;</span>
+  <span class="ͼo">&lt;default&gt;</span>false<span class="ͼo">&lt;/default&gt;</span>
+  <span class="ͼo">&lt;summary&gt;</span>Hide Clock Section<span class="ͼo">&lt;/summary&gt;</span>
+  <span class="ͼo">&lt;description&gt;</span>Hide Clock Section<span class="ͼo">&lt;/description&gt;</span>
+<span class="ͼo">&lt;/key&gt;</span></code></pre>
+<h4>1. Nombre</h4>
+<p>Indica que controla si se <strong data-start="325" data-end="356">oculta la sección del reloj</strong> del
+    Notification Center.</p>
+<pre><samp>hide-clock-section</samp></pre>
+<h4>2. Tipo</h4>
+<pre><samp>type="b"</samp></pre>
+<p>Es un <strong data-start="423" data-end="435">booleano</strong>:</p>
+<ul>
+    <li><code>true</code> → ocultar la sección.</li>
+    <li><code>false</code> → mostrarla.</li>
+</ul>
+<h4>3. Valor por defecto</h4>
+<p>Por defecto, la sección del reloj <strong data-start="590" data-end="604">se muestra</strong>.</p>
+<pre><samp><span class="ͼo">&lt;default&gt;</span>false<span class="ͼo">&lt;/default&gt;</span></samp></pre>
+<h4>4. Summary y Description</h4>
+<p>Ambos dicen:</p>
+<blockquote>Hide Clock Section</blockquote>
+<p>Son bastantes directo y no agregan información adicional.</p>
+<h4>5. Relación con <code data-start="752" data-end="766">extension.js</code></h4>
+<p>Aquí podemos conectarlo con algo que <strong data-start="805" data-end="817">ya vimos</strong> en la construcción de
+    la interfaz: la extensión manipula las distintas partes del menú de fecha de GNOME.</p>
+<p>Este <code data-start="930" data-end="935">key</code> representa la preferencia que determina si la sección
+    correspondiente al reloj debe formar parte de la interfaz.</p>
+<p>Y hay una diferencia interesante respecto a <code data-start="1094"
+        data-end="1124">show-events-section-if-empty</code>: </p>
+<pre><samp>hide-clock-section
+        ↓
+     ¿ocultar?</samp></pre>
+<p>Mientras que:</p>
+<pre><samp>show-events-section-if-empty
+        ↓
+     ¿mostrar aunque esté vacío?</samp></pre>
+<p>Ambos son booleanos, pero expresan la decisión desde perspectivas opuestas.</p>
+<h4>6. Resumen</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>hide-clock-section</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td><code>b</code> (booleano)</td>
+        </tr>
+        <tr>
+            <td>Valor por defecto</td>
+            <td><code>false</code></td>
+        </tr>
+        <tr>
+            <td>Summary</td>
+            <td>Ocultar sección del reloj</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>Igual que el Summary</td>
+        </tr>
+        <tr>
+            <td>Función</td>
+            <td>Determina si la sección del reloj se oculta del Notification Center</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3 id="key15" class="keys-schemas">Key: "hide-weather-section"</h3>
+<hr>
+<p>Este es prácticamente el hermano gemelo del anterior, así que aquí podemos avanzar rápido.</p>
+<pre><code><span class="ͼo">&lt;key</span> <span class="ͼn">name</span><span class="ͼg">=</span><span class="ͼk">"hide-weather-section"</span> <span class="ͼn">type</span><span class="ͼg">=</span><span class="ͼk">"b"</span><span class="ͼo">&gt;</span>
+  <span class="ͼo">&lt;default&gt;</span>false<span class="ͼo">&lt;/default&gt;</span>
+  <span class="ͼo">&lt;summary&gt;</span>Hide Weather Section<span class="ͼo">&lt;/summary&gt;</span>
+  <span class="ͼo">&lt;description&gt;</span>Hide Weather Section<span class="ͼo">&lt;/description&gt;</span>
+<span class="ͼo">&lt;/key&gt;</span></code></pre>
+<h4>1. Nombre</h4>
+<p>ndica que controla si se <strong data-start="350" data-end="381">oculta la sección del clima</strong>.</p>
+<pre><samp>hide-weather-section</samp></pre>
+<h4>2. Tipo</h4>
+<pre><samp>type="b"</samp></pre>
+<p>Booleano:</p>
+<ul>
+    <li><code>true</code> → ocultar la sección.</li>
+    <li><code>false</code> → mostrarla.</li>
+</ul>
+<h4>3. Valor por defecto</h4>
+<p>Por defecto, <strong data-start="560" data-end="602">la sección del clima permanece visible</strong>.</p>
+<pre><samp><span class="ͼo">&lt;default&gt;</span>false<span class="ͼo">&lt;/default&gt;</span></samp></pre>
+<h4>4. Summary y Description</h4>
+<p>Ambos son:</p>
+<blockquote>Hide Weather Section</blockquote>
+<p>Son directos y no hay información adicional escondida aquí.</p>
+<h4>5. Relación con <code data-start="752" data-end="766">extension.js</code></h4>
+<p>Aquí podemos relacionarlo con la lógica que ya estudiamos sobre la construcción y administración de las distintas
+    partes del menú de fecha.</p>
+<p>Esta preferencia permite que esa sección pueda ser eliminada visualmente cuando el usuario así lo configure. Y hay
+    algo interesante al compararlo con el anterior:</p>
+<pre><samp>hide-clock-section
+hide-weather-section</samp></pre>
+<p>Los dos utilizan exactamente el mismo patrón:</p>
+<pre><samp>type="b"
+default=false</samp></pre>
+<p>Por lo tanto, desde el punto de vista del esquema, ambos representan decisiones binarias independientes.</p>
+<h4>6. Una observación</h4>
+<p>Y aquí aparece otro pequeño patrón en la organización: <strong data-start="1678" data-end="1766">Selenium-H está
+        agrupando preferencias relacionadas con las partes del menú de fecha</strong>. Primero encontramos <code
+        data-start="1788" data-end="1808">hide-clock-section</code> y ahora <code data-start="1817"
+        data-end="1839">hide-weather-section</code>, lo que empieza a mostrarnos que el orden de los <code
+        data-start="1889" data-end="1894">key</code> también tiene cierta lógica temática, no es simplemente una
+    colección aleatoria.</p>
+<h4>7. Resumen</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>hide-weather-section</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td><code>b</code> (booleano)</td>
+        </tr>
+        <tr>
+            <td>Valor por defecto</td>
+            <td><code>false</code></td>
+        </tr>
+        <tr>
+            <td>Summary</td>
+            <td>Hide Weather Section</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>Igual que el Summary</td>
+        </tr>
+        <tr>
+            <td>Función</td>
+            <td>Determina si la sección del clima debe ocultarse</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3 id="key16" class="keys-schemas">Key: "hide-date-section"</h3>
+<hr>
+<p>Este completa la pequeña familia que acabamos de encontrar:</p>
+<pre><code><span class="ͼo">&lt;key</span> <span class="ͼn">name</span><span class="ͼg">=</span><span class="ͼk">"hide-date-section"</span> <span class="ͼn">type</span><span class="ͼg">=</span><span class="ͼk">"b"</span><span class="ͼo">&gt;</span>
+  <span class="ͼo">&lt;default&gt;</span>false<span class="ͼo">&lt;/default&gt;</span>
+  <span class="ͼo">&lt;summary&gt;</span>Hide Date Section<span class="ͼo">&lt;/summary&gt;</span>
+  <span class="ͼo">&lt;description&gt;</span>Hide Date Section<span class="ͼo">&lt;/description&gt;</span>
+<span class="ͼo">&lt;/key&gt;</span></code></pre>
+<h4>1. Nombre</h4>
+<p>Controla si se <strong data-start="296" data-end="329">oculta la sección de la fecha</strong>.</p>
+<pre><samp>hide-date-section</samp></pre>
+<h4>2. Tipo</h4>
+<pre><samp>type="b"</samp></pre>
+<p>Booleano:</p>
+<ul>
+    <li><code>true</code> → ocultar la sección.</li>
+    <li><code>false</code> → mantenerla visible.</li>
+</ul>
+<h4>3. Valor por defecto</h4>
+<p>Por defecto, la sección de fecha <strong data-start="537" data-end="551">se muestra</strong>.</p>
+<pre><samp><span class="ͼo">&lt;default&gt;</span>false<span class="ͼo">&lt;/default&gt;</span></samp></pre>
+<h4>4. Summary y Description</h4>
+<p>Ambos son:</p>
+<blockquote>Hide Date Section</blockquote>
+<p>No hay información adicional.</p>
+<h4>5. Relación con los dos anteriores</h4>
+<p>Ahora tenemos tres preferencias consecutivas:</p>
+<pre><samp>hide-clock-section
+hide-weather-section
+hide-date-section</samp></pre>
+<p>Las tres tienen exactamente la misma estructura:</p>
+<pre><samp>type = b
+default = false</samp></pre>
+<p>Y representan tres partes independientes de la información del menú de fecha:</p>
+<table>
+    <thead>
+        <tr>
+            <th>Key</th>
+            <th>Sección</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>hide-clock-section</code></td>
+            <td>Reloj</td>
+        </tr>
+        <tr>
+            <td><code>hide-weather-section</code></td>
+            <td>Clima</td>
+        </tr>
+        <tr>
+            <td><code>hide-date-section</code></td>
+            <td>Fecha</td>
+        </tr>
+    </tbody>
+</table>
+<p>Esto es un buen ejemplo de <strong data-start="1129" data-end="1189">separación de responsabilidades a nivel de
+        configuración</strong>: cada sección tiene su propio interruptor y una modificación no obliga a afectar a las
+    otras.</p>
+<h4>6. Una observación</h4>
+
+<p>En el menú de calendario de GNOME, tenemos el bloque de información que aparece <strong data-start="165"
+        data-end="190">debajo del calendario</strong>:</p>
+<ul>
+    <li>Fecha</li>
+    <li>Clima</li>
+    <li>Reloj</li>
+    <li>Eventos</li>
+</ul>
+<p>Y ahora el <code data-start="255" data-end="268">gschema.xml</code> nos está mostrando que Selenium-H tenía
+    preferencias independientes para controlar esas partes.</p>
+<p>En particular, acabamos de encontrar:</p>
+<pre><samp>hide-clock-section
+hide-weather-section
+hide-date-section</samp></pre>
+<p>Mientras que la sección de eventos tiene su propia lógica mediante:</p>
+<pre><samp>show-events
+show-events-section-if-empty
+events-position</samp></pre>
+<p>Eso también explica por qué no deberíamos interpretar los tres <code data-start="678" data-end="686">hide-*</code>
+    como secciones arbitrarias creadas por Selenium-H. <strong data-start="738" data-end="875">Son partes que ya existen
+        dentro del menú de fecha/calendario de GNOME y la extensión decide cuáles conservar, ocultar o
+        reorganizar.</strong></p>
+<p>Y aquí aparece algo interesante para nuestro mapa:</p>
+<pre><samp>GNOME Date Menu
+│
+├── Date
+├── Calendar
+├── Weather
+├── Clock
+└── Events</samp></pre>
+<p>Y ahora los <code data-start="328" data-end="333">key</code> que acabamos de estudiar encajan perfectamente:</p>
+<pre><samp>Date
+└── hide-date-section
+
+Calendar
+└── calendar-on-left
+   └── ... otras preferencias relacionadas
+
+Weather
+└── hide-weather-section
+
+Clock
+└── hide-clock-section
+
+Events
+├── show-events
+├── show-events-section-if-empty
+├── events-position
+└── ... otras preferencias</samp></pre>
+<p>La extensión está básicamente <strong data-start="1101" data-end="1196">tomando piezas que GNOME ya proporciona y
+        reorganizándolas dentro de su Notification Center</strong>, en lugar de dibujar absolutamente todo desde cero.
+</p>
+<p>Eso conecta muy bien con lo que descubrimos anteriormente sobre la reutilización de recursos de GNOME. Y creo que
+    esta parte del <code data-start="1379" data-end="1388">gschema</code> nos está dando otra pista importante sobre la
+    filosofía de Selenium-H: <strong data-start="1460" data-end="1535" data-is-last-node="">modificar y reorganizar
+        componentes existentes antes que reinventarlos.</strong></p>
+<h4>7. Resumen</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>hide-date-section</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td><code>b</code> (booleano)</td>
+        </tr>
+        <tr>
+            <td>Valor por defecto</td>
+            <td><code>false</code></td>
+        </tr>
+        <tr>
+            <td>Summary</td>
+            <td>Hide Date Section</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>Igual que el Summary</td>
+        </tr>
+        <tr>
+            <td>Función</td>
+            <td>Determina si la sección de fecha debe ocultarse</td>
         </tr>
     </tbody>
 </table>
