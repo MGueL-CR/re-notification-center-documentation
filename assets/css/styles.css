@@ -224,11 +224,16 @@ body {
     content: "bloque 0" counter(bloque) ":";
 }
 
-hr+pre,
-hr+p,
+pre+hr,
 p+hr,
-pre+hr {
+table+hr {
     margin-top: 1.75rem;
+}
+
+hr:has(+pre),
+hr:has(+p),
+hr:has(table) {
+    margin-bottom: 1.75rem;
 }
 
 pre {

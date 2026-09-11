@@ -7,16 +7,16 @@
     <div class="card">
         <p>Lista de Keys:</p>
         <a href="#intro">Introducción</a>
-        <a href="#key1">Key: show-media</a>
-        <a href="#key2">Key: show-notification</a>
-        <a href="#key3">Key: show-events</a>
-        <a href="#key4">Key: events-position</a>
-        <a href="#key5">Key: 05</a>
-        <a href="#key6">Key: 06</a>
-        <a href="#key7">Key: 07</a>
-        <a href="#key8">Key: 08</a>
-        <a href="#key9">Key: 09</a>
-        <a href="#key10">Key: 10</a>
+        <a href="#key1">Key: Show-media</a>
+        <a href="#key2">Key: Show-notification</a>
+        <a href="#key3">Key: Show-events</a>
+        <a href="#key4">Key: Events-position</a>
+        <a href="#key5">Key: Autohide-space-beside-...</a>
+        <a href="#key6">Key: Calendar-on-left</a>
+        <a href="#key7">Key: Show-events-secction-...</a>
+        <a href="#key8">Key: Sections-order</a>
+        <a href="#key9">Key: Dnd-position</a>
+        <a href="#key10">Key: Clear-button-alignment</a>
     </div>
 </aside>
 <h2 id="intro" class="keys-schemas">Las Keys</h2>
@@ -68,6 +68,7 @@ prefs.js
 extension.js</samp></pre>
 <p>Y, poco a poco, iremos entendiendo cómo fluye una preferencia desde que el usuario la cambia hasta que modifica el
     comportamiento de la extensión.</p>
+
 <h3 id="key1" class="keys-schemas">Key: "show-media"</h3>
 <hr>
 <p>Este primer <code data-start="70" data-end="75">key</code> es una buena introducción porque es bastante sencillo.</p>
@@ -180,7 +181,7 @@ extension.js</samp></pre>
         </tr>
     </tbody>
 </table>
-<hr>
+
 <h3 id="key2" class="keys-schemas">Key: "show-notification"</h3>
 <hr>
 <pre><code><span class="ͼo">&lt;key</span> <span class="ͼn">name</span><span class="ͼg">=</span><span class="ͼk">"show-notification"</span> <span class="ͼn">type</span><span class="ͼg">=</span><span class="ͼk">"i"</span><span class="ͼo">&gt;</span>
@@ -300,7 +301,7 @@ show-notification</samp></pre>
         </tr>
     </tbody>
 </table>
-<hr>
+
 <h3 id="key3" class="keys-schemas">Key: "show-events" </h3>
 <hr>
 <p>Este tercer <code data-start="22" data-end="27">key</code> termina de reforzar la hipótesis que comenzamos a
@@ -443,8 +444,9 @@ show-events</samp></pre>
         </tr>
     </tbody>
 </table>
-<hr>
+
 <h3 id="key4" class="keys-schemas">Key: "events-position"</h3>
+<hr>
 <p>Este <code data-start="47" data-end="52">key</code> es el primero que rompe el patrón de los anteriores y
     precisamente por eso es muy interesante.</p>
 <pre><code><span class="ͼo">&lt;key</span> <span class="ͼn">enum</span><span class="ͼg">=</span><span class="ͼk">"org.gnome.shell.extensions.notification-center.events-position"</span>
@@ -493,7 +495,7 @@ show-events</samp></pre>
         class="inline-code">Position of the events section</code></p>
 <p>Porque el nombre del <code data-start="2281" data-end="2286">key</code> habla de posición. El summary habla de
     mostrar, no son exactamente la misma idea.</p>
-<h5>5. Description</h5>
+<h4>5. Description</h4>
 <p>Igual que el Summary.</p>
 <h4>6. Relación con <code data-start="2441" data-end="2455">extension.js</code></h4>
 <p>Aquí ya no necesitamos hacer hipótesis.</p>
@@ -555,4 +557,633 @@ show-events</samp></pre>
         </tr>
     </tbody>
 </table>
+
+<h3 id="key5" class="keys-schemas">Key: "autohide-space-beside-calendar"</h3>
 <hr>
+<p>Este <code data-start="19" data-end="24">key</code> nos da un pequeño descanso después del anterior, porque vuelve a
+    ser muy directo.</p>
+<pre><code><span class="ͼ13">&lt;key</span> <span class="ͼ12">name</span><span class="ͼv">=</span><span class="ͼz">"autohide-space-beside-calendar"</span> <span class="ͼ12">type</span><span class="ͼv">=</span><span class="ͼz">"b"</span><span class="ͼ13">&gt;</span>
+  <span class="ͼ13">&lt;default&gt;</span>false<span class="ͼ13">&lt;/default&gt;</span>
+  <span class="ͼ13">&lt;summary&gt;</span>Hide space beside Calendar if empty<span class="ͼ13">&lt;/summary&gt;</span>
+  <span class="ͼ13">&lt;description&gt;</span>Hide space beside Calendar if empty<span class="ͼ13">&lt;/description&gt;</span>
+<span class="ͼ13">&lt;/key&gt;</span></code></pre>
+<h4>1. Nombre</h4>
+<p>El nombre es largo, pero bastante descriptivo.</p>
+<pre><samp>name="autohide-space-beside-calendar"</samp></pre>
+<p>Si lo dividimos:</p>
+<pre><samp>autohide
+    ↓
+space
+    ↓
+beside
+    ↓
+calendar</samp></pre>
+<p>La preferencia controla si debe <strong data-start="593" data-end="681">ocultarse automáticamente el espacio que
+        queda junto al calendario cuando está vacío</strong>.</p>
+<p>Y aquí inmediatamente recordé algo que vimos en <code data-start="732" data-end="746">extension.js</code>.</p>
+<p>Existía el método: <span class="ͼ11"></span><var class="inline-code"><span class="ͼ11">manageAutohide</span>()</var>
+    y aparecía llamado desde varios lugares: <var class="inline-code"><span
+            class="ͼy">this</span>manageAutohide();</var></p>
+<p>Por ejemplo en:</p>
+<ul>
+    <li>blinkIcon()</li>
+    <li>resetIndicator()</li>
+</ul>
+<p>En ese momento entendimos <strong data-start="970" data-end="993">qué hacía el método</strong>, pero no sabíamos de
+    dónde obtenía su configuración. Ahora sí empezamos a conectar las piezas.</p>
+<h4>2. Tipo</h4>
+<p>Aquí sí aparece un <strong data-start="1159" data-end="1171">booleano</strong>.</p>
+<pre><samp>type="b"</samp></pre>
+<p>Y esto me gusta mucho. Porque ahora vemos que Selenium-H sí utilizó el tipo adecuado cuando solo existían dos estados
+    posibles.</p>
+<pre><samp>true
+false</samp></pre>
+<p>No usó un entero. No creó un enum. Simplemente:</p>
+<pre><samp>Sí
+No</samp></pre>
+<h4>3. Valor por defecto</h4>
+<pre><samp><span class="ͼ13">&lt;default&gt;</span>false<span class="ͼ13">&lt;/default&gt;</span></samp></pre>
+<p>Por defecto <strong data-start="1523" data-end="1529">no</strong> se oculta automáticamente ese espacio.</p>
+<h4>4. Summary</h4>
+<p>Muy claro.</p>
+<pre><samp>Hide space beside Calendar if empty</samp></pre>
+<h4>5. Description</h4>
+<p>Idéntico al Summary.</p>
+<h4>6. Relación con <code data-start="1730" data-end="1744">extension.js</code></h4>
+<p>Aquí ya no necesito hacer una hipótesis, creo que este es el primer <code data-start="1815"
+        data-end="1820">key</code> donde puedo decir:</p>
+<blockquote>Tiene un candidato casi directo.</blockquote>
+<p>Porque vimos: <span class="ͼ11"></span><kbd class="inline-code"><span class="ͼ11">manageAutohide</span>()</kbd>
+    y el nombre del método coincide perfectamente con: <dfn class="inline-code">autohide-space-beside-calendar</dfn>.
+</p>
+<p>Este <code data-start="420" data-end="425">key</code> corresponde a la preferencia que ya vimos cargar en <code
+        data-start="478" data-end="497">loadPreferences()</code> y cuyo efecto termina reflejándose en <code
+        data-start="536" data-end="554">manageAutohide()</code>.</p>
+<h4>7. Una observación interesante</h4>
+<p>Hasta ahora ya hemos visto los tres tipos principales de configuración. Esto me parece una buena clasificación:</p>
+<p><b>Booleano</b>: Para decisiones binarias.</p>
+<pre><samp>type="b"</samp></pre>
+<p><b>Entero</b>: Cuando el código interpreta varios estados.</p>
+<pre><samp>type="i"</samp></pre>
+<p><b>Enum</b>: Cuando esos estados están formalizados y reutilizados.</p>
+<pre><samp>enum="..."</samp></pre>
+<h4>Resumen</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>autohide-space-beside-calendar</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td><code>b</code> (booleano)</td>
+        </tr>
+        <tr>
+            <td>Valor por defecto</td>
+            <td><code>false</code></td>
+        </tr>
+        <tr>
+            <td>Summary</td>
+            <td>Ocultar el espacio junto al calendario si está vacío.</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>Igual que el Summary.</td>
+        </tr>
+        <tr>
+            <td>Relación conocida</td>
+            <td>Muy probablemente asociado al método <code>manageAutohide()</code>.</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+        </tr>
+    </tbody>
+</table>
+
+<h3 id="key6" class="keys-schemas">Key: "calendar-on-left" </h3>
+<hr>
+<p>Este también es bastante claro y, afortunadamente, ya conocemos el contexto gracias a <code data-start="124"
+        data-end="138">extension.js</code>.</p>
+<pre><code><span class="ͼ13">&lt;key</span> <span class="ͼ12">name</span><span class="ͼv">=</span><span class="ͼz">"calendar-on-left"</span> <span class="ͼ12">type</span><span class="ͼv">=</span><span class="ͼz">"b"</span><span class="ͼ13">&gt;</span>
+  <span class="ͼ13">&lt;default&gt;</span>false<span class="ͼ13">&lt;/default&gt;</span>
+  <span class="ͼ13">&lt;summary&gt;</span>Show Calendar on Left<span class="ͼ13">&lt;/summary&gt;</span>
+  <span class="ͼ13">&lt;description&gt;</span>Show Calendar on Left<span class="ͼ13">&lt;/description&gt;</span>
+<span class="ͼ13">&lt;/key&gt;</span></code></pre>
+<h4>1. Nombre</h4>
+<pre><samp>name="calendar-on-left"</samp></pre>
+<p>Describe exactamente su propósito:</p>
+<blockquote>Mostrar el calendario al lado izquierdo.</blockquote>
+<p>No habla de ocultarlo, ni de su tamaño, ni de su contenido; únicamente de su <strong data-start="535"
+        data-end="547">posición</strong> dentro de la interfaz.</p>
+<h4>2. Tipo</h4>
+<p>Es un <strong data-start="615" data-end="627">booleano</strong>, lo cual tiene todo el sentido.</p>
+<pre><samp>type="b"</samp></pre>
+<p>Solo existen dos posibilidades:</p>
+<ul>
+    <li><code>true</code> → Calendario a la izquierda.</li>
+    <li><code>false</code> → Calendario en la posición normal (a la derecha, según el diseño original de GNOME).</li>
+</ul>
+<p>Aquí Selenium-H vuelve a escoger el tipo más simple posible.</p>
+<h4>3. Valor por defecto</h4>
+<p>Por defecto la extensión <strong data-start="982" data-end="997">no modifica</strong> la posición del calendario.</p>
+<pre><samp><span class="ͼ13">&lt;default&gt;</span>false<span class="ͼ13">&lt;/default&gt;</span></samp></pre>
+<p>Es decir, respeta el diseño original de GNOME hasta que el usuario decida cambiarlo.</p>
+<h4>4. Summary</h4>
+<p>Muy claro y consistente con el nombre.</p>
+<pre><samp>Show Calendar on Left</samp></pre>
+<h4>5. Description</h4>
+<p>Igual que el Summary.</p>
+<h4>6. Relación con el proyecto</h4>
+<p>Aquí ya conocemos el comportamiento porque lo vimos durante el análisis de <code data-start="1364"
+        data-end="1378">extension.js</code>.</p>
+<p>Recordemos que la extensión reorganizaba partes del menú de fecha (<code data-start="1448"
+        data-end="1458">dateMenu</code>) y movía algunas secciones.</p>
+<p>Este <code data-start="1493" data-end="1498">key</code> gobierna precisamente una de esas modificaciones de la
+    interfaz: decidir si el calendario permanece en su posición original o si se coloca al lado izquierdo.</p>
+<p>Por lo tanto, este <code data-start="1677" data-end="1682">key</code> participa en la construcción visual del panel
+    del Centro de Notificaciones.</p>
+<h4>7. Observación de diseño</h4>
+<p>Este <code data-start="1795" data-end="1800">key</code> me parece un buen ejemplo de cuándo <strong data-start="1837"
+        data-end="1843">no</strong> utilizar un enum.</p>
+<p>Podría haberse hecho algo así:</p>
+<pre><samp>LEFT
+RIGHT</samp></pre>
+<p>Pero habría sido innecesario, solo hay dos estados posibles, así que un booleano es mucho más limpio.</p>
+<p>Otra pequeña observación, empiezo a notar una organización bastante lógica en los <code data-start="2492"
+        data-end="2497">key</code>.</p>
+<p>Hasta ahora hemos visto:</p>
+<ul>
+    <li><strong>Visibilidad de secciones</strong> (<code>show-*</code>)</li>
+    <li><strong>Posición de secciones</strong> (<code>events-position</code>)</li>
+    <li><strong>Comportamiento automático</strong> (<code>autohide-*</code>)</li>
+    <li><strong>Distribución de la interfaz</strong> (<code>calendar-on-left</code>)</li>
+</ul>
+<p>No están agrupados al azar; parece que Selenium-H fue ordenando las preferencias por áreas funcionales de la
+    extensión, lo que hace que el <code data-start="2858" data-end="2871">gschema.xml</code> sea mucho más fácil de
+    recorrer. Esa organización ya empieza a reflejar la estructura que conocimos previamente en <code data-start="2987"
+        data-end="3001">extension.js</code>. </p>
+<h4>8. Resumen</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>calendar-on-left</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td><code>boolean</code> (<code>b</code>)</td>
+        </tr>
+        <tr>
+            <td>Valor por defecto</td>
+            <td><code>false</code></td>
+        </tr>
+        <tr>
+            <td>Summary</td>
+            <td>Mostrar el calendario a la izquierda.</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>Igual que el Summary.</td>
+        </tr>
+        <tr>
+            <td>Relación conocida</td>
+            <td>Controla si la extensión reorganiza la posición del calendario dentro del menú de fecha.</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3 id="key7" class="keys-schemas">Key: "show-events-section-if-empty" </h3>
+<hr>
+<p>Este <code data-start="31" data-end="36">key</code> me llamó la atención por un pequeño detalle en su nombre y su
+    descripción.</p>
+<pre><code><span class="ͼ13">&lt;key</span> <span class="ͼ12">name</span><span class="ͼv">=</span><span class="ͼz">"show-events-section-if-empty"</span> <span class="ͼ12">type</span><span class="ͼv">=</span><span class="ͼz">"b"</span><span class="ͼ13">&gt;</span>
+  <span class="ͼ13">&lt;default&gt;</span>true<span class="ͼ13">&lt;/default&gt;</span>
+  <span class="ͼ13">&lt;summary&gt;</span>Hide Events List If Empty<span class="ͼ13">&lt;/summary&gt;</span>
+  <span class="ͼ13">&lt;description&gt;</span>Hide Events List If Empty<span class="ͼ13">&lt;/description&gt;</span>
+<span class="ͼ13">&lt;/key&gt;</span></code></pre>
+<h4>1. Nombre</h4>
+<pre><samp>name="show-events-section-if-empty"</samp></pre>
+<p>Si lo leemos literalmente dice:</p>
+<blockquote>Mostrar la sección de eventos si está vacía.</blockquote>
+<p>Es decir, la sección seguiría apareciendo aunque no existan eventos.</p>
+<h4>2. Tipo</h4>
+<p>Es un <strong data-start="575" data-end="587">booleano</strong>.</p>
+<pre><samp>type="b"</samp></pre>
+<p>Tiene sentido porque solo existen dos comportamientos:</p>
+<ul>
+    <li>Mostrar la sección vacía.</li>
+    <li>No mostrarla.</li>
+</ul>
+<h4>3. Valor por defecto</h4>
+<p>Por defecto la extensión <strong data-start="803" data-end="846">sí muestra la sección aunque esté vacía</strong>.
+</p>
+<pre><samp><span class="ͼ13">&lt;default&gt;</span>true<span class="ͼ13">&lt;/default&gt;</span></samp></pre>
+<p>Esto es coherente con el propio nombre del <code data-start="892" data-end="897">key</code>.</p>
+<h4>4. Summary</h4>
+<p>Aquí encontré algo curioso:</p>
+<pre><samp>Hide Events List If Empty</samp></pre>
+<p>Si lo comparas con el nombre:</p>
+<table>
+    <thead>
+        <tr>
+            <th>Campo</th>
+            <th>Dice</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><strong>Key</strong></td>
+            <td>Show Events Section If Empty</td>
+        </tr>
+        <tr>
+            <td><strong>Summary</strong></td>
+            <td>Hide Events List If Empty</td>
+        </tr>
+    </tbody>
+</table>
+<p>Los dos expresan la <strong data-start="1161" data-end="1175">misma idea</strong>, pero desde lados opuestos.</p>
+<div class="row">
+    <div class="col"><span>Uno pregunta:</span>
+        <blockquote>¿Mostrar la sección vacía?</blockquote>
+    </div>
+    <div class="col"><span>El otro:</span>
+        <blockquote>¿Ocultar la lista cuando está vacía?</blockquote>
+    </div>
+</div>
+<p>Lógicamente son complementarios.</p>
+<h4>5. Description</h4>
+<p>Es idéntico al Summary.</p>
+<h4>6. Relación con el proyecto</h4>
+<p>Aquí sí tenemos una relación que ya estudiamos.</p>
+<p>Durante <code data-start="1475" data-end="1489">extension.js</code> analizamos el método: <span
+        class="ͼ11"></span><kbd class="inline-code"><span class="ͼ11">shouldShowEventsSection</span>()</kbd></p>
+<p>Y posteriormente vimos varias llamadas como: <var class="inline-code"><span class="ͼy">this</span><span
+            class="ͼv">.</span>eventsCount <span class="ͼv">=</span> <span class="ͼy">this</span><span
+            class="ͼv">.</span>shouldShowEventsSection();</var> y <var class="inline-code"><span
+            class="ͼy">this</span><span class="ͼv">.</span>manageEvents(<span class="ͼy">0</span>);</var></p>
+<p>Este <code data-start="1723" data-end="1728">key</code> es precisamente uno de los que influyen en esa decisión, es
+    decir, <code data-start="1797" data-end="1824">shouldShowEventsSection()</code> no solo pregunta si existen eventos;
+    también consulta esta preferencia para decidir si la sección debe permanecer visible cuando está vacía.</p>
+<h4>7. Observación</h4>
+<p>Aquí encontré un pequeño detalle de diseño, el <strong data-start="2035" data-end="2055">nombre del <code
+            data-start="2048" data-end="2053">key</code></strong> me parece más claro que el Summary.</p>
+<p>Porque el booleano queda muy natural: <var class="inline-code">true</var></p>
+<blockquote>Ocultar la lista cuando esté vacía.</blockquote>
+<p>Ya obliga a pensar en una negación. No es un error; simplemente creo que el nombre elegido para el <code
+        data-start="2384" data-end="2389">key</code> comunica mejor el comportamiento.</p>
+<h4>8. Resumen</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>show-events-section-if-empty</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td><code>boolean</code> (<code>b</code>)</td>
+        </tr>
+        <tr>
+            <td>Valor por defecto</td>
+            <td><code>true</code></td>
+        </tr>
+        <tr>
+            <td>Summary</td>
+            <td>Ocultar la lista de eventos si está vacía.</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>Igual que el Summary.</td>
+        </tr>
+        <tr>
+            <td>Relación conocida</td>
+            <td>Participa en la lógica de <code>shouldShowEventsSection()</code> y, por extensión, en
+                <code>manageEvents()</code>.
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<h3 id="key8" class="keys-schemas">Key: "sections-order"</h3>
+<hr>
+<p>Este <code data-start="7" data-end="12">key</code> es muy interesante porque introduce un tipo de dato que todavía no
+    habíamos visto.</p>
+<pre><code><span class="ͼ13">&lt;key</span> <span class="ͼ12">name</span><span class="ͼv">=</span><span class="ͼz">"sections-order"</span> <span class="ͼ12">type</span><span class="ͼv">=</span><span class="ͼz">"as"</span><span class="ͼ13">&gt;</span>
+  <span class="ͼ13">&lt;default&gt;</span>['media','notification','events']<span class="ͼ13">&lt;/default&gt;</span>
+  <span class="ͼ13">&lt;summary&gt;</span>Order of sections in Notification Center<span class="ͼ13">&lt;/summary&gt;</span>
+  <span class="ͼ13">&lt;description&gt;</span>Order of sections in Notification Center<span class="ͼ13">&lt;/description&gt;</span>
+<span class="ͼ13">&lt;/key&gt;</span></code></pre>
+<h4>1. Nombre</h4>
+<pre><samp>name="sections-order"</samp></pre>
+<p>Describe exactamente su función:</p>
+<blockquote>Define el orden en que se mostrarán las secciones del Centro de Notificaciones.</blockquote>
+<p>Ya no controla si una sección existe o no. Controla <strong data-start="567" data-end="583">la secuencia</strong> en
+    que aparecerán.</p>
+<h4>2. Tipo</h4>
+<p>Aquí aparece un tipo nuevo.</p>
+<pre><samp>type="as"</samp></pre>
+<p><code data-start="671" data-end="675">as</code> significa: <q class="inline-code">Array of String</q>, es decir:</p>
+<pre><samp>a  = Array
+s  = String</samp></pre>
+<h4>3. Valor por defecto</h4>
+<p>Aquí ya no tenemos un único valor.</p>
+<pre><samp><span class="ͼ13">&lt;default&gt;</span>['media','notification','events']<span class="ͼ13">&lt;/default&gt;</span></samp></pre>
+<p>Tenemos una lista ordenada:</p>
+<pre><samp>1. media
+2. notification
+3. events</samp></pre>
+<p>Y aquí está la clave: <b>El orden tiene significado.</b></p>
+<p>Si el usuario cambia la preferencia a:</p>
+<pre><samp>[
+    "events",
+    "media",
+    "notification"
+]</samp></pre>
+<p>La extensión reorganizará la interfaz en ese mismo orden.</p>
+<h4>4. Summary</h4>
+<p>Muy claro.</p>
+<pre><samp>Order of sections in Notification Center</samp></pre>
+<h4>5. Description</h4>
+<p>Igual que el Summary.</p>
+<h4>6. Relación con el proyecto</h4>
+<p>Este <code data-start="1495" data-end="1500">key</code> lo vimos reflejado durante el análisis de <code
+        data-start="1543" data-end="1557">extension.js</code>.</p>
+<p>Recordemos que existía lógica que construía las tres secciones:</p>
+<ul>
+    <li><code>mediaSection</code></li>
+    <li><code>notificationSection</code></li>
+    <li><code>eventsSection</code></li>
+</ul>
+<p>Y posteriormente las insertaba dentro del contenedor.</p>
+<p>Este <code data-start="1745" data-end="1750">key</code> es precisamente el que decide <strong data-start="1781"
+        data-end="1797">en qué orden</strong> deben agregarse, es decir, no cambia el contenido de las secciones, cambia
+    la forma en que se distribuyen visualmente.</p>
+<h4>7. Una observación</h4>
+<p>Este <code data-start="1968" data-end="1973">key</code> demuestra una buena decisión de diseño. Selenium-H <strong
+        data-start="2026" data-end="2052">no creó tres booleanos</strong> como:</p>
+<pre><samp>media-first
+notification-first
+events-first</samp></pre>
+<p>Ni tampoco creó un enum gigantesco con todas las combinaciones posibles.</p>
+<p>Eso habría sido una pesadilla. En cambio dijo:</p>
+<blockquote>"Voy a guardar simplemente una lista ordenada."</blockquote>
+<p>Eso hace que el sistema sea mucho más flexible. Con tres elementos existen: <var class="inline-code">3! =
+        6</var> combinaciones posibles. Con un array no hace falta crear seis enums distintos.</p>
+<p>Aquí también vemos otra fortaleza de GSettings, no solo almacena tipos simples. También puede almacenar colecciones,
+    eso amplía bastante las posibilidades del esquema.</p>
+<h4>8. Resumen</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>sections-order</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td><code>as</code> (Array de Strings)</td>
+        </tr>
+        <tr>
+            <td>Valor por defecto</td>
+            <td><code>["media", "notification", "events"]</code></td>
+        </tr>
+        <tr>
+            <td>Summary</td>
+            <td>Orden de las secciones del Centro de Notificaciones.</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>Igual que el Summary.</td>
+        </tr>
+        <tr>
+            <td>Relación conocida</td>
+            <td>Determina el orden en que se insertan <code>mediaSection</code>, <code>notificationSection</code> y
+                <code>eventsSection</code> en la interfaz.
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<h3 id="key9" class="keys-schemas">Key: "dnd-position"</h3>
+<hr>
+<p>Este <code data-start="17" data-end="22">key</code> es bastante sencillo porque ya conocemos el enum asociado y
+    durante <code data-start="91" data-end="105">extension.js</code> también vimos referencias al botón <strong
+        data-start="141" data-end="165">Do Not Disturb (DND)</strong>.</p>
+<pre><code><span class="ͼ13">&lt;key</span> <span class="ͼ12">enum</span><span class="ͼv">=</span><span class="ͼz">"org.gnome.shell.extensions.notification-center.dnd-position"</span>
+     <span class="ͼ12">name</span><span class="ͼv">=</span><span class="ͼz">"dnd-position"</span><span class="ͼ13">&gt;</span>
+  <span class="ͼ13">&lt;default&gt;</span>'bottom'<span class="ͼ13">&lt;/default&gt;</span>
+  <span class="ͼ13">&lt;summary&gt;</span>Do Not Disturb menu position<span class="ͼ13">&lt;/summary&gt;</span>
+  <span class="ͼ13">&lt;description&gt;</span>Do Not Disturb menu position<span class="ͼ13">&lt;/description&gt;</span>
+<span class="ͼ13">&lt;/key&gt;</span></code></pre>
+<h4>1. Nombre</h4>
+<p>Controla la posición del botón o la opción <strong data-start="516" data-end="548">Do Not Disturb (No
+        molestar)</strong> dentro del menú del Centro de Notificaciones.</p>
+<pre><samp>name="dnd-position"</samp></pre>
+<p>No controla si DND está activado. No controla su comportamiento. Solo <strong data-start="668" data-end="685">dónde
+        aparece</strong>.</p>
+<h4>2. Tipo</h4>
+<p>Aquí ya sabemos exactamente qué significa.</p>
+<pre><samp>enum="org.gnome.shell.extensions.notification-center.dnd-position"</samp></pre>
+<p>No es un entero libre. No es un booleano. Está utilizando el enum que ya analizamos anteriormente.</p>
+<pre><samp>Si no recuerdo mal, ese enum definía algo equivalente a:</samp></pre>
+<h4>3. Valor por defecto</h4>
+<pre><samp><span class="ͼ13">&lt;default&gt;</span>'bottom'<span class="ͼ13">&lt;/default&gt;</span></samp></pre>
+<p>Aquí vuelve a verse una de las ventajas del uso de enums. En lugar de: <span class="ͼ13"></span><kbd
+        class="inline-code"><span class="ͼ13">&lt;default&gt;</span>1<span
+            class="ͼ13">&lt;/default&gt;</span></kbd><span class="ͼ13"></span> vemos directamente: <kbd
+        class="inline-code">bottom</kbd> mucho más legible.</p>
+<h4>4. Summary</h4>
+<p>Muy preciso.</p>
+<pre><samp>Do Not Disturb menu position</samp></pre>
+<h4>5. Description</h4>
+<p>Igual que el Summary.</p>
+<h4>6. Relación con el proyecto</h4>
+<p>Aquí ya conocemos el recorrido.</p>
+<p>Durante el análisis de <code data-start="1528" data-end="1542">extension.js</code> vimos que la extensión construía
+    distintos componentes del menú y uno de ellos era el relacionado con <strong data-start="1645" data-end="1663">Do
+        Not Disturb</strong>.</p>
+<p>Esta preferencia determina si ese elemento se inserta, según el valor del enum:</p>
+<ul>
+    <li>al principio,</li>
+    <li>o al final,</li>
+</ul>
+<h4>7. Observación</h4>
+<p>Este <code data-start="1804" data-end="1809">key</code> vuelve a confirmar algo que ya veníamos observando. Cuando el
+    problema consiste en elegir entre un conjunto pequeño y fijo de opciones:</p>
+<pre><samp>top
+bottom</samp></pre>
+<p>Selenium-H utiliza un <strong data-start="1994" data-end="2002">enum</strong>, cuando el problema solo tiene dos
+    estados: <var class="inline-code">sí / no</var> utiliza un <strong data-start="2081"
+        data-end="2093">booleano</strong>.</p>
+<p>Y cuando necesita una colección ordenada, utiliza un <strong data-start="2189" data-end="2198">array</strong>.</p>
+<pre><samp>media
+notification
+events</samp></pre>
+<p>Cada problema tiene su tipo de dato más adecuado.</p>
+<h4>8. Resumen</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>dnd-position</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td>Enum (<code>dnd-position</code>)</td>
+        </tr>
+        <tr>
+            <td>Valor por defecto</td>
+            <td><code>bottom</code></td>
+        </tr>
+        <tr>
+            <td>Summary</td>
+            <td>Posición del menú "Do Not Disturb".</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>Igual que el Summary.</td>
+        </tr>
+        <tr>
+            <td>Relación conocida</td>
+            <td>Controla la ubicación del control DND dentro del menú del Centro de Notificaciones.</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3>Key: "clear-button-alignment"</h3>
+<hr>
+<p>Este <code data-start="17" data-end="22">key</code> es otro ejemplo donde el diseño del esquema refleja muy bien el
+    problema que intenta resolver.</p>
+<pre><code><span class="ͼ13">&lt;key</span> <span class="ͼ12">enum</span><span class="ͼv">=</span><span class="ͼz">"org.gnome.shell.extensions.notification-center.clear-button-alignment"</span>
+     <span class="ͼ12">name</span><span class="ͼv">=</span><span class="ͼz">"clear-button-alignment"</span><span class="ͼ13">&gt;</span>
+  <span class="ͼ13">&lt;default&gt;</span>'right'<span class="ͼ13">&lt;/default&gt;</span>
+  <span class="ͼ13">&lt;summary&gt;</span>Clear All Button position<span class="ͼ13">&lt;/summary&gt;</span>
+  <span class="ͼ13">&lt;description&gt;</span>Clear All Button position<span class="ͼ13">&lt;/description&gt;</span>
+<span class="ͼ13">&lt;/key&gt;</span></code></pre>
+<h4>1. Nombre</h4>
+<p>Controla la <strong data-start="453" data-end="489">alineación del botón "Clear All"</strong> (Borrar todo).</p>
+<pre><samp>clear-button-alignment</samp></pre>
+<p>Y aquí inmediatamente recordé que durante <code data-start="548" data-end="562">extension.js</code> vimos la creación
+    del botón: <span class="ͼy"></span><kbd class="inline-code"><span class="ͼy">this</span><span
+            class="ͼv">.</span>clearButton</kbd> y también cómo se agregaba al contenedor correspondiente.</p>
+<p>Este <code data-start="693" data-end="698">key</code> no controla el botón en sí, sino <strong data-start="732"
+        data-end="775">dónde se coloca dentro de su contenedor</strong>.</p>
+<h4>2. Tipo</h4>
+<p>Este enum ya lo estudiamos.</p>
+<pre><samp>enum="org.gnome.shell.extensions.notification-center.clear-button-alignment"</samp></pre>
+<p>Sus valores eran:</p>
+<pre><samp>left
+center
+right
+hide</samp></pre>
+<p>Aquí encontramos algo interesante. Este enum no solo representa una posición.</p>
+<p>También incorpora un comportamiento: <var class="inline-code">hide</var> , es decir, reutiliza el mismo
+    mecanismo (<code data-start="1143" data-end="1149">enum</code>) para representar tanto la ubicación como la
+    posibilidad de no mostrar el botón.</p>
+<p>Me parece una decisión acertada porque evita crear un booleano adicional como: <var
+        class="inline-code">show-clear-button</var></p>
+<h4>3. Valor por defecto</h4>
+<pre><samp><span class="ͼ13">&lt;default&gt;</span>'right'<span class="ͼ13">&lt;/default&gt;</span></samp></pre>
+<p>Por defecto:</p>
+<pre><samp>Clear All
+        ↓
+     derecha</samp></pre>
+<p>Y creo que coincide con lo esperado visualmente.</p>
+<h4>4. Summary</h4>
+<p>Describe correctamente la finalidad.</p>
+<pre><samp>Clear All Button position</samp></pre>
+<h5>5. Description</h5>
+<p>Igual que el Summary.</p>
+<h4>6. Relación con el proyecto</h4>
+<p>Ya conocemos el recorrido.</p>
+<p>Durante <code data-start="1735" data-end="1749">extension.js</code> vimos:</p>
+<ul>
+    <li>la creación del botón,</li>
+    <li>su inserción en el contenedor,</li>
+    <li>y el uso de la preferencia correspondiente para decidir dónde colocarlo.</li>
+</ul>
+<p>Por tanto, este <code data-start="1908" data-end="1913">key</code> gobierna la alineación visual del botón "Clear
+    All".</p>
+<h4>7. Una observación interesante</h4>
+<p>Este enum es uno de mis favoritos hasta ahora.</p>
+<p><b>¿Por qué?</b> Porque combina dos conceptos relacionados:</p>
+<pre><samp>left
+center
+right</samp></pre>
+<p>y además: <var class="inline-code">hide</var>, en lugar de hacer esto:</p>
+<pre><samp>alignment
+showButton</samp></pre>
+<p>Lo resolvió con un único enum.</p>
+<p>Desde el punto de vista del usuario tiene bastante sentido:</p>
+<blockquote>"¿Dónde quieres el botón?"</blockquote>
+<ul>
+    <li>Izquierda.</li>
+    <li>Centro.</li>
+    <li>Derecha.</li>
+    <li>No lo quiero.</li>
+</ul>
+<p>Todo forma parte de la misma decisión.</p>
+<h4>8. Resumen</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>clear-button-alignment</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td>Enum (<code>clear-button-alignment</code>)</td>
+        </tr>
+        <tr>
+            <td>Valor por defecto</td>
+            <td><code>right</code></td>
+        </tr>
+        <tr>
+            <td>Summary</td>
+            <td>Posición del botón <strong>Clear All</strong>.</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>Igual que el Summary.</td>
+        </tr>
+        <tr>
+            <td>Relación conocida</td>
+            <td>Controla la alineación del botón <code>clearButton</code> dentro del Centro de Notificaciones.</td>
+        </tr>
+    </tbody>
+</table>
