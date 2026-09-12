@@ -39,9 +39,9 @@
             <a href="#key29">Key: Middle-click-dnd</a>
             <a href="#key30">Key: Application-list</a>
             <a href="#key31">Key: Name-list</a>
-            <a href="#key32">Key: XXX</a>
-            <a href="#key33">Key: XXX</a>
-            <a href="#key34">Key: XXX</a>
+            <a href="#key32">Key: Script-list</a>
+            <a href="#key33">Key: For-list</a>
+            <a href="#key34">Key: Run-script</a>
             <a href="#key35">Key: XXX</a>
             <a href="#key36">Key: XXX</a>
             <a href="#key37">Key: XXX</a>
@@ -3527,6 +3527,341 @@ Lista de aplicaciones a ignorar</samp></pre>
         <tr>
             <td>Función</td>
             <td>Almacena las aplicaciones que deben quedar excluidas de las notificaciones</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3 id="key32" class="keys-schemas">key: "script-list"</h3>
+<hr>
+<p>Este sigue formando parte del grupo de configuraciones relacionadas con <strong data-start="72"
+        data-end="88">aplicaciones</strong>, y ahora aparece una tercera lista:</p>
+<pre><code><span class="ͼo">&lt;key</span> <span class="ͼn">name</span><span class="ͼg">=</span><span class="ͼk">"script-list"</span> <span class="ͼn">type</span><span class="ͼg">=</span><span class="ͼk">"as"</span><span class="ͼo">&gt;</span>
+  <span class="ͼo">&lt;default&gt;</span>[]<span class="ͼo">&lt;/default&gt;</span>
+  <span class="ͼo">&lt;summary&gt;</span>List of Scripts for applications<span class="ͼo">&lt;/summary&gt;</span>
+  <span class="ͼo">&lt;description&gt;</span>List of Scripts for applications<span class="ͼo">&lt;/description&gt;</span>
+<span class="ͼo">&lt;/key&gt;</span></code></pre>
+<h4>1. Nombre</h4>
+<p>Almacena una <strong data-start="373" data-end="418">lista de scripts asociados a aplicaciones</strong>.</p>
+<pre><samp>script-list</samp></pre>
+<p>El <code data-start="424" data-end="433">summary</code> es bastante directo: <em data-start="455" data-end="489">List
+        of Scripts for applications</em>.</p>
+<h4>2. Tipo</h4>
+<pre><samp>type="as"</samp></pre>
+<p>Ya lo tenemos dominado:</p>
+<pre><samp>a = array
+s = string</samp></pre>
+<p>Por lo tanto:</p>
+<blockquote>arreglo de cadenas de texto</blockquote>
+<p>Cada elemento de la lista es un <code data-start="673" data-end="681">string</code>, presumiblemente representando
+    algún script.</p>
+<h4>3. Valor por defecto</h4>
+<p>La lista comienza vacía.</p>
+<pre><samp><span class="ͼo">&lt;default&gt;</span>[]<span class="ͼo">&lt;/default&gt;</span></samp></pre>
+<p>Es decir, <strong data-start="829" data-end="873">no hay scripts configurados inicialmente</strong>.</p>
+<h4>4. Lo interesante: las tres listas</h4>
+<p>Ahora tenemos tres <code data-start="940" data-end="945">key</code> consecutivos:</p>
+<pre><samp>application-list
+    ↓
+Lista de aplicaciones
+
+name-list
+    ↓
+Nombres de aplicaciones cuyas notificaciones ignorar
+
+script-list
+    ↓
+Scripts asociados a aplicaciones</samp></pre>
+<p>Esto empieza a revelar bastante claramente la estructura de aquella funcionalidad de <strong data-start="1226"
+        data-end="1251">perfiles/aplicaciones</strong> que mencionábamos, pero aquí quiero mantener nuestra regla:
+    <strong data-start="1313" data-end="1369">no asumir todavía cómo se relacionan las tres listas</strong>.
+</p>
+<p>Por ejemplo, sería tentador pensar que funcionan mediante índices paralelos:</p>
+<pre><samp>application-list[0] → name-list[0] → script-list[0]
+application-list[1] → name-list[1] → script-list[1]</samp></pre>
+<p>pero el <code data-start="1575" data-end="1588">gschema.xml</code> <strong data-start="1589" data-end="1609">no
+        demuestra eso</strong>. Para afirmarlo tendríamos que encontrar cómo <code data-start="1656"
+        data-end="1670">extension.js</code> lee esas listas.</p>
+<h4>5. Resumen — Key N.º 32</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>script-list</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td><code>as</code> — arreglo de strings</td>
+        </tr>
+        <tr>
+            <td>Valor por defecto</td>
+            <td><code>[]</code></td>
+        </tr>
+        <tr>
+            <td>Summary</td>
+            <td>Lista de scripts para aplicaciones</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>Igual que el Summary</td>
+        </tr>
+        <tr>
+            <td>Función</td>
+            <td>Almacena una lista de scripts asociados a aplicaciones</td>
+        </tr>
+    </tbody>
+</table>
+<h3 id="key33" class="keys-schemas">key: "for-list"</h3>
+<hr>
+<p>Este nos devuelve al <strong data-start="21" data-end="40">enum <code data-start="28"
+            data-end="38">for-list</code></strong> que ya analizamos anteriormente, así que aquí podemos conectar
+    directamente ambas partes.</p>
+<pre><code><span class="ͼo">&lt;key</span> <span class="ͼn">enum</span><span class="ͼg">=</span><span class="ͼk">"org.gnome.shell.extensions.notification-center.for-list"</span> <span class="ͼn">name</span><span class="ͼg">=</span><span class="ͼk">"for-list"</span><span class="ͼo">&gt;</span>
+  <span class="ͼo">&lt;default&gt;</span>'none'<span class="ͼo">&lt;/default&gt;</span>
+  <span class="ͼo">&lt;summary&gt;</span>When new notification arrives<span class="ͼo">&lt;/summary&gt;</span>
+  <span class="ͼo">&lt;description&gt;</span>When new notification arrives<span class="ͼo">&lt;/description&gt;</span>
+<span class="ͼo">&lt;/key&gt;</span></code></pre>
+<h4>1. Nombre</h4>
+<p>Define <strong data-start="418" data-end="495">qué debe hacerse con una nueva notificación respecto a la
+        lista/indicador</strong>, utilizando el enum <code data-start="516" data-end="526">for-list</code>.</p>
+<pre><samp>for-list</samp></pre>
+<p>Recordemos que el enum que vimos era:</p>
+<pre><samp>for-list
+├── none   = 0
+├── count  = 1
+├── banner = 2
+└── both   = 3</samp></pre>
+<p>Por lo tanto, aquí tenemos cuatro posibilidades:</p>
+<table>
+    <thead>
+        <tr>
+            <th align="right">Valor</th>
+            <th>Nick</th>
+            <th>Significado</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td align="right"><code>0</code></td>
+            <td><code>none</code></td>
+            <td>No mostrar ninguna de las dos cosas</td>
+        </tr>
+        <tr>
+            <td align="right"><code>1</code></td>
+            <td><code>count</code></td>
+            <td>Mostrar el conteo</td>
+        </tr>
+        <tr>
+            <td align="right"><code>2</code></td>
+            <td><code>banner</code></td>
+            <td>Mostrar el banner</td>
+        </tr>
+        <tr>
+            <td align="right"><code>3</code></td>
+            <td><code>both</code></td>
+            <td>Mostrar ambos</td>
+        </tr>
+    </tbody>
+</table>
+<h4>2. Tipo</h4>
+<p>Es un <strong data-start="936" data-end="944">enum</strong>, no un simple entero: <kbd
+        class="inline-code">enum="org.gnome.shell.extensions.notification-center.for-list"</kbd>.</p>
+<p><span style="background-color: rgb(245, 245, 245);">Eso es precisamente lo que hace que podamos escribir:
+    </span><span class="ͼo">&lt;default&gt;</span><span style="background-color: rgb(245, 245, 245);">'none'</span><span
+        class="ͼo">&lt;/default&gt;</span><span style="background-color: rgb(245, 245, 245);"> en lugar de: </span><span
+        class="ͼo">&lt;default&gt;</span><span style="background-color: rgb(245, 245, 245);">0</span><span
+        class="ͼo">&lt;/default&gt;</span><span style="background-color: rgb(245, 245, 245);"> mucho más legible.</span>
+</p>
+<h4>3. Valor por defecto</h4>
+<pre><samp><span class="ͼo">&lt;default&gt;</span>'none'<span class="ͼo">&lt;/default&gt;</span></samp></pre>
+<p>Por defecto, cuando llega una nueva notificación, esta configuración está en: <cite class="inline-code">none</cite>
+</p>
+<p>Es decir, no se utiliza ni el banner ni el conteo asociado a este mecanismo.</p>
+<h4>4. Summary y Description</h4>
+<p>Aquí tenemos exactamente el mismo texto que en <code data-start="1527" data-end="1545">new-notification</code>:</p>
+<blockquote>When new notification arrives</blockquote>
+<p>Pero <strong data-start="1586" data-end="1613">no debemos confundirlos</strong>. Tenemos dos keys diferentes:</p>
+<pre><samp>new-notification
+for-list</samp></pre>
+<p>Además utilizan <strong data-start="1703" data-end="1723">enums diferentes</strong>.</p>
+<p><code data-start="1726" data-end="1744">new-notification</code> utiliza el enum:</p>
+<pre><samp>org.gnome.shell.extensions.notification-center.new-notification</samp></pre>
+<p>mientras que <code data-start="1853" data-end="1863">for-list</code> utiliza:</p>
+<pre><samp>org.gnome.shell.extensions.notification-center.for-list</samp></pre>
+<p>Así que aunque ambos se activan cuando llega una nueva notificación, representan decisiones diferentes.</p>
+<h4>5. Y aquí recuperamos algo que comentaste anteriormente</h4>
+<p>Cuando estudiamos el enum <code data-start="2140" data-end="2150">for-list</code>, tú explicaste que existía una
+    sección de <strong data-start="2193" data-end="2220">perfiles por aplicación</strong>, donde se podía decidir si una
+    aplicación:</p>
+<ul>
+    <li>mostraba el banner,</li>
+    <li>solamente contaba la notificación,</li>
+    <li>no mostraba nada,</li>
+    <li>o hacía ambas cosas.</li>
+</ul>
+<p>Ahora este <code data-start="2379" data-end="2384">key</code> encaja perfectamente con esa descripción. De hecho, la
+    estructura:</p>
+<pre><samp>for-list
+├── none
+├── count
+├── banner
+└── both</samp></pre>
+<p>Es prácticamente la representación de esas cuatro decisiones y eso también explica por qué encontramos después:</p>
+<pre><samp>application-list
+name-list
+script-list
+include-events-count</samp></pre>
+<p>Dentro de esta zona del <code data-start="2725" data-end="2734">gschema</code>: estamos claramente entrando en la
+    funcionalidad de configuración individual por aplicación.</p>
+<h4>6. Resumen — Key N.º 33</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>for-list</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td>Enum <code>for-list</code></td>
+        </tr>
+        <tr>
+            <td>Valor por defecto</td>
+            <td><code>none</code></td>
+        </tr>
+        <tr>
+            <td>Opciones</td>
+            <td><code>none</code>, <code>count</code>, <code>banner</code>, <code>both</code></td>
+        </tr>
+        <tr>
+            <td>Summary</td>
+            <td>When new notification arrives</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>Igual que el Summary</td>
+        </tr>
+        <tr>
+            <td>Función</td>
+            <td>Define qué mostrar ante una nueva notificación: nada, conteo, banner o ambos</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3 id="key34" class="keys-schemas">key: "run-script"</h3>
+<hr>
+<p>Este es justamente el <code data-start="22" data-end="27">key</code> que hace que nuestro pendiente de <code
+        data-start="62" data-end="75">script-list</code> sea todavía más interesante. </p>
+<pre><code><span class="ͼo">&lt;key</span> <span class="ͼn">name</span><span class="ͼg">=</span><span class="ͼk">"run-script"</span> <span class="ͼn">type</span><span class="ͼg">=</span><span class="ͼk">"b"</span><span class="ͼo">&gt;</span>
+  <span class="ͼo">&lt;default&gt;</span>false<span class="ͼo">&lt;/default&gt;</span>
+  <span class="ͼo">&lt;summary&gt;</span>Run scripts on new notification<span class="ͼo">&lt;/summary&gt;</span>
+  <span class="ͼo">&lt;description&gt;</span>Run scripts on new notification<span class="ͼo">&lt;/description&gt;</span>
+<span class="ͼo">&lt;/key&gt;</span></code></pre>
+<h4>1. Nombre</h4>
+<p>Aquí ya no tenemos que especular sobre si existe un mecanismo para ejecutar scripts: <strong data-start="450"
+        data-end="481">el propio <code data-start="462" data-end="467">key</code> lo confirma</strong>.</p>
+<pre><samp>run-script</samp></pre>
+<p>Controla si se deben <strong data-start="505" data-end="561">ejecutar scripts cuando llega una nueva
+        notificación</strong>. Esto conecta directamente con el <code data-start="597" data-end="610">script-list</code>
+    que acabamos de dejar pendiente.</p>
+<h4>2. Tipo</h4>
+<pre><samp>type="b"</samp></pre>
+<p>Es booleano:</p>
+<ul>
+    <li><code>true</code> → ejecutar los scripts.</li>
+    <li><code>false</code> → no ejecutarlos.</li>
+</ul>
+<h4>3. Valor por defecto</h4>
+<p>Por defecto, la ejecución de scripts está <strong data-start="894" data-end="909">desactivada</strong>.</p>
+<pre><samp><span class="ͼo">&lt;default&gt;</span>false<span class="ͼo">&lt;/default&gt;</span></samp></pre>
+<p>Esto es importante porque significa que <code data-start="952" data-end="965">script-list</code> puede existir y
+    contener configuraciones, pero <strong data-start="1013" data-end="1086">el comportamiento de ejecución no está
+        activo de forma predeterminada</strong>.</p>
+<h4>4. Summary y Description</h4>
+<p>Ambos dicen:</p>
+<blockquote>Run scripts on new notification</blockquote>
+<p>Y aquí la descripción sí es bastante clara. La relación conceptual ahora es:</p>
+<pre><samp>new notification
+      │
+      ▼
+run-script
+      │
+      ├── false → no ejecutar scripts
+      │
+      └── true
+           │
+           ▼
+       script-list
+           │
+           ▼
+       ¿qué scripts?</samp></pre>
+<p>Y aquí aparece exactamente el dato que nos faltaba.</p>
+<h4>5. Una observacion</h4>
+<p>El misterio de <code data-start="1561" data-end="1574">script-list</code> acaba de mejorar, antes teníamos:</p>
+<pre><samp>script-list
+└── List of Scripts for applications</samp></pre>
+<p>Pero no sabíamos <strong data-start="1698" data-end="1718">cómo se activaba</strong>. Ahora sabemos que existe:</p>
+<pre><samp>run-script
+└── Run scripts on new notification</samp></pre>
+<p>Por tanto, ya podemos afirmar que <strong data-start="1854" data-end="1973"><code data-start="1856"
+            data-end="1869">script-list</code> y <code data-start="1872" data-end="1884">run-script</code> pertenecen al
+        mismo mecanismo de ejecución de scripts asociado a nuevas notificaciones</strong>. </p>
+<p>Pero todavía <strong data-start="1989" data-end="2048">no sabemos el formato de cada elemento de <code
+            data-start="2033" data-end="2046">script-list</code></strong>. Ese sigue siendo nuestro pendiente:</p>
+<blockquote>¿Cómo interpreta <code data-start="2110" data-end="2124">extension.js</code> los elementos de <code
+        data-start="2142" data-end="2155">script-list</code>?</blockquote>
+<p>Y aquí tu recuerdo de algo como <strong data-start="2190" data-end="2201"><code data-start="2192"
+            data-end="2199">spawn</code></strong> empieza a ser especialmente interesante. Si encontramos una llamada a
+    <code data-start="2272" data-end="2279">spawn</code>, <code data-start="2281" data-end="2294">spawn_async</code>,
+    <code data-start="2296" data-end="2312">Gio.Subprocess</code> o algo equivalente alrededor de esta lógica,
+    probablemente ahí estará la pieza que nos falta para entender cómo se ejecutan esos scripts.
+</p>
+<h4>6. Resumen — Key N.º 34</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>run-script</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td><code>b</code> (booleano)</td>
+        </tr>
+        <tr>
+            <td>Valor por defecto</td>
+            <td><code>false</code></td>
+        </tr>
+        <tr>
+            <td>Summary</td>
+            <td>Ejecutar scripts al llegar una nueva notificación</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>Igual que el Summary</td>
+        </tr>
+        <tr>
+            <td>Función</td>
+            <td>Activa/desactiva la ejecución de scripts ante nuevas notificaciones</td>
+        </tr>
+        <tr>
+            <td>Relación</td>
+            <td><code>script-list</code></td>
         </tr>
     </tbody>
 </table>
