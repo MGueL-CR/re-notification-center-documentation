@@ -108,6 +108,29 @@
     </tbody>
 </table>
 <p>Con esto ya podremos leer cualquier clave sin detenernos a pensar qué significa el tipo.</p>
+<h4>Regla rápida para identificar tipos de Arrays</h4>
+<pre><samp>a + tipo
+│
+├── as → array de strings
+├── ai → array de integers
+├── ab → array de booleans
+└── ad → array de doubles</samp></pre>
+<p>Y esto sigue la misma lógica que los tipos simples que ya vimos:</p>
+<pre><samp>s  → string
+i  → integer
+b  → boolean
+d  → double</samp></pre>
+<p>Así que cuando encontremos algo como: <var class="inline-code">type="as"</var> ya podemos identificarlo
+    inmediatamente como <strong data-start="795" data-end="835">una lista/arreglo de Strings</strong>, sin tener que
+    buscarlo. </p>
+<p>Entonces, la misma lógica que acabamos de ver con: <var class="inline-code">type="as"</var> se aplica a <code
+        data-start="105" data-end="109">ai</code>:</p>
+<pre><samp>a = array
+i = integer</samp></pre>
+<p>Por lo tanto: <var class="inline-code">type="ai"</var> significa: </p>
+<blockquote>arreglo de enteros (<code data-start="244" data-end="263">array of integers</code>)</blockquote>
+<p>Por ejemplo: <kbd class="inline-code"><span class="ͼo">&lt;default&gt;</span>[1, 2, 5, 8]<span
+            class="ͼo">&lt;/default&gt;</span></kbd> sería una lista de cuatro enteros.</p>
 <h3>Orden propuesto</h3>
 <hr>
 <p>Entonces propongo este orden:</p>

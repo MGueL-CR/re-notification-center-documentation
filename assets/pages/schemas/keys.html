@@ -30,13 +30,21 @@
             <a href="#key20">Key: Individual-icons</a>
             <a href="#key21">Key: Change-icons</a>
             <a href="#key22">Key: Autohide</a>
-            <a href="#key23">Key: XXX</a>
-            <a href="#key24">Key: XXX</a>
-            <a href="#key25">Key: XXX</a>
-            <a href="#key26">Key: XXX</a>
-            <a href="#key27">Key: XXX</a>
-            <a href="#key28">Key: XXX</a>
-            <a href="#key29">Key: XXX</a>
+            <a href="#key23">Key: New-notification</a>
+            <a href="#key24">Key: Include-events-count</a>
+            <a href="#key25">Key: Blink-icon</a>
+            <a href="#key26">Key: Blink-time</a>
+            <a href="#key27">Key: Animate-icon</a>
+            <a href="#key28">Key: Show-label</a>
+            <a href="#key29">Key: Middle-click-dnd</a>
+            <a href="#key30">Key: Application-list</a>
+            <a href="#key31">Key: Name-list</a>
+            <a href="#key32">Key: XXX</a>
+            <a href="#key33">Key: XXX</a>
+            <a href="#key34">Key: XXX</a>
+            <a href="#key35">Key: XXX</a>
+            <a href="#key36">Key: XXX</a>
+            <a href="#key37">Key: XXX</a>
         </div>
     </div>
 </aside>
@@ -2554,6 +2562,971 @@ AUTOHIDE_DND</samp></pre>
         <tr>
             <td>Área</td>
             <td>Indicador del panel</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3 id="key23" class="keys-schemas">key: "new-notification"</h3>
+<hr>
+<p>Este nos devuelve a los <strong data-start="26" data-end="77">eventos relacionados con una nueva
+        notificación</strong>, y además utiliza un enum que ya conocemos:</p>
+<pre><code><span class="ͼo">&lt;key</span> <span class="ͼn">enum</span><span class="ͼg">=</span><span class="ͼk">"org.gnome.shell.extensions.notification-center.new-notification"</span>
+     <span class="ͼn">name</span><span class="ͼg">=</span><span class="ͼk">"new-notification"</span><span class="ͼo">&gt;</span>
+  <span class="ͼo">&lt;default&gt;</span>'dot'<span class="ͼo">&lt;/default&gt;</span>
+  <span class="ͼo">&lt;summary&gt;</span>When new notification arrives<span class="ͼo">&lt;/summary&gt;</span>
+  <span class="ͼo">&lt;description&gt;</span>When new notification arrives<span class="ͼo">&lt;/description&gt;</span>
+<span class="ͼo">&lt;/key&gt;</span></code></pre>
+<h4>1. Nombre</h4>
+<p>Controla <strong data-start="463" data-end="519">qué debe ocurrir cuando llega una nueva notificación</strong>.</p>
+<pre><samp>new-notification</samp></pre>
+<p>Aquí el nombre ya nos está describiendo un <strong data-start="565" data-end="575">evento</strong>, no una propiedad
+    visual permanente.</p>
+<h4>2. Tipo</h4>
+<p>En lugar de: <var class="inline-code">type="i"</var> tenemos:</p>
+<pre><samp>enum="org.gnome.shell.extensions.notification-center.new-notification"</samp></pre>
+<p>Por tanto, los valores permitidos están definidos en el enum correspondiente. y este es precisamente uno de los enums
+    que ya analizamos. La idea era algo como:</p>
+<pre><samp>none
+dot
+blink
+...</samp></pre>
+<p>Según las opciones que vimos en ese enum. Lo importante aquí es que el <code data-start="1063"
+        data-end="1068">key</code> <strong data-start="1069" data-end="1104">no necesita conocer los números</strong>.
+    El esquema permite escribir directamente: <span class="ͼo">&lt;default&gt;</span>'dot'<span
+        class="ͼo">&lt;/default&gt;</span></p>
+<h4>3. Valor por defecto</h4>
+<pre><samp><span class="ͼo">&lt;default&gt;</span>'dot'<span class="ͼo">&lt;/default&gt;</span></samp></pre>
+<p>Cuando la extensión se instala o no existe todavía una preferencia personalizada, el comportamiento predeterminado
+    ante una nueva notificación es:</p>
+<blockquote><kbd class="inline-code">dot</kbd></blockquote>
+<p>Y aquí tenemos nuevamente la ventaja de los enums frente a los números mágicos.</p>
+<p>En lugar de: <span class="ͼo">&lt;default&gt;</span>2<span class="ͼo">&lt;/default&gt;</span> tenemos: <span
+        class="ͼo">&lt;default&gt;</span>'dot'<span class="ͼo">&lt;/default&gt;</span> El significado se puede entender
+    inmediatamente.</p>
+<h4>4. Summary y Description</h4>
+<p>Ambos:</p>
+<blockquote>When new notification arrives</blockquote>
+<p>Son bastante genéricos.</p>
+<p>La información importante realmente está en el <strong data-start="1836" data-end="1844">enum</strong>, porque es
+    allí donde están definidas las alternativas disponibles.</p>
+<h4>5. Relación con <code data-start="1939" data-end="1953">extension.js</code></h4>
+<p>Este es especialmente interesante porque durante nuestro análisis de <code data-start="2024"
+        data-end="2038">extension.js</code> encontramos precisamente la variable: <var class="inline-code"> <span
+            class="ͼj">this</span><span class="ͼg">.</span>newNotificationAction</var> y vimos comparaciones como: <var
+        class="inline-code"><span class="ͼj">this</span><span class="ͼg">.</span>newNotificationAction <span
+            class="ͼg">==</span> <span class="ͼj">2</span></var>.</p>
+<p>Ahora podemos conectar ambas piezas:</p>
+<pre><samp>gschema
+   │
+   └── new-notification
+          │
+          └── 'dot'
+                 ↓
+           GSettings
+                 ↓
+extension.js
+   │
+   └── this.newNotificationAction</samp></pre>
+<p>Y esto refuerza <strong data-start="2487" data-end="2502">exactamente</strong> aquella mejora que anotamos en nuestra
+    lista:</p>
+<blockquote>Eliminar los números mágicos de <code data-start="2588" data-end="2602">extension.js</code> y utilizar
+    nombres descriptivos relacionados con los valores del enum.</blockquote>
+<p>Porque ahora podemos leer: <var class="inline-code"> <span class="ͼg">if</span> (<span class="ͼj">this</span><span
+            class="ͼg">.</span>newNotificationAction <span class="ͼg">==</span> <span class="ͼj">2</span>)</var> y
+    sabemos que funciona, pero seguimos teniendo que recordar: <b><i>"¿Qué era
+            el 2?"</i></b></p>
+<p>Mientras que conceptualmente sería muchísimo más expresivo trabajar con algo equivalente a: <kbd
+        class="inline-code">if (newNotificationAction === DOT)</kbd> o con la representación/nombre que decidamos
+    utilizar en nuestra nueva versión.</p>
+<h4>6. Una observación</h4>
+<p>Este <code data-start="3637" data-end="3642">key</code> es una demostración muy clara de la arquitectura que llevamos
+    descubriendo:</p>
+<pre><samp>Enum
+  ↓
+Define las opciones
+
+Key
+  ↓
+Elige una opción por defecto
+
+Preferencias
+  ↓
+Permiten cambiarla
+
+extension.js
+  ↓
+Ejecuta el comportamiento correspondiente</samp></pre>
+<p>Y ahora que hemos vuelto a encontrarnos con <code data-start="3953" data-end="3971">new-notification</code>, aquella
+    discusión que tuvimos sobre <strong data-start="4009" data-end="4046"><code data-start="4011"
+            data-end="4044">this.newNotificationAction == 2</code></strong> deja de ser una observación aislada: ya
+    tenemos perfectamente identificado de dónde viene ese <code data-start="4141" data-end="4144">2</code> y qué
+    representa conceptualmente.</p>
+<h4>7. Resumen — Key N.º 23</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>new-notification</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td>Enum <code>new-notification</code></td>
+        </tr>
+        <tr>
+            <td>Valor por defecto</td>
+            <td><code>dot</code></td>
+        </tr>
+        <tr>
+            <td>Summary</td>
+            <td>When new notification arrives</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>Igual que el Summary</td>
+        </tr>
+        <tr>
+            <td>Función</td>
+            <td>Define qué acción visual/comportamental se realiza cuando llega una nueva notificación</td>
+        </tr>
+        <tr>
+            <td>Relación con <code>extension.js</code></td>
+            <td><code>this.newNotificationAction</code></td>
+        </tr>
+        <tr>
+            <td>Mejora candidata</td>
+            <td>Eliminar comparaciones numéricas y usar referencias descriptivas</td>
+        </tr>
+    </tbody>
+</table>
+
+
+<h3 id="key24" class="keys-schemas">key: "include-events-count"</h3>
+<hr>
+<p>Este <code data-start="7" data-end="12">key</code> nos devuelve a la parte de <strong data-start="40"
+        data-end="51">eventos</strong>, específicamente a una preferencia que parece complementar alguna opción
+    anterior.</p>
+<pre><code><span class="ͼo">&lt;key</span> <span class="ͼn">name</span><span class="ͼg">=</span><span class="ͼk">"include-events-count"</span> <span class="ͼn">type</span><span class="ͼg">=</span><span class="ͼk">"b"</span><span class="ͼo">&gt;</span>
+  <span class="ͼo">&lt;default&gt;</span>false<span class="ͼo">&lt;/default&gt;</span>
+  <span class="ͼo">&lt;summary&gt;</span>Include events in above case<span class="ͼo">&lt;/summary&gt;</span>
+  <span class="ͼo">&lt;description&gt;</span>Include events in above case<span class="ͼo">&lt;/description&gt;</span>
+<span class="ͼo">&lt;/key&gt;</span></code></pre>
+<h4>1. Nombre</h4>
+<pre><samp>include-events-count</samp></pre>
+<p>El nombre nos da una pista bastante clara:</p>
+<blockquote>Incluir los eventos en el conteo.</blockquote>
+<p>Es decir, parece controlar si los <strong data-start="497" data-end="576">eventos también deben participar en algún
+        conteo que se realiza en el panel</strong>.</p>
+<p>Y aquí el <code data-start="589" data-end="596">count</code> es importante porque anteriormente estudiamos opciones
+    relacionadas con mostrar el número de notificaciones.</p>
+<h4>2. Tipo</h4>
+<pre><samp>type="b"</samp></pre>
+<p>Es un booleano:</p>
+<ul>
+    <li><code>true</code> → incluir los eventos.</li>
+    <li><code>false</code> → no incluirlos.</li>
+</ul>
+<h4>3. Valor por defecto</h4>
+<pre><samp><span class="ͼo">&lt;default&gt;</span>false<span class="ͼo">&lt;/default&gt;</span></samp></pre>
+<p>Por defecto:</p>
+<blockquote>Los eventos no se incluyen en ese conteo.</blockquote>
+<p>Esto tiene bastante sentido porque los eventos del calendario no son necesariamente "notificaciones" y Selenium-H
+    permite decidir si deben formar parte de ese indicador.</p>
+<h4>4. Summary y Description</h4>
+<p>Ambos dicen:</p>
+<blockquote>Include events in above case</blockquote>
+<p>Aquí tenemos una pequeña particularidad: <strong data-start="1247" data-end="1309">"above case" hace referencia a
+        algo anterior en el archivo</strong>. Por sí solo este <code data-start="1329" data-end="1334">key</code> no nos
+    dice exactamente cuál es ese "caso anterior". Por eso prefiero no inventar todavía qué conteo concreto está
+    modificando.</p>
+<p>Lo que sí podemos afirmar por el propio nombre es:</p>
+<pre><samp>include-events-count
+        ↓
+¿Los eventos participan en un conteo?</samp></pre>
+<p>Y el valor predeterminado es <code data-start="1628" data-end="1635">false</code>.</p>
+<h4>5. Una observación</h4>
+<p>Aquí el <strong data-start="2034" data-end="2082">nombre es más informativo que la descripción</strong>. <code
+        data-start="2085" data-end="2115">Include events in above case</code> es bastante ambiguo si lo encontramos
+    aislado. Pero: <q class="inline-code">include-events-count</q> nos deja claro que estamos hablando de
+    <strong data-start="2244" data-end="2262">contar eventos</strong>.
+</p>
+<p>Y como ya estudiamos anteriormente el enum:</p>
+<pre><samp>for-list
+├── none
+├── count
+├── banner
+└── both</samp></pre>
+<p>Este <code data-start="2376" data-end="2381">key</code> probablemente está relacionado con ese sistema de conteo que
+    vimos en los perfiles.</p>
+<p>De hecho, esto hace que nuestra decisión anterior de <strong data-start="2520" data-end="2584">no eliminar
+        inmediatamente toda la funcionalidad de perfiles</strong> sea acertada: todavía estamos encontrando <code
+        data-start="2627" data-end="2632">key</code> que parecen depender de esa lógica. Podemos seguir documentándola
+    y, al final, decidir si realmente vale la pena conservarla o eliminarla.</p>
+<h4>6. Resumen — Key N.º 24</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>include-events-count</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td><code>b</code> (booleano)</td>
+        </tr>
+        <tr>
+            <td>Valor por defecto</td>
+            <td><code>false</code></td>
+        </tr>
+        <tr>
+            <td>Summary</td>
+            <td>Include events in above case</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>Igual que el Summary</td>
+        </tr>
+        <tr>
+            <td>Función</td>
+            <td>Determina si los eventos se incluyen en el conteo asociado al caso anterior</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3 id="key25" class="keys-schemas">key: "blink-icon" </h3>
+<hr>
+<p> Este vuelve a la familia de <strong data-start="30" data-end="68">comportamiento del icono del panel</strong>
+    que estamos recorriendo.</p>
+<pre><samp><span class="ͼo">&lt;key</span> <span class="ͼn">name</span><span class="ͼg">=</span><span class="ͼk">"blink-icon"</span> <span class="ͼn">type</span><span class="ͼg">=</span><span class="ͼk">"i"</span><span class="ͼo">&gt;</span>
+  <span class="ͼo">&lt;default&gt;</span>0<span class="ͼo">&lt;/default&gt;</span>
+  <span class="ͼo">&lt;summary&gt;</span>Number of times panel icon blinks on new notification<span class="ͼo">&lt;/summary&gt;</span>
+  <span class="ͼo">&lt;description&gt;</span>Number of times panel icon blinks on new notification<span class="ͼo">&lt;/description&gt;</span>
+<span class="ͼo">&lt;/key&gt;</span></samp></pre>
+<h4>1. Nombre</h4>
+<p>Controla <strong data-start="376" data-end="463">cuántas veces debe parpadear el icono del panel cuando llega una
+        nueva notificación</strong>.</p>
+<pre><samp>blink-icon</samp></pre>
+<p>Esto encaja directamente con una de las funciones que ya habíamos identificado en <code data-start="548"
+        data-end="562">extension.js</code>:</p>
+<pre><samp>blinkIcon()
+blinkIconStopIfBlinking()</samp></pre>
+<p>Así que aquí tenemos otra conexión bastante clara entre <code data-start="672" data-end="681">gschema</code> y el
+    código.</p>
+<h4>2. Tipo</h4>
+<pre><samp>type="i"</samp></pre>
+<p>Es un entero.</p>
+<p>A diferencia de <code data-start="766" data-end="784">new-notification</code>, aquí un entero tiene bastante sentido
+    porque no estamos seleccionando entre estados concretos, sino indicando una <strong data-start="900"
+        data-end="912">cantidad</strong>:</p>
+<pre><samp>0 → ningún parpadeo
+1 → parpadear una vez
+2 → parpadear dos veces
+3 → parpadear tres veces
+...</samp></pre>
+<p>Por supuesto, el comportamiento exacto de cada valor dependerá de cómo <code data-start="1094"
+        data-end="1108">extension.js</code> implemente el contador.</p>
+<h4>4. Summary y Description</h4>
+<p>Ambos dicen:</p>
+<blockquote>Number of times panel icon blinks on new notification</blockquote>
+<p>Aquí sí tenemos una descripción bastante precisa: el entero representa directamente <strong data-start="1598"
+        data-end="1648">el número de veces que debe parpadear el icono</strong>.</p>
+<h4>5. Relación con <code data-start="1676" data-end="1694">new-notification</code></h4>
+<p>Ahora tenemos dos <code data-start="1714" data-end="1719">key</code> consecutivos que trabajan alrededor del mismo
+    evento:</p>
+<pre><samp>new-notification
+      ↓
+¿Qué hacer cuando llega una notificación?
+
+blink-icon
+      ↓
+¿Cuántas veces debe parpadear el icono?</samp></pre>
+<p>Y aquí hay una diferencia importante: <code data-start="1954" data-end="1972">new-notification</code> utiliza un
+    <strong data-start="1984" data-end="1992">enum</strong> porque seleccionamos un comportamiento.
+</p>
+<p><code data-start="2034" data-end="2046">blink-icon</code> utiliza un <strong data-start="2058"
+        data-end="2068">entero</strong> porque necesitamos una cantidad. Eso es exactamente el tipo de distinción que
+    estamos aprendiendo a reconocer al leer el <code data-start="2191" data-end="2200">gschema</code>.</p>
+<h4>6. Una observación</h4>
+<p>Aparece otra buena candidata para nuestra lista, aquí no necesariamente hay que cambiar nada, porque <strong
+        data-start="2735" data-end="2799"><code data-start="2737" data-end="2740">0</code>, <code data-start="2742"
+            data-end="2745">1</code>, <code data-start="2747" data-end="2750">2</code>, <code data-start="2752"
+            data-end="2755">3</code>... tienen sentido natural como cantidades</strong>.</p>
+<p>Así que este es un buen contraste con los casos que queremos refactorizar: <var class="inline-code">blink-icon =
+        3</var>. Es claro: tres veces, mientras: <var class="inline-code">new-notification == 2</var>, no sabemos qué
+    significa <code data-start="3004" data-end="3007">2</code> sin consultar el enum.</p>
+<p>Por tanto, <strong data-start="3043" data-end="3121">no todos los números que encontramos en <code data-start="3085"
+            data-end="3099">extension.js</code> son números mágicos</strong>. Esa distinción también merece quedarse en
+    nuestra lista de criterios para el futuro refactor.</p>
+<h4>7. Resumen — Key N.º 25</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>blink-icon</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td><code>i</code> (entero)</td>
+        </tr>
+        <tr>
+            <td>Valor por defecto</td>
+            <td><code>0</code></td>
+        </tr>
+        <tr>
+            <td>Summary</td>
+            <td>Número de veces que parpadea el icono</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>Igual que el Summary</td>
+        </tr>
+        <tr>
+            <td>Función</td>
+            <td>Define cuántas veces parpadea el icono del panel cuando llega una nueva notificación</td>
+        </tr>
+        <tr>
+            <td>Relación con <code>extension.js</code></td>
+            <td><code>blinkIcon()</code> / <code>blinkIconStopIfBlinking()</code></td>
+        </tr>
+    </tbody>
+</table>
+
+<h3 id="key26" class="keys-schemas">key: "blink-time"</h3>
+<hr>
+<p> Y este es el complemento directo de <code data-start="38" data-end="50">blink-icon</code>. Si el anterior decía
+    <strong data-start="73" data-end="90">cuántas veces</strong> parpadea, este define <strong data-start="113"
+        data-end="135">cada cuánto tiempo</strong> ocurre el cambio.
+</p>
+<pre><code><span class="ͼo">&lt;key</span> <span class="ͼn">name</span><span class="ͼg">=</span><span class="ͼk">"blink-time"</span> <span class="ͼn">type</span><span class="ͼg">=</span><span class="ͼk">"i"</span><span class="ͼo">&gt;</span>
+  <span class="ͼo">&lt;default&gt;</span>500<span class="ͼo">&lt;/default&gt;</span>
+  <span class="ͼo">&lt;summary&gt;</span>Blink Time Interval ( in milliseconds )<span class="ͼo">&lt;/summary&gt;</span>
+  <span class="ͼo">&lt;description&gt;</span>Blink Time Interval ( in milliseconds )<span class="ͼo">&lt;/description&gt;</span>
+<span class="ͼo">&lt;/key&gt;</span></code></pre>
+<h4>1. Nombre</h4>
+<p>Controla el <strong data-start="413" data-end="449">intervalo de tiempo del parpadeo</strong> del icono.</p>
+<pre><samp>blink-time</samp></pre>
+<h4>2. Tipo</h4>
+<p>Es un entero (<code data-start="515" data-end="524">integer</code>).</p>
+<pre><samp>type="i"</samp></pre>
+<p>Aquí nuevamente el entero tiene un significado cuantitativo: representa una cantidad de tiempo.</p>
+<h4>3. Valor por defecto</h4>
+<pre><samp><span class="ͼo">&lt;default&gt;</span>500<span class="ͼo">&lt;/default&gt;</span></samp></pre>
+<p>El valor predeterminado es: <b>500 milisegundos</b> es decir: <b>0,5 segundos</b>. Por tanto, el intervalo
+    predeterminado entre cambios del estado del icono durante el parpadeo es de medio segundo.</p>
+<h4>4. Summary y Description</h4>
+<p>Ambos especifican claramente la unidad:</p>
+<blockquote>Blink Time Interval (in milliseconds)</blockquote>
+<p>Así que no tenemos que adivinar qué representa <code data-start="1052" data-end="1057">500</code>.</p>
+<pre><samp>500 ms = 0.5 s</samp></pre>
+<h4>5. Relación con <code data-start="1113" data-end="1125">blink-icon</code></h4>
+<p>Ahora los dos <code data-start="1141" data-end="1146">key</code> forman una pareja muy clara:</p>
+<pre><samp>blink-icon
+    ↓
+¿Cuántas veces?
+
+blink-time
+    ↓
+¿Cada cuánto tiempo?</samp></pre>
+<p>Por ejemplo, conceptualmente:</p>
+<pre><samp>blink-icon = 3
+blink-time = 500</samp></pre>
+<p>Significaría que el comportamiento está configurado para realizar <strong data-start="1404" data-end="1419">3
+        parpadeos</strong>, utilizando un intervalo de <strong data-start="1448" data-end="1458">500 ms</strong>.</p>
+<p>El detalle exacto de cómo <code data-start="1487" data-end="1501">extension.js</code> cuenta los parpadeos y aplica
+    el intervalo lo dejamos al código, pero la intención de ambos <code data-start="1594" data-end="1599">key</code>
+    está perfectamente definida.</p>
+<h4>6. Una observación</h4>
+<p>Aquí aparece otro buen criterio para nuestra lista, al igual que con <code data-start="2085"
+        data-end="2097">blink-icon</code>, <strong data-start="2099" data-end="2134">el <code data-start="2104"
+            data-end="2109">500</code> no es un número mágico</strong>.</p>
+<p>Esto: <var class="inline-code">blink-time = 500</var> es perfectamente razonable porque la descripción nos dice
+    qué representa y además especifica la unidad.</p>
+<p>Así que nuestra regla queda cada vez más clara:</p>
+<ul>
+    <li><code>blink-time = 500</code> → ✅ número con significado cuantitativo claro.</li>
+    <li><code>blink-icon = 3</code> → ✅ cantidad.</li>
+    <li><code>new-notification = 2</code> → ⚠️ estado de un enum; mejor usar un nombre descriptivo.</li>
+</ul>
+<p>Es decir, <strong data-start="2523" data-end="2644" data-is-last-node="">no queremos eliminar números; queremos
+        eliminar números cuyo significado depende de que recordemos una tabla externa.</strong></p>
+<h4>7. Resumen — Key N.º 26</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>blink-time</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td><code>i</code> (entero)</td>
+        </tr>
+        <tr>
+            <td>Valor por defecto</td>
+            <td><code>500</code></td>
+        </tr>
+        <tr>
+            <td>Unidad</td>
+            <td>Milisegundos</td>
+        </tr>
+        <tr>
+            <td>Equivalencia</td>
+            <td>0,5 segundos</td>
+        </tr>
+        <tr>
+            <td>Summary</td>
+            <td>Intervalo de tiempo del parpadeo</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>Igual que el Summary</td>
+        </tr>
+        <tr>
+            <td>Función</td>
+            <td>Determina el intervalo utilizado durante el parpadeo del icono</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3 id="key27" class="keys-schemas">key: "animate-icon"</h3>
+<hr>
+<p>Sí, este continúa perfectamente con la familia de comportamiento del icono.</p>
+<pre><code><span class="ͼo">&lt;key</span> <span class="ͼn">name</span><span class="ͼg">=</span><span class="ͼk">"animate-icon"</span> <span class="ͼn">type</span><span class="ͼg">=</span><span class="ͼk">"b"</span><span class="ͼo">&gt;</span>
+  <span class="ͼo">&lt;default&gt;</span>false<span class="ͼo">&lt;/default&gt;</span>
+  <span class="ͼo">&lt;summary&gt;</span>Animate icon when new notification arrives<span class="ͼo">&lt;/summary&gt;</span>
+  <span class="ͼo">&lt;description&gt;</span>Animate icon when new notification arrives<span class="ͼo">&lt;/description&gt;</span>
+<span class="ͼo">&lt;/key&gt;</span></code></pre>
+<h4>1. Nombre</h4>
+<p>Controla si el <strong data-start="377" data-end="446">icono del panel debe animarse cuando llega una nueva
+        notificación</strong>.</p>
+<pre><samp>animate-icon</samp></pre>
+<h4>2. Tipo</h4>
+<pre><samp>type="b"</samp></pre>
+<p>Es booleano:</p>
+<ul>
+    <li><code>true</code> → animar el icono.</li>
+    <li><code>false</code> → no animarlo.</li>
+</ul>
+<h4>3. Valor por defecto</h4>
+<p>Por defecto, <strong data-start="661" data-end="692">el icono permanece estático</strong> cuando llega una nueva
+    notificación.</p>
+<pre><samp><span class="ͼo">&lt;default&gt;</span>false<span class="ͼo">&lt;/default&gt;</span></samp></pre>
+<h4>4. Summary y Description</h4>
+<p>Ambos dicen:</p>
+<blockquote>Animate icon when new notification arrives</blockquote>
+<p>Así que aquí no hay ninguna interpretación adicional necesaria.</p>
+<h4>5. Relación con los anteriores</h4>
+<p>Ya tenemos una pequeña familia muy clara:</p>
+<pre><samp>new-notification
+        │
+        └── ¿Qué hacer al llegar una notificación?
+
+blink-icon
+        │
+        └── ¿Cuántas veces parpadear?
+
+blink-time
+        │
+        └── ¿Cada cuánto tiempo?
+
+animate-icon
+        │
+        └── ¿Animar el icono?</samp></pre>
+<p>Y aquí aparece una distinción interesante: <strong data-start="1290" data-end="1354"><code data-start="1292"
+            data-end="1304">blink-icon</code> y <code data-start="1307" data-end="1321">animate-icon</code> no son
+        necesariamente lo mismo</strong>.</p>
+<ol>
+    <li>El primero controla específicamente el <strong>parpadeo</strong> y además permite definir cuántas veces ocurre.
+    </li>
+    <li>El segundo simplemente habilita o deshabilita una <strong>animación del icono</strong>.</li>
+</ol>
+<p>Qué animación concreta realiza <code data-start="1564" data-end="1578">animate-icon</code> no lo podemos determinar
+    únicamente desde este <code data-start="1626" data-end="1631">key</code>; para eso tendríamos que mirar la
+    implementación correspondiente en <code data-start="1700" data-end="1714">extension.js</code>.</p>
+<h4>6. Una observación</h4>
+<p>El patrón de estos últimos keys ya está bastante definido, estamos recorriendo prácticamente todo el comportamiento
+    visual asociado a <strong data-start="2208" data-end="2242">"llegó una notificación nueva"</strong>:</p>
+<pre><samp>Nueva notificación
+│
+├── new-notification
+├── blink-icon
+├── blink-time
+└── animate-icon</samp></pre>
+<p>Y nuevamente vemos por qué es útil que el <code data-start="2389" data-end="2398">gschema</code> esté organizado de
+    esta manera: <strong data-start="2431" data-end="2469">los keys relacionados están juntos</strong>, haciendo que
+    podamos reconocer la funcionalidad como un bloque y no como preferencias aisladas.</p>
+<h4>7. Resumen — Key N.º 27</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>animate-icon</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td><code>b</code> (booleano)</td>
+        </tr>
+        <tr>
+            <td>Valor por defecto</td>
+            <td><code>false</code></td>
+        </tr>
+        <tr>
+            <td>Summary</td>
+            <td>Animar icono al recibir una nueva notificación</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>Igual que el Summary</td>
+        </tr>
+        <tr>
+            <td>Función</td>
+            <td>Activa o desactiva la animación del icono cuando llega una notificación</td>
+        </tr>
+    </tbody>
+</table>
+<h3 id="key28" class="keys-schemas">key: "show-label" </h3>
+<hr>
+<p>Este <code data-start="7" data-end="12">key</code> cierra muy bien la pequeña familia que veníamos viendo sobre
+    <strong data-start="74" data-end="139">qué ocurre con el indicador después de recibir notificaciones</strong>:
+</p>
+<pre><code><span class="ͼo">&lt;key</span> <span class="ͼn">name</span><span class="ͼg">=</span><span class="ͼk">"show-label"</span> <span class="ͼn">type</span><span class="ͼg">=</span><span class="ͼk">"b"</span><span class="ͼo">&gt;</span>
+  <span class="ͼo">&lt;default&gt;</span>false<span class="ͼo">&lt;/default&gt;</span>
+  <span class="ͼo">&lt;summary&gt;</span>Show Dots or Counts till all notifications are cleared<span class="ͼo">&lt;/summary&gt;</span>
+  <span class="ͼo">&lt;description&gt;</span>Show Dots or Counts till all notifications are cleared<span class="ͼo">&lt;/description&gt;</span>
+<span class="ͼo">&lt;/key&gt;</span></code></pre>
+<h4>1. Nombre</h4>
+<p>Controla si el indicador del panel debe <strong data-start="484" data-end="559">mostrar una etiqueta mientras todavía
+        existan notificaciones pendientes</strong>.</p>
+<pre><samp>show-label</samp></pre>
+<p>Y aquí el <code data-start="572" data-end="581">summary</code> nos da un detalle importante: esa etiqueta puede
+    representar <strong data-start="643" data-end="663">puntos o conteos</strong>.</p>
+<h4>2. Tipo</h4>
+<pre><samp>type="b"</samp></pre>
+<p>Booleano:</p>
+<ul>
+    <li><code>true</code> → mostrar el punto/conteo mientras existan notificaciones.</li>
+    <li><code>false</code> → no mantener esa indicación.</li>
+</ul>
+<h4>3. Valor por defecto</h4>
+<p>Por defecto está desactivado.</p>
+<pre><samp><span class="ͼo">&lt;default&gt;</span>false<span class="ͼo">&lt;/default&gt;</span></samp></pre>
+<p>Es decir, la extensión <strong data-start="971" data-end="1079">no mantiene automáticamente esos puntos o conteos
+        visibles hasta que se limpien todas las notificaciones</strong>.</p>
+<h4>4. Summary y Description</h4>
+<p>Aquí el <code data-start="1125" data-end="1134">summary</code> es bastante más útil que el nombre:</p>
+<blockquote>Show Dots or Counts till all notifications are cleared</blockquote>
+<p>Nos revela que <code data-start="1245" data-end="1257">show-label</code> no necesariamente significa mostrar un texto
+    literal. La "label" puede ser:</p>
+<pre><samp>•    ← indicador/punto
+3    ← cantidad</samp></pre>
+<p>y permanecer mientras todavía haya notificaciones sin limpiar.</p>
+<h4>5. Relación con lo que acabamos de estudiar</h4>
+<p>Ahora tenemos un bloque bastante interesante:</p>
+<pre><samp>Nueva notificación
+│
+├── new-notification
+│      └── ¿qué acción realizar?
+│
+├── blink-icon
+│      └── ¿cuántas veces parpadear?
+│
+├── blink-time
+│      └── ¿cada cuánto?
+│
+├── animate-icon
+│      └── ¿animar?
+│
+└── show-label
+       └── ¿mantener punto/conteo mientras existan notificaciones?</samp></pre>
+<p>Y <code data-start="1886" data-end="1898">show-label</code> tiene una relación conceptual muy cercana con <code
+        data-start="1945" data-end="1959">change-icons</code> que vimos anteriormente:</p>
+<pre><samp>change-icons
+└── cambia el icono según haya o no notificaciones
+
+show-label
+└── muestra punto/conteo mientras haya notificaciones</samp></pre>
+<p>Son dos mecanismos diferentes para comunicarle al usuario:</p>
+<blockquote>"Tienes notificaciones pendientes."</blockquote>
+<h4>6. Una observacion</h4>
+<p>Aquí haría una pequeña pausa conceptual: <strong data-start="2669" data-end="2715">el nombre <code data-start="2681"
+            data-end="2693">show-label</code> es bastante ambiguo</strong>, mientras que el <code data-start="2733"
+        data-end="2742">summary</code> nos explica mucho mejor qué significa realmente.</p>
+<p>Esto es algo que podemos ir anotando mentalmente para nuestro futuro proyecto: cuando creemos nuevos <code
+        data-start="2894" data-end="2899">key</code>, podemos intentar que <strong data-start="2922" data-end="3044">el
+        nombre y la descripción sean lo suficientemente claros para que no tengamos que descifrar la intención años
+        después</strong>. </p>
+<p>Estoy de acuerdo, <strong data-start="25" data-end="61"><code data-start="27" data-end="39">show-label</code> es
+        bastante ambiguo</strong> porque "label" normalmente nos hace pensar en texto, mientras que el propio <code
+        data-start="138" data-end="147">summary</code> dice que puede mostrar <strong data-start="171"
+        data-end="188">dots o counts</strong>.</p>
+<p>Para nuestro proyecto, algo como: <b><mark class="inline-code">show-symbol</mark></b> sería más representativo
+    si queremos enfatizar que se muestra un <strong data-start="316" data-end="334">símbolo visual</strong>.</p>
+<p>Aunque yo consideraría incluso: <b><mark class="inline-code">show-indicator</mark></b> porque describe mejor la
+    función y además mantiene coherencia con el vocabulario que ya utiliza la extensión:</p>
+<pre><samp>indicator-pos
+indicator-index
+individual-icons
+change-icons</samp></pre>
+<p>Entonces tendríamos: </p>
+<pre><samp>show-indicator
+    ↓
+¿Mostrar el indicador de notificaciones pendientes?</samp></pre>
+<p>Y no importa si ese indicador termina siendo: <kbd class="inline-code">•</kbd> o <kbd class="inline-code">3</kbd>
+    porque ambos son indicadores.</p>
+<h5>Para nuestra lista de mejoras</h5>
+<p>Este sería otro pequeño detalle de <strong data-start="872" data-end="888">nomenclatura</strong>:</p>
+<blockquote><code data-start="897" data-end="909">show-label</code> → considerar <code data-start="923"
+        data-end="939">show-indicator</code> (o <code data-start="943" data-end="956">show-symbol</code>).</blockquote>
+<p>Personalmente me quedaría con <strong data-start="990" data-end="1010"><code data-start="992"
+            data-end="1008">show-indicator</code></strong>, porque <code data-start="1019" data-end="1027">symbol</code>
+    podría sugerir que siempre se trata de un símbolo, mientras que aquí también puede ser un conteo numérico.</p>
+<h4>7. Resumen — Key N.º 28</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>show-label</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td><code>b</code> (booleano)</td>
+        </tr>
+        <tr>
+            <td>Valor por defecto</td>
+            <td><code>false</code></td>
+        </tr>
+        <tr>
+            <td>Summary</td>
+            <td>Mostrar puntos o conteos hasta limpiar todas las notificaciones</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>Igual que el Summary</td>
+        </tr>
+        <tr>
+            <td>Función</td>
+            <td>Mantiene visible un indicador de puntos/conteos mientras existan notificaciones pendientes</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3 id="key29" class="keys-schemas">key: "middle-click-dnd"</h3>
+<hr>
+<pre><code><span class="ͼo">&lt;key</span> <span class="ͼn">name</span><span class="ͼg">=</span><span class="ͼk">"middle-click-dnd"</span> <span class="ͼn">type</span><span class="ͼg">=</span><span class="ͼk">"b"</span><span class="ͼo">&gt;</span> 
+  <span class="ͼo">&lt;default&gt;</span>true<span class="ͼo">&lt;/default&gt;</span>
+  <span class="ͼo">&lt;summary&gt;</span>Middle click panel icon to toggle Do Not Disturb<span class="ͼo">&lt;/summary&gt;</span>
+  <span class="ͼo">&lt;description&gt;</span>Middle click panel icon to toggle Do Not Disturb<span class="ͼo">&lt;/description&gt;</span>
+<span class="ͼo">&lt;/key&gt;</span></code></pre>
+<h4>1. Nombre</h4>
+<p>Define qué ocurre al hacer <strong data-start="352" data-end="416">clic con el botón central del mouse sobre el icono
+        del panel</strong>.</p>
+<blockquote>middle-click-dnd</blockquote>
+<p>En concreto, permite utilizar ese clic como acceso rápido para activar/desactivar <strong data-start="501"
+        data-end="525">Do Not Disturb (DND)</strong>.</p>
+<h4>2. Tipo</h4>
+<pre><samp>type="b"</samp></pre>
+<p>Es un booleano:</p>
+<ul>
+    <li><code>true</code> → el clic central funciona como interruptor de DND.</li>
+    <li><code>false</code> → el clic central no realiza esa acción.</li>
+</ul>
+<h4>3. Valor por defecto</h4>
+<p>Por defecto la función está <strong data-start="792" data-end="804">activada</strong>.</p>
+<pre><samp><span class="ͼo">&lt;default&gt;</span>true<span class="ͼo">&lt;/default&gt;</span></samp></pre>
+<p>Es decir, Selenium-H considera que el usuario puede hacer:</p>
+<pre><samp>Clic central sobre el icono
+          ↓
+Toggle DND
+          ↓
+Activado ↔ Desactivado</samp></pre>
+<h4>4. Relación con <code data-start="991" data-end="1005">extension.js</code></h4>
+<p>Este <code data-start="1012" data-end="1017">key</code> tiene una conexión directa con algo que ya habíamos
+    identificado: <kbd class="inline-code">middleClickDndToggle()</kbd> en nuestra lista de métodos de <code
+        data-start="1152" data-end="1172">NotificationCenter</code>. También teníamos:</p>
+<pre><samp>dndToggle()
+loadDndStatus()</samp></pre>
+<p>Así que podemos visualizar la relación:</p>
+<pre><samp>middle-click-dnd
+        ↓
+¿Está habilitado el clic central?
+        ↓
+middleClickDndToggle()
+        ↓
+dndToggle()
+        ↓
+Do Not Disturb</samp></pre>
+<p>Aquí nuevamente tenemos una ventaja del <code data-start="1470" data-end="1479">gschema</code>: la preferencia nos
+    dice <strong data-start="1505" data-end="1523">por qué existe</strong> ese método.</p>
+<h4>5. Una observación</h4>
+<p>Y este es otro ejemplo donde <strong data-start="2004" data-end="2052">el nombre del <code data-start="2020"
+            data-end="2025">key</code> me parece bastante bueno</strong>: <code data-start="2054"
+        data-end="2072">middle-click-dnd</code> prácticamente se explica solo. No hay necesidad de cambiarlo a algo más
+    sofisticado.</p>
+<h4>6. Resumen — Key N.º 29</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>middle-click-dnd</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td><code>b</code> (booleano)</td>
+        </tr>
+        <tr>
+            <td>Valor por defecto</td>
+            <td><code>true</code></td>
+        </tr>
+        <tr>
+            <td>Summary</td>
+            <td>Clic central en el icono para alternar DND</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>Igual que el Summary</td>
+        </tr>
+        <tr>
+            <td>Función</td>
+            <td>Permite usar el clic central del icono del panel para activar/desactivar Do Not Disturb</td>
+        </tr>
+        <tr>
+            <td>Relación con <code>extension.js</code></td>
+            <td><code>middleClickDndToggle()</code> / <code>dndToggle()</code></td>
+        </tr>
+    </tbody>
+</table>
+
+<h3 id="key30" class="keys-schemas">key: "application-list" </h3>
+<hr>
+<p>Este cambia un poco respecto a los anteriores porque aquí aparece un <strong data-start="69" data-end="91">arreglo de
+        cadenas</strong>.</p>
+<pre><code><span class="ͼo">&lt;key</span> <span class="ͼn">name</span><span class="ͼg">=</span><span class="ͼk">"application-list"</span> <span class="ͼn">type</span><span class="ͼg">=</span><span class="ͼk">"as"</span><span class="ͼo">&gt;</span>
+  <span class="ͼo">&lt;default&gt;</span>[]<span class="ͼo">&lt;/default&gt;</span>
+  <span class="ͼo">&lt;summary&gt;</span>List of applications<span class="ͼo">&lt;/summary&gt;</span>
+  <span class="ͼo">&lt;description&gt;</span>List of applications<span class="ͼo">&lt;/description&gt;</span>
+<span class="ͼo">&lt;/key&gt;</span></code></pre>
+<h4>1. Nombre</h4>
+<p>Por el nombre, es una configuración que almacena una <strong data-start="391" data-end="416">lista de
+        aplicaciones</strong>.</p>
+<pre><samp>application-list</samp></pre>
+<p>Y esto encaja muy bien con lo que ya comentamos sobre la sección de <strong data-start="487"
+        data-end="499">perfiles</strong>: probablemente aquí se almacena qué aplicaciones forman parte de esa
+    configuración personalizada.</p>
+<h4>2. Tipo</h4>
+<p>Aquí tenemos algo nuevo:</p>
+<pre><samp>type="as"</samp></pre>
+<p>La <code data-start="680" data-end="683">s</code> significa <strong data-start="694" data-end="704">string</strong>,
+    pero la <code data-start="714" data-end="717">a</code> indica <strong data-start="725"
+        data-end="734">array</strong>. Por tanto: <kbd class="inline-code">as = array of strings</kbd>.</p>
+<p>Es decir:</p>
+<blockquote>una lista de cadenas de texto.</blockquote>
+<p>Por ejemplo, podría contener algo conceptualmente así:</p>
+<pre><samp>[
+  "org.gnome.Terminal",
+  "firefox",
+  "org.gnome.Nautilus"
+]</samp></pre>
+<p>No afirmaría que esas sean las cadenas reales que utiliza esta extensión; son solamente un ejemplo del tipo de dato.
+</p>
+<h4>3. Valor por defecto</h4>
+<p>La lista comienza <strong data-start="1199" data-end="1208">vacía</strong>.</p>
+<pre><samp><span class="ͼo">&lt;default&gt;</span>[]<span class="ͼo">&lt;/default&gt;</span></samp></pre>
+<p>Eso significa que inicialmente no hay ninguna aplicación registrada en <code data-start="1282"
+        data-end="1300">application-list</code> y aquí el <code data-start="1313" data-end="1317">[]</code> tiene
+    mucho sentido porque representa un arreglo vacío.</p>
+<h4>4. Summary y Description</h4>
+<p>Ambos simplemente dicen:</p>
+<blockquote>List of applications</blockquote>
+<p>Así que la descripción no nos proporciona información sobre <strong data-start="1520" data-end="1564">qué representa
+        cada elemento de la lista</strong>. Para descubrir eso tendremos que ver dónde <code data-start="1610"
+        data-end="1624">extension.js</code> lee o modifica: <span class="ͼm"></span><var class="inline-code"><span
+            class="ͼm">application</span><span class="ͼg">-</span><span class="ͼm">list </span></var><span
+        class="ͼm"></span></p>
+<h4>5. Una observación</h4>
+<p>Y aquí aparece algo interesante respecto a lo que veníamos hablando:</p>
+<pre><samp>application-list
+        ↓
+   lista de aplicaciones
+        ↓
+   perfiles
+        ↓
+configuración individual</samp></pre>
+<p><strong data-start="2277" data-end="2329">Pero por ahora lo dejamos como relación probable</strong>, no como hecho
+    confirmado. El <code data-start="2360" data-end="2369">gschema</code> solamente nos dice que existe una lista de
+    aplicaciones; no nos dice todavía para qué se utiliza cada aplicación.</p>
+<h4>6. Resumen — Key N.º 30</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>application-list</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td><code>as</code> — arreglo de strings</td>
+        </tr>
+        <tr>
+            <td>Valor por defecto</td>
+            <td><code>[]</code> — lista vacía</td>
+        </tr>
+        <tr>
+            <td>Summary</td>
+            <td>List of applications</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>Igual que el Summary</td>
+        </tr>
+        <tr>
+            <td>Función</td>
+            <td>Mantiene una lista de aplicaciones</td>
+        </tr>
+        <tr>
+            <td>Posible relación</td>
+            <td>Sistema de perfiles/configuración por aplicación</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3 id="key31" class="keys-schemas">key: "name-list"</h3>
+<hr>
+<p>Este es muy parecido al anterior, pero aquí ya tenemos <strong data-start="59" data-end="96">la finalidad concreta de
+        la lista</strong>.</p>
+<pre><code><span class="ͼo">&lt;key</span> <span class="ͼn">name</span><span class="ͼg">=</span><span class="ͼk">"name-list"</span> <span class="ͼn">type</span><span class="ͼg">=</span><span class="ͼk">"as"</span><span class="ͼo">&gt;</span>
+  <span class="ͼo">&lt;default&gt;</span>[]<span class="ͼo">&lt;/default&gt;</span>
+  <span class="ͼo">&lt;summary&gt;</span>List of Names of application to ignore notifications from<span class="ͼo">&lt;/summary&gt;</span>
+  <span class="ͼo">&lt;description&gt;</span>List of Names of application to ignore notifications from<span class="ͼo">&lt;/description&gt;</span>
+<span class="ͼo">&lt;/key&gt;</span></code></pre>
+<h4>1. Nombre</h4>
+<p>Es una lista de nombres de aplicaciones.</p>
+<pre><samp>name-list</samp></pre>
+<p>Pero el <code data-start="429" data-end="438">summary</code> nos aclara algo importante: son las aplicaciones <strong
+        data-start="488" data-end="529">cuyas notificaciones se deben ignorar</strong>. Por ejemplo, conceptualmente:
+</p>
+<pre><samp>name-list
+   ↓
+["Aplicación A", "Aplicación B", "Aplicación C"]
+   ↓
+ignorar notificaciones de esas aplicaciones</samp></pre>
+<h4>2. Tipo</h4>
+<pre><samp>type="as"</samp></pre>
+<p>Ya sabemos interpretarlo:</p>
+<pre><samp>a = array
+s = string</samp></pre>
+<p>Por tanto: <q class="inline-code">array de strings</q>, cada elemento de la lista es texto.</p>
+<h4>3. Valor por defecto</h4>
+<p>La lista empieza vacía.</p>
+<pre><samp><span class="ͼo">&lt;default&gt;</span>[]<span class="ͼo">&lt;/default&gt;</span></samp></pre>
+<p>Por lo tanto, inicialmente <strong data-start="980" data-end="1039">no hay ninguna aplicación configurada para ser
+        ignorada</strong>.</p>
+<h4>4. Summary y Description</h4>
+<p>Aquí ambos son bastante claros:</p>
+<blockquote>List of Names of application to ignore notifications from</blockquote>
+<p>Es decir:</p>
+<blockquote>Lista de nombres de aplicaciones de las cuales ignorar las notificaciones.</blockquote>
+<p>Y aquí podemos afirmar algo que en <code data-start="1295" data-end="1313">application-list</code> todavía era
+    solamente una posibilidad: <strong data-start="1353" data-end="1452">este <code data-start="1360"
+            data-end="1365">key</code> sí está relacionado explícitamente con el filtrado de notificaciones por
+        aplicación.</strong></p>
+<h4>5. Una observación</h4>
+<p>Ahora podemos distinguir entre las dos anteriores.</p>
+
+<div class="row">
+    <div class="col">
+        <span>Tenemos:</span>
+        <pre><samp>application-list
+    ↓
+Lista de aplicaciones</samp></pre>
+    </div>
+    <div class="col">
+        <span>Y:</span>
+        <pre><samp>name-list
+    ↓
+Lista de aplicaciones a ignorar</samp></pre>
+    </div>
+</div>
+<p>El segundo tiene una función mucho más específica. Además, fíjate en algo interesante: <strong data-start="2109"
+        data-end="2182"><code data-start="2111" data-end="2129">application-list</code> y <code data-start="2132"
+            data-end="2143">name-list</code> no necesariamente contienen lo mismo</strong>. Por el <code
+        data-start="2191" data-end="2200">gschema</code> que estamos revisando, no debemos asumir todavía cuál es la
+    relación entre ambas listas.</p>
+<h4>6. Resumen — Key N.º 31</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>name-list</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td><code>as</code> — arreglo de strings</td>
+        </tr>
+        <tr>
+            <td>Valor por defecto</td>
+            <td><code>[]</code></td>
+        </tr>
+        <tr>
+            <td>Summary</td>
+            <td>Lista de nombres de aplicaciones cuyas notificaciones se deben ignorar</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>Igual que el Summary</td>
+        </tr>
+        <tr>
+            <td>Función</td>
+            <td>Almacena las aplicaciones que deben quedar excluidas de las notificaciones</td>
         </tr>
     </tbody>
 </table>
