@@ -26,7 +26,17 @@
             <a href="#key16">Key: Hide-date-section</a>
             <a href="#key17">Key: Banner-pos</a>
             <a href="#key18">Key: Indicator-pos</a>
-            <a href="#key19">Key: None</a>
+            <a href="#key19">Key: Indicator-index</a>
+            <a href="#key20">Key: Individual-icons</a>
+            <a href="#key21">Key: Change-icons</a>
+            <a href="#key22">Key: Autohide</a>
+            <a href="#key23">Key: XXX</a>
+            <a href="#key24">Key: XXX</a>
+            <a href="#key25">Key: XXX</a>
+            <a href="#key26">Key: XXX</a>
+            <a href="#key27">Key: XXX</a>
+            <a href="#key28">Key: XXX</a>
+            <a href="#key29">Key: XXX</a>
         </div>
     </div>
 </aside>
@@ -148,7 +158,7 @@ extension.js</samp></pre>
     <li>el valor por defecto,</li>
     <li>y dónde se utiliza en el código.</li>
 </ul>
-<h4>8. Resumen</h4>
+<h4>8. Resumen — Key N.º 1</h4>
 <table>
     <thead>
         <tr>
@@ -267,7 +277,7 @@ show-notification</samp></pre>
     ...</samp></pre>
 <p>Si el siguiente <code data-start="3127" data-end="3132">key</code> también resulta ser un entero relacionado con otra
     sección de la interfaz, esa hipótesis empezará a tomar bastante fuerza.</p>
-<h4>8. Resumen</h4>
+<h4>8. Resumen — Key N.º 2</h4>
 <table>
     <thead>
         <tr>
@@ -408,7 +418,7 @@ show-events</samp></pre>
     <li>probablemente compartan un enum;</li>
     <li>controlan una sección visible del panel.</li>
 </ul>
-<h4>8. Resumen</h4>
+<h4>8. Resumen — Key N.º 3</h4>
 <table>
     <thead>
         <tr>
@@ -528,7 +538,7 @@ show-events</samp></pre>
 <p>Eso me hace pensar que los tres anteriores <strong data-start="3735" data-end="3762">no están usando un
         enum</strong>, sino que realmente almacenan un entero cuyos valores interpreta el código. Es decir, ya no estoy
     tan convencido de mi hipótesis anterior de que compartían un enum.</p>
-<h4>8. Resumen</h4>
+<h4>8. Resumen — Key N.º 4</h4>
 <table>
     <thead>
         <tr>
@@ -638,7 +648,7 @@ No</samp></pre>
 <pre><samp>type="i"</samp></pre>
 <p><b>Enum</b>: Cuando esos estados están formalizados y reutilizados.</p>
 <pre><samp>enum="..."</samp></pre>
-<h4>Resumen</h4>
+<h4>8. Resumen — Key N.º 5</h4>
 <table>
     <thead>
         <tr>
@@ -740,7 +750,7 @@ RIGHT</samp></pre>
     extensión, lo que hace que el <code data-start="2858" data-end="2871">gschema.xml</code> sea mucho más fácil de
     recorrer. Esa organización ya empieza a reflejar la estructura que conocimos previamente en <code data-start="2987"
         data-end="3001">extension.js</code>. </p>
-<h4>8. Resumen</h4>
+<h4>8. Resumen — Key N.º 6</h4>
 <table>
     <thead>
         <tr>
@@ -855,7 +865,7 @@ RIGHT</samp></pre>
 <blockquote>Ocultar la lista cuando esté vacía.</blockquote>
 <p>Ya obliga a pensar en una negación. No es un error; simplemente creo que el nombre elegido para el <code
         data-start="2384" data-end="2389">key</code> comunica mejor el comportamiento.</p>
-<h4>8. Resumen</h4>
+<h4>8. Resumen — Key N.º 7</h4>
 <table>
     <thead>
         <tr>
@@ -960,7 +970,7 @@ events-first</samp></pre>
         6</var> combinaciones posibles. Con un array no hace falta crear seis enums distintos.</p>
 <p>Aquí también vemos otra fortaleza de GSettings, no solo almacena tipos simples. También puede almacenar colecciones,
     eso amplía bastante las posibilidades del esquema.</p>
-<h4>8. Resumen</h4>
+<h4>8. Resumen — Key N.º 8</h4>
 <table>
     <thead>
         <tr>
@@ -1054,7 +1064,7 @@ bottom</samp></pre>
 notification
 events</samp></pre>
 <p>Cada problema tiene su tipo de dato más adecuado.</p>
-<h4>8. Resumen</h4>
+<h4>8. Resumen — Key N.º 9</h4>
 <table>
     <thead>
         <tr>
@@ -1163,7 +1173,7 @@ showButton</samp></pre>
     <li>No lo quiero.</li>
 </ul>
 <p>Todo forma parte de la misma decisión.</p>
-<h4>8. Resumen</h4>
+<h4>8. Resumen — Key N.º 10</h4>
 <table>
     <thead>
         <tr>
@@ -1273,7 +1283,7 @@ showButton</samp></pre>
     cómo se ve el Centro de Notificaciones, sino <strong data-start="3119" data-end="3137">cómo reacciona</strong> ante
     una interacción del usuario. Me parece una separación bastante natural y, hasta el momento, consistente con la forma
     en que Selenium-H organizó sus preferencias.</p>
-<h4>8. Resumen</h4>
+<h4>8. Resumen — Key N.º 11</h4>
 <table>
     <thead>
         <tr>
@@ -1397,7 +1407,7 @@ showButton</samp></pre>
         data-start="4345" data-end="4348">&gt;</code>) que el parser XML podría interpretar como etiquetas. Es un buen
     ejemplo de cómo, además de aprender la arquitectura de la extensión, de vez en cuando el propio formato XML nos
     obliga a conocer algunas de sus reglas.</p>
-<h4>9. Resumen</h4>
+<h4>9. Resumen — Key N.º 12</h4>
 <table>
     <thead>
         <tr>
@@ -1483,7 +1493,7 @@ showButton</samp></pre>
     interpretarse como <strong data-start="2248" data-end="2262">porcentaje</strong>.</p>
 <p>Por eso: <var class="inline-code">80</var> no significa necesariamente "80 píxeles". Significa <strong
         data-start="2344" data-end="2352">80 %</strong>, porque así lo establece la descripción de la preferencia.</p>
-<h4>7. Resumen</h4>
+<h4>7. Resumen — Key N.º 13</h4>
 <table>
     <thead>
         <tr>
@@ -1564,7 +1574,7 @@ showButton</samp></pre>
         ↓
      ¿mostrar aunque esté vacío?</samp></pre>
 <p>Ambos son booleanos, pero expresan la decisión desde perspectivas opuestas.</p>
-<h4>6. Resumen</h4>
+<h4>6. Resumen — Key N.º 14</h4>
 <table>
     <thead>
         <tr>
@@ -1643,7 +1653,7 @@ default=false</samp></pre>
         data-end="1839">hide-weather-section</code>, lo que empieza a mostrarnos que el orden de los <code
         data-start="1889" data-end="1894">key</code> también tiene cierta lógica temática, no es simplemente una
     colección aleatoria.</p>
-<h4>7. Resumen</h4>
+<h4>7. Resumen — Key N.º 15</h4>
 <table>
     <thead>
         <tr>
@@ -1796,7 +1806,7 @@ Events
     esta parte del <code data-start="1379" data-end="1388">gschema</code> nos está dando otra pista importante sobre la
     filosofía de Selenium-H: <strong data-start="1460" data-end="1535" data-is-last-node="">modificar y reorganizar
         componentes existentes antes que reinventarlos.</strong></p>
-<h4>7. Resumen</h4>
+<h4>7. Resumen — Key N.º 16</h4>
 <table>
     <thead>
         <tr>
@@ -1908,7 +1918,7 @@ bannerPos[1] → alineación horizontal</samp></pre>
  ││
  │└── posición horizontal
  └── posición vertical</samp></pre>
-<h4>3. Resumen</h4>
+<h4>3. Resumen — Key N.º 17</h4>
 <table>
     <thead>
         <tr>
@@ -2046,7 +2056,7 @@ indicator-pos
     estaría la última pieza del rompecabezas, pero ya no necesitamos buscar otro <code data-start="4383"
         data-end="4388">key</code>: <strong data-start="4390" data-end="4440" data-is-last-node="">la estructura de
         configuración ya quedó clara.</strong></p>
-<h4>Resumen</h4>
+<h4>Resumen — Key N.º 18</h4>
 <table>
     <thead>
         <tr>
@@ -2078,6 +2088,472 @@ indicator-pos
         <tr>
             <td>Función</td>
             <td>Determina dónde aparece el indicador de la extensión en el panel</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3 id="key19" class="keys-schemas">key: "indicator-index"</h3>
+<hr>
+<p>Este <code data-start="20" data-end="25">key</code> es interesante porque vuelve a hablar del <strong data-start="68"
+        data-end="101">icono del Notification Center</strong>, pero ahora no de su posición izquierda/centro/derecha.
+</p>
+<pre><code><span class="ͼo">&lt;key</span> <span class="ͼn">name</span><span class="ͼg">=</span><span class="ͼk">"indicator-index"</span> <span class="ͼn">type</span><span class="ͼg">=</span><span class="ͼk">"i"</span><span class="ͼo">&gt;</span>
+  <span class="ͼo">&lt;default&gt;</span>2<span class="ͼo">&lt;/default&gt;</span>
+  <span class="ͼo">&lt;summary&gt;</span>Position of notification icon in panel box<span class="ͼo">&lt;/summary&gt;</span>
+  <span class="ͼo">&lt;description&gt;</span>Position of notification icon in panel box<span class="ͼo">&lt;/description&gt;</span>
+<span class="ͼo">&lt;/key&gt;</span></code></pre>
+<h4>1. Nombre</h4>
+<p>La palabra importante aquí es <strong data-start="449" data-end="458">index</strong>.</p>
+<pre><samp>indicator-index</samp></pre>
+<p>No está indicando:</p>
+<pre><samp>left
+center
+right</samp></pre>
+<p>Eso ya lo hacía <code data-start="528" data-end="543">indicator-pos</code>. Aquí estamos hablando de la <strong
+        data-start="574" data-end="637">posición numérica del icono dentro del contenedor del panel</strong>.</p>
+<h4>2. Tipo</h4>
+<p>Es un entero (<code data-start="693" data-end="702">integer</code>).</p>
+<pre><samp>type="i"</samp></pre>
+<p>Y ahora tiene sentido utilizar un entero, porque un índice normalmente se expresa como:</p>
+<pre><samp>0
+1
+2
+3
+...</samp></pre>
+<p>en lugar de utilizar un enum.</p>
+<h3>3. Valor por defecto</h3>
+<pre><samp><span class="ͼo">&lt;default&gt;</span>2<span class="ͼo">&lt;/default&gt;</span></samp></pre>
+<p>El índice predeterminado es: <kbd class="inline-code">2</kbd> es decir, el icono ocupa inicialmente la
+    posición que el código considera como índice <code data-start="1046" data-end="1049">2</code> dentro del contenedor
+    correspondiente.</p>
+<p>Aquí conviene <strong data-start="1104" data-end="1164">no traducir automáticamente ese <code data-start="1138"
+            data-end="1141">2</code> a "tercera posición"</strong> todavía, porque el significado exacto depende de cómo
+    Selenium-H utilice ese índice al modificar el panel.</p>
+<h4>4. Summary y Description</h4>
+<p>Ambos dicen:</p>
+<blockquote>Position of notification icon in panel box</blockquote>
+<p>Y eso refuerza bastante la diferencia con el <code data-start="1413" data-end="1418">key</code> anterior: <var
+        class="inline-code">indicator-pos</var> que decía:</p>
+<blockquote>Notification Center icon position on panel</blockquote>
+<p>Tenemos entonces <strong data-start="1532" data-end="1589">dos configuraciones distintas para el mismo
+        indicador</strong>.</p>
+<h4>5. Comparándolo con <code data-start="1620" data-end="1635">indicator-pos</code></h4>
+<div class="row">
+    <div class="col">
+        <p>Esto es lo realmente interesante:</p>
+        <pre><samp>indicator-pos
+    ↓
+left / center / right</samp></pre>
+    </div>
+    <div class="col">
+        <p>Mientras:</p>
+        <pre><samp>indicator-index
+    ↓
+0 / 1 / 2 / ...</samp></pre>
+    </div>
+</div>
+<p>Por lo tanto:</p>
+<pre><samp>indicator-pos
+    = posición/alineación del indicador dentro del panel
+
+indicator-index
+    = posición numérica dentro del "panel box"</samp></pre>
+<p>Y esto explica por qué no tendría mucho sentido convertir <code data-start="2010"
+        data-end="2027">indicator-index</code> en un enum: el índice puede depender de cuántos elementos haya en ese
+    contenedor.</p>
+<p>Una diferencia que vale la pena conservar de este par:</p>
+<pre><samp>indicator-pos
+indicator-index</samp></pre>
+<p>Es un buen ejemplo de que <strong data-start="2623" data-end="2674">"posición" no necesariamente significa lo
+        mismo</strong>.</p>
+<div class="row">
+    <div class="col"><span>Uno describe una <strong>ubicación conceptual</strong>:</span>
+        <pre><samp>left / center / right</samp></pre>
+    </div>
+    <div class="col"><span>El otro describe una <strong>posición estructural</strong>:</span>
+        <pre><samp>index = 2</samp></pre>
+    </div>
+</div>
+<p>Y creo que esta distinción nos va a servir bastante cuando lleguemos a las preferencias que modifican directamente la
+    estructura del <code data-start="2960" data-end="2972">Main.panel</code>.</p>
+<h4>6. Resumen — Key N.º 19</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>indicator-index</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td><code>i</code> (entero)</td>
+        </tr>
+        <tr>
+            <td>Valor por defecto</td>
+            <td><code>2</code></td>
+        </tr>
+        <tr>
+            <td>Summary</td>
+            <td>Posición del icono de notificación dentro del panel box</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>Igual que el Summary</td>
+        </tr>
+        <tr>
+            <td>Función</td>
+            <td>Determina mediante un índice numérico dónde se inserta el indicador dentro del contenedor del panel</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3 id="key20" class="keys-schemas">key: "individual-icons"</h3>
+<hr>
+<p>Este vuelve a ser un <code data-start="23" data-end="28">key</code> bastante directo, pero tiene una consecuencia
+    interesante sobre la interfaz del panel.</p>
+<pre><code><span class="ͼo">&lt;key</span> <span class="ͼn">name</span><span class="ͼg">=</span><span class="ͼk">"individual-icons"</span> <span class="ͼn">type</span><span class="ͼg">=</span><span class="ͼk">"b"</span><span class="ͼo">&gt;</span>
+  <span class="ͼo">&lt;default&gt;</span>false<span class="ͼo">&lt;/default&gt;</span>
+  <span class="ͼo">&lt;summary&gt;</span>Show individual icons for each section on panel<span class="ͼo">&lt;/summary&gt;</span>
+  <span class="ͼo">&lt;description&gt;</span>Show individual icons for each section on panel<span class="ͼo">&lt;/description&gt;</span>
+<span class="ͼo">&lt;/key&gt;</span></code></pre>
+<h4>1. Nombre</h4>
+<p>Indica que controla si cada sección del Notification Center puede tener <strong data-start="465" data-end="496">su
+        propio icono en el panel</strong>.</p>
+<pre><samp>individual-icons</samp></pre>
+<p>La idea sería pasar de un único indicador general a varios indicadores asociados a las diferentes secciones.</p>
+<h4>2. Tipo</h4>
+<pre><samp>type="b"</samp></pre>
+<p>Es un booleano:</p>
+<ul>
+    <li><code>true</code> → mostrar iconos individuales.</li>
+    <li><code>false</code> → mantener el indicador general.</li>
+</ul>
+<h4>3. Valor por defecto</h4>
+<p>Por defecto está desactivado.</p>
+<pre><samp><span class="ͼo">&lt;default&gt;</span>false<span class="ͼo">&lt;/default&gt;</span></samp></pre>
+<p>Es decir, Selenium-H utiliza <strong data-start="877" data-end="905">un único icono/indicador</strong> en el panel,
+    en lugar de mostrar un icono independiente para cada sección.</p>
+<h4>4. Summary y Description</h4>
+<p>Ambos dicen: </p>
+<blockquote>Show individual icons for each section on panel</blockquote>
+<p>Son prácticamente una explicación directa del <code data-start="1128" data-end="1133">key</code>.</p>
+<h4>5. Relación con lo que acabamos de estudiar</h4>
+<p>Aquí empieza a tener mucho más sentido el par que acabamos de ver:</p>
+<pre><samp>indicator-pos
+indicator-index</samp></pre>
+<p>Esas preferencias controlan <strong data-start="1329" data-end="1345">el indicador</strong> del Notification Center.
+</p>
+<p>Pero ahora aparece: <kbd class="inline-code">individual-icons</kbd> que puede cambiar la propia estructura
+    de esos indicadores.</p>
+<div class="row">
+    <div class="col"><span>Podemos imaginar conceptualmente:</span>
+        <pre><samp>individual-icons = false
+
+Panel
+   └── [Notification Center]</samp></pre>
+    </div>
+    <div class="col"><span>Frente a:</span>
+        <pre><samp>individual-icons = true
+
+Panel
+   ├── [Media]
+   ├── [Notifications]
+   └── [Events]</samp></pre>
+    </div>
+</div>
+<p>Esa representación es <strong data-start="1727" data-end="1741">conceptual</strong>. El <code data-start="1746"
+        data-end="1751">key</code> por sí solo nos dice que habrá iconos individuales para cada sección, pero no nos
+    dice exactamente qué iconos utiliza ni cómo se posicionan; eso corresponde a la implementación de <code
+        data-start="1932" data-end="1946">extension.js</code>.</p>
+<h4>6. Una observación importante</h4>
+<p>Este <code data-start="2353" data-end="2358">key</code> es un buen ejemplo de una preferencia que <strong
+        data-start="2401" data-end="2463">no solamente cambia una propiedad de un elemento existente</strong>, sino que
+    puede cambiar la <strong data-start="2491" data-end="2522">estructura visual del panel</strong>.</p>
+<p>Y además nos ayuda a entender mejor por qué existen <code data-start="2577" data-end="2592">indicator-pos</code> e
+    <code data-start="2595" data-end="2612">indicator-index</code>: esas preferencias tienen sentido dentro del sistema
+    de indicadores que Selenium-H construye para representar el Notification Center en el panel.
+</p>
+<p>Aquí ya empezamos a entrar nuevamente en terreno de <code data-start="2812" data-end="2826">extension.js</code>,
+    donde podremos comprobar exactamente cómo se construye esa estructura cuando la opción está activada.</p>
+<h4>7. Resumen — Key N.º 20</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>individual-icons</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td><code>b</code> (booleano)</td>
+        </tr>
+        <tr>
+            <td>Valor por defecto</td>
+            <td><code>false</code></td>
+        </tr>
+        <tr>
+            <td>Summary</td>
+            <td>Mostrar iconos individuales para cada sección en el panel</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>Igual que el Summary</td>
+        </tr>
+        <tr>
+            <td>Función</td>
+            <td>Determina si las secciones utilizan indicadores individuales en el panel</td>
+        </tr>
+    </tbody>
+</table>
+<h3 id="key21" class="keys-schemas">key: "change-icons"</h3>
+<hr>
+<p>Este sigue la misma línea de configuración de los iconos del panel, pero ahora la preferencia no decide <strong
+        data-start="106" data-end="117">cuántos</strong> iconos hay, sino <strong data-start="135" data-end="195">qué
+        aspecto tienen según el estado de las notificaciones</strong>.</p>
+<pre><code><span class="ͼo">&lt;key</span> <span class="ͼn">name</span><span class="ͼg">=</span><span class="ͼk">"change-icons"</span> <span class="ͼn">type</span><span class="ͼg">=</span><span class="ͼk">"b"</span><span class="ͼo">&gt;</span>
+  <span class="ͼo">&lt;default&gt;</span>false<span class="ͼo">&lt;/default&gt;</span>
+  <span class="ͼo">&lt;summary&gt;</span>Change icons depending if there is notification or not<span class="ͼo">&lt;/summary&gt;</span>
+  <span class="ͼo">&lt;description&gt;</span>Change icons depending if there is notification or not<span class="ͼo">&lt;/description&gt;</span>
+<span class="ͼo">&lt;/key&gt;</span></code></pre>
+<h4>1. Nombre</h4>
+<p>Indica que la extensión puede <strong data-start="534" data-end="600">cambiar el icono dependiendo de si existen
+        notificaciones o no</strong>.</p>
+<pre><samp>change-icons</samp></pre>
+<p>Por ejemplo, conceptualmente:</p>
+<pre><samp>Sin notificaciones → icono A
+Con notificaciones → icono B</samp></pre>
+<p>No sabemos todavía cuáles son esos iconos concretos; eso pertenece a la implementación que ya vimos en <code
+        data-start="820" data-end="834">extension.js</code>.</p>
+<h4>2. Tipo</h4>
+<pre><samp>type="b"</samp></pre>
+<p>Booleano:</p>
+<ul>
+    <li><code>true</code> → cambiar el icono según el estado.</li>
+    <li><code>false</code> → utilizar el icono normal.</li>
+</ul>
+<h4>3. Valor por defecto</h4>
+<p>Por defecto, <strong data-start="1076" data-end="1135">el icono no cambia dependiendo de si hay
+        notificaciones</strong>.</p>
+<pre><samp><span class="ͼo">&lt;default&gt;</span>false<span class="ͼo">&lt;/default&gt;</span></samp></pre>
+<h4>4. Summary y Description</h4>
+<p>Ambos expresan la misma idea:</p>
+<blockquote>Cambiar los iconos dependiendo de si hay o no notificaciones.</blockquote>
+<p>Aquí no hay información adicional escondida en la descripción.</p>
+<h4>5. Y aquí tenemos una conexión muy buena con <code data-start="1387" data-end="1401">extension.js</code></h4>
+<p>Este <code data-start="1408" data-end="1413">key</code> encaja directamente con algo que <strong data-start="1447"
+        data-end="1493">ya encontramos durante nuestra exploración</strong>: <kbd
+        class="inline-code">manageIconChange()</kbd> y también con: <kbd
+        class="inline-code">setNotificationIconName()</kbd>. Incluso teníamos identificadas las funciones:</p>
+<pre><samp>manageIconChange
+setNotificationIconName</samp></pre>
+<p>Ahora sabemos qué preferencia alimenta esa lógica:</p>
+<pre><samp>change-icons
+      ↓
+¿debe cambiar el icono?
+      ↓
+manageIconChange()
+      ↓
+setNotificationIconName()</samp></pre>
+<p>Aquí ya no estamos haciendo una suposición basada únicamente en el nombre. <strong data-start="1978"
+        data-end="2087">Tenemos el <code data-start="1991" data-end="1996">key</code> y ya habíamos visto las funciones
+        relacionadas con el cambio de icono en <code data-start="2070" data-end="2084">extension.js</code>.</strong></p>
+<h4>6. Una observación</h4>
+<p>Aparece un patrón bonito, ya tenemos dos preferencias consecutivas relacionadas con los iconos:</p>
+<pre><samp>individual-icons
+      ↓
+¿Cuántos indicadores tengo?
+
+change-icons
+      ↓
+¿Debe cambiar el icono según el estado?</samp></pre>
+<p>Una decide <strong data-start="2781" data-end="2798">la estructura</strong> y la otra decide <strong
+        data-start="2816" data-end="2844">el comportamiento visual</strong>.</p>
+<p>Eso nos está permitiendo reconstruir no solo qué hace cada <code data-start="2906" data-end="2911">key</code>, sino
+    también cómo Selenium-H pensó el sistema de indicadores del panel.</p>
+<h4>7. Resumen — Key N.º 21</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>change-icons</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td><code>b</code> (booleano)</td>
+        </tr>
+        <tr>
+            <td>Valor por defecto</td>
+            <td><code>false</code></td>
+        </tr>
+        <tr>
+            <td>Summary</td>
+            <td>Cambiar iconos según haya o no notificaciones</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>Igual que el Summary</td>
+        </tr>
+        <tr>
+            <td>Función</td>
+            <td>Activa/desactiva el cambio del icono según el estado de las notificaciones</td>
+        </tr>
+        <tr>
+            <td>Relación con <code>extension.js</code></td>
+            <td><code>manageIconChange()</code> / <code>setNotificationIconName()</code></td>
+        </tr>
+    </tbody>
+</table>
+
+<h3 id="key22" class="keys-schemas">key: "autohide"</h3>
+<hr>
+<pre><code><span class="ͼo">&lt;key</span> <span class="ͼn">name</span><span class="ͼg">=</span><span class="ͼk">"autohide"</span> <span class="ͼn">type</span><span class="ͼg">=</span><span class="ͼk">"i"</span><span class="ͼo">&gt;</span>
+  <span class="ͼo">&lt;default&gt;</span>1<span class="ͼo">&lt;/default&gt;</span>
+  <span class="ͼo">&lt;summary&gt;</span>AutoHide notification indicator on panel<span class="ͼo">&lt;/summary&gt;</span>
+  <span class="ͼo">&lt;description&gt;</span>AutoHide notification indicator on panel<span class="ͼo">&lt;/description&gt;</span>
+<span class="ͼo">&lt;/key&gt;</span></code></pre>
+<h4>1. Nombre</h4>
+<p>Controla el <strong data-start="442" data-end="513">ocultamiento automático del indicador de notificaciones en el
+        panel</strong>.</p>
+<pre><samp>autohide</samp></pre>
+<p>La palabra <code data-start="527" data-end="537">autohide</code> ya nos dice que no se trata simplemente de ocultar
+    el icono manualmente: la extensión decide cuándo debe desaparecer.</p>
+<h4>2. Tipo</h4>
+<p>Es un entero.</p>
+<pre><samp>type="i"</samp></pre>
+<p>Y aquí tenemos que tener cuidado con algo que precisamente hemos aprendido durante esta investigación:</p>
+<blockquote>Que sea <code data-start="827" data-end="830">i</code> no significa que podamos interpretar el <code
+        data-start="871" data-end="874">1</code> sin mirar cómo lo utiliza el código.</blockquote>
+<p>En este caso sabemos que <code data-start="940" data-end="950">autohide</code> admite varios estados porque ya
+    encontramos comparaciones numéricas relacionadas con el comportamiento de AutoHide en <code data-start="1069"
+        data-end="1083">extension.js</code>.</p>
+<p>Por ejemplo, el código utilizaba valores como: <span class="ͼj"></span><var class="inline-code"><span
+            class="ͼj">this</span><span class="ͼg">.</span>autohide <span class="ͼg">==</span> <span
+            class="ͼj">2</span></var><span class="ͼj"></span> y por eso habíamos comentado anteriormente que esos
+    números son poco descriptivos.</p>
+<h4>3. Valor por defecto</h4>
+<pre><samp><span class="ͼo">&lt;default&gt;</span>1<span class="ͼo">&lt;/default&gt;</span></samp></pre>
+<p>El valor inicial es: <kbd class="inline-code">1</kbd> , pero <strong data-start="1362" data-end="1417">no voy a
+        traducirlo directamente a "true" o "false"</strong>, porque no es un booleano.</p>
+<p>Aquí <code data-start="1451" data-end="1454">1</code> representa uno de los estados definidos por la lógica de la
+    extensión, y esto conecta directamente con la conclusión que sacamos anteriormente: <strong data-start="1600"
+        data-end="1715">en nuestro futuro refactor de <code data-start="1632" data-end="1646">extension.js</code>
+        deberíamos sustituir esos números mágicos por nombres descriptivos</strong>, de acuerdo con los valores
+    definidos en la configuración.</p>
+<h4>4. Summary y Description</h4>
+<p>Ambos dicen:</p>
+<blockquote>AutoHide notification indicator on panel</blockquote>
+<p>Por lo tanto, la preferencia controla específicamente el <strong data-start="1926" data-end="1949">indicador del
+        panel</strong>, no el Notification Center completo.</p>
+<p>Eso lo diferencia de: <kbd class="inline-code">autoclose-menu</kbd> que controla el cierre del menú. Aquí
+    estamos hablando del <strong data-start="2099" data-end="2144">icono/indicador que permanece en el panel</strong>.
+</p>
+<h4>5. Relación con los anteriores</h4>
+<p>Ahora tenemos una pequeña familia bastante interesante:</p>
+<pre><samp>individual-icons
+      ↓
+¿Uno o varios iconos?
+
+change-icons
+      ↓
+¿Cambiar el icono según las notificaciones?
+
+autohide
+      ↓
+¿Ocultar automáticamente el indicador?</samp></pre>
+<p>Podemos verlo como tres dimensiones diferentes del mismo sistema:</p>
+<table>
+    <thead>
+        <tr>
+            <th>Key</th>
+            <th>Qué controla</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>individual-icons</code></td>
+            <td>Cantidad/estructura de indicadores</td>
+        </tr>
+        <tr>
+            <td><code>change-icons</code></td>
+            <td>Apariencia del indicador</td>
+        </tr>
+        <tr>
+            <td><code>autohide</code></td>
+            <td>Visibilidad automática del indicador</td>
+        </tr>
+    </tbody>
+</table>
+<p>Y los tres afectan directamente al <strong data-start="2724" data-end="2747">indicador del panel</strong>.</p>
+<h4>6. Una observacion</h4>
+<p>Aquí tenemos una buena candidata para nuestro futuro refactor. Este <code data-start="3199"
+        data-end="3204">key</code> refuerza exactamente aquella observación que hiciste tú: <span class="ͼg"></span><var
+        class="inline-code"><span class="ͼg">if</span> (<span class="ͼj">this</span><span
+            class="ͼg">.</span>newNotificationAction <span class="ͼg">==</span> <span class="ͼj">2</span>)</var> o
+    cualquier lógica similar basada en:</p>
+<pre><samp><span class="ͼg">==</span> <span class="ͼj">0</span>
+<span class="ͼg">==</span> <span class="ͼj">1</span>
+<span class="ͼg">==</span> <span class="ͼj">2</span></samp></pre>
+<p>Si, es funcional, pero poco expresiva. Cuando hagamos nuestra versión nueva, sería mucho más legible trabajar
+    conceptualmente con algo como:</p>
+<pre><samp>AUTOHIDE_FALSE
+AUTOHIDE_TRUE
+AUTOHIDE_DND</samp></pre>
+<p>O los nombres que correspondan <strong data-start="3617" data-end="3643">exactamente al esquema</strong>, en lugar de
+    obligarnos a recordar qué significa cada número.</p>
+<p>Ahí sí estamos encontrando una mejora concreta para <code data-start="3759" data-end="3773">extension.js</code>, no
+    simplemente cambiando código por gusto.</p>
+<h4>7. Resumen — Key N.º 22</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>autohide</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td><code>i</code> (entero)</td>
+        </tr>
+        <tr>
+            <td>Valor por defecto</td>
+            <td><code>1</code></td>
+        </tr>
+        <tr>
+            <td>Summary</td>
+            <td>AutoHide del indicador de notificaciones en el panel</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>Igual que el Summary</td>
+        </tr>
+        <tr>
+            <td>Función</td>
+            <td>Determina el comportamiento de ocultamiento automático del indicador</td>
+        </tr>
+        <tr>
+            <td>Área</td>
+            <td>Indicador del panel</td>
         </tr>
     </tbody>
 </table>
