@@ -13,6 +13,15 @@ b {
     font-weight: bold;
 }
 
+
+.row {
+    flex-wrap: wrap;
+}
+
+.row .col {
+    max-width: 100%;
+}
+
 .row>.col>li {
     margin-left: 1rem;
 }
@@ -184,7 +193,9 @@ hr:has(table) {
 
 pre {
     text-wrap: auto;
-    /*white-space: pre-line;*/
+    max-width: 100%;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
 }
 
 pre:has(> samp) {
@@ -221,6 +232,7 @@ table th {
 
 table :is(th, td) {
     text-align: start;
+    white-space: normal;
 }
 
 /**
