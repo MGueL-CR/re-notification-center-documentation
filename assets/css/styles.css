@@ -13,17 +13,31 @@ b {
     font-weight: bold;
 }
 
-
 .row {
     flex-wrap: wrap;
 }
 
 .row .col {
+    flex: 1;
     max-width: 100%;
 }
 
 .row>.col>li {
     margin-left: 1rem;
+}
+
+@media (width <=720px) {
+    .row>[class^="col"] {
+        flex: 1 1 100%;
+        background-color: #63a8f8;
+    }
+}
+
+@media (width <=640px) {
+    .row {
+        flex-wrap: nowrap;
+        background-color: #f1a275;
+    }
 }
 
 body {
