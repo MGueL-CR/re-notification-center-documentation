@@ -9,7 +9,7 @@
     </span><span class="ͼj">this</span><span class="ͼg">.</span><span>newEventsSectionParent</span><span class="ͼg">.</span><span>insert_child_at_index(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>eventsSection, </span><span class="ͼj">2</span><span>);
 }</span></code></pre>
 <p>Y aquí creo que empieza la parte más interesante. Ya no está creando componentes (widgets). Ahora empieza a <strong
-        data-start="4251" data-end="4312">reorganizar el Centro de Notificaciones original de GNOME</strong>,&nbsp; es
+        data-start="4251" data-end="4312">reorganizar el Centro de Notificaciones original de GNOME</strong>, es
     decir, estamos <strong data-start="936" data-end="974">moviendo widgets que GNOME ya creó</strong>. Eso cambia
     completamente el enfoque.</p>
 <p>En <code data-start="1018" data-end="1027">_init()</code> vimos que se guardaban referencias como:</p>
@@ -163,8 +163,8 @@ Calendario
 ];</span></code></pre>
     </div>
 </div>
-<p>Dependiendo de las preferencias del usuario. Es decir...&nbsp;<strong data-start="809" data-end="855">el usuario
-        decide qué secciones quiere ver</strong>&nbsp;y el <code data-start="863" data-end="868">for</code> simplemente
+<p>Dependiendo de las preferencias del usuario. Es decir... <strong data-start="809" data-end="855">el usuario
+        decide qué secciones quiere ver</strong> y el <code data-start="863" data-end="868">for</code> simplemente
     las recorre.</p>
 <hr>
 <p>Aquí Selenium-H trata a <strong data-start="1001" data-end="1011">Events</strong> de forma diferente.</p>
@@ -362,7 +362,7 @@ actor-removed</samp></pre>
         data-end="1564">eventsSection</code>, <code data-start="1566" data-end="1587">notificationSection</code>...),
     pero todavía estaban "sueltas". Con este bloque, Selenium-H empieza a ensamblarlas para que el usuario pueda verlas
     cuando abra el panel.</p>
-<p>Así que...&nbsp;<strong data-start="1746" data-end="1838" data-is-last-node="">¡volvamos&nbsp;y no dejemos ninguna
+<p>Así que... <strong data-start="1746" data-end="1838" data-is-last-node="">¡volvamos y no dejemos ninguna
         línea sin entender!</strong></p>
 <pre><samp class="samp-block">this.scrollView._delegate = this;</samp></pre>
 <div class="row">
@@ -442,7 +442,7 @@ actor-removed</samp></pre>
 <p>Hasta ahora solo existía, ahora se agrega al <code data-start="2139" data-end="2150">BoxLayout</code>. Lo interesante
     es que <strong data-start="2175" data-end="2216">no significa que siempre vaya a verse</strong>. Más bien ya queda
     preparado.</p>
-<p>Probablemente, cuando no existan notificaciones,&nbsp;otro método haga algo como:</p>
+<p>Probablemente, cuando no existan notificaciones, otro método haga algo como:</p>
 <pre><samp class="samp-block">this.noNotificationLabel.visible = true;</samp></pre>
 <p>Yo sospecho que será <code data-start="2408" data-end="2426">manageAutohide()</code> o <code data-start="2429"
         data-end="2447">resetIndicator()</code>. Todavía no lo sabemos.</p>
@@ -467,11 +467,11 @@ actor-removed</samp></pre>
     <li>crear iconos</li>
     <li>recorrer <code data-start="3031" data-end="3048">showingSections</code></li>
 </ul>
-<p>...era preparar el contenido.&nbsp;</p>
+<p>...era preparar el contenido. </p>
 <p>Aquí, por fin, ese contenido entra dentro del menú de la extensión.</p>
 <hr>
 <h4>Una obserbación</h4>
-<p>Fíjate en el orden.&nbsp;</p>
+<p>Fíjate en el orden. </p>
 <div class="row">
     <div class="col"><span>No hace esto al principio del método:</span></div>
     <div class="col">
@@ -602,7 +602,7 @@ Hidden</samp></pre>
     </div>
 </div>
 <div class="row">
-    <div class="col"><span>Entonces:&nbsp;</span></div>
+    <div class="col"><span>Entonces: </span></div>
     <div class="col">
         <pre><samp>1
 2
@@ -673,7 +673,7 @@ false
         <pre><samp>0</samp></pre>
     </div>
 </div>
-<p>Como resultado&nbsp;<code data-start="2631" data-end="2639">notificationSectionToBeShown</code>&nbsp;es invisible.
+<p>Como resultado <code data-start="2631" data-end="2639">notificationSectionToBeShown</code> es invisible.
 </p>
 <div class="row">
     <div class="col"><span>Pero, si vale</span></div>
@@ -702,7 +702,7 @@ true
 <p>Como resultado <code data-start="2631" data-end="2639">notificationSectionToBeShown</code> es visible.</p>
 <hr>
 <h4>¿Pero qué botón es este?</h4>
-<p>No es <strong data-start="3675" data-end="3692">nuestro botón</strong>. Es:&nbsp;</p>
+<p>No es <strong data-start="3675" data-end="3692">nuestro botón</strong>. Es: </p>
 <pre><samp class="samp-block">this._messageList._clearButton</samp></pre>
 <p>Es decir... el botón original de GNOME. Entonces Selenium-H está diciendo algo así:</p>
 <blockquote>"Dependiendo de cómo esté configurada la extensión, oculta o muestra el botón original."</blockquote>

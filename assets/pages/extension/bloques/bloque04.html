@@ -42,7 +42,7 @@
     con <code data-start="1745" data-end="1757">ScrollView</code>. Todavía no sabemos por qué GNOME lo necesita, pero ya
     vimos que Selenium-H lo usa cuando trabaja con componentes complejos de GTK.</p>
 <pre><samp class="samp-block">this.dndItem.connect("toggled", ()=&gt;this.dndToggle());</samp></pre>
-<p>Esto sí es muy claro. Cuando el usuario cambia el interruptor... Se ejecuta:&nbsp;</p>
+<p>Esto sí es muy claro. Cuando el usuario cambia el interruptor... Se ejecuta: </p>
 <pre><samp class="samp-block">this.dndToggle();</samp></pre>
 <p>Y aquí ya tenemos una conexión mental muy útil. Pues ahora ya sabemos <strong data-start="2313" data-end="2344">quién
         llama a <code data-start="2329" data-end="2342">dndToggle()</code></strong>. No tuvimos que buscarlo, El propio
@@ -99,8 +99,8 @@ No molestar</samp></pre>
     widget, eso hace que el código sea fácil de mantener.</p>
 <hr>
 <p><strong data-start="2118" data-end="2187">Ahora viene un bloque que me parece especialmente
-        interesante.&nbsp;</strong></p>
-<p>Después del <code data-start="2201" data-end="2209">switch</code> aparece:&nbsp;</p>
+        interesante. </strong></p>
+<p>Después del <code data-start="2201" data-end="2209">switch</code> aparece: </p>
 <pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>loadDndStatus();
 </span><span class="ͼj">this</span><span class="ͼg">.</span><span>resetIndicator();</span></code></pre>
 <p>Son solo dos líneas, pero sospecho que representan un cambio de fase:</p>
@@ -111,7 +111,7 @@ No molestar</samp></pre>
 <p>Y tengo muchas ganas de ver qué hace <code data-start="2533" data-end="2550">loadDndStatus()</code>, porque por el
     nombre parece uno de esos métodos que no crea nada, sino que <strong data-start="2627" data-end="2697">lee el estado
         actual de GNOME y adapta la interfaz de la extensión</strong>. Tengo la impresión de que será otro buen ejemplo
-    de cómo Selenium-H reutiliza el sistema en lugar de reemplazarlo.&nbsp;</p>
+    de cómo Selenium-H reutiliza el sistema en lugar de reemplazarlo. </p>
 <p>Observa estas dos líneas:</p>
 <pre><samp class="samp-block">this.loadDndStatus();
 this.resetIndicator();</samp></pre>

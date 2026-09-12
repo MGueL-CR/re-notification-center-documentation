@@ -23,8 +23,8 @@
                     │
                     ▼
              usuario instala</samp></pre>
-<p>Eso es perfectamente posible y&nbsp;<strong data-start="2915" data-end="2974">no requeriría que <code
-            data-start="2935" data-end="2957">extensions.gnome.org</code> compilara nada</strong>. Pero tenemos una
+<p>Eso es perfectamente posible y <strong data-start="2915" data-end="2974">no requeriría que <code data-start="2935"
+            data-end="2957">extensions.gnome.org</code> compilara nada</strong>. Pero tenemos una
     buena razón para no decidirlo todavía, tenemos dos mecanismos posibles:</p>
 
 <div class="row">
@@ -75,7 +75,7 @@ usuario</samp></pre>
 <p>Este archivo <i>notification-centerSelenium-H.v24.shell-extension.zip</i> es una <strong data-start="28"
         data-end="51">evidencia muy buena</strong> para nuestra investigación. Ahora ya
     no estamos planteando solamente una hipótesis: <strong data-start="140" data-end="218">podemos observar directamente
-        qué contiene el paquete que GNOME distribuye</strong>&nbsp;y hay varias cosas interesantes.</p>
+        qué contiene el paquete que GNOME distribuye</strong> y hay varias cosas interesantes.</p>
 <h4>1. El <code data-start="265" data-end="271">.zip</code> sí contiene los <code data-start="288"
         data-end="293">.mo</code></h4>
 <hr>
@@ -143,7 +143,7 @@ msgfmt </span><span class="ͼm">${poFile}</span><span>/</span><span class="ͼm">
 ├── it/
 ├── nl/
 └── notification-center.pot</samp></pre>
-<p>Es decir:&nbsp;<code data-start="2113" data-end="2117">de</code> y <code data-start="2120" data-end="2124">ko</code>
+<p>Es decir: <code data-start="2113" data-end="2117">de</code> y <code data-start="2120" data-end="2124">ko</code>
     no están en el paquete publicado que acabas de descargar. Eso abre una pregunta diferente y bastante interesante:
 </p>
 <blockquote>¿Por qué existen traducciones <code data-start="2275" data-end="2279">de</code> y <code data-start="2282"
@@ -175,7 +175,7 @@ gschemas.compiled</samp></pre>
 notification-center.mo</samp></pre>
     </div>
 </div>
-<p>Este bloque nos explica de dónde sale: <b>gschemas.compiled.&nbsp;</b>No es un archivo que el autor haya escrito
+<p>Este bloque nos explica de dónde sale: <b>gschemas.compiled. </b>No es un archivo que el autor haya escrito
     manualmente. Es un <strong data-start="5193" data-end="5242">artefacto generado por <code data-start="5218"
             data-end="5240">glib-compile-schemas</code></strong>. Por tanto, ahora tenemos dos tipos diferentes de
     compilación:</p>
@@ -318,4 +318,5 @@ descriptions</samp></pre>
     <code>glib-compile-schemas</code>. El usuario recibe los <code data-start="4361" data-end="4366">.mo</code> y <code
         data-start="4369" data-end="4388">gschemas.compiled</code>. Por lo tanto, no
     necesitamos que <code data-start="4424" data-end="4446">extensions.gnome.org</code> haga necesariamente esas
-    compilaciones en el momento de instalar.</p>
+    compilaciones en el momento de instalar.
+</p>

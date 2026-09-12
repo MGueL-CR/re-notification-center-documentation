@@ -30,29 +30,29 @@
         <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
     
       }</code></pre>
-<p>Debo decir que con esto&nbsp;<strong data-start="34" data-end="93">acabamos de confirmar varias hipótesis de un solo
+<p>Debo decir que con esto <strong data-start="34" data-end="93">acabamos de confirmar varias hipótesis de un solo
         golpe</strong>.</p>
 <p>Este método es mucho más rico de lo que esperaba. No solo carga el estado de DND, sino que <strong data-start="187"
         data-end="218">sincroniza toda la interfaz</strong> con ese estado.</p>
-<p>Cuando uno lee&nbsp;<span class="ͼm"></span><code
-        class="inline-code"><span class="ͼm">loadDndStatus</span>()</code>&nbsp;piensa:</p>
+<p>Cuando uno lee <span class="ͼm"></span><code class="inline-code"><span class="ͼm">loadDndStatus</span>()</code>
+    piensa:</p>
 <blockquote>"Va a leer el estado."</blockquote>
-<p>Pero en realidad hace mucho más. Yo lo renombraría mentalmente como:&nbsp;</p>
+<p>Pero en realidad hace mucho más. Yo lo renombraría mentalmente como: </p>
 <blockquote>"Sincronizar la interfaz con el estado DND."</blockquote>
 <p>Porque eso es exactamente lo que hace.</p>
 <hr>
 <pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>isDndOff </span><span class="ͼg">=</span><span> </span><span class="ͼj">this</span><span class="ͼg">.</span><span>dndpref</span><span class="ͼg">.</span><span>get_boolean(</span><span class="ͼk">"show-banners"</span><span>);</span></code></pre>
 <p>¡Aquí está el famoso estado! Y además nos revela algo muy interesante, no existe una preferencia llamada:
-    <b><i>do-not-disturb&nbsp;</i></b>sino que utiliza: <i><b>show-banners</b></i>&nbsp;
+    <b><i>do-not-disturb </i></b>sino que utiliza: <i><b>show-banners</b></i>
 </p>
 <p>Eso tiene muchísimo sentido, porque GNOME realmente implementa el "No molestar" como:</p>
 <blockquote>"¿Mostrar banners?"</blockquote>
-<p>Si: <b>show-banners</b> = <i>true&nbsp;</i>Entonces... No molestar está <strong data-start="1022"
-        data-end="1037">desactivado</strong>, por eso la variable se llama:&nbsp;<b><i>isDndOff</i></b></p>
+<p>Si: <b>show-banners</b> = <i>true </i>Entonces... No molestar está <strong data-start="1022"
+        data-end="1037">desactivado</strong>, por eso la variable se llama: <b><i>isDndOff</i></b></p>
 <hr>
 <pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>dndItem</span><span class="ͼg">.</span><span>setToggleState(</span><span class="ͼg">!</span><span class="ͼj">this</span><span class="ͼg">.</span><span>isDndOff);</span></code></pre>
 <p>Aquí también aprendemos algo, hay un interruptor (toggle) dentro de la extensión y lo pone sincronizado con el estado
-    real.&nbsp;</p>
+    real. </p>
 <pre><samp>GNOME
 ↓
 
@@ -86,8 +86,8 @@ No. Entonces... blinkIconStopIfBlinking();</samp></pre>
 <p>Deja el icono normal.</p>
 <hr>
 <pre><code><span class="ͼg">if</span><span>(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>isDndOff)</span></code></pre>
-<p>Si DND está desactivado, hace&nbsp;<b><i>set_opacity(255);</i></b>&nbsp;y el icono queda completamente visible.
-    Luego&nbsp;<b><i>manageLabel();</i></b>&nbsp;Y termina.</p>
+<p>Si DND está desactivado, hace <b><i>set_opacity(255);</i></b> y el icono queda completamente visible.
+    Luego <b><i>manageLabel();</i></b> Y termina.</p>
 <p>Pero... Cuando DND está activo... Aquí estaba la sorpresa.</p>
 <pre><code><span class="ͼg">if</span><span>(</span><span class="ͼm">Gtk</span><span class="ͼg">.</span><span>IconTheme</span><span class="ͼg">.</span><span>get_default()) {</span></code></pre>
 <p>Busca si el tema tiene un icono específico y pregunta:</p>

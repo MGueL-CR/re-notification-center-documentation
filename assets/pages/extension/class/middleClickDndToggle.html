@@ -40,7 +40,7 @@ Central
 ↓
 
 ...</samp></pre>
-<p>Pero... Aquí ocurre algo curioso, solo existe:&nbsp;<b><i>case 2:</i></b></p>
+<p>Pero... Aquí ocurre algo curioso, solo existe: <b><i>case 2:</i></b></p>
 <h3>¿Qué significa eso?</h3>
 <p>Aquí es donde me parece elegante la solución Selenium-H <strong data-start="855" data-end="878">no quiso
         reemplazar</strong> el comportamiento normal, solo quiso añadir uno nuevo.</p>
@@ -61,7 +61,7 @@ La extensión hace algo especial.</samp></pre>
 <pre><code><span class="ͼe">// close the menu, since it gets open on any click</span></code></pre>
 <p>¡Habíamos apostado durante semanas! Y aquí Selenium-H nos deja la respuesta escrita en un comentario. Traducción:</p>
 <blockquote>"Cerrar el menú, porque se abre con cualquier clic."</blockquote>
-<p>Dibujemos la secuencia:&nbsp;</p>
+<p>Dibujemos la secuencia: </p>
 <pre><samp>Usuario
 ↓
 
@@ -95,7 +95,7 @@ Actualiza el estado del indicador</samp></pre>
         <pre><samp>visible = false;</samp></pre>
     </div>
 </div>
-<p><b>¿Por qué?</b>&nbsp;No quiero afirmar nada, pero sí formular una hipótesis.</p>
+<p><b>¿Por qué?</b> No quiero afirmar nada, pero sí formular una hipótesis.</p>
 <blockquote>Creo que Selenium-H quería evitar que el usuario viera el menú abrirse durante una fracción de segundo.
 </blockquote>
 <p>Imagina esto si hiciera click:</p>
@@ -125,7 +125,7 @@ El usuario prácticamente nunca llega a verlo.</samp></pre>
 <blockquote>Alternar el modo No Molestar.</blockquote>
 <hr>
 <pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>loadDndStatus();</span></code></pre>
-<p>Esto me parece muy elegante. Primero cambia el estado, luego actualiza la interfaz.&nbsp;</p>
+<p>Esto me parece muy elegante. Primero cambia el estado, luego actualiza la interfaz. </p>
 <pre><samp>Cambiar DND
 ↓
 
@@ -155,10 +155,10 @@ Actualizar lo necesario</samp></pre>
 <h4>¿Existía un evento solo para el botón central?</h4>
 <p>Podemos plantear varias posibilidades:</p>
 <h5>Hipótesis A:</h5>
-<p>GNOME/GObject simplemente ofrece un único evento:&nbsp;<i>button-press-event</i></p>
-<p>Y el botón se consulta mediante:&nbsp;<i>event.get_button()</i></p>
+<p>GNOME/GObject simplemente ofrece un único evento: <i>button-press-event</i></p>
+<p>Y el botón se consulta mediante: <i>event.get_button()</i></p>
 <p>Si eso es así... No había otra opción.</p>
-<h5>Hipótesis B:&nbsp;</h5>
+<h5>Hipótesis B: </h5>
 <p>Sí existe otra forma, pero Selenium-H prefirió esta porque es el patrón habitual en GTK/GNOME.</p>
 <h5>Hipótesis C:</h5>
 <p>Existía otra forma, pero en GNOME 40 no funcionaba correctamente o era menos portable.</p>
@@ -166,7 +166,7 @@ Actualizar lo necesario</samp></pre>
 <p>Después de haber visto bastante código de esta extensión... Me inclino todavía más por la Hipótesis A.</p>
 <h6>¿Por qué?</h6>
 <p>Porque Selenium-H reutiliza muchísimo la API de GNOME, no da la impresión de ser alguien que haga rodeos
-    innecesarios. Si hubiera existido un elegante:&nbsp;<i>middle-button-press-event&nbsp;</i>me sorprendería que no lo
+    innecesarios. Si hubiera existido un elegante: <i>middle-button-press-event </i>me sorprendería que no lo
     hubiera usado.</p>
-<p>Pero... Eso sigue siendo una hipótesis.&nbsp;Pero... Eso sigue siendo una hipótesis y eso ya sería una investigación
+<p>Pero... Eso sigue siendo una hipótesis. Pero... Eso sigue siendo una hipótesis y eso ya sería una investigación
     aparte.</p>

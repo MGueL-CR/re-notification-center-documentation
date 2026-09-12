@@ -54,20 +54,20 @@ ejecuta las instrucciones</samp></pre>
 <p>El autor está indicando que esta es la <strong data-start="733" data-end="762">versión 4 de <code data-start="748"
             data-end="760">INSTALL.sh</code></strong>. Importante: esto <strong data-start="782" data-end="844">no
         necesariamente corresponde a la versión de la extensión</strong>. Es decir, no debemos
-    interpretar:&nbsp;<code><i>Version 4</i> </code>como: <code><i>Notification Center v4.</i></code></p>
+    interpretar: <code><i>Version 4</i> </code>como: <code><i>Notification Center v4.</i></code></p>
 <p>Es la versión del <strong data-start="966" data-end="980">instalador</strong>. Lo podemos considerar simplemente
     información de mantenimiento para el desarrollador.</p>
 <h3>Directorio predeterminado de instalación</h3>
 <pre><code><span class="ͼe"># Default Installation Directory</span><span>
 </span><span class="ͼm">installDir</span><span class="ͼg">=</span><span>~/.local/share/gnome-shell/extensions</span></code></pre>
-<p>Nuevamente tenemos un comentario descriptivo y después una variable:&nbsp;<code
-        class="inline-code"><i>installDir</i></code>&nbsp;que contiene:&nbsp;</p>
+<p>Nuevamente tenemos un comentario descriptivo y después una variable: <code
+        class="inline-code"><i>installDir</i></code> que contiene: </p>
 <blockquote>~/.local/share/gnome-shell/extensions</blockquote>
 <p>El <code data-start="1380" data-end="1383">~</code> representa el <strong data-start="1398"
         data-end="1451">directorio HOME del usuario que ejecuta el script</strong>.</p>
 <div class="row">
     <div class="col">
-        <p>Por ejemplo, en tu sistema:&nbsp;</p>
+        <p>Por ejemplo, en tu sistema: </p>
     </div>
     <div class="col">
         <pre><samp>~
@@ -103,23 +103,23 @@ ejecuta las instrucciones</samp></pre>
 <h3>Nombre de la extensión</h3>
 <pre><code><span class="ͼe"># Extension Name and directory</span><span>
 </span><span class="ͼm">extensionName</span><span class="ͼg">=</span><span>notification-center</span></code></pre>
-<p>Aquí aparece otra variable:&nbsp;<code class="inline-code">extensionName</code>&nbsp;con el
-    valor:&nbsp;&nbsp;<i><code class="inline-code">notification-center</code>.</i></p>
+<p>Aquí aparece otra variable: <code class="inline-code">extensionName</code> con el
+    valor: <i><code class="inline-code">notification-center</code>.</i></p>
 <p>Y aquí encontramos algo que <strong data-start="2231" data-end="2284">ya conocemos de nuestro estudio de <code
             data-start="2268" data-end="2282">extension.js</code></strong>.</p>
 <p>Recordemos:</p>
 <pre><code><span class="ͼm">ExtensionUtils</span><span class="ͼg">.</span><span>initTranslations(</span><span class="ͼk">"notification-center"</span><span>);</span></code></pre>
-<p>Tenemos el mismo identificador:&nbsp;<code class="inline-code"><i>notification-center</i></code>.</p>
+<p>Tenemos el mismo identificador: <code class="inline-code"><i>notification-center</i></code>.</p>
 <p>Pero todavía no debemos asumir que todas las apariciones tienen exactamente la misma función. En este contexto
     concreto, el nombre se está utilizando como <strong data-start="2596" data-end="2658">nombre base de la
         extensión/archivos relacionados con ella</strong>.</p>
-<p>Por ejemplo, más adelante vimos que el instalador genera:&nbsp;<code
-        class="inline-code"><i>notification-center.mo</i></code>&nbsp; precisamente a partir de:&nbsp;<code
+<p>Por ejemplo, más adelante vimos que el instalador genera: <code
+        class="inline-code"><i>notification-center.mo</i></code> precisamente a partir de: <code
         class="inline-code">$extensionName</code>. Así que esta variable también sirve para evitar escribir
-    repetidamente:&nbsp;<code class="inline-code"><i>notification-center</i></code>.</p>
+    repetidamente: <code class="inline-code"><i>notification-center</i></code>.</p>
 <h3>Directorio de la extensión</h3>
 <pre><code><span class="ͼm">extensionDir</span><span class="ͼg">=</span><span class="ͼm">$extensionName</span><span>@Selenium-H</span></code></pre>
-<p>Aquí tenemos:&nbsp;<code class="inline-code">extensionDir</code> y su valor se construye utilizando la variable
+<p>Aquí tenemos: <code class="inline-code">extensionDir</code> y su valor se construye utilizando la variable
     anterior:</p>
 <pre><samp>extensionName
     │
@@ -130,9 +130,9 @@ notification-center
     ▼
 notification-center@Selenium-H</samp></pre>
 <p>Este nombre nos resulta especialmente importante porque <strong data-start="3284" data-end="3343">GNOME Shell
-        identifica las extensiones mediante su UUID</strong>. En este proyecto antiguo, el UUID es:&nbsp;<code
-        class="inline-code"><i>notification-center@Selenium-H</i></code>&nbsp;y eso explica por qué el instalador
-    necesita distinguir: <code class="inline-code">extensionName</code>&nbsp;de&nbsp;<code
+        identifica las extensiones mediante su UUID</strong>. En este proyecto antiguo, el UUID es: <code
+        class="inline-code"><i>notification-center@Selenium-H</i></code> y eso explica por qué el instalador
+    necesita distinguir: <code class="inline-code">extensionName</code> de <code
         class="inline-code">extensionDir</code>.</p>
 <p>Son dos conceptos diferentes:</p>
 <table>
@@ -258,13 +258,13 @@ notification-center@Selenium-H</samp></pre>
      predeterminado</samp></pre>
 <p>Esto nos dice algo interesante, el directorio que vimos en el bloque anterior <strong data-start="1277"
         data-end="1303">no está realmente fijo</strong>, es un <strong data-start="1312" data-end="1336">valor
-        predeterminado</strong>&nbsp;y el usuario puede proporcionar otro directorio.</p>
+        predeterminado</strong> y el usuario puede proporcionar otro directorio.</p>
 <h3>Comprueba si el directorio existe</h3>
 <pre><code><span class="ͼg">if</span><span> [ ! </span><span class="ͼn">-d</span><span> </span><span class="ͼm">$installDir</span><span> ]
 </span><span class="ͼg">then</span></code></pre>
-<p>Aquí aparece:&nbsp;<code class="inline-code">-d</code>&nbsp;que comprueba si una ruta corresponde a un <strong
+<p>Aquí aparece: <code class="inline-code">-d</code> que comprueba si una ruta corresponde a un <strong
         data-start="1548" data-end="1572">directorio existente</strong>. El <code data-start="1578"
-        data-end="1581">!</code> invierte el resultado.&nbsp;</p>
+        data-end="1581">!</code> invierte el resultado. </p>
 <div class="row">
     <div class="col"><span>Por tanto:</span>
         <pre><samp>[ ! -d $installDir ]</samp></pre>
@@ -317,8 +317,8 @@ Would you like to create the directory (y/n) ?</samp></pre>
     </div>
     <div class="col"></div>
 </div>
-<p>Espera que el usuario escriba algo. Por ejemplo: <i>y<u>&nbsp;&nbsp;</u>&nbsp;e</i>ntonces&nbsp;<i>response =
-        y</i>&nbsp;</p>
+<p>Espera que el usuario escriba algo. Por ejemplo: <i>y<u> </u> e</i>ntonces <i>response =
+        y</i> </p>
 <p>Aquí tenemos un instalador <strong data-start="2882" data-end="2897">interactivo</strong>.</p>
 <h3>Instalación no interactiva</h3>
 <pre><code><span class="ͼg">else</span><span>
@@ -350,18 +350,18 @@ $2 = y</samp></pre>
 <pre><code><span class="ͼg">if</span><span> [ </span><span class="ͼm">$response</span><span> </span><span class="ͼg">==</span><span> </span><span class="ͼk">"y"</span><span> ]
 </span><span class="ͼg">then</span></code></pre>
 <p>Pregunta si la respuesta fue exactamente: <u><i>y</i></u></p>
-<p>Si es así,&nbsp;<code class="inline-code">mkdir</code>, crea un directorio y&nbsp;<code
-        class="inline-code">-p</code>&nbsp;significa que también puede crear los directorios padre que hagan falta.</p>
+<p>Si es así, <code class="inline-code">mkdir</code>, crea un directorio y <code class="inline-code">-p</code> significa
+    que también puede crear los directorios padre que hagan falta.</p>
 <pre><samp>mkdir -p $installDir</samp></pre>
-<p>Por ejemplo, si no existiera:&nbsp;<code class="inline-code">~/.local/share/gnome-shell/extensions</code>, <code
+<p>Por ejemplo, si no existiera: <code class="inline-code">~/.local/share/gnome-shell/extensions</code>, <code
         data-start="3972" data-end="3982">mkdir -p</code> puede crear la cadena necesaria.</p>
 <h3>Comprueba si <code data-start="4040" data-end="4047">mkdir</code> tuvo éxito</h3>
 <pre><code><span class="ͼg">if</span><span> [ </span><span class="ͼm">$?</span><span> </span><span class="ͼn">-eq</span><span> </span><span class="ͼj">0</span><span> ]</span></code></pre>
-<p>Este es un concepto <strong data-start="4127" data-end="4153">muy importante en Bash</strong>.&nbsp;<code
+<p>Este es un concepto <strong data-start="4127" data-end="4153">muy importante en Bash</strong>. <code
         data-start="4156" data-end="4160">$?</code> contiene el <strong data-start="4173" data-end="4222">código de
         salida del último comando ejecutado</strong>. Justamente antes ejecutamos:</p>
 <pre><samp>mkdir -p $installDir</samp></pre>
-<p>Por lo que ahora: <code class="inline-code">$?</code>&nbsp;contiene el resultado de <code data-start="4349"
+<p>Por lo que ahora: <code class="inline-code">$?</code> contiene el resultado de <code data-start="4349"
         data-end="4356">mkdir</code>.</p>
 <div class="row">
     <div class="col"><span>Normalmente:</span>
@@ -387,8 +387,8 @@ otro valor = error</samp></pre>
     </span><span class="ͼl">echo</span><span> </span><span class="ͼk">" Error ! "</span><span>
     </span><span class="ͼg">exit</span><span>
 </span><span class="ͼg">fi</span></code></pre>
-<p>Si <code data-start="4748" data-end="4755">mkdir</code> falló,&nbsp;<code data-start="4828"
-        data-end="4834">exit</code> termina la ejecución del script.</p>
+<p>Si <code data-start="4748" data-end="4755">mkdir</code> falló, <code data-start="4828" data-end="4834">exit</code>
+    termina la ejecución del script.</p>
 <pre><samp>mkdir
   │
   ▼
@@ -427,7 +427,7 @@ Exiting ... !
 <h3>Informa qué extensión va a instalar</h3>
 <pre><code><span class="ͼl">echo</span><span> </span><span class="ͼk">"Installing Extension "</span><span class="ͼm">$extensionDir</span></code></pre>
 <p><code data-start="329" data-end="335">echo</code> muestra texto en la terminal y como <code data-start="372"
-        data-end="387">$extensionDir</code> contiene:&nbsp;<i>notification-center@Selenium-H,&nbsp;</i>el resultado
+        data-end="387">$extensionDir</code> contiene: <i>notification-center@Selenium-H, </i>el resultado
     sería aproximadamente:</p>
 <pre><samp>Installing Extension notification-center@Selenium-H</samp></pre>
 <p>Aquí vemos nuevamente por qué anteriormente se definió <code data-start="600" data-end="614">extensionDir</code>:
@@ -435,7 +435,7 @@ Exiting ... !
 <h3>Informa dónde se instalará</h3>
 <pre><code><span class="ͼl">echo</span><span> </span><span class="ͼk">"Installation Path "</span><span class="ͼm">$installDir</span></code></pre>
 <p>Como <code data-start="731" data-end="743">installDir</code> normalmente contiene:
-    <i>~/.local/share/gnome-shell/extensions</i>&nbsp;mostraría:
+    <i>~/.local/share/gnome-shell/extensions</i> mostraría:
 </p>
 <pre><samp>Installation Path ~/.local/share/gnome-shell/extensions</samp></pre>
 <p>Pero si el usuario proporcionó <code data-start="930" data-end="934">$1</code>, aquí aparecería el directorio
@@ -481,8 +481,8 @@ echo "Mundo"</samp></pre>
         data-end="2053">no afecta al resultado de este mensaje</strong>.</p>
 <h3>Elimina la versión anterior</h3>
 <pre><code><span class="ͼl">rm</span><span> </span><span class="ͼn">-rf</span><span> </span><span class="ͼm">$installDir</span><span class="ͼk">"/"</span><span class="ͼm">$extensionDir</span></code></pre>
-<p>Aquí está la parte importante:&nbsp;<code data-start="2175" data-end="2179">rm</code> significa <strong
-        data-start="2190" data-end="2200">remove</strong>. Las opciones:</p>
+<p>Aquí está la parte importante: <code data-start="2175" data-end="2179">rm</code> significa <strong data-start="2190"
+        data-end="2200">remove</strong>. Las opciones:</p>
 <p><code class="inline-code">-r</code> significa <em data-start="2244" data-end="2255">recursive</em>: elimina
     directorios y todo su contenido.</p>
 <p><code class="inline-code">-f</code> significa <em data-start="2325" data-end="2332">force</em>: no pregunta antes de
@@ -552,7 +552,7 @@ instalación limpia
 └── old-file.js    ← ¡quedaría!</samp></pre>
     </div>
 </div>
-<p>Con:&nbsp;<code class="inline-code"><i>rm -rf ...</i></code>&nbsp;primero se elimina todo y luego se instala
+<p>Con: <code class="inline-code"><i>rm -rf ...</i></code> primero se elimina todo y luego se instala
     nuevamente.</p>
 <pre><samp>extension/
       ↓
@@ -594,7 +594,7 @@ Removing any Older Version ...   Done</samp></pre>
     <li><code>-n</code> → no hace salto de línea.</li>
     <li><code>-e</code> → habilita secuencias especiales, aunque aquí no parece necesario.</li>
 </ul>
-<p>La intención es mostrar: <i>Copying New Version ...&nbsp;</i>y dejar el cursor en esa misma línea mientras se
+<p>La intención es mostrar: <i>Copying New Version ... </i>y dejar el cursor en esa misma línea mientras se
     ejecutan los siguientes comandos.</p>
 <div class="row">
     <div class="col"><span>Al final:</span>
@@ -610,7 +610,7 @@ Removing any Older Version ...   Done</samp></pre>
 </div>
 <h3>Copia la extensión</h3>
 <pre><code><span class="ͼ10">cp</span><span> </span><span class="ͼ12">-rf</span><span> </span><span class="ͼ11">$extensionDir</span><span> </span><span class="ͼ11">$installDir</span></code></pre>
-<p>Aquí aparece:&nbsp;<code class="inline-code">cp</code>&nbsp;que significa <strong data-start="844"
+<p>Aquí aparece: <code class="inline-code">cp</code> que significa <strong data-start="844"
         data-end="852">copy</strong>. Las opciones:</p>
 <pre><samp>-r → copia directorios recursivamente
 -f → fuerza la copia</samp></pre>
@@ -652,8 +652,8 @@ Removing any Older Version ...   Done</samp></pre>
 <p>Es decir, el instalador espera una estructura de trabajo determinada.</p>
 <h3>Copia <code data-start="1979" data-end="1988">schemas</code></h3>
 <pre><code><span class="ͼ10">cp</span><span> </span><span class="ͼ12">-rf</span><span> schemas </span><span class="ͼ11">$installDir</span><span class="ͼz">"/"</span><span class="ͼ11">$extensionDir</span></code></pre>
-<p>Aquí ocurre algo muy interesante, el script toma: <code class="inline-code">schemas/</code>&nbsp;del directorio
-    actual y lo copia dentro de:&nbsp;<b>$installDir/$extensionDir</b></p>
+<p>Aquí ocurre algo muy interesante, el script toma: <code class="inline-code">schemas/</code> del directorio
+    actual y lo copia dentro de: <b>$installDir/$extensionDir</b></p>
 <pre><samp>repositorio
         ├── schemas/
         │   └── ...
@@ -675,7 +675,7 @@ Removing any Older Version ...   Done</samp></pre>
 </div>
 <h3>Copia <code data-start="2901" data-end="2909">locale</code></h3>
 <pre><code><span class="ͼ10">cp</span><span> </span><span class="ͼ12">-rf</span><span> locale </span><span class="ͼ11">$installDir</span><span class="ͼz">"/"</span><span class="ͼ11">$extensionDir</span></code></pre>
-<p>Y aquí tenemos la otra pieza que acabamos de investigar. Copia <code class="inline-code">locale/</code>&nbsp;dentro
+<p>Y aquí tenemos la otra pieza que acabamos de investigar. Copia <code class="inline-code">locale/</code> dentro
     del directorio de la extensión.</p>
 <div class="row">
     <div class="col"><span>Por tanto:</span>
@@ -701,8 +701,8 @@ Removing any Older Version ...   Done</samp></pre>
 <p>Pero aquí tenemos que detenernos un momento, hay algo que todavía no hemos visto en <code data-start="3530"
         data-end="3542">INSTALL.sh</code>:</p>
 <blockquote>¿En qué momento se generan los <code data-start="3580" data-end="3585">.mo</code>?</blockquote>
-<p>Porque este bloque solamente hace:&nbsp;<i>cp locale ...&nbsp;</i>No hay <code data-start="3660"
-        data-end="3668">msgfmt</code> aquí. Por lo tanto, <strong data-start="3690" data-end="3760">la compilación de
+<p>Porque este bloque solamente hace: <i>cp locale ... </i>No hay <code data-start="3660" data-end="3668">msgfmt</code>
+    aquí. Por lo tanto, <strong data-start="3690" data-end="3760">la compilación de
         las traducciones debe ocurrir antes de este <code data-start="3754" data-end="3758">cp</code></strong>. Así que
     debemos tener muy presente el <strong data-start="4032" data-end="4052">orden del script</strong>.</p>
 <p>Probablemente la secuencia será:</p>
@@ -743,8 +743,8 @@ glib-compile-schemas schemas
         $extensionDir = notification-center@Selenium-H</samp></pre>
 <p>Terminamos en:</p>
 <pre><samp>~/.local/share/gnome-shell/extensions/notification-center@Selenium-H</samp></pre>
-<p>Esto es importante porque el siguiente comando utiliza una ruta relativa:&nbsp;<i>glib-compile-schemas
-        schemas.&nbsp;</i>Por lo tanto, necesita estar ubicado en el directorio de la extensión para encontrar:
+<p>Esto es importante porque el siguiente comando utiliza una ruta relativa: <i>glib-compile-schemas
+        schemas. </i>Por lo tanto, necesita estar ubicado en el directorio de la extensión para encontrar:
     <i>schemas/.</i>
 </p>
 <p>El flujo es:</p>
@@ -766,7 +766,7 @@ glib-compile-schemas schemas
     <li><code>-e</code> → permite interpretar secuencias especiales.</li>
     <li>aquí no hay ninguna secuencia especial, así que <code>-e</code> no parece necesario.</li>
 </ul>
-<p>El objetivo es mostrar:&nbsp;<i>Compiling Schemas ...</i>&nbsp;y dejar el cursor ahí hasta que se termine la
+<p>El objetivo es mostrar: <i>Compiling Schemas ...</i> y dejar el cursor ahí hasta que se termine la
     compilación.</p>
 <div class="row">
     <div class="col"><span>Después:</span>
@@ -776,10 +776,10 @@ glib-compile-schemas schemas
         <pre><samp>Compiling Schemas ...            Done</samp></pre>
     </div>
 </div>
-<h3>La parte realmente importante:&nbsp;</h3>
+<h3>La parte realmente importante: </h3>
 <pre><code><span>glib-compile-schemas schemas</span></code></pre>
 <p>Aquí tenemos una herramienta de GLib. Su función es tomar los archivos de esquemas GSettings que están dentro de:
-    <b>schemas/&nbsp;</b>y generar el archivo compilado:&nbsp;<i>schemas/gschemas.compiled</i>
+    <b>schemas/ </b>y generar el archivo compilado: <i>schemas/gschemas.compiled</i>
 </p>
 <p>Por ejemplo, antes:</p>
 <pre><samp>schemas/
@@ -801,7 +801,7 @@ glib-compile-schemas schemas
 <pre><code><span class="ͼ10">cp</span><span> </span><span class="ͼ12">-rf</span><span> schemas </span><span class="ͼ11">$installDir</span><span class="ͼz">"/"</span><span class="ͼ11">$extensionDir</span><span>
 </span><span class="ͼ10">cp</span><span> </span><span class="ͼ12">-rf</span><span> locale </span><span class="ͼ11">$installDir</span><span class="ͼz">"/"</span><span class="ͼ11">$extensionDir</span></code></pre>
 <div class="row">
-    <div class="col"><span>Y&nbsp;<strong>después</strong>:</span>
+    <div class="col"><span>Y <strong>después</strong>:</span>
         <pre><code><span>cd</span><span> </span><span>$installDir</span><span>"/"</span><span>$extensionDir</span></code></pre>
     </div>
     <div class="col"></div>
@@ -840,11 +840,11 @@ status=<span class="hljs-string">"Done"</span>
     <li><code>-n</code> evita el salto de línea.</li>
     <li><code>-e</code> permite secuencias especiales, aunque aquí no parece necesario.</li>
 </ul>
-<p>La terminal mostrará:&nbsp;<i>Creating Translations ...</i>&nbsp;y esperará a que el bloque termine para que después
+<p>La terminal mostrará: <i>Creating Translations ...</i> y esperará a que el bloque termine para que después
     aparezca <code data-start="723" data-end="729">Done</code> o <code data-start="732" data-end="739">Error</code>.</p>
 <h3>Entramos en <code data-start="764" data-end="772">locale</code></h3>
 <pre><code><span class="ͼl">cd</span><span> locale</span></code></pre>
-<p>Esto cambia el directorio de trabajo a <b>locale/</b>&nbsp;y aquí es importante recordar cómo está organizado nuestro
+<p>Esto cambia el directorio de trabajo a <b>locale/</b> y aquí es importante recordar cómo está organizado nuestro
     repositorio:</p>
 <pre><samp>locale/
 ├── de/
@@ -859,7 +859,7 @@ status=<span class="hljs-string">"Done"</span>
 <p>El script está entrando precisamente en el lugar donde están los directorios de traducciones.</p>
 <h3>Inicializa el estado</h3>
 <pre><code><span class="ͼm">status</span><span class="ͼg">=</span><span class="ͼk">"Done"</span></code></pre>
-<p>Aquí simplemente crea/asigna una variable:&nbsp;<b>status</b> = "<i>Done</i>"</p>
+<p>Aquí simplemente crea/asigna una variable: <b>status</b> = "<i>Done</i>"</p>
 <p>La idea es interesante porque el script parte suponiendo:</p>
 <blockquote>"Todo está bien."</blockquote>
 <p>Y solamente cambiará el estado si encuentra un error:</p>
@@ -877,14 +877,14 @@ procesar traducciones
 <pre><code><span class="ͼg">for</span><span> poFile </span><span class="ͼg">in</span><span> */
 </span><span class="ͼg">do</span></code></pre>
 <p>Aquí aparece un pequeño detalle de Bash muy interesante.</p>
-<p>El patrón: <b>*/</b>&nbsp;representa las <strong data-start="1990" data-end="2051">entradas que son directorios
+<p>El patrón: <b>*/</b> representa las <strong data-start="1990" data-end="2051">entradas que son directorios
         dentro del directorio actual</strong>.</p>
 <p>Como estamos dentro de: <b>locale/ </b>el patrón encontrará:</p>
 <pre><samp>de/
 it/
 ko/
 nl/</samp></pre>
-<p>Pero <strong data-start="2181" data-end="2198">no encontrará</strong>: <b>notification-center.pot&nbsp;</b>porque eso
+<p>Pero <strong data-start="2181" data-end="2198">no encontrará</strong>: <b>notification-center.pot </b>porque eso
     es un archivo, no un directorio. Así que conceptualmente:</p>
 <pre><samp>locale/
 │
@@ -901,8 +901,8 @@ nl/</samp></pre>
 <h3>Crea <code data-start="2658" data-end="2671">LC_MESSAGES</code></h3>
 <pre><code><span class="ͼl">mkdir</span><span> </span><span class="ͼm">${poFile}</span><span>/LC_MESSAGES</span></code></pre>
 <p>Dentro del <code data-start="2684" data-end="2689">for</code>, si <code data-start="2748"
-        data-end="2756">poFile</code> vale <b>it/&nbsp;</b>la expresión&nbsp;<b><span
-            class="ͼm">${poFile}</span>/LC_MESSAGES&nbsp;</b>se convierte en&nbsp;<i><b>it</b>/LC_MESSAGES y</i>&nbsp;se
+        data-end="2756">poFile</code> vale <b>it/ </b>la expresión <b><span class="ͼm">${poFile}</span>/LC_MESSAGES
+    </b>se convierte en <i><b>it</b>/LC_MESSAGES y</i> se
     crea ese directorio.</p>
 <pre><samp>it/
 ├── LC_MESSAGES/
@@ -914,11 +914,11 @@ nl/</samp></pre>
 <pre><code><span>msgfmt </span><span class="ͼm">${poFile}</span><span>/</span><span class="ͼm">$extensionName</span><span class="ͼk">".po"</span><span> \
        </span><span class="ͼn">-o</span><span> </span><span class="ͼm">${poFile}</span><span>/LC_MESSAGES/</span><span class="ͼm">$extensionName</span><span class="ͼk">".mo"</span></code></pre>
 <p>Esta es <strong data-start="3242" data-end="3260">la línea clave</strong>, aquí ocurre la verdadera
-    compilación,tenemos&nbsp;<b>msgfmt</b>&nbsp;que toma un archivo <code data-start="3325" data-end="3330">.po</code> y
+    compilación,tenemos <b>msgfmt</b> que toma un archivo <code data-start="3325" data-end="3330">.po</code> y
     genera un <code data-start="3343" data-end="3348">.mo</code>.</p>
 <p>Recordemos:</p>
 <pre><samp>extensionName=notification-center</samp></pre>
-<p>Por ejemplo, cuando: <b>poFile</b> = <i>it/&nbsp;</i>la orden queda conceptualmente:</p>
+<p>Por ejemplo, cuando: <b>poFile</b> = <i>it/ </i>la orden queda conceptualmente:</p>
 <pre><samp>msgfmt it/notification-center.po \
        -o it/LC_MESSAGES/notification-center.mo</samp></pre>
 <p>Lo mismo para <code data-start="3629" data-end="3633">nl</code>:</p>
@@ -950,21 +950,21 @@ nl/</samp></pre>
 │
 └── notification-center.pot</samp></pre>
 <h3>¿Por qué utiliza <code data-start="4706" data-end="4722">$extensionName</code>?</h3>
-<p>Esta parte&nbsp;<b>$extensionName".po"</b> es equivalente a&nbsp;<i>notification-center.po y&nbsp;</i><span
-        class="ͼm"><b>$extensionName</b></span><span class="ͼk"><b>".mo"</b>&nbsp;</span>equivale
-    a&nbsp;<i>notification-center.mo.</i></p>
+<p>Esta parte <b>$extensionName".po"</b> es equivalente a <i>notification-center.po y </i><span
+        class="ͼm"><b>$extensionName</b></span><span class="ͼk"><b>".mo"</b> </span>equivale
+    a <i>notification-center.mo.</i></p>
 <p>El autor está reutilizando la variable que definió al
-    principio:&nbsp;<b>extensionName</b>=<i>notification-center.&nbsp;</i>Así evita repetir el nombre y mantiene
+    principio: <b>extensionName</b>=<i>notification-center. </i>Así evita repetir el nombre y mantiene
     consistencia.</p>
 <p>Además, esto nos confirma que el nombre base de los catálogos está deliberadamente ligado
-    a:&nbsp;<i>notification-center.</i></p>
+    a: <i>notification-center.</i></p>
 <h3>Comprueba si <code data-start="5277" data-end="5285">msgfmt</code> falló</h3>
 <pre><code><span class="ͼg">if</span><span> [ </span><span class="ͼm">$?</span><span> !</span><span class="ͼg">=</span><span> </span><span class="ͼj">0</span><span> ]; </span><span class="ͼg">then</span><span>
   </span><span class="ͼm">status</span><span class="ͼg">=</span><span class="ͼk">"Error"</span><span>
   break
 </span><span class="ͼg">fi</span></code></pre>
 <p>Otra vez aparece <code data-start="5394" data-end="5398">$?</code>. Justo antes ejecutamos: <b>msgfmt
-        ...&nbsp;</b>por lo que <code data-start="5461" data-end="5465">$?</code> contiene el código de salida de <code
+        ... </b>por lo que <code data-start="5461" data-end="5465">$?</code> contiene el código de salida de <code
         data-start="5498" data-end="5506">msgfmt</code>. Conceptualmente:</p>
 <pre><samp>msgfmt
   │
@@ -1066,8 +1066,8 @@ LC_MESSAGES/</samp></pre>
 <h3>Comprueba el resultado de las traducciones</h3>
 <pre><code><span class="ͼg">if</span><span> [ </span><span class="ͼk">"</span><span class="ͼm">$status</span><span class="ͼk">"</span><span> </span><span class="ͼg">==</span><span> </span><span class="ͼk">"Done"</span><span> ]; </span><span class="ͼg">then</span></code></pre>
 <p>Aquí compara el contenido de la variable <code data-start="302" data-end="310">status</code>
-    con:&nbsp;<b>Done</b>&nbsp;</p>
-<p>Recordemos que anteriormente hicimos:&nbsp;<b>status</b> =&nbsp;<i>"Done"&nbsp;</i>y solamente cambiábamos ese valor
+    con: <b>Done</b> </p>
+<p>Recordemos que anteriormente hicimos: <b>status</b> = <i>"Done" </i>y solamente cambiábamos ese valor
     cuando <code data-start="442" data-end="450">msgfmt</code> encontraba un error:</p>
 <pre><samp>status="Error"
 break</samp></pre>
@@ -1081,7 +1081,7 @@ break</samp></pre>
 <pre><code><span class="ͼl">echo</span><span> </span><span class="ͼn">-e</span><span> </span><span class="ͼm">$status</span><span> 
 </span><span class="ͼl">echo</span><span> </span><span class="ͼk">""</span><span> 
 </span><span class="ͼl">echo</span><span> </span><span class="ͼk">"All Done !"</span></code></pre>
-<p>Si&nbsp;<b>status&nbsp;</b>= <i>"Done"&nbsp;</i>muestra:</p>
+<p>Si <b>status </b>= <i>"Done" </i>muestra:</p>
 <pre><samp>Done
 
 All Done !</samp></pre>
@@ -1093,7 +1093,7 @@ All Done !</samp></pre>
   </span><span class="ͼl">echo</span><span> </span><span class="ͼk">"Extension Installed, Translations not done."</span><span>
 </span><span class="ͼg">fi</span></code></pre>
 <p>Si <code data-start="1097" data-end="1105">msgfmt</code> falló en alguno de los idiomas <b>status</b>="<i>Error</i>"
-    entonces el script informa:&nbsp;<i>Extension Installed, Translations not done</i>.</p>
+    entonces el script informa: <i>Extension Installed, Translations not done</i>.</p>
 <p>Esto es bastante importante porque nos revela la filosofía del instalador:</p>
 <blockquote>Un error al generar las traducciones no hace que la instalación completa sea considerada fallida.
 </blockquote>
@@ -1109,7 +1109,7 @@ Traducciones
         ├── OK
         │
         └── Error</samp></pre>
-<p>Por eso el mensaje dice explícitamente:&nbsp;</p>
+<p>Por eso el mensaje dice explícitamente: </p>
 <pre><samp>Extension Installed,
 Translations not done.</samp></pre>
 <p>No dice:</p>
@@ -1126,7 +1126,7 @@ Translations not done.</samp></pre>
 r
 Enter</samp></pre>
 <p>Esto era particularmente relevante en las versiones antiguas de GNOME Shell donde ese procedimiento permitía
-    reiniciar GNOME Shell sin cerrar la sesión.&nbsp;</p>
+    reiniciar GNOME Shell sin cerrar la sesión. </p>
 <p>No debemos asumir que ese procedimiento sigue siendo válido para las versiones modernas que estamos buscando
     soportar; eso será una cuestión para nuestra futura fase de modernización.</p>
 <p>Por ahora solamente registramos:</p>

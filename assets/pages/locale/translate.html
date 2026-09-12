@@ -51,14 +51,14 @@ notification-center.mo</samp></pre>
 <p>Es decir, <strong data-start="1501" data-end="1678">nuestro repositorio contiene los archivos fuente de las
         traducciones, pero el archivo que Gettext consulta tiene que terminar como <code data-start="1634"
             data-end="1676">locale/&lt;idioma&gt;/LC_MESSAGES/&lt;dominio&gt;.mo</code></strong>. Esa convención también
-    está documentada por gettext.&nbsp;<span class="contents" data-content-reference-start="1710"
+    está documentada por gettext. <span class="contents" data-content-reference-start="1710"
         data-content-reference-end="1729"><span class="" data-state="closed"></span></span></p>
 <p>Y aquí tenemos una pista muy interesante en <code data-start="1820" data-end="1834">extension.js</code></p>
 <pre><code><span class="ͼm">ExtensionUtils</span><span class="ͼg">.</span><span>initTranslations(</span><span class="ͼk">"notification-center"</span><span>);</span></code></pre>
 <p>Eso es precisamente el mecanismo de <code data-start="1970" data-end="1986">ExtensionUtils</code> para inicializar
     las traducciones. La documentación de extensiones de GNOME explica que <code data-start="2075"
         data-end="2095">initTranslations()</code> vincula el dominio de gettext con la carpeta <code data-start="2141"
-        data-end="2149">locale</code> de la extensión cuando está disponible.&nbsp;</p>
+        data-end="2149">locale</code> de la extensión cuando está disponible. </p>
 <p>Nuestro dominio es:</p>
 <blockquote>notification-center</blockquote>
 <p>Por eso el nombre del <code data-start="2307" data-end="2312">.mo</code> tiene sentido:</p>
@@ -74,7 +74,7 @@ notification-center.mo</samp></pre>
 <p>Por ejemplo:</p>
 <pre><code><span>msgfmt de/notification-center.po \
        </span><span class="ͼ12">-o</span><span> de/LC_MESSAGES/notification-center.mo</span></code></pre>
-<p>No necesita conectarse a ningún servidor, entonces podemos plantear este modelo:&nbsp;</p>
+<p>No necesita conectarse a ningún servidor, entonces podemos plantear este modelo: </p>
 <p>El desarrollador mantiene en el repositorio:</p>
 <pre><samp>locale/
 ├── de/

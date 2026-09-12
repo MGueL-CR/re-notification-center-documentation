@@ -152,7 +152,7 @@ Método especializado</samp></pre>
 <pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>prefs</span><span class="ͼg">.</span><span>get_boolean(</span><span class="ͼk">"middle-click-dnd"</span><span>)</span></code></pre>
 <p>Es simplemente:</p>
 <blockquote>"¿El usuario activó esta opción en las preferencias?"</blockquote>
-<p>Si la respuesta es:&nbsp;<i>false</i></p>
+<p>Si la respuesta es: <i>false</i></p>
 <p>No hace absolutamente nada, ni siquiera registra el evento. Eso es importante.</p>
 <div class="row">
     <div class="col"><span>No está haciendo:</span>
@@ -283,7 +283,7 @@ connect(...)</samp></pre>
         <pre><samp>layout_manager.frozen = false;</samp></pre>
     </div>
 </div>
-<p>No llama a un método bonito. Eso me hace pensar inmediatamente:&nbsp;</p>
+<p>No llama a un método bonito. Eso me hace pensar inmediatamente: </p>
 <blockquote>"Había algo congelado."</blockquote>
 <h4>¿Qué significa "frozen"?</h4>
 <p>No podemos asegurarlo todavía. Pero una hipótesis razonable sería:</p>
@@ -321,11 +321,11 @@ connect(...)</samp></pre>
     </div>
 </div>
 <p><b>Segunda:</b> Eliminar cualquier estilo temporal.</p>
-<p>Es decir... Seguramente durante otros estados había puesto:&nbsp;<i><span class="ͼo">border-width</span>:0</i> o algo
+<p>Es decir... Seguramente durante otros estados había puesto: <i><span class="ͼo">border-width</span>:0</i> o algo
     parecido. Ahora vuelve al estilo normal.</p>
 <p><b>Después:</b> ¡Otro viejo conocido!</p>
 <pre><samp>this._messageList._sync();</samp></pre>
-<p>Ya vimos <code data-start="3252" data-end="3261">_sync()</code> varias veces.&nbsp;</p>
+<p>Ya vimos <code data-start="3252" data-end="3261">_sync()</code> varias veces. </p>
 <pre><samp>Cada vez que cambia algo importante...
 ↓
 
@@ -351,7 +351,7 @@ Agosto
 Septiembre</samp></pre>
 <p>La sección de eventos puede cambiar. Porque los eventos pertenecen a la fecha seleccionada. Tiene muchísimo sentido.
 </p>
-<p>Creo que este bloque existe para solucionar un pequeño detalle visual.&nbsp;</p>
+<p>Creo que este bloque existe para solucionar un pequeño detalle visual. </p>
 <div class="row">
     <div class="col"><span>Algo parecido a esto:</span></div>
     <div class="col">
@@ -473,21 +473,21 @@ Este callback despierta</samp></pre>
 <pre><samp>if (menu.isOpen)</samp></pre>
 <p>Muy elegante, no necesita preguntar</p>
 <pre><samp><span>evento</span> <span>==</span> <span>abrir</span></samp></pre>
-<p>Simplemente pregunta el estado actual:&nbsp;<span class="ͼm"></span><code
+<p>Simplemente pregunta el estado actual: <span class="ͼm"></span><code
         class="inline-code"><span class="ͼm">menu</span><span class="ͼg">.</span>isOpen</code></p>
 <h5>Si el menú se abrió</h5>
 <hr>
 <p><b>Primero</b>: Lo que hace es:</p>
 <p>¡Otro viejo conocido que todavía no conocemos!</p>
 <pre><samp>this.manageEvents(1);</samp></pre>
-<p>El nombre dice: <b>manageEvents</b>&nbsp;O sea... "Hazte cargo de los eventos" y nada más.</p>
-<p><b>Después:</b>&nbsp;Y aquí me gusta hacer una lectura "humana".&nbsp;</p>
+<p>El nombre dice: <b>manageEvents</b> O sea... "Hazte cargo de los eventos" y nada más.</p>
+<p><b>Después:</b> Y aquí me gusta hacer una lectura "humana". </p>
 <pre><samp>if(this.showLabel==false) {
     this.eventsCount = 0;
 }</samp></pre>
 <p>Si no estoy mostrando el contador... ¿Para qué conservar el número? Parece lógico ponerlo en cero. Aunque todavía no
     sabemos exactamente cómo funciona <code data-start="2583" data-end="2596">eventsCount</code>.</p>
-<p><b>Luego:</b>&nbsp;Este sí ya casi podemos imaginarlo.</p>
+<p><b>Luego:</b> Este sí ya casi podemos imaginarlo.</p>
 <pre><samp>this.resetIndicator();</samp></pre>
 <p>Seguramente actualiza todo el indicador:</p>
 <ul>
@@ -496,7 +496,7 @@ Este callback despierta</samp></pre>
     <li>contador</li>
     <li>visibilidad</li>
 </ul>
-<p><b>Después:</b>&nbsp;Aparece otra vieja amistad</p>
+<p><b>Después:</b> Aparece otra vieja amistad</p>
 <pre><samp>this._messageList._sync();</samp></pre>
 <p>Ya perdí la cuenta de las veces que <code data-start="2914" data-end="2923">_sync()</code> apareció. Eso me dice una
     cosa.</p>
@@ -557,7 +557,7 @@ Se conserva.
 <pre><samp>this.resetIndicator();</samp></pre>
 <p>Porque el indicador tiene que reflejar el nuevo estado.</p>
 <hr>
-<h4>Observación&nbsp;</h4>
+<h4>Observación </h4>
 <p>¿Te das cuenta de que <code data-start="5305" data-end="5332">startNotificationCenter()</code> ya no está
     "construyendo" la extensión?</p>
 <p>A esta altura del método... Está definiendo su comportamiento. Ya no agrega widgets, ni mueve paneles.</p>
@@ -568,9 +568,9 @@ Se conserva.
     <li>cuando cambie la fecha...</li>
     <li>cuando cambie DND...</li>
 </ul>
-<p>Es decir... <i style="font-weight: bold;">La extensión ya está viva.</i>&nbsp;Y eso me parece un cambio muy bonito
+<p>Es decir... <i style="font-weight: bold;">La extensión ya está viva.</i> Y eso me parece un cambio muy bonito
     dentro del método.</p>
-<h3><span class="ͼj">this</span><span class="ͼg">.</span>cmsig&nbsp;</h3>
+<h3><span class="ͼj">this</span><span class="ͼg">.</span>cmsig </h3>
 <hr>
 <pre><code><span class="ͼg">if</span><span>(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>prefs</span><span class="ͼg">.</span><span>get_boolean(</span><span class="ͼk">"autoclose-menu"</span><span>)) {
     </span><span class="ͼj">this</span><span class="ͼg">.</span><span>cmsig </span><span class="ͼg">=</span><span> </span><span class="ͼm">global</span><span class="ͼg">.</span><span>display</span><span class="ͼg">.</span><span>connect(
@@ -585,7 +585,7 @@ Se conserva.
 <p>Y, como ya es costumbre, antes de leer línea por línea intentemos responder una pregunta.</p>
 <blockquote>¿Qué quiere conseguir el autor?</blockquote>
 <p>Solo con leer la preferencia, ya podemos imaginar la intención.</p>
-<h4>Connect():&nbsp;autoclose-menu</h4>
+<h4>Connect(): autoclose-menu</h4>
 <hr>
 <pre><samp>if(this.prefs.get_boolean("autoclose-menu"))</samp></pre>
 <p>Ya conocemos este patrón de memoria. Si el usuario no activó la función... <b>No se conecta ningún evento</b>.</p>
@@ -631,7 +631,7 @@ Este callback despierta</samp></pre>
     </div>
 </div>
 <p>Porque si ya estaba cerrado... No hay nada que hacer.</p>
-<p><b>Finalmente:&nbsp;</b>Y listo.</p>
+<p><b>Finalmente: </b>Y listo.</p>
 <pre><samp>this.menu.close(1);</samp></pre>
 <p>No hace nada más, no reinicia, no sincroniza, no actualiza iconos. Simplemente... <b>Cierra el menú</b>.</p>
 <h5>Una función muy "de usuario"</h5>

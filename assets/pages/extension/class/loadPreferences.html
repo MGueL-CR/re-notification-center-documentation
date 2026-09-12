@@ -61,7 +61,7 @@ this.showLabel = this.prefs.get_boolean("show-label");
 <p>Porque creo que aquí Selenium-H organizó las preferencias por temas.</p>
 <h4>1. Autohide</h4>
 <pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>autohide </span><span class="ͼg">=</span><span> </span><span class="ͼj">this</span><span class="ͼg">.</span><span>prefs</span><span class="ͼg">.</span><span>get_int(</span><span class="ͼk">"autohide"</span><span>);</span></code></pre>
-<p>Ya sabemos que después existe:&nbsp;<b><i>manageAutohide()</i></b>. Así que esta variable será la materia prima de
+<p>Ya sabemos que después existe: <b><i>manageAutohide()</i></b>. Así que esta variable será la materia prima de
     ese método.</p>
 <h4>2. Secciones visibles</h4>
 <p>Aquí aparece un grupo muy interesante.</p>
@@ -77,13 +77,13 @@ this.showLabel = this.prefs.get_boolean("show-label");
         <blockquote>"La sección de medios debe mostrarse."</blockquote>
     </div>
 </div>
-<p>Es muy fácil leer después un código como:&nbsp;<b><i>if (this.mediaSectionToBeShown)</i></b></p>
+<p>Es muy fácil leer después un código como: <b><i>if (this.mediaSectionToBeShown)</i></b></p>
 <h5>Un detalle curioso:</h5>
 <pre><code><span>(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>prefs</span><span class="ͼg">.</span><span>get_int(...) </span><span class="ͼg">&gt;</span><span> </span><span class="ͼj">0</span><span>) </span><span class="ͼg">?</span><span> </span><span class="ͼj">true</span><span> </span><span class="ͼg">:</span><span> </span><span class="ͼj">false</span><span>;</span></code></pre>
 <p>Aquí tengo una pequeña observación.</p>
 <p>Esto ya devuelve un booleano. Es decir <i>true</i> o <i>false</i>.</p>
 <pre><code><span>(</span><span class="ͼj">this</span><span class="ͼg">.</span><span>prefs</span><span class="ͼg">.</span><span>get_int(</span><span class="ͼk">"show-media"</span><span>) </span><span class="ͼg">&gt;</span><span> </span><span class="ͼj">0</span><span>)</span></code></pre>
-<p>Entonces el operador ternario:&nbsp;<i><b>? true : false</b></i>&nbsp;es redundante. Podría haberse escrito
+<p>Entonces el operador ternario: <i><b>? true : false</b></i> es redundante. Podría haberse escrito
     simplemente:</p>
 <pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>mediaSectionToBeShown </span><span class="ͼg">=</span><span>
     </span><span class="ͼj">this</span><span class="ͼg">.</span><span>prefs</span><span class="ͼg">.</span><span>get_int(</span><span class="ͼk">"show-media"</span><span>) </span><span class="ͼg">&gt;</span><span> </span><span class="ͼj">0</span><span>;</span></code></pre>
@@ -145,22 +145,22 @@ scriptList
     </div>
 </div>
 <p>Y para obtenerlo hace una negación. Funciona perfectamente, pero personalmente creo que habría sido más claro guardar
-    directamente:&nbsp;<i>this.animateIcon</i>&nbsp;y evitar el <code data-start="4371" data-end="4374">!</code> mental
+    directamente: <i>this.animateIcon</i> y evitar el <code data-start="4371" data-end="4374">!</code> mental
     cada vez que se lea el código.</p>
 <p>No está mal, es simplemente una decisión de estilo.</p>
 <h4>9. Parpadeo</h4>
-<p>Sin sorpresa con&nbsp;<i><b>this.blinkTime</b></i>, Pero con...</p>
+<p>Sin sorpresa con <i><b>this.blinkTime</b></i>, Pero con...</p>
 <pre><code><span class="ͼj">this</span><span class="ͼg">.</span><span>blinkCount </span><span class="ͼg">=</span><span>
     </span><span class="ͼj">this</span><span class="ͼg">.</span><span>prefs</span><span class="ͼg">.</span><span>get_int(</span><span class="ͼk">"blink-icon"</span><span>) </span><span class="ͼg">*</span><span> </span><span class="ͼj">2</span><span>;</span></code></pre>
-<p>Aquí sí levanto una ceja. <b>¿Por qué multiplicar por dos?</b>&nbsp;No lo sabemos todavía.&nbsp;</p>
+<p>Aquí sí levanto una ceja. <b>¿Por qué multiplicar por dos?</b> No lo sabemos todavía. </p>
 <p>Y justamente por eso <strong data-start="4737" data-end="4774">no voy a inventar una explicación</strong>. Puede que
-    más adelante encontremos un:&nbsp;<b><i>while(blinkCount--)</i></b>&nbsp;o que cuente encendidos y apagados. De
+    más adelante encontremos un: <b><i>while(blinkCount--)</i></b> o que cuente encendidos y apagados. De
     momento, solo anotaría la duda.</p>
 <h3>En resumen</h3>
 <hr>
 <p>Diría que <code data-start="5175" data-end="5194">loadPreferences()</code> es como leer un archivo <code
         data-start="5219" data-end="5231">config.ini</code> al arrancar una aplicación.</p>
-<p>No hace absolutamente nada más que cargar datos, ni una sola llamada como a: <i>manage...&nbsp;</i>Ni una
+<p>No hace absolutamente nada más que cargar datos, ni una sola llamada como a: <i>manage... </i>Ni una
     modificación visual, solo deja el objeto preparado.</p>
 <pre><samp>Usuario cambia preferencias
 ↓
@@ -179,7 +179,7 @@ El resto de la extensión trabaja únicamente con esas variables.</samp></pre>
 <p>¿Recuerdas que en <code data-start="5492" data-end="5509">loadDndStatus()</code> dijimos que existía un "único punto
     de verdad" para sincronizar el estado DND? Aquí veo la misma filosofía.</p>
 <p>En lugar de tener por todo el código cosas
-    como:&nbsp;<b><i>this.prefs.get_boolean("show-label")</i></b>&nbsp;repetidas una y otra vez... Selenium-H decidió
+    como: <b><i>this.prefs.get_boolean("show-label")</i></b> repetidas una y otra vez... Selenium-H decidió
     concentrarlas aquí.</p>
 <p>Eso tiene varias ventajas:</p>
 <ul>

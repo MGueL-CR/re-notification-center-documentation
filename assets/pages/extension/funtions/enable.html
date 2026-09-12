@@ -27,14 +27,14 @@
     <code><span class="ͼm">notificationCenter</span><span class="ͼg">.</span><span>startNotificationCenter();</span></code>
 </pre>
 <p>Y aquí vino la sorpresa. Yo esperaba que el constructor hiciera toda la inicialización. pero Selenium-H separó dos
-    conceptos, que&nbsp; me parece una decisión interesante.</p>
+    conceptos, que me parece una decisión interesante.</p>
 <blockquote>Crear el objeto<div><br></div>
     <div>y</div>
     <div><br></div>
     <div>Iniciar el objeto</div>
 </blockquote>
 <p>Esto significa que el constructor probablemente solo prepara el objeto. Mientras
-    que&nbsp;<span></span><code><span>startNotificationCenter</span>()</code>&nbsp;es quien realmente:</p>
+    que <span></span><code><span>startNotificationCenter</span>()</code> es quien realmente:</p>
 <ul>
     <li>crea el panel,<span></span>
     </li>
@@ -55,5 +55,5 @@
 <pre class="cm-content q9tKkq_readonly m-0">
     <code><span class="ͼm">reloadApplicationProfilesOnPrefsChange</span><span>();</span></code>
 </pre>
-<p>Aquí descubrimos algo que ni siquiera sabíamos que existía,&nbsp;<code>Application Profiles</code>&nbsp;. Eso
+<p>Aquí descubrimos algo que ni siquiera sabíamos que existía, <code>Application Profiles</code> . Eso
     significa que la extensión tiene un sistema de perfiles, ni siquiera habíamos llegado a esa parte del código.</p>

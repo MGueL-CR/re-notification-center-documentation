@@ -49,7 +49,7 @@
 <hr>
 <h4>Luego</h4>
 <pre><code><span class="ͼj">this</span><span class="ͼg">.</span>add_style_pseudo_class(<span class="ͼk">'active'</span>);</code></pre>
-<p>Esto me gusta mucho porque complementa perfectamente el <code data-start="1682" data-end="1691">disable</code>.&nbsp;
+<p>Esto me gusta mucho porque complementa perfectamente el <code data-start="1682" data-end="1691">disable</code>.
 </p>
 <div class="row">
     <div class="col">
@@ -71,7 +71,7 @@
 <h4>Esta línea</h4>
 <pre><code><div class="cm-line">[</div><div class="cm-line"> <span class="ͼj">this</span><span class="ͼg">.</span>mediaSection<span class="ͼg">.</span>visible,</div><div class="cm-line"> <span class="ͼj">this</span><span class="ͼg">.</span>notificationSection<span class="ͼg">.</span>visible</div><div class="cm-line">] <span class="ͼg">=</span></div><div class="cm-line">[</div><div class="cm-line"> <span class="ͼj">this</span><span class="ͼg">.</span>mediaSection<span class="ͼg">.</span>_shouldShow(),</div><div class="cm-line"> <span class="ͼj">this</span><span class="ͼg">.</span>notificationSection<span class="ͼg">.</span>_list<span class="ͼg">.</span>get_children()<span class="ͼg">.</span>length</div><div class="cm-line">];</div></code></pre>
 <p>Aquí sí tuve que leer dos veces. Porque utiliza una característica muy bonita de JavaScript. Está haciendo una
-    asignación múltiple, es una sintaxis elegante.&nbsp;Equivale más o menos a:</p>
+    asignación múltiple, es una sintaxis elegante. Equivale más o menos a:</p>
 <pre><code><div class="cm-line"><span class="ͼj">this</span><span class="ͼg">.</span>mediaSection<span class="ͼg">.</span>visible <span class="ͼg">=</span></div><div class="cm-line">    <span class="ͼj">this</span><span class="ͼg">.</span>mediaSection<span class="ͼg">.</span>_shouldShow();</div><div class="cm-line"><br></div><div class="cm-line"><span class="ͼj">this</span><span class="ͼg">.</span>notificationSection<span class="ͼg">.</span>visible <span class="ͼg">=</span></div><div class="cm-line">    <span class="ͼj">this</span><span class="ͼg">.</span>notificationSection<span class="ͼg">.</span>_list<span class="ͼg">.</span>get_children()<span class="ͼg">.</span>length;</div></code></pre>
 <hr>
 <h4>Después</h4>
@@ -82,7 +82,7 @@
 <h4>Luego</h4>
 <pre><code><div class="cm-line"><span class="ͼg">if</span>(<span class="ͼg">!</span><span class="ͼj">this</span><span class="ͼg">.</span>showLabel) {</div><div class="cm-line">    ...</div><div class="cm-line">}</div></code></pre>
 <p>Aquí todavía no sabemos qué es <code data-start="2966" data-end="2977">showLabel</code>. Pero entendemos la
-    intención, perfectamente razonable.&nbsp;Si no se muestran etiquetas... reinicia los contadores.</p>
+    intención, perfectamente razonable. Si no se muestran etiquetas... reinicia los contadores.</p>
 <hr>
 <h4>Finalmente</h4>
 <pre><code><div class="cm-line"><span class="ͼj">this</span><span class="ͼg">.</span>seenEvents <span class="ͼg">=</span> <span class="ͼj">true</span>;</div><div class="cm-line"><span class="ͼj">this</span><span class="ͼg">.</span>resetIndicator();</div></code></pre>

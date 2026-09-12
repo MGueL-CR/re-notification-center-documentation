@@ -17,7 +17,7 @@
 <hr>
 <p>Aquí ya aparece algo muy importante.</p>
 <pre><div class="cm-line"><span class="ͼj">this</span><span class="ͼg">.</span>iconThemeChangeSig <span class="ͼg">=</span></div><div class="cm-line">    <span class="ͼj">this</span><span class="ͼg">.</span>textureCache<span class="ͼg">.</span>connect(</div><div class="cm-line">        <span class="ͼk">'icon-theme-changed'</span>,</div><div class="cm-line">        <span class="ͼj">this</span><span class="ͼg">.</span>iconThemeChanged<span class="ͼg">.</span>bind(<span class="ͼj">this</span>)</div><div class="cm-line">    );</div></pre>
-<p>Nuestra primera señal (<code data-start="2542" data-end="2550">signal</code>) importante. Esto significa:&nbsp;</p>
+<p>Nuestra primera señal (<code data-start="2542" data-end="2550">signal</code>) importante. Esto significa: </p>
 <blockquote>"Cuando cambie el tema de iconos del sistema, ejecuta <code data-start="2640"
                 data-end="2660">iconThemeChanged()</code>."</blockquote>
 <p>Y eso me gusta muchísimo. No está preguntando constantemente si cambió el tema. Simplemente se suscribe al evento.
@@ -52,4 +52,4 @@
 <p>Puede parecer una diferencia pequeña, pero es enorme. Ya no estamos describiendo líneas de código; estamos
         entendiendo las decisiones de diseño detrás de ellas. Y eso, para un futuro mantenedor de <strong
                 data-start="5085" data-end="5112">Re: Notification Center</strong>, es exactamente el tipo de
-        comprensión que buscamos desde el primer día.&nbsp;</p>
+        comprensión que buscamos desde el primer día. </p>
