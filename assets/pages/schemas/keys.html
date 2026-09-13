@@ -12,9 +12,9 @@
             <a href="#key2">Key: Show-notification</a>
             <a href="#key3">Key: Show-events</a>
             <a href="#key4">Key: Events-position</a>
-            <a href="#key5">Key: Autohide-space-beside-...</a>
+            <a href="#key5">Key: Autohide-space-beside-calendar</a>
             <a href="#key6">Key: Calendar-on-left</a>
-            <a href="#key7">Key: Show-events-secction-...</a>
+            <a href="#key7">Key: Show-events-section-if-empty</a>
             <a href="#key8">Key: Sections-order</a>
             <a href="#key9">Key: Dnd-position</a>
             <a href="#key10">Key: Clear-button-alignment</a>
@@ -42,9 +42,9 @@
             <a href="#key32">Key: Script-list</a>
             <a href="#key33">Key: For-list</a>
             <a href="#key34">Key: Run-script</a>
-            <a href="#key35">Key: XXX</a>
-            <a href="#key36">Key: XXX</a>
-            <a href="#key37">Key: XXX</a>
+            <a href="#key35">Key: Current-version</a>
+            <a href="#key36">Key: Reload-signal"</a>
+            <a href="#key37">Key: Reload-profiles-signal</a>
         </div>
     </div>
 </aside>
@@ -97,6 +97,52 @@ prefs.js
 extension.js</samp></pre>
 <p>Y, poco a poco, iremos entendiendo cómo fluye una preferencia desde que el usuario la cambia hasta que modifica el
     comportamiento de la extensión.</p>
+
+<h3>Extension Variables</h3>
+<hr>
+<pre><samp>&lt;!--  ==================  Extension Variables  ==================== --&gt;</samp></pre>
+<p>Este comentario es interesante porque marca <strong data-start="52" data-end="107">una sección deliberadamente
+        separada por Selenium-H. </strong>No es una instrucción de GSettings ni tiene ningún efecto sobre el
+    funcionamiento del esquema. Es simplemente un <strong data-start="438" data-end="456">comentario XML</strong> usado
+    como separador visual.</p>
+<h4>¿Qué está señalando?</h4>
+<p>Literalmente:</p>
+<blockquote><strong data-start="530" data-end="553">Extension Variables</strong> → <em data-start="556"
+        data-end="583">Variables de la extensión</em></blockquote>
+<p>Por la posición que nos estás mostrando, Selenium-H está indicando que <strong data-start="656" data-end="764">a
+        partir de aquí comienza otro grupo de <code data-start="698" data-end="703">key</code> que él considera
+        relacionado con variables de la extensión</strong>, diferenciándolo de los grupos anteriores.</p>
+<p>Es decir, la estructura conceptual del archivo pasa a ser algo así:</p>
+<pre><samp>gschema.xml
+│
+├── Enums
+│
+├── Schema
+│   │
+│   ├── Keys anteriores
+│   │
+│   └── ...
+│
+├── Extension Variables  ← aquí
+│   │
+│   ├── key
+│   ├── key
+│   ├── key
+│   └── ...</samp></pre>
+<p>Pero hay que hacer una distinción importante: <b>GSettings no reconoce "Extension Variables" como una categoría
+        especial.</b></p>
+<p>Para GSettings todos esos <code data-start="1215" data-end="1222">&lt;key&gt;</code> siguen siendo simplemente claves
+    pertenecientes al mismo:</p>
+<pre><samp><span class="ͼo">&lt;schema</span> <span class="ͼn">id</span><span class="ͼg">=</span><span class="ͼk">"org.gnome.shell.extensions.notification-center"</span> ...&gt;</samp></pre>
+<p>La separación es <strong data-start="1376" data-end="1399">organización humana</strong>, creada por el autor.</p>
+<h4>En nuestra lectura</h4>
+<p>Yo tomaría este comentario como un <strong data-start="1751" data-end="1780">nuevo punto de referencia</strong> en
+    nuestro recorrido. Hasta ahora veníamos leyendo los <code data-start="1837" data-end="1842">key</code> como una
+    secuencia. A partir de este comentario, podemos considerar que <strong data-start="1915" data-end="1954">comienza un
+        nuevo bloque conceptual</strong>, y conviene mantenerlo separado en nuestras notas.</p>
+<p>Así que no lo trataría como un <code data-start="2038" data-end="2043">key</code> ni le asignaría número. Simplemente
+    lo marcaría como:</p>
+<blockquote><strong data-start="2104" data-end="2136">Sección: Extension Variables</strong></blockquote>
 
 <h3 id="key1" class="keys-schemas">Key: "show-media"</h3>
 <hr>
@@ -3862,6 +3908,291 @@ run-script
         <tr>
             <td>Relación</td>
             <td><code>script-list</code></td>
+        </tr>
+    </tbody>
+</table>
+
+<h3 id="key35" class="keys-schemas">key: "current-version"</h3>
+<hr>
+<p>Este sí marca un cambio interesante dentro de <strong data-start="46" data-end="71"><code data-start="48"
+            data-end="69">Extension Variables</code></strong>. Y aquí la descripción nos da bastante información sobre
+    por qué existe.</p>
+<pre><code><span class="ͼo">&lt;key</span> <span class="ͼn">name</span><span class="ͼg">=</span><span class="ͼk">"current-version"</span> <span class="ͼn">type</span><span class="ͼg">=</span><span class="ͼk">"d"</span><span class="ͼo">&gt;</span>
+  <span class="ͼo">&lt;default&gt;</span>23.00<span class="ͼo">&lt;/default&gt;</span>
+  <span class="ͼo">&lt;summary&gt;</span>Version of Current Extension<span class="ͼo">&lt;/summary&gt;</span>
+  <span class="ͼo">&lt;description&gt;</span>Provided to ensure that extension is stopped incase of autoupdate from previous version to prevent unwanted effects<span class="ͼo">&lt;/description&gt;</span>
+<span class="ͼo">&lt;/key&gt;</span></code></pre>
+<h4>1. Nombre</h4>
+<p>Representa la <strong data-start="483" data-end="517">versión actual de la extensión</strong>.</p>
+<pre><samp>current-version</samp></pre>
+<h4>2. Tipo</h4>
+<pre><samp>type="d"</samp></pre>
+<p>Aquí aparece otro tipo que todavía no habíamos usado: <var class="inline-code">d = double</var></p>
+<p>Es decir, un número de punto flotante. Por eso tenemos: 23.00 y no simplemente <code data-start="732"
+        data-end="736">23</code>.</p>
+<h4>3. Valor por defecto</h4>
+<p>La versión que Selenium-H estableció para esta configuración es:</p>
+<pre><samp><span class="ͼo">&lt;default&gt;</span>23.00<span class="ͼo">&lt;/default&gt;</span></samp></pre>
+<p>Y aquí hay un detalle interesante: esto <strong data-start="924" data-end="986">no necesariamente equivale al <code
+            data-start="956" data-end="965">version</code> de <code data-start="969"
+            data-end="984">metadata.json</code></strong>. Es una variable interna de configuración que la extensión
+    utiliza para saber qué versión está manejando.</p>
+<h4>4. La descripción es lo realmente interesante</h4>
+<p>Dice:</p>
+<blockquote><code
+        class="inline-code">Provided to ensure that extension is stopped incase of autoupdate from previous version to prevent unwanted effects</code>
+</blockquote>
+<p>La intención parece ser:</p>
+<pre><samp>Nueva versión instalada automáticamente
+             ↓
+compara current-version
+             ↓
+detecta actualización desde una versión anterior
+             ↓
+evita efectos no deseados
+             ↓
+detiene/desactiva la extensión</samp></pre>
+<p>Y aquí tenemos una conexión muy directa con algo que <strong data-start="1601" data-end="1644">ya vimos en <code
+            data-start="1615" data-end="1642">startNotificationCenter()</code></strong>. </p>
+<p>Recordemos que encontramos una comprobación relacionada con: <span class="ͼj">this</span><span
+        class="ͼg">.</span>prefs<span class="ͼg">.</span>get_double(<span class="ͼk">"current-version"</span>) y que
+    existía una condición alrededor de: <kbd class="inline-code">23.03</kbd> seguida de una notificación al usuario.</p>
+<p>Así que ahora podemos entender mejor por qué esa variable existía: <strong data-start="1939" data-end="1995">no es
+        una preferencia visual del Notification Center</strong>, sino un mecanismo de control relacionado con
+    actualizaciones.</p>
+<h4>5. Una observación</h4>
+<p>Aquí hay una distinción importante, antes estábamos viendo keys como:</p>
+<pre><samp>show-media
+hide-weather-section
+blink-icon
+middle-click-dnd</samp></pre>
+<p>Que representan <strong data-start="2635" data-end="2685">configuraciones que el usuario puede
+        modificar</strong>. <code data-start="2688" data-end="2705">current-version</code> es diferente. Es más
+    bien una <strong data-start="2737" data-end="2791">variable interna de estado/control de la
+        extensión</strong>. </p>
+<p>Y eso explica perfectamente por qué Selenium-H creó este separador: <code
+        class="inline-code">Extension Variables</code>. Está empezando a separar las preferencias de usuario de valores
+    que la propia extensión necesita para controlar su funcionamiento.</p>
+<h4>6. Resumen — Extension Variables #1</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>current-version</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td><code>d</code> — double</td>
+        </tr>
+        <tr>
+            <td>Valor por defecto</td>
+            <td><code>23.00</code></td>
+        </tr>
+        <tr>
+            <td>Summary</td>
+            <td>Version of Current Extension</td>
+        </tr>
+        <tr>
+            <td>Función</td>
+            <td>Ayuda a detectar/gestionar actualizaciones automáticas desde versiones anteriores</td>
+        </tr>
+        <tr>
+            <td>Relación con <code>extension.js</code></td>
+            <td><code>get_double("current-version")</code></td>
+        </tr>
+        <tr>
+            <td>Sección</td>
+            <td><strong>Extension Variables</strong></td>
+        </tr>
+    </tbody>
+</table>
+
+<h3 id="key36" class="keys-schemas">key: "reload-signal" </h3>
+<hr>
+<p>Este segundo <code data-start="13" data-end="18">key</code> de <strong data-start="22" data-end="45">Extension
+        Variables</strong> es bastante directo, pero también revela algo importante sobre cómo Selenium-H diseñó la
+    recarga de la extensión.</p>
+<pre><code><span class="ͼo">&lt;key</span> <span class="ͼn">name</span><span class="ͼg">=</span><span class="ͼk">"reload-signal"</span> <span class="ͼn">type</span><span class="ͼg">=</span><span class="ͼk">"b"</span><span class="ͼo">&gt;</span>
+  <span class="ͼo">&lt;default&gt;</span>false<span class="ͼo">&lt;/default&gt;</span>
+  <span class="ͼo">&lt;summary&gt;</span>Signals the extension to reload <span class="ͼo">&lt;/summary&gt;</span>
+  <span class="ͼo">&lt;description&gt;</span>Signals the extension to reload<span class="ͼo">&lt;/description&gt;</span>
+<span class="ͼo">&lt;/key&gt;</span></code></pre>
+<h4>1. Nombre</h4>
+<pre><samp>reload-signal</samp></pre>
+<p>El nombre prácticamente lo explica:</p>
+<blockquote>Es una señal que indica a la extensión que debe <strong data-start="511" data-end="525">recargarse</strong>.
+</blockquote>
+<p>No representa una configuración visual del Notification Center.</p>
+<h4>2. Tipo</h4>
+<pre><samp>type="b"</samp></pre>
+<p>Es un booleano:</p>
+<ul>
+    <li><code>true</code> → señal de recarga activada.</li>
+    <li><code>false</code> → señal de recarga desactivada.</li>
+</ul>
+<h4>3. Valor por defecto</h4>
+<p>Normalmente la extensión comienza con la señal desactivada.</p>
+<pre><samp><span class="ͼo">&lt;default&gt;</span>false<span class="ͼo">&lt;/default&gt;</span></samp></pre>
+<p>Tiene sentido: no queremos que al iniciar la extensión exista una orden pendiente de recargarla.</p>
+<h4>4. Summary y Description</h4>
+<p>Ambos dicen:</p>
+<blockquote>Signals the extension to reload</blockquote>
+<p>Aquí no hay ambigüedad: su propósito es actuar como <strong data-start="1117" data-end="1137">señal de
+        control</strong>. Y esto es precisamente lo que diferencia este <code data-start="1186"
+        data-end="1191">key</code> de los primeros que vimos.</p>
+<p>Por ejemplo: <kbd class="inline-code">show-media</kbd> es una preferencia:</p>
+<blockquote>¿Mostrar la sección Media?</blockquote>
+<p>Mientras: <kbd class="inline-code">reload-signal</kbd> es una variable de control:</p>
+<blockquote>¿La extensión debe recargarse?</blockquote>
+<h4>5. Una observacion</h4>
+<p>Algo que conviene recordar, este tipo de <code data-start="1812" data-end="1817">key</code> demuestra por qué
+    Selenium-H puso estos elementos bajo:</p>
+<pre><samp>&lt;!-- Extension Variables --&gt;</samp></pre>
+<p>No son necesariamente valores que el usuario deba configurar directamente. Son <strong data-start="2007"
+        data-end="2095">variables internas utilizadas por la extensión para comunicarse con su propia lógica</strong>.
+</p>
+<p>Y este particularmente tiene pinta de funcionar como un pequeño mecanismo de comunicación:</p>
+<pre><samp>algo cambia
+    ↓
+reload-signal = true
+    ↓
+la extensión detecta la señal
+    ↓
+recarga</samp></pre>
+<p>El <code data-start="2307" data-end="2316">gschema</code> nos permite saber <strong data-start="2335"
+        data-end="2363">para qué existe la señal</strong>, pero no todavía <strong data-start="2381"
+        data-end="2422">quién la establece ni quién la vigila</strong>. Eso, como siempre, corresponde a <code
+        data-start="2457" data-end="2471">extension.js</code>.</p>
+<h4>6. Resumen — Extension Variables #2</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>reload-signal</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td><code>b</code> — boolean</td>
+        </tr>
+        <tr>
+            <td>Valor por defecto</td>
+            <td><code>false</code></td>
+        </tr>
+        <tr>
+            <td>Summary</td>
+            <td>Señala a la extensión que debe recargarse</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>Igual que el Summary</td>
+        </tr>
+        <tr>
+            <td>Función</td>
+            <td>Actúa como señal para provocar una recarga de la extensión</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3 id="key37" class="keys-schemas">key: "reload-profiles-signal" </h3>
+<hr>
+<h4>Este es prácticamente el hermano del anterior, pero mucho más específico: <strong data-start="74" data-end="157">no
+        pide recargar toda la extensión, sino solamente los perfiles de aplicaciones</strong>.</h4>
+<pre><code><span class="ͼo">&lt;key</span> <span class="ͼn">name</span><span class="ͼg">=</span><span class="ͼk">"reload-profiles-signal"</span> <span class="ͼn">type</span><span class="ͼg">=</span><span class="ͼk">"b"</span><span class="ͼo">&gt;</span>
+  <span class="ͼo">&lt;default&gt;</span>false<span class="ͼo">&lt;/default&gt;</span>
+  <span class="ͼo">&lt;summary&gt;</span>Signals the extension to reload Application Profiles<span class="ͼo">&lt;/summary&gt;</span>
+  <span class="ͼo">&lt;description&gt;</span>Signals the extension to reload Application Profiles<span class="ͼo">&lt;/description&gt;</span>
+<span class="ͼo">&lt;/key&gt;</span></code></pre>
+<h4>1. Nombre</h4>
+<p>Es una <strong data-start="465" data-end="482">señal interna</strong> para indicarle a la extensión que debe volver a
+    cargar los <strong data-start="542" data-end="566">Application Profiles</strong>.</p>
+<pre><samp>reload-profiles-signal</samp></pre>
+<p>Y aquí tenemos una confirmación interesante de algo que veníamos viendo:</p>
+<blockquote>Los perfiles de aplicaciones son una funcionalidad real y tienen su propio mecanismo de recarga.
+</blockquote>
+<h4>2. Tipo</h4>
+<pre><samp>type="b"</samp></pre>
+<p>Booleano:</p>
+<ul>
+    <li><code>true</code> → hay una señal para recargar los perfiles.</li>
+    <li><code>false</code> → no hay ninguna recarga pendiente.</li>
+</ul>
+<h4>3. Valor por defecto</h4>
+<p>Al iniciar, la señal está desactivada.</p>
+<pre><samp><span class="ͼo">&lt;default&gt;</span>false<span class="ͼo">&lt;/default&gt;</span></samp></pre>
+<p>Tiene sentido porque no queremos que la extensión interprete que debe recargar los perfiles inmediatamente.</p>
+<h4>4. ¿Por qué existe separado de <code data-start="1154" data-end="1169">reload-signal</code>?</h4>
+<p>Aquí está lo interesante:</p>
+<pre><samp>reload-signal
+    ↓
+recargar la extensión completa
+
+
+reload-profiles-signal
+    ↓
+recargar solamente los Application Profiles</samp></pre>
+<p>Esto sugiere que Selenium-H intentó hacer una distinción entre: <strong data-start="1403" data-end="1420">recargar
+        todo</strong> y <strong data-start="1423" data-end="1477">actualizar solamente una
+        parte de la configuración</strong>.</p>
+<p>Eso puede evitar hacer una recarga completa cuando únicamente cambió la configuración de perfiles.</p>
+<h4>5. Una observación</h4>
+<p>Este <code data-start="1930" data-end="1935">key</code> también nos ayuda a entender mejor los que dejamos atrás:</p>
+<pre><samp>application-list
+name-list
+script-list
+for-list
+include-events-count
+run-script</samp></pre>
+<p>Ya no parecen una colección arbitraria de listas y opciones. <strong data-start="2149" data-end="2213">Claramente
+        forman parte del sistema de Application Profiles.</strong></p>
+<p>Lo que todavía tenemos pendiente —especialmente <code data-start="2263" data-end="2276">script-list</code>— es
+    <strong data-start="2281" data-end="2341">cómo implementó Selenium-H ese sistema en <code data-start="2325"
+            data-end="2339">extension.js</code></strong> y qué papel juega ese misterioso <code data-start="2375"
+        data-end="2382">spawn</code> que recuerdas. Eso lo mantenemos separado para investigarlo después.
+</p>
+<h4>6. Resumen — Extension Variables #3</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Nombre</td>
+            <td><code>reload-profiles-signal</code></td>
+        </tr>
+        <tr>
+            <td>Tipo</td>
+            <td><code>b</code> — boolean</td>
+        </tr>
+        <tr>
+            <td>Valor por defecto</td>
+            <td><code>false</code></td>
+        </tr>
+        <tr>
+            <td>Summary</td>
+            <td>Señala recargar los Application Profiles</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>Igual que el Summary</td>
+        </tr>
+        <tr>
+            <td>Función</td>
+            <td>Señal interna para volver a cargar los perfiles de aplicaciones</td>
         </tr>
     </tbody>
 </table>
