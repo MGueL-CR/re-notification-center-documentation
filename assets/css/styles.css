@@ -259,7 +259,6 @@ table :is(th, td) {
     position: fixed;
     display: flex;
     justify-content: end;
-    min-width: 8rem;
     width: fit-content;
     top: 50%;
     right: 1rem;
@@ -272,14 +271,6 @@ table :is(th, td) {
     place-self: center;
 }
 
-.list-blocks .symbol-tab:hover+.card,
-.list-blocks .card:hover {
-    visibility: visible;
-    opacity: 1;
-    width: fit-content;
-    box-shadow: 0 0 6px 1px var(--cemphbg), 0 0 4px 0 var(--cmed), 0 0 3px 0 var(--cemph);
-}
-
 .list-blocks .symbol-tab .symbol {
     cursor: pointer;
     padding: 1rem 0.5rem;
@@ -287,6 +278,10 @@ table :is(th, td) {
     border-end-start-radius: 6px;
     background-color: var(--cbg);
     border: 1px solid var(--cmed);
+}
+
+.list-blocks .symbol-tab:has(+.card:hover) .symbol {
+    visibility: hidden;
 }
 
 .list-blocks .symbol-tab .symbol .icon-bar {
@@ -304,21 +299,33 @@ table :is(th, td) {
     padding: 0;
     background-color: var(--cbg);
     gap: 0.25rem;
-    transition: all 300ms ease-in-out;
+    transition: all 750ms ease-in-out;
+}
+
+.list-blocks .symbol-tab:hover+.card,
+.list-blocks .card:hover {
+    visibility: visible;
+    opacity: 1;
+    width: fit-content;
+    box-shadow: 0 0 6px 1px var(--cemphbg), 0 0 4px 0 var(--cmed), 0 0 3px 0 var(--cemph);
 }
 
 .list-blocks .card p {
+    position: relative;
     font-size: large;
     font-weight: bold;
     margin: 0.6rem;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 .list-blocks .card .list-links {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.55rem;
     max-height: 60vh;
-    max-width: 12rem;
+    max-width: 14rem;
     margin: 0.6rem;
     margin-top: 0;
     padding: 0.3rem;
