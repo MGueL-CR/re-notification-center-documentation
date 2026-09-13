@@ -1,49 +1,5 @@
 <h2>Funciones de la clase</h2>
 <hr>
-<p>Si yo dibujara la arquitectura completa hoy sería así:</p>
-<pre><samp class="samp-block">NotificationCenter
-│
-├── Inicialización
-│   └── _init()
-│
-├── Eventos
-│   └── _onOpenStateChanged()
-│
-├── Indicador
-│   ├── animateOnNewNotification()
-│   ├── blinkIcon()
-│   ├── blinkIconStopIfBlinking()
-│   └── resetIndicator()
-│
-├── DND
-│   ├── loadDndStatus()
-│   ├── dndToggle()
-│   └── middleClickDndToggle()
-│
-├── Preferencias
-│   └── loadPreferences()
-│
-├── Gestión
-│   ├── manageAutohide()
-│   ├── manageEvents()
-│   ├── manageLabel()
-│   └── manageIconChange()
-│
-├── Notificaciones
-│   ├── newNotif()
-│   └── remNotif()
-│
-├── Iconos / Apariencia
-│   ├── setNotificationIconName()
-│   ├── iconThemeChanged()
-│   ├── shouldShowEventsSection()
-│   └── removeSection()
-│
-└── Ciclo de vida
-    ├── startNotificationCenter()
-    └── undoChanges()</samp></pre>
-<p>Eso demuestra que Selenium-H agrupó funcionalidades relacionadas.</p>
-<hr>
 <h3>1. Inicialización</h3>
 <p>No modifica todavía el comportamiento de GNOME.</p>
 <pre><samp class="samp-block">_init()</samp></pre>
@@ -122,3 +78,48 @@ shouldShowEventsSection()</samp></pre>
 <pre><samp class="samp-block">startNotificationCenter()
 
 undoChanges()</samp></pre>
+<hr>
+<h3>Arquitectura completa</h3>
+<p>Si yo dibujara la arquitectura completa hoy sería así:</p>
+<pre><samp class="samp-block">NotificationCenter
+│
+├── Inicialización
+│   └── _init()
+│
+├── Eventos
+│   └── _onOpenStateChanged()
+│
+├── Indicador
+│   ├── animateOnNewNotification()
+│   ├── blinkIcon()
+│   ├── blinkIconStopIfBlinking()
+│   └── resetIndicator()
+│
+├── DND
+│   ├── loadDndStatus()
+│   ├── dndToggle()
+│   └── middleClickDndToggle()
+│
+├── Preferencias
+│   └── loadPreferences()
+│
+├── Gestión
+│   ├── manageAutohide()
+│   ├── manageEvents()
+│   ├── manageLabel()
+│   └── manageIconChange()
+│
+├── Notificaciones
+│   ├── newNotif()
+│   └── remNotif()
+│
+├── Iconos / Apariencia
+│   ├── setNotificationIconName()
+│   ├── iconThemeChanged()
+│   ├── shouldShowEventsSection()
+│   └── removeSection()
+│
+└── Ciclo de vida
+    ├── startNotificationCenter()
+    └── undoChanges()</samp></pre>
+<p>Eso demuestra que Selenium-H agrupó funcionalidades relacionadas.</p>

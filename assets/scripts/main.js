@@ -73,7 +73,9 @@ function activateLinksSideMenu() {
 
         loadContentPage(pagina, contenido, contenedor).then(() => {
             contenido.classList.add('fade-in');
-            activateBlockSection();
+            if (pagina.includes("langclass")) {
+                activateBlockSection();
+            }
         });
     });
 }
@@ -86,22 +88,46 @@ function markBlockSelected(banner, block) {
     block.classList.add("select");
 }
 
+function showSectionsPages(clase, menu, seccion, contenedor) {
+
+    menu.addEventListener('click', (eve) => {
+        seccion.classList.remove('fade-in');
+        seccion.offsetWidth;
+
+        const bloque = eve.target;
+        const pagina = bloque.dataset.name;
+
+        if (!bloque.classList.contains(clase)) { return; }
+
+        loadContentPage(pagina, seccion, contenedor).finally(() => {
+            seccion.classList.add('fade-in');
+
+            if (clase == "item-link") {
+                const aside = eve.target.closest(".list-blocks");
+                seccion.prepend(aside);
+                if (pagina.includes("start")) {
+                    activateBlockSection();
+                }
+            } else {
+                markBlockSelected(menu, bloque);
+                seccion.prepend(menu);
+            }
+
+        });
+    });
+}
+
 function activateBlockSection() {
     const contenedor = document.getElementById("mainContent");
     const contenido = document.getElementById("show-content");
     const banner = document.getElementById("floatBaner");
+    const aside = document.getElementById('listBlocks');
     if (banner) {
-        banner.addEventListener('click', (eve) => {
-            contenido.classList.remove('fade-in');
-            contenido.offsetWidth;
-            const bloque = eve.target;
-            const pagina = bloque.dataset.name;
-            if (!bloque.classList.contains("float-span")) { return; }
-            loadContentPage(pagina, contenido, contenedor).finally(() => {
-                markBlockSelected(banner, bloque);
-                contenido.classList.add('fade-in');
-                contenido.prepend(banner);
-            });
-        });
+        showSectionsPages("float-span", banner, contenido, contenedor);
+    }
+
+    if (aside) {
+        const menu = aside.querySelector(".list-links")
+        showSectionsPages("item-link", menu, contenido, contenedor);
     }
 }
