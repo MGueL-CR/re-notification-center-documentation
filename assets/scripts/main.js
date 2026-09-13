@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const pagina = elemento.dataset.name;
             const superior = elemento.closest('.menu-item');
             if (superior.dataset.section) {
-                loadContentPage(`${superior.dataset.section}-folder`, contenedor, headerPage).then(() => {
+                loadContentPage(`sections/${superior.dataset.section}-folder`, contenedor, headerPage).then(() => {
                     const contenido = document.getElementById("show-content");
                     activateLinksSideMenu();
                     loadContentPage(pagina, contenido, contenedor);

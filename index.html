@@ -35,35 +35,34 @@
 			<ul>
 				<li class="logo-web">Notification Center</li>
 				<li class="menu-item" data-name="intro-main">Inicio </li>
-				<li class="menu-item" data-section="extension" data-name="extension-folder">Re: Notification Center <a
+				<li class="menu-item" data-section="extension" data-name="sections/extension-folder">Extension <a
 						href="#">&#8964;</a>
 					<ul>
-						<li class="submenu-item" data-name="metadata">metadata.json</li>
-						<li class="submenu-item" data-name="extension">extension.js</li>
-						<li class="submenu-item" data-name="stylesheet">stylesheet.css</li>
-						<li class="submenu-item" data-name="prefs">prefs.js</li>
+						<li class="submenu-item" data-name="ext-folder/metadata">metadata.json</li>
+						<li class="submenu-item" data-name="ext-folder/extension">extension.js</li>
+						<li class="submenu-item" data-name="ext-folder/stylesheet">stylesheet.css</li>
+						<li class="submenu-item" data-name="ext-folder/prefs">prefs.js</li>
 					</ul>
 				</li>
-				<li class="menu-item" data-name="schemas-folder">Schemas <a href="#">&#8964;</a>
+				<li class="menu-item" data-section="schemas" data-name="sections/schemas-folder">Schemas <a
+						href="#">&#8964;</a>
 					<ul>
-						<li class="submenu-item" data-name="schemas/magicNums">Números Mágicos</li>
-						<hr>
 						<li class="submenu-item" data-name="schemas/info">Información</li>
 						<li class="submenu-item" data-name="schemas/enums">Enumeraciones</li>
 						<li class="submenu-item" data-name="schemas/keys">Keys</li>
-						<li class="submenu-item" data-name="schemas/">Item 4</li>
 					</ul>
 				</li>
-				<li class="menu-item" data-section="locale" data-name="locale-folder">Locale <a href="#">&#8964;</a>
+				<li class="menu-item" data-section="locale" data-name="sections/locale-folder">Locale <a
+						href="#">&#8964;</a>
 					<ul>
 						<li class="submenu-item" data-name="locale/info">Información</li>
 						<li class="submenu-item" data-name="locale/file-pot">Archivo .POT</li>
 						<li class="submenu-item" data-name="locale/file-po">Archivo .PO</li>
 						<li class="submenu-item" data-name="locale/file-mo">Archivo .MO</li>
-						<li class="submenu-item" data-name="locale/translate">Tradución</li>
 					</ul>
 				</li>
-				<li class="menu-item" data-section="extras" data-name="extras-folder">Otros<a href="#">&#8964;</a>
+				<li class="menu-item" data-section="extras" data-name="sections/extras-folder">Otros <a
+						href="#">&#8964;</a>
 					<ul>
 						<li class="submenu-item" data-name="extras/install">INSTALL</li>
 						<hr>
@@ -73,9 +72,18 @@
 						<li class="submenu-item" data-name="extras/images-folder">IMAGES/</li>
 					</ul>
 				</li>
-				<li class="float-right">Github</li>
-				<li class="float-right">MGueL-CR</li>
-				<li class="menu-item" data-name="schemas/keys">Ver pagina...</li>
+				<li class="menu-item float-right" data-name="schemas/keys">Ver pagina...</li>
+				<li class="menu-item float-right" data-name="intro-main">Anotaciones <a href="#">&#8964;</a>
+					<ul>
+						<li class="submenu-item" data-name="annotations/translate">Las Traduciones</li>
+						<hr>
+						<li class="submenu-item" data-name="annotations/filestypemo">Archivos .MO</li>
+						<hr>
+						<li class="submenu-item" data-name="annotations/magicNums">Números Mágicos</li>
+						<hr>
+						<li class="submenu-item" data-name="annotations/animateBanner">Animar Banner</li>
+					</ul>
+				</li>
 			</ul>
 		</nav>
 	</header>
@@ -84,11 +92,16 @@
 	<footer class="hint mt-1" style="overflow: unset">
 		<hr />
 		<div class="row">
+			<div class="col">
+				<span>versión: 1.0 </span>
+			</div>
 			<div class="col" style="text-align: center">
 				Estado: En Edición
 			</div>
-			<div class="col"></div>
-			<div class="col" style="align-items: center8">versión: 1.0</div>
+			<div class="col">
+				<span>Github</span>
+				<span class="float-right">MGueL-CR</span>
+			</div>
 		</div>
 	</footer>
 	<script src="/assets/scripts/main.js"></script>
