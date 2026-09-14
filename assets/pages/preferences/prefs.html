@@ -1,0 +1,353 @@
+<h2>Prefs.js</h2>
+<hr>
+<p>Vamos a mantener exactamente la metodología que usamos con <code data-start="69" data-end="82">gschema.xml</code>:
+    <strong data-start="84" data-end="169">por partes, entendiendo qué hace cada cosa y relacionándola con lo que ya
+        sabemos</strong>.
+</p>
+<h3>Primer Bloque:</h3>
+<hr>
+<pre><code><span class="ͼe">/*
+Version 24.00
+=============
+*/</span>
+
+<span class="ͼg">const</span> <span class="ͼm">Config</span>            <span class="ͼg">=</span> <span class="ͼm">imports</span><span class="ͼg">.</span>misc<span class="ͼg">.</span>config;
+<span class="ͼg">const</span> <span class="ͼm">Extension</span>         <span class="ͼg">=</span> <span class="ͼm">imports</span><span class="ͼg">.</span>misc<span class="ͼg">.</span>extensionUtils<span class="ͼg">.</span>getCurrentExtension();
+<span class="ͼg">const</span> <span class="ͼm">GLib</span>              <span class="ͼg">=</span> <span class="ͼm">imports</span><span class="ͼg">.</span>gi<span class="ͼg">.</span>GLib;</code></pre>
+<h4>Comentario de versión</h4>
+<pre><code><span class="ͼe">/*
+Version 24.00
+=============
+*/</span></code></pre>
+<p>Es simplemente un comentario utilizado por el autor para indicar la versión del archivo o de la extensión a la que
+    corresponde este código.</p>
+<p>No tiene ningún efecto sobre JavaScript y podemos notar algo interesante respecto al <code data-start="747"
+        data-end="756">gschema</code> que acabamos de estudiar: allí encontramos: <var
+        class="inline-code">current-version = 23.00</var>, mientras aquí aparece: <var class="inline-code">Version
+        24.00</var>.</p>
+<p><strong data-start="890" data-end="971">No debemos asumir todavía que ambos valores representan exactamente lo
+        mismo.</strong> Pueden estar relacionados con diferentes versiones del código, y precisamente esta diferencia es
+    algo que podremos aclarar al estudiar el resto de <code data-start="1119" data-end="1129">prefs.js</code> y después
+    volver a <code data-start="1149" data-end="1166">current-version</code>.</p>
+<h4>Config</h4>
+<p>Aquí se importa el módulo de configuración de GNOME Shell.</p>
+<pre><code><span class="ͼg">const</span> <span class="ͼm">Config</span> <span class="ͼg">=</span> <span class="ͼm">imports</span><span class="ͼg">.</span>misc<span class="ͼg">.</span>config;</code></pre>
+<p>El resultado se guarda en la constante: <kbd class="inline-code">Config</kbd></p>
+<p>Por lo tanto, posteriormente el código puede utilizar <code data-start="1421" data-end="1429">Config</code> para
+    acceder a información de configuración de GNOME Shell, en lugar de escribir nuevamente la ruta completa. Es
+    básicamente un <strong data-start="1559" data-end="1568">alias</strong>.</p>
+<h4>Extension</h4>
+<p>Esta es particularmente importante para una extensión.</p>
+<pre><code><span class="ͼg">const</span> <span class="ͼm">Extension</span> <span class="ͼg">=</span> <span class="ͼm">imports</span><span class="ͼg">.</span>misc<span class="ͼg">.</span>extensionUtils<span class="ͼg">.</span>getCurrentExtension();</code></pre>
+<p><code data-start="1740" data-end="1763">getCurrentExtension()</code> obtiene la información de <strong
+        data-start="1790" data-end="1838">la extensión que está ejecutando este código</strong>.</p>
+<p>El resultado se guarda en: <kbd class="inline-code">Extension</kbd>.</p>
+<p>Esto permite que posteriormente <code data-start="1924" data-end="1934">prefs.js</code> pueda acceder a recursos
+    propios de la extensión, por ejemplo:</p>
+<ul>
+    <li>archivos de la extensión;</li>
+    <li>directorios;</li>
+    <li>información de la extensión;</li>
+    <li>recursos que formen parte de su instalación.</li>
+</ul>
+<p>Y hay algo que nos interesa especialmente para lo que vamos a estudiar: <strong data-start="2193" data-end="2322">es
+        muy probable que aquí termine apareciendo el acceso a los recursos de la extensión que necesita la ventana de
+        preferencias</strong>.</p>
+<h4>GLib</h4>
+<p>Aquí se importa <strong data-start="2410" data-end="2418">GLib</strong>, una de las bibliotecas fundamentales
+    utilizadas por el ecosistema GNOME.</p>
+<pre><code><span class="ͼg">const</span> <span class="ͼm">GLib</span> <span class="ͼg">=</span> <span class="ͼm">imports</span><span class="ͼg">.</span>gi<span class="ͼg">.</span>GLib;</code></pre>
+<p>El código podrá utilizarla mediante: <var class="inline-code"><span class="ͼm">GLib</span></var>.</p>
+<h3>Segundo Bloque</h3>
+<hr>
+<p><strong data-start="8" data-end="30">Este sorprende</strong> porque después de todos esos imports uno esperaría
+    encontrarse con una función <code data-start="110" data-end="118">init()</code> llena de inicialización… y resulta
+    ser:</p>
+<pre><code><span class="ͼg">function</span> <span class="ͼm">init</span>() {
+}</code></pre>
+<h4>¿Qué significa?</h4>
+<p><code data-start="257" data-end="265">init()</code> probablemente está ahí porque <strong data-start="296"
+        data-end="384">el sistema de preferencias espera que <code data-start="336" data-end="346">prefs.js</code> tenga
+        una función de inicialización</strong>, pero en esta versión concreta Selenium-H no necesita hacer nada especial
+    al inicializar el módulo.</p>
+<p>Es decir:</p>
+<pre><samp>GNOME carga prefs.js
+        ↓
+puede llamar a init()
+        ↓
+init() existe
+        ↓
+no hace nada</samp></pre>
+<p>No debemos confundirla con las funciones de inicialización que vimos en <code data-start="694"
+        data-end="708">extension.js</code>. Aquí <code data-start="715" data-end="723">init()</code> <strong
+        data-start="724" data-end="772">no está inicializando el Notification Center</strong> ni cargando las
+    preferencias.</p>
+<h4>¿Por qué dejar una función vacía?</h4>
+<p>Hay varias posibilidades razonables:</p>
+<ol>
+    <li>Compatibilidad con el mecanismo de preferencias de esa generación de GNOME.</li>
+    <li><strong>Plantilla generada originalmente</strong> que el autor mantuvo.</li>
+    <li>En algún momento pudo haber contenido inicialización y posteriormente fue eliminada.</li>
+    <li>Simplemente se dejó porque <strong>no hacía falta eliminarla</strong>.</li>
+</ol>
+<p>Con lo que tenemos ahora, no podemos saber cuál de esas fue la razón histórica, pero hay algo que sí podemos afirmar:
+</p>
+<blockquote>Esta <code data-start="1305" data-end="1313">init()</code> no tiene ninguna lógica propia actualmente.
+</blockquote>
+<p>Y esto también es una buena oportunidad para nuestra metodología: <strong data-start="1427" data-end="1515">no todo
+        lo que encontramos necesita tener una función oculta o un propósito complejo</strong>. A veces es simplemente
+    una pieza que la estructura del sistema esperaba y que en esta versión quedó vacía.</p>
+<h4>Observación</h4>
+<p>Y fíjate en algo, los imports que acabamos de ver, <strong data-start="1737" data-end="1771">todavía no han sido
+        utilizados</strong> en lo que nos has mostrado.</p>
+<pre><samp><span class="ͼm">Config</span>
+<span class="ͼm">Extension</span>
+<span class="ͼm">GLib</span></samp></pre>
+<p>Así que no vamos a sacar conclusiones sobre ellos todavía. Los iremos relacionando con el código conforme aparezcan.
+</p>
+<h3>Tercer Bloque</h3>
+<hr>
+<p>Ahora sí, a<strong data-start="13" data-end="54">quí aparece el corazón de <code data-start="42"
+            data-end="52">prefs.js</code></strong> y además este bloque explica por qué existen <code data-start="101"
+        data-end="115">prefsGtk3.js</code> y <code data-start="118" data-end="132">prefsGtk4.js</code>.
+</p>
+<pre><code><span class="hljs-keyword">function</span> <span class="hljs-title function_">buildPrefsWidget</span>(<span class="hljs-params"></span>) {
+
+  <span class="hljs-keyword">let</span> gtkVersion = (<span class="hljs-title class_">Config</span>.<span class="hljs-property">PACKAGE_VERSION</span> &gt;= <span class="hljs-string">"40"</span>) ? <span class="hljs-title class_">Extension</span>.<span class="hljs-property">imports</span>.<span class="hljs-property">prefsGtk4</span> : <span class="hljs-title class_">Extension</span>.<span class="hljs-property">imports</span>.<span class="hljs-property">prefsGtk3</span>;
+  gtkVersion.<span class="hljs-title function_">init</span>();
+  <span class="hljs-keyword">let</span> widget = <span class="hljs-keyword">new</span> gtkVersion.<span class="hljs-title class_">Prefs</span>_NotificationCenterExtension();   
+  <span class="hljs-title class_">GLib</span>.<span class="hljs-title function_">timeout_add</span>(<span class="hljs-title class_">GLib</span>.<span class="hljs-property">PRIORITY_DEFAULT</span>, <span class="hljs-number">0</span>, <span class="hljs-function">()=&gt;</span> {    
+    <span class="hljs-keyword">new</span> gtkVersion.<span class="hljs-title class_">ExtensionPreferencesWindow</span>_NotificationCenterExtension( widget );
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+  });
+ 
+  (<span class="hljs-title class_">Config</span>.<span class="hljs-property">PACKAGE_VERSION</span> &gt;= <span class="hljs-string">"40"</span>) ? <span class="hljs-literal">null</span> : widget.<span class="hljs-title function_">show_all</span>();  
+  <span class="hljs-keyword">return</span> widget;  
+  
+}</code></pre>
+<h4>La función</h4>
+<p><code data-start="234" data-end="254">buildPrefsWidget()</code> es la función que construye/devuelve el <strong
+        data-start="295" data-end="331">widget principal de preferencias</strong> que GNOME utilizará para mostrar la
+    configuración de la extensión.</p>
+<pre><code><span class="ͼg">function</span> <span class="ͼm">buildPrefsWidget</span>() { ... }</code></pre>
+<p>Y aquí aparece una arquitectura interesante:</p>
+<pre><samp>prefs.js
+   │
+   ├── ¿GTK3 o GTK4?
+   │
+   ├── prefsGtk3.js
+   └── prefsGtk4.js</samp></pre>
+<h4>Detectar la versión de GNOME/GTK</h4>
+<pre><code><span class="ͼg">let</span> <span class="ͼm">gtkVersion</span> <span class="ͼg">=</span> (<span class="ͼm">Config</span><span class="ͼg">.</span>PACKAGE_VERSION <span class="ͼg">&gt;=</span> <span class="ͼk">"40"</span>)
+    <span class="ͼg">?</span> <span class="ͼm">Extension</span><span class="ͼg">.</span>imports<span class="ͼg">.</span>prefsGtk4
+    <span class="ͼg">:</span> <span class="ͼm">Extension</span><span class="ͼg">.</span>imports<span class="ͼg">.</span>prefsGtk3;</code></pre>
+<p>Aquí está usando un <strong data-start="767" data-end="788">operador ternario</strong>: <var
+        class="inline-code">condición <b>?</b> si_verdadero <b>:</b> si_falso</var>.</p>
+<p>La condición es: <var class="inline-code"> <span class="ͼm">Config</span><span class="ͼg">.</span>PACKAGE_VERSION
+        <span class="ͼg">&gt;=</span> <span class="ͼk">"40"</span> </var> Es
+    decir:</p>
+<blockquote>Si la versión del paquete de GNOME Shell es 40 o superior, utiliza <code data-start="1000"
+        data-end="1011">prefsGtk4</code>; de lo contrario, utiliza <code data-start="1038"
+        data-end="1049">prefsGtk3</code>.</blockquote>
+<p>Por tanto:</p>
+<pre><samp>GNOME &lt; 40
+    ↓
+prefsGtk3.js
+
+GNOME &gt;= 40
+    ↓
+prefsGtk4.js</samp></pre>
+<p>Y esto nos confirma inmediatamente <strong data-start="1186" data-end="1222">por qué existen los dos
+        archivos</strong>.</p>
+<p>No son dos versiones alternativas de las preferencias que el usuario pueda escoger: son implementaciones diferentes
+    utilizadas según la versión de GNOME.</p>
+<h4>Inicializar el módulo seleccionado</h4>
+<pre><code><span class="ͼm">gtkVersion</span><span class="ͼg">.</span>init();</code></pre>
+<p>Aquí <code data-start="1483" data-end="1495">gtkVersion</code> ahora contiene uno de estos módulos: <var
+        class="inline-code"><kbd class="inline-code">prefsGtk3</kbd></var> o <var class="inline-code"><kbd
+            class="inline-code">prefsGtk4</kbd></var>. Por lo tanto, está llamando a: <var class="inline-code"><kbd
+            class="inline-code"> <span class="ͼm">prefsGtk3</span><span class="ͼg">.</span>init()</kbd></var>
+    o <var class="inline-code"><kbd class="inline-code"> <span class="ͼm">prefsGtk4</span><span
+                class="ͼg">.</span>init()</kbd></var>.</p>
+<p>Esto es importante porque <strong data-start="1766" data-end="1844">la <code data-start="1771"
+            data-end="1779">init()</code> vacía que acabamos de ver no es la única <code data-start="1821"
+            data-end="1829">init()</code> del proyecto</strong>.</p>
+<p>La que acabamos de estudiar: <kbd class="inline-code"> <span class="ͼg">function</span> <span
+            class="ͼm">init</span>() {}</kbd> pertenece a <code data-start="1927" data-end="1937">prefs.js</code> pero
+    aquí se está llamando a: <kbd class="inline-code">gtkVersion.init()</kbd> que pertenece al archivo que acabamos de
+    seleccionar.</p>
+<p>Así que todavía tendremos que ver qué hace el <code data-start="2103" data-end="2111">init()</code> de <code
+        data-start="2115" data-end="2129">prefsGtk3.js</code> o <code data-start="2132"
+        data-end="2146">prefsGtk4.js</code>.</p>
+<h4>Crear el widget de preferencias</h4>
+<pre><code><span class="ͼg">let</span> <span class="ͼm">widget</span> <span class="ͼg">=</span> <span class="ͼg">new</span> <span class="ͼm">gtkVersion</span><span class="ͼg">.</span>Prefs_NotificationCenterExtension();</code></pre>
+<p>Aquí se crea una instancia de la clase: <kbd class="inline-code">Prefs_NotificationCenterExtension</kbd> y nuevamente
+    el archivo concreto depende de GTK.</p>
+<p>Por ejemplo: <kbd class="inline-code">prefsGtk4.Prefs_NotificationCenterExtension</kbd> o <kbd
+        class="inline-code">prefsGtk3.Prefs_NotificationCenterExtension</kbd>. Esto probablemente representa <strong
+        data-start="2626" data-end="2677">la ventana/contenedor principal de preferencias</strong>.</p>
+<h4>GLib.timeout_add()</h4>
+<p>Ahora aparece el <code data-start="2731" data-end="2737">GLib</code> que vimos al principio:</p>
+<pre><code><span class="ͼm">GLib</span><span class="ͼg">.</span>timeout_add(<span class="ͼm">GLib</span><span class="ͼg">.</span>PRIORITY_DEFAULT, <span class="ͼj">0</span>, ()=&gt; {
+    <span class="ͼg">new</span> <span class="ͼm">gtkVersion</span><span class="ͼg">.</span>ExtensionPreferencesWindow_NotificationCenterExtension(<span class="ͼm">widget</span>);
+    <span class="ͼg">return</span> <span class="ͼj">false</span>;
+});</code></pre>
+<p>Aquí hay algo interesante, está programando una función para ejecutarse mediante el <strong data-start="3034"
+        data-end="3061">loop de eventos de GLib</strong>. El <code data-start="3067" data-end="3070">0</code> indica que
+    no quiere esperar un intervalo significativo antes de ejecutarla.</p>
+<p>Dentro hace:<var class="inline-code"> <span class="ͼg">new</span> <span class="ͼm">gtkVersion</span><span
+            class="ͼg">.</span>ExtensionPreferencesWindow_NotificationCenterExtension(<span
+            class="ͼm">widget</span>)</var>; Es decir, crea otra instancia: <kbd
+        class="inline-code">ExtensionPreferencesWindow_NotificationCenterExtension</kbd> pasándole el <code
+        data-start="3386" data-end="3394">widget</code> que acabamos de crear.</p>
+<p>Conceptualmente:</p>
+<pre><samp>Prefs_NotificationCenterExtension
+          │
+          ▼
+       widget
+          │
+          ▼
+ExtensionPreferencesWindow_...</samp></pre>
+<p>El detalle de <strong data-start="3603" data-end="3656">por qué necesita hacerlo mediante <code data-start="3639"
+            data-end="3654">timeout_add()</code></strong> lo dejamos pendiente hasta ver <code data-start="3688"
+        data-end="3702">prefsGtk3.js</code>/<code data-start="3703" data-end="3717">prefsGtk4.js</code>. Ahí seguramente
+    tendrá mucho más sentido.</p>
+<h4>El return false</h4>
+<p>Esto es importante en un callback de GLib.</p>
+<pre><code><span class="ͼg">return</span> <span class="ͼj">false</span>;</code></pre>
+<p>Al devolver <code data-start="3891" data-end="3898">false</code>, está indicando que <strong data-start="3919"
+        data-end="3952">el callback no debe repetirse</strong>. En otras palabras:</p>
+<blockquote>Ejecuta esto una vez y no vuelvas a programarlo.</blockquote>
+<h4> Diferencia GTK3 / GTK4</h4>
+<p>Finalmente:</p>
+<pre><code>(<span class="ͼm">Config</span><span class="ͼg">.</span>PACKAGE_VERSION <span class="ͼg">&gt;=</span> <span class="ͼk">"40"</span>) <span class="ͼg">?</span> <span class="ͼj">null</span> <span class="ͼg">:</span> <span class="ͼm">widget</span><span class="ͼg">.</span>show_all();</code></pre>
+<p>Otra vez el ternario:</p>
+<div class="row">
+    <div class="col"><span>Para GNOME 40 o superior:</span>
+        <pre><samp>GTK4
+→ null
+→ no ejecuta show_all()</samp></pre>
+    </div>
+    <div class="col"><span>Para versiones anteriores:</span>
+        <pre><samp>GTK3
+→ widget.show_all()</samp></pre>
+    </div>
+</div>
+<p>Esto tiene bastante sentido porque <code data-start="4392" data-end="4404">show_all()</code> pertenece al modelo de
+    GTK3 y <strong data-start="4435" data-end="4502">GTK4 cambió la forma de gestionar la visibilidad de los
+        widgets</strong>.</p>
+<h4>Finalmente devuelve el widget</h4>
+<p>La función entrega el widget que creó.</p>
+<pre><code><span class="ͼg">return</span> <span class="ͼm">widget</span>;</code></pre>
+<p>Por tanto, podemos representar todo el proceso así:</p>
+<pre><samp>buildPrefsWidget()
+        │
+        ▼
+¿GNOME &gt;= 40?
+   │           │
+  sí           no
+   │           │
+   ▼           ▼
+prefsGtk4    prefsGtk3
+   │           │
+   └─────┬─────┘
+         ▼
+      init()
+         │
+         ▼
+crear Prefs_NotificationCenterExtension
+         │
+         ▼
+GLib programa creación de
+ExtensionPreferencesWindow_...
+         │
+         ▼
+¿GTK3?
+   │
+   ├── sí → show_all()
+   │
+   └── no → GTK4 gestiona la presentación
+         │
+         ▼
+   return widget</samp></pre>
+<h4>Observación</h4>
+<p>Aquí aparece algo muy útil para nuestro estudio, sabemos que <strong data-start="5263" data-end="5327"><code
+            data-start="5265" data-end="5275">prefs.js</code> no contiene realmente la interfaz de
+        preferencias</strong>.</p>
+<p>Es más bien un <strong data-start="5345" data-end="5369">orquestador/selector</strong>:</p>
+<pre><samp>prefs.js
+   │
+   ├── detecta versión
+   ├── selecciona implementación
+   ├── inicializa implementación
+   ├── crea los objetos
+   └── devuelve el widget</samp></pre>
+<p>Mientras que la lógica real de la interfaz está en:</p>
+<pre><samp>prefsGtk3.js
+prefsGtk4.js</samp></pre>
+<p>Por eso tu propuesta de estudiar primero los archivos de preferencias <strong data-start="5700" data-end="5727">tiene
+        muchísimo sentido</strong>. Ahora ya sabemos exactamente dónde buscar.</p>
+<p>Y además hemos encontrado algo que deberíamos tener muy presente cuando modernicemos la extensión:</p>
+<blockquote>El corte histórico que utiliza Selenium-H es GNOME 40: GTK3 para <code data-start="5942"
+        data-end="5948">&lt; 40</code> y GTK4 para <code data-start="5961" data-end="5968">&gt;= 40</code>.</blockquote>
+<p>Como nuestro objetivo actual es GNOME moderno, seguramente <code data-start="6032"
+        data-end="6046">prefsGtk3.js</code> termine siendo un candidato para <strong data-start="6080"
+        data-end="6125">estudiar, entender y posiblemente retirar</strong>, pero no tomemos esa decisión todavía.
+    Primero veamos qué contiene.</p>
+
+<h3>El Resumen</h3>
+<hr>
+<p>Ahora que sabemos que <strong data-start="28" data-end="54">eso es todo <code data-start="42"
+            data-end="52">prefs.js</code></strong>, su papel queda bastante claro.</p>
+<p>En realidad es un archivo muy pequeño que funciona como <strong data-start="144"
+        data-end="166">puente/orquestador</strong> entre GNOME y las implementaciones GTK de las preferencias.</p>
+<p>Su estructura completa sería:</p>
+<pre><samp>prefs.js
+│
+├── imports
+│   ├── Config
+│   ├── Extension
+│   └── GLib
+│
+├── init()
+│   └── vacío
+│
+└── buildPrefsWidget()
+    │
+    ├── Detecta GNOME &gt;= 40
+    │
+    ├── Selecciona
+    │   ├── prefsGtk4.js
+    │   └── prefsGtk3.js
+    │
+    ├── llama init()
+    │
+    ├── crea Prefs_NotificationCenterExtension
+    │
+    ├── crea ExtensionPreferencesWindow_...
+    │   mediante GLib.timeout_add()
+    │
+    ├── si GTK3 → widget.show_all()
+    │
+    └── devuelve widget</samp></pre>
+<h4>Lo más importante que aprendimos</h4>
+<p>Ahora sabemos que <strong data-start="796" data-end="858"><code data-start="798" data-end="808">prefs.js</code> no
+        contiene las preferencias propiamente dichas</strong>. Su trabajo es básicamente:</p>
+<blockquote>Decidir qué implementación de preferencias utilizar y ponerla en marcha.</blockquote>
+<p>Por eso ahora tiene mucho sentido pasar a <strong data-start="1011" data-end="1046"><code data-start="1013"
+            data-end="1027">prefsGtk4.js</code> y <code data-start="1030" data-end="1044">prefsGtk3.js</code></strong> y
+    yo empezaría por <strong data-start="1068" data-end="1086"><code data-start="1070"
+            data-end="1084">prefsGtk4.js</code></strong>, no por GTK3.</p>
+<h5>¿Por qué?</h5>
+<p>Porque nuestro objetivo es modernizar la extensión para GNOME actual, y <code data-start="1185"
+        data-end="1195">prefs.js</code> ya nos dijo que:</p>
+<pre><samp>GNOME &lt; 40  → prefsGtk3.js
+GNOME ≥ 40  → prefsGtk4.js</samp></pre>
+<p>Así que <strong data-start="1289" data-end="1337">GTK4 es el camino que nos interesa conservar</strong>. Después
+    podemos mirar <code data-start="1362" data-end="1376">prefsGtk3.js</code> para entender qué hacía originalmente y
+    detectar qué cosas eran solamente compatibilidad histórica.</p>
+<p>Y hay otro pequeño punto que podemos dejar anotado:</p>
+<blockquote>El ternario de <code data-start="1551" data-end="1563">show_all()</code> funciona, pero un <code
+        data-start="1582" data-end="1586">if</code> sería más claro.</blockquote>
+<p>No necesitamos modificarlo ahora; simplemente lo tenemos identificado para cuando llegue el momento de modernizar.
+</p>

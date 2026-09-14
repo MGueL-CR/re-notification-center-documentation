@@ -1,0 +1,22 @@
+<h2><code>prefsGtk3.js</code></h2>
+<hr>
+<p>En esta documentación, por el momento, no vamos a profundizar en este archivo. Dado que hemos encontrado algo que
+    deberíamos tener muy presente cuando modernicemos la extensión:</p>
+<blockquote>El corte histórico que utiliza Selenium-H es GNOME 40: GTK3 para <code data-start="5942"
+        data-end="5948">&lt; 40</code> y GTK4 para <code data-start="5961" data-end="5968">&gt;= 40</code>.</blockquote>
+<p>Como nuestro objetivo actual es GNOME moderno, seguramente <code data-start="6032"
+        data-end="6046">prefsGtk3.js</code> termine siendo un candidato para <strong data-start="6080"
+        data-end="6125">estudiar, entender y posiblemente retirar</strong>, pero no tomemos esa decisión todavía.&nbsp;
+</p>
+<p>Por eso ahora tiene mucho sentido pasar a <strong data-start="1011" data-end="1046"><code data-start="1013"
+            data-end="1027">prefsGtk4.js</code> y <code data-start="1030" data-end="1044">prefsGtk3.js</code></strong>.
+    Y yo empezaría por <strong data-start="1068" data-end="1086"><code data-start="1070"
+            data-end="1084">prefsGtk4.js</code></strong>, no por GTK3.</p>
+<h3>¿Por qué?</h3>
+<p>Porque nuestro objetivo es modernizar la extensión para GNOME actual, y <code data-start="1185"
+        data-end="1195">prefs.js</code> ya nos dijo que:</p>
+<pre><samp>GNOME &lt; 40  → prefsGtk3.js
+GNOME ≥ 40  → prefsGtk4.js</samp></pre>
+<p>Así que <strong data-start="1289" data-end="1337">GTK4 es el camino que nos interesa conservar</strong>. Después
+    podemos mirar <code data-start="1362" data-end="1376">prefsGtk3.js</code> para entender qué hacía originalmente y
+    detectar qué cosas eran solamente compatibilidad histórica.</p>
