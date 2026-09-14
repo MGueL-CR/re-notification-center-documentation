@@ -29,14 +29,12 @@ b {
 @media (width <=720px) {
     .row>[class^="col"] {
         flex: 1 1 100%;
-        background-color: #63a8f8;
     }
 }
 
 @media (width <=640px) {
     .row {
         flex-wrap: nowrap;
-        background-color: #f1a275;
     }
 }
 
