@@ -1,0 +1,88 @@
+<h2>Clases presentes en prefsGtk4.js</h2>
+<hr>
+<p>Así que sí: <strong data-start="1680" data-end="1777">ahora entramos en la parte donde las variables empiezan a
+        construir el modelo de preferencias</strong>, y ahí probablemente tendremos bastante más información sobre cómo
+    Selenium-H diseñó esta interfaz.</p>
+<p>Para cada variable/clase que estudiemos en <code data-start="167" data-end="181">prefsGtk4.js</code>, haré este
+    proceso:</p>
+<h3>Identificar la declaración</h3>
+<pre><samp><span class="ͼg">const</span> <span class="ͼm">ExtensionPreferencesWindow_NotificationCenterExtension</span> <span class="ͼg">=</span> <span class="ͼg">new</span> <span class="ͼm">GObject</span><span class="ͼg">.</span>Class({</samp></pre>
+<h3>Recorrer todo el bloque</h3>
+<p>Recorrer todo el bloque que le pertenece, sin adelantarnos a lo que todavía no conocemos.</p>
+<h3><strong data-start="449" data-end="475">Al encontrar su cierre</strong></h3>
+<p>Reconstruiré el nodo completo con todo lo aprendido:</p>
+<ul>
+    <li>nombre;</li>
+    <li>tipo;</li>
+    <li>de dónde proviene;</li>
+    <li>propósito;</li>
+    <li>propiedades;</li>
+    <li>métodos;</li>
+    <li>objetos que utiliza;</li>
+    <li>relación con <code>settings</code>;</li>
+    <li>relación con las <code>keys</code>/enums del <code>gschema</code>;</li>
+    <li>quién la crea o utiliza;</li>
+    <li>y cualquier pendiente que haya quedado.</li>
+</ul>
+<h3>La siguiente variable/clase</h3>
+<p>Después pasamos a la siguiente variable/clase y hacemos exactamente lo mismo.</p>
+<p>Por ejemplo, este nodo provisional:</p>
+<pre><samp>ExtensionPreferencesWindow_NotificationCenterExtension
+│
+├── Tipo
+│   └── Clase GObject
+│
+├── Archivo
+│   └── prefsGtk4.js
+│
+├── Propósito
+│   └── Ventana de preferencias
+│
+├── Creada desde
+│   └── prefs.js
+│
+└── Pendiente
+    └── conocer su contenido completo</samp></pre>
+<p>Cuando terminemos la clase, se convertirá en algo más parecido a:</p>
+<pre><samp>ExtensionPreferencesWindow_NotificationCenterExtension
+│
+├── Tipo
+│   └── Clase GObject
+│
+├── Propósito
+│   └── ...
+│
+├── Hereda de
+│   └── ...
+│
+├── Recibe
+│   └── widget
+│
+├── Contiene
+│   ├── ...
+│   ├── ...
+│   └── ...
+│
+├── Utiliza
+│   ├── settings
+│   │   ├── show-media
+│   │   ├── ...
+│   │   └── ...
+│   └── ...
+│
+├── Es utilizada por
+│   └── prefs.js
+│
+└── Pendientes
+    └── ...</samp></pre>
+<p>Y <strong data-start="1697" data-end="1735">no solo lo haremos para las clases</strong>. Si después
+    encontramos: <kbd class="inline-code"> <span class="ͼg">let</span> <span class="ͼm">applicationList</span>
+        <span class="ͼg">=</span> ...</kbd> o: <kbd class="inline-code"> <span class="ͼg">const</span> <span
+            class="ͼm">something</span> <span class="ͼg">=</span> ...</kbd> también construiremos su nodo
+    correspondiente cuando terminemos de estudiar el bloque donde tenga sentido.</p>
+<p>Esto nos va a dar, al final de <code data-start="1991" data-end="2005">prefsGtk4.js</code>, un <strong
+        data-start="2010" data-end="2055">mapa mental bastante completo del archivo</strong>, y será especialmente útil
+    cuando volvamos a <code data-start="2101" data-end="2115">extension.js</code>. Además, mantendré una separación
+    entre <strong data-start="2157" data-end="2174">lo confirmado</strong> y <strong data-start="2177"
+        data-end="2209">lo que todavía sea hipótesis</strong>, para que no terminemos convirtiendo una suposición en
+    "hecho" simplemente porque apareció temprano en el código.</p>

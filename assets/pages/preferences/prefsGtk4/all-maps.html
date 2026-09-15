@@ -1,0 +1,102 @@
+<h2>Mapas de cada clase</h2>
+<hr>
+<div class="tabs">
+    <input type="radio" name="tabs-maps" id="tb1" checked="checked">
+    <label for="tb1">ExtensionPreferencesWindow</label>
+    <div class="tab">
+        <h4>Mapa completo del nodo: ExtensionPreferencesWindow</h4>
+        <pre><samp>ExtensionPreferencesWindow_NotificationCenterExtension
+        │
+        ├── Tipo
+        │   └── GObject.Class
+        │
+        ├── Name
+        │   └── ExtensionPreferencesWindow_NotificationCenterExtension
+        │
+        ├── Propósito
+        │   └── Personalizar la ventana de preferencias GTK4
+        │
+        ├── _init(widget)
+        │   │
+        │   ├── this.toplevel
+        │   │   └── widget.get_native()
+        │   │
+        │   ├── this.headerBar
+        │   │   └── this.toplevel.get_titlebar()
+        │   │
+        │   ├── Gtk.StackSwitcher
+        │   │   ├── halign: CENTER
+        │   │   └── stack: widget
+        │   │
+        │   ├── createAppMenu()
+        │   └── createRefreshButton()
+        │
+        ├── createAppMenu()
+        │   │
+        │   ├── preferencesDialogAction
+        │   │   └── Gio.SimpleAction("preferences")
+        │   │       └── abre diálogo Preferences
+        │   │           └── ExtensionResetButton_NotificationCenterExtension
+        │   │
+        │   ├── helpDialogAction
+        │   │   └── Gio.SimpleAction("help")
+        │   │       └── abre diálogo Help
+        │   │           └── Metadata.description
+        │   │
+        │   ├── aboutDialogAction
+        │   │   └── Gio.SimpleAction("about")
+        │   │       └── Gtk.AboutDialog
+        │   │           ├── eicon.png
+        │   │           ├── Metadata.name
+        │   │           ├── Metadata.version
+        │   │           ├── Metadata.status
+        │   │           ├── Metadata.comment
+        │   │           └── license_type: 3
+        │   │
+        │   ├── actionGroup
+        │   │   ├── preferences
+        │   │   ├── help
+        │   │   └── about
+        │   │
+        │   ├── Gio.Menu
+        │   │   ├── Preferences → prefswindow.preferences
+        │   │   ├── Help → prefswindow.help
+        │   │   └── About → prefswindow.about
+        │   │
+        │   ├── Gtk.PopoverMenu
+        │   │   └── basado en Gio.Menu
+        │   │
+        │   └── Gtk.MenuButton
+        │       └── open-menu-symbolic
+        │
+        └── createRefreshButton()
+            │
+            ├── refreshButton
+            │   └── Gtk.Button
+            │       └── view-refresh-symbolic
+            │
+            ├── clicked
+            │   └── reloadExtension()
+            │       └── modifica "reload-signal"
+            │
+            └── headerBar.pack_start()</samp></pre>
+    </div>
+    <input type="radio" name="tabs-maps" id="tb2">
+    <label for="tb2">Tab Two</label>
+    <div class="tab">
+        <h4>Tab Two Content</h4>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
+            dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
+            ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat
+            nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
+            anim id est laborum.</p>
+        <pre><code>&lt;link rel="stylesheet" href="https://classless.de/classless-tiny.css"&gt;</code></pre>
+    </div>
+
+    <input type="radio" name="tabs-maps" id="tb3">
+    <label for="tb3">Tab Three</label>
+    <div class="tab">
+        <h4>Tab Three Content</h4>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+    </div>
+</div>

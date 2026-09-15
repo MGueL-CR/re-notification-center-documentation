@@ -1,0 +1,957 @@
+<aside class="list-blocks">
+    <div class="symbol-tab">
+        <div class="symbol">
+            <div class="icon-bar"></div>
+        </div>
+    </div>
+    <div class="card">
+        <p>Secciones:</p>
+        <div class="list-links">
+            <a href="#section1">ExtensionPreferencesWindow</a>
+            <a href="#section2">Name: 'ExtensionPreferencesWindow...'</a>
+            <hr>
+            <a href="#section3">_init ( ) { ... }</a>
+            <hr>
+            <a href="#section4">createAppMenu ( )</a>
+            <a href="#section5">Agregar las opciones al menú</a>
+            <a href="#section6">preferencesDialogAction</a>
+            <a href="#section7">helpDialogAction</a>
+            <a href="#section8">aboutDialogAction</a>
+            <hr>
+            <a href="#section9">createRefreshButton ( )</a>
+            <hr>
+            <a href="#section10">Dependencias que descubrimos</a>
+            <a href="#section11">Pendientes que dejamos conscientemente</a>
+            <a href="#section12">Estado de nuestro recorrido</a>
+        </div>
+    </div>
+</aside>
+<h2>ExtensionPreferencesWindow</h2>
+<hr>
+<p>Esta línea es un muy buen punto de partida porque aquí comienza <strong data-start="74" data-end="125">una de las
+        clases principales de <code data-start="109" data-end="123">prefsGtk4.js</code></strong>:</p>
+<h3 id="section1" class="class-prefs">const ExtensionPreferencesWindow...</h3>
+<hr>
+<pre><code><span class="ͼg">const</span> <span class="ͼm">ExtensionPreferencesWindow_NotificationCenterExtension</span> <span class="ͼg">=</span> <span class="ͼg">new</span> <span class="ͼm">GObject</span><span class="ͼg">.</span>Class({ ... })</code></pre>
+<h4>El nombre de la variable</h4>
+<p>Es una constante que va a contener una <strong data-start="403" data-end="412">clase</strong>.</p>
+<pre><samp>ExtensionPreferencesWindow_NotificationCenterExtension</samp></pre>
+<p>El nombre ya nos da una pista bastante fuerte:</p>
+<ul>
+    <li><code>ExtensionPreferencesWindow</code> → ventana de preferencias de la extensión.</li>
+    <li><code>NotificationCenterExtension</code> → pertenece a Notification Center.</li>
+</ul>
+<p>Y ahora podemos conectar esto con algo que vimos en <code data-start="657" data-end="667">prefs.js</code>:</p>
+<pre><samp><span class="ͼg">new</span> <span class="ͼm">gtkVersion</span><span class="ͼg">.</span>ExtensionPreferencesWindow_NotificationCenterExtension(<span class="ͼm">widget</span>);</samp></pre>
+<p>¡Ahora sabemos de dónde sale esa clase! La cadena es:</p>
+<pre><samp>prefs.js
+   │
+   ▼
+gtkVersion.ExtensionPreferencesWindow_NotificationCenterExtension
+   │
+   ▼
+prefsGtk4.js
+   │
+   ▼
+ExtensionPreferencesWindow_NotificationCenterExtension</samp></pre>
+<h4>GObject.Class</h4>
+<p>Aquí Selenium-H está utilizando el sistema de clases basado en <strong data-start="1177"
+        data-end="1188">GObject</strong> que era habitual en las versiones antiguas de GNOME.</p>
+<pre><samp><span class="ͼg">new</span> <span class="ͼm">GObject</span><span class="ͼg">.</span>Class({ ... })</samp></pre>
+<p>Recordemos que anteriormente vimos: <span class="ͼg">const</span> <span class="ͼm">GObject</span> <span
+        class="ͼg">=</span> <span class="ͼm">imports</span><span class="ͼg">.</span>gi<span class="ͼg">.</span>GObject;
+</p>
+<p>Ahora vemos finalmente <strong data-start="1370" data-end="1404">para qué necesitaba ese import</strong>. Está
+    creando una clase mediante:<var class="inline-code"> <span class="ͼm">GObject</span><span
+            class="ͼg">.</span>Class</var>. Por tanto:</p>
+<pre><samp>GObject
+   │
+   └── Class
+       │
+       ▼
+ExtensionPreferencesWindow_NotificationCenterExtension</samp></pre>
+<h4> ¿Qué significa el <code data-start="1652" data-end="1655">{</code>?</h4>
+<p>El objeto que empieza aquí: <kbd class="inline-code">{</kbd> contendrá la definición de la clase. Dentro
+    probablemente encontraremos cosas como o estructuras similares:</p>
+<pre><samp><span class="ͼo">Name</span>: ...,
+<span class="ͼo">Extends</span>: ...,
+<span class="ͼo">_init</span>: <span class="ͼg">function</span> (...) {
+    ...
+},
+...</samp></pre>
+<p><strong data-start="1915" data-end="1972">Eso es lo que debemos estudiar en el siguiente bloque</strong>, porque ahí
+    veremos de qué clase GTK hereda esta ventana y qué hace cuando se crea.</p>
+<h4>Comentario</h4>
+<p>Y hay una cosa que me gusta especialmente de haber llegado aquí después de estudiar <code data-start="2456"
+        data-end="2466">prefs.js</code>: <strong data-start="2468" data-end="2511">ya no estamos viendo esta clase
+        aislada</strong>.</p>
+<p>Ya sabemos que <code data-start="2529" data-end="2539">prefs.js</code> hace:</p>
+<pre><samp><span class="ͼg">new</span> <span class="ͼm">gtkVersion</span><span class="ͼg">.</span>ExtensionPreferencesWindow_NotificationCenterExtension(<span class="ͼm">widget</span>);</samp></pre>
+<p>Así que ahora vamos a descubrir <strong data-start="2677" data-end="2767">qué ocurre exactamente cuando se crea ese
+        objeto y qué hace con el <code data-start="2746" data-end="2754">widget</code> que recibe</strong>.</p>
+<h3 id="section2" class="class-prefs">Name: 'ExtensionPreferencesWindow...'</h3>
+<hr>
+<p>Aquí estamos definiendo una propiedad de la clase:</p>
+<pre><code><span class="ͼo">Name</span>: <span class="ͼk">'ExtensionPreferencesWindow_NotificationCenterExtension'</span>,</code></pre>
+<h4>¿Qué significa <code data-start="154" data-end="160">Name</code>?</h4>
+<p><code data-start="163" data-end="178">GObject.Class</code> permite describir la clase mediante un objeto de
+    configuración. Una de esas propiedades es <code data-start="270" data-end="276">Name</code>, que establece <strong
+        data-start="292" data-end="333">el nombre que tendrá la clase GObject</strong>.</p>
+<p>En este caso:</p>
+<pre><samp>Name
+  ↓
+ExtensionPreferencesWindow_NotificationCenterExtension</samp></pre>
+<p>Y coincide con el nombre que usamos para guardar la clase:</p>
+<pre><samp><span class="ͼg">const</span> <span class="ͼm">ExtensionPreferencesWindow_NotificationCenterExtension</span> <span class="ͼg">=</span> <span class="ͼg">new</span> <span class="ͼm">GObject</span><span class="ͼg">.</span>Class({</samp></pre>
+<p>Por eso tenemos dos cosas relacionadas, pero conceptualmente distintas: </p>
+<pre><samp>const ExtensionPreferencesWindow_NotificationCenterExtension
+        │
+        │ contiene
+        ▼
+     GObject.Class
+        │
+        └── Name:
+            'ExtensionPreferencesWindow_NotificationCenterExtension'</samp></pre>
+<h4>¿Por qué especificarlo si ya tiene el mismo nombre?</h4>
+<p>Porque <strong data-start="956" data-end="1074">el nombre de la variable JavaScript y el nombre registrado de la
+        clase GObject no son necesariamente la misma cosa</strong>.</p>
+<p>Podríamos tener, por ejemplo:</p>
+<pre><samp><span class="ͼg">const</span> <span class="ͼm">MiVentana</span> <span class="ͼg">=</span> <span class="ͼg">new</span> <span class="ͼm">GObject</span><span class="ͼg">.</span>Class({
+    Name: <span class="ͼk">'ExtensionPreferencesWindow'</span>
+});</samp></pre>
+<p>y seguiría siendo perfectamente posible.</p>
+<p>Aquí Selenium-H simplemente decidió mantener ambos nombres iguales, lo cual facilita bastante la lectura.</p>
+<h3 id="section3" class="class-prefs">_init: function( widget ) { ... }</h3>
+<hr>
+<p>Aquí ya llegamos a una parte <strong data-start="29" data-end="48">muy interesante</strong>, porque este <code
+        data-start="62" data-end="71">_init()</code> nos muestra qué hace realmente la clase cuando <code
+        data-start="119" data-end="129">prefs.js</code> la instancia.</p>
+<pre><code><span class="ͼo">_init</span>: <span class="ͼg">function</span>( <span class="ͼm">widget</span> ) {
+
+  <span class="ͼj">this</span><span class="ͼg">.</span>toplevel  <span class="ͼg">=</span> <span class="ͼm">widget</span><span class="ͼg">.</span>get_native();
+  <span class="ͼj">this</span><span class="ͼg">.</span>headerBar <span class="ͼg">=</span> <span class="ͼj">this</span><span class="ͼg">.</span>toplevel<span class="ͼg">.</span>get_titlebar();
+  <span class="ͼj">this</span><span class="ͼg">.</span>headerBar<span class="ͼg">.</span>set_title_widget(
+      <span class="ͼg">new</span> <span class="ͼm">Gtk</span><span class="ͼg">.</span>StackSwitcher({
+          halign: <span class="ͼm">Gtk</span><span class="ͼg">.</span>Align<span class="ͼg">.</span>CENTER,
+          stack: <span class="ͼm">widget</span>
+      })
+  );
+  <span class="ͼj">this</span><span class="ͼg">.</span>createAppMenu();  
+  <span class="ͼj">this</span><span class="ͼg">.</span>createRefreshButton();  
+
+},</code></pre>
+<h4>_init</h4>
+<p>En este modelo antiguo de <code data-start="596" data-end="611">GObject.Class</code>, <code data-start="613"
+        data-end="622">_init()</code> funciona como el <strong data-start="640" data-end="673">inicializador de la
+        instancia</strong>.</p>
+<pre><code><span class="ͼo">_init</span>: <span class="ͼg">function</span>( <span class="ͼm">widget</span> ) {</code></pre>
+<p>Y recibe: <kbd class="inline-code">widget</kbd></p>
+<h5>¿De dónde viene?</h5>
+<p>Lo vimos en <code data-start="749" data-end="759">prefs.js</code>: <span class="ͼg">let</span> <span
+        class="ͼm">widget</span> <span class="ͼg">=</span> <span class="ͼg">new</span> <span
+        class="ͼm">gtkVersion</span><span class="ͼg">.</span>Prefs_NotificationCenterExtension();</p>
+<p>y después: <span class="ͼg">new</span> <span class="ͼm">gtkVersion</span><span
+        class="ͼg">.</span>ExtensionPreferencesWindow_NotificationCenterExtension(<span class="ͼm">widget</span>);</p>
+<p>Por lo tanto:</p>
+<pre><samp>Prefs_NotificationCenterExtension
+        │
+        │ widget
+        ▼
+ExtensionPreferencesWindow_NotificationCenterExtension
+        │
+        ▼
+_init(widget)</samp></pre>
+<h4>this.toplevel</h4>
+<p>Aquí está obteniendo el <strong data-start="1277" data-end="1313">objeto nativo asociado al widget</strong>.</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>toplevel <span class="ͼg">=</span> <span class="ͼm">widget</span><span class="ͼg">.</span>get_native();</code></pre>
+<p>El resultado se guarda como propiedad de la instancia: <kbd class="inline-code">this.toplevel</kbd></p>
+<p>Por el contexto, necesitamos tratarlo como el objeto GTK de nivel superior que contiene la interfaz.Todavía no
+    necesitamos determinar exactamente qué clase GTK es; eso lo podremos confirmar cuando estudiemos <code
+        data-start="1621" data-end="1656">Prefs_NotificationCenterExtension</code>.</p>
+<h4>this.headerBar</h4>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>headerBar <span class="ͼg">=</span> <span class="ͼj">this</span><span class="ͼg">.</span>toplevel<span class="ͼg">.</span>get_titlebar();</code></pre>
+<p>Ahora obtiene la barra de título de esa ventana:</p>
+<pre><samp>this.toplevel
+     │
+     └── get_titlebar()
+             ↓
+       this.headerBar</samp></pre>
+<p>Y ya tenemos otro nodo para nuestro mapa:</p>
+<pre><samp>this.headerBar
+└── barra de título de la ventana</samp></pre>
+<h4>Gtk.StackSwitcher</h4>
+<p>Esta línea es probablemente la más interesante:</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>headerBar<span class="ͼg">.</span>set_title_widget(
+    <span class="ͼg">new</span> <span class="ͼm">Gtk</span><span class="ͼg">.</span>StackSwitcher({
+        halign: <span class="ͼm">Gtk</span><span class="ͼg">.</span>Align<span class="ͼg">.</span>CENTER,
+        stack: <span class="ͼm">widget</span>
+    })
+);</code></pre>
+<p>Está colocando un <strong data-start="2302" data-end="2354"><code data-start="2304"
+            data-end="2323">Gtk.StackSwitcher</code> dentro de la barra de título</strong>. <code data-start="2357"
+        data-end="2376">Gtk.StackSwitcher</code> sirve para cambiar entre diferentes páginas de un <code
+        data-start="2427" data-end="2438">Gtk.Stack</code>.</p>
+<p>Y aquí: <span class="ͼo">stack</span>: <span class="ͼm">widget </span> le está diciendo: </p>
+<blockquote>Este <code data-start="2521" data-end="2536">StackSwitcher</code> controla las páginas contenidas en <code
+        data-start="2572" data-end="2580">widget</code>.</blockquote>
+<p>Esto nos revela algo muy importante sobre <code data-start="2625"
+        data-end="2660">Prefs_NotificationCenterExtension</code>:</p>
+<p>Ese <code data-start="2669" data-end="2677">widget</code> probablemente es un <code data-start="2698"
+        data-end="2709">Gtk.Stack</code> o contiene/actúa como uno.</p>
+<p>Y eso explica algo que de otra manera sería bastante extraño: las preferencias probablemente están organizadas en
+    <strong data-start="2854" data-end="2886">diferentes páginas/secciones</strong>, y el <code data-start="2893"
+        data-end="2908">StackSwitcher</code> proporciona los botones para cambiar entre ellas.
+</p>
+<h4>halign</h4>
+<p>Simplemente indica que el <code data-start="3064" data-end="3079">StackSwitcher</code> debe alinearse horizontalmente
+    en el centro.</p>
+<pre><code><span class="ͼo">halign</span>: <span class="ͼm">Gtk</span><span class="ͼg">.</span>Align<span class="ͼg">.</span>CENTER</code></pre>
+<p>Visualmente podemos imaginar:</p>
+<pre><samp>┌──────────────────────────────────────────┐
+│        [General] [Applications] [...]    │
+├──────────────────────────────────────────┤
+│                                          │
+│          contenido de la página          │
+│                                          │
+└──────────────────────────────────────────┘</samp></pre>
+<p>No afirmemos todavía cuáles son las páginas; eso lo veremos cuando lleguemos a <code data-start="3564"
+        data-end="3599">Prefs_NotificationCenterExtension</code>.</p>
+<h4>createAppMenu()</h4>
+<p>Aquí llama a otro método de <strong data-start="3714" data-end="3734">esta misma clase</strong>.</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>createAppMenu();</code></pre>
+<p>Probablemente construye/configura el menú de la aplicación, pero todavía no sabemos qué contiene.</p>
+<p>Lo marcamos como pendiente:</p>
+<pre><samp>createAppMenu()
+└── pendiente de estudiar</samp></pre>
+<h4>createRefreshButton()</h4>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>createRefreshButton();</code></pre>
+<p>Y aquí aparece algo que conecta directamente con nuestro descubrimiento anterior:</p>
+<pre><samp>createRefreshButton()
+        │
+        └── posiblemente relacionado con
+            reloadExtension()</samp></pre>
+<p><strong data-start="4239" data-end="4252">Pero ojo:</strong> todavía no sabemos si realmente es así. Lo interesante
+    es que acabamos de encontrar una función llamada <code data-start="4358"
+        data-end="4381">createRefreshButton()</code>, mientras que anteriormente encontramos: <span
+        class="ͼm">reloadExtension</span>() y <span class="ͼm">reloadApplicationProfiles</span>().</p>
+<p>Así que tenemos una pista bastante fuerte para investigar y me parece que aquí apareció <strong data-start="5237"
+        data-end="5338">nuestro primer indicio de que la interfaz de preferencias no es simplemente una lista de
+        opciones</strong>, sino que tiene una estructura con páginas/pestañas y posiblemente un menú y un botón de
+    actualización.</p>
+<p>Eso será especialmente interesante cuando lleguemos a <code data-start="5498" data-end="5515">createAppMenu()</code>
+    y <code data-start="5518" data-end="5541">createRefreshButton()</code>.</p>
+
+<h3 id="section4" class="class-prefs">createAppMenu: function( )</h3>
+<hr>
+<p>Aquí empieza a aparecer la construcción del <strong data-start="44" data-end="69">menú de la aplicación</strong>. Y
+    podemos ver que Selenium-H está usando varias clases de <code data-start="129" data-end="134">Gio</code> y <code
+        data-start="137" data-end="142">Gtk</code> que importó al principio.</p>
+<pre><code><span class="ͼo">createAppMenu</span>: <span class="ͼg">function</span>( ) {
+
+  <span class="ͼg">let</span> <span class="ͼm">preferencesDialogAction</span> <span class="ͼg">=</span> <span class="ͼg">new</span> <span class="ͼm">Gio</span><span class="ͼg">.</span>SimpleAction({ name: <span class="ͼk">'preferences'</span>});  
+  <span class="ͼg">let</span> <span class="ͼm">helpDialogAction</span>        <span class="ͼg">=</span> <span class="ͼg">new</span> <span class="ͼm">Gio</span><span class="ͼg">.</span>SimpleAction({ name: <span class="ͼk">'help'</span>});
+  <span class="ͼg">let</span> <span class="ͼm">aboutDialogAction</span>       <span class="ͼg">=</span> <span class="ͼg">new</span> <span class="ͼm">Gio</span><span class="ͼg">.</span>SimpleAction({ name: <span class="ͼk">'about'</span>});
+  <span class="ͼg">let</span> <span class="ͼm">actionGroup</span>             <span class="ͼg">=</span> <span class="ͼg">new</span> <span class="ͼm">Gio</span><span class="ͼg">.</span>SimpleActionGroup();
+  <span class="ͼg">let</span> <span class="ͼm">menu</span>                    <span class="ͼg">=</span> <span class="ͼg">new</span> <span class="ͼm">Gio</span><span class="ͼg">.</span>Menu();
+  <span class="ͼg">let</span> <span class="ͼm">appMenu</span>                 <span class="ͼg">=</span> <span class="ͼm">Gtk</span><span class="ͼg">.</span>PopoverMenu<span class="ͼg">.</span>new_from_model(<span class="ͼm">menu</span>);
+  <span class="ͼg">let</span> <span class="ͼm">appMenuButton</span>           <span class="ͼg">=</span> <span class="ͼg">new</span> <span class="ͼm">Gtk</span><span class="ͼg">.</span>MenuButton({
+      popover: <span class="ͼm">appMenu</span>,
+      icon_name: <span class="ͼk">"open-menu-symbolic"</span>,
+      visible:<span class="ͼj">true</span>
+  });</code></pre>
+<h4>preferencesDialogAction</h4>
+<p>Crea una <strong data-start="940" data-end="957">acción de Gio</strong> llamada: <kbd
+        class="inline-code">preferences</kbd></p>
+<pre><code><span class="ͼg">let</span> <span class="ͼm">preferencesDialogAction</span> <span class="ͼg">=</span>
+    <span class="ͼg">new</span> <span class="ͼm">Gio</span><span class="ͼg">.</span>SimpleAction({ name: <span class="ͼk">'preferences'</span> });</code></pre>
+<p>Una <code data-start="997" data-end="1015">Gio.SimpleAction</code> representa una acción que posteriormente puede
+    tener un callback asociado.</p>
+<p>Por ahora:</p>
+<pre><samp>preferencesDialogAction
+└── SimpleAction
+    └── name = "preferences"</samp></pre>
+<p>Todavía no sabemos qué hace cuando se activa. Eso seguramente aparecerá más adelante en este mismo método.</p>
+<h4>helpDialogAction</h4>
+<p>Representa la acción de <strong data-start="1524" data-end="1533">ayuda</strong>.</p>
+<pre><code><span class="ͼg">let</span> <span class="ͼm">helpDialogAction</span> <span class="ͼg">=</span>
+    <span class="ͼg">new</span> <span class="ͼm">Gio</span><span class="ͼg">.</span>SimpleAction({ name: <span class="ͼk">'help'</span> });</code></pre>
+<p>Mismo mecanismo:</p>
+<pre><samp>helpDialogAction
+└── SimpleAction
+    └── name = "help"</samp></pre>
+<h4>aboutDialogAction</h4>
+<pre><code><span class="ͼg">let</span> <span class="ͼm">aboutDialogAction</span> <span class="ͼg">=</span>
+    <span class="ͼg">new</span> <span class="ͼm">Gio</span><span class="ͼg">.</span>SimpleAction({ name: <span class="ͼk">'about'</span> });</code></pre>
+<p>Y otra acción:</p>
+<pre><samp>aboutDialogAction
+└── SimpleAction
+    └── name = "about"</samp></pre>
+<p>Probablemente abrirá el diálogo <strong data-start="1776" data-end="1785">About</strong> de la extensión. Pero
+    nuevamente, no lo damos por hecho hasta encontrar qué callback se le asigna.</p>
+<h4>actionGroup</h4>
+<p>Aquí aparece el contenedor de las acciones.</p>
+<pre><code><span class="ͼg">let</span> <span class="ͼm">actionGroup</span> <span class="ͼg">=</span> <span class="ͼg">new</span> <span class="ͼm">Gio</span><span class="ͼg">.</span>SimpleActionGroup();</code></pre>
+<p>Podemos visualizarlo así:</p>
+<pre><samp>actionGroup
+│
+├── preferences
+├── help
+└── about</samp></pre>
+<p>Aunque <strong data-start="2121" data-end="2163">todavía no han sido agregadas al grupo</strong> en el código que nos
+    has mostrado. Eso probablemente viene inmediatamente después. La idea de <code data-start="2259"
+        data-end="2278">SimpleActionGroup</code> es precisamente reunir acciones que luego pueden ser utilizadas desde
+    la interfaz de GTK/Gio.</p>
+<h4>menu</h4>
+<p>Ahora crea el <strong data-start="2454" data-end="2473">modelo del menú</strong>.</p>
+<pre><code><span class="ͼg">let</span> <span class="ͼm">menu</span> <span class="ͼg">=</span> <span class="ͼg">new</span> <span class="ͼm">Gio</span><span class="ͼg">.</span>Menu();</code></pre>
+<p>Esto es importante: todavía no estamos creando visualmente el menú. <code data-start="2545"
+        data-end="2555">Gio.Menu</code> representa la estructura/contenido lógico del menú. </p>
+<p>Por ejemplo, posteriormente podría terminar teniendo algo conceptualmente parecido a:</p>
+<pre><samp>Gio.Menu
+│
+├── Preferences
+├── Help
+└── About</samp></pre>
+<p>Pero todavía no sabemos cuáles elementos terminarán dentro.</p>
+<h4>appMenu</h4>
+<p>Aquí sí comienza la parte visual.</p>
+<pre><code><span class="ͼg">let</span> <span class="ͼm">appMenu</span> <span class="ͼg">=</span> <span class="ͼm">Gtk</span><span class="ͼg">.</span>PopoverMenu<span class="ͼg">.</span>new_from_model(<span class="ͼm">menu</span>);</code></pre>
+<p>Está tomando el modelo: <kbd class="inline-code">menu</kbd> y creando un <code data-start="3001"
+        data-end="3018">Gtk.PopoverMenu</code> a partir de él.</p>
+<p>Conceptualmente:</p>
+<pre><samp>Gio.Menu
+   │
+   │ new_from_model()
+   ▼
+Gtk.PopoverMenu</samp></pre>
+<p>Un <code data-start="3127" data-end="3140">PopoverMenu</code> es el menú que aparece flotando cuando el usuario pulsa
+    el botón correspondiente.</p>
+<h4>appMenuButton</h4>
+<p>Aquí finalmente crea el botón que el usuario verá.</p>
+<pre><code><span class="ͼg">let</span> <span class="ͼm">appMenuButton</span> <span class="ͼg">=</span> <span class="ͼg">new</span> <span class="ͼm">Gtk</span><span class="ͼg">.</span>MenuButton({
+    popover: <span class="ͼm">appMenu</span>,
+    icon_name: <span class="ͼk">"open-menu-symbolic"</span>,
+    visible: <span class="ͼj">true</span>
+});</code></pre>
+<p>Sus propiedades son:</p>
+<pre><samp>appMenuButton
+│
+├── popover
+│   └── appMenu
+│
+├── icon_name
+│   └── open-menu-symbolic
+│
+└── visible
+    └── true</samp></pre>
+<p>Así que la relación completa es:</p>
+<pre><samp>appMenuButton
+      │
+      ▼
+   appMenu
+      │
+      ▼
+   Gio.Menu
+      │
+      ├── preferences
+      ├── help
+      └── about
+           ↑
+      actionGroup</samp></pre>
+<p>Todavía falta ver cómo se conectan exactamente esas acciones con los elementos del menú.</p>
+<h4>Algo importante</h4>
+<p>Aquí todavía <strong data-start="4514" data-end="4554">no aparece ninguna key del <code data-start="4543"
+            data-end="4552">gschema</code></strong> y eso está bien. Este bloque está construyendo la <strong
+        data-start="4608" data-end="4657">infraestructura visual y de acciones del menú</strong>, no modificando
+    preferencias.</p>
+<p>Así que por ahora <code data-start="4707" data-end="4717">settings</code> queda fuera de este bloque. Lo siguiente
+    que aparezca probablemente nos dirá cómo se conectan:</p>
+<blockquote>acciones → menú → callbacks → diálogos.</blockquote>
+<p>Y ahí podremos empezar a entender para qué existen realmente <code data-start="4921"
+        data-end="4934">preferences</code>, <code data-start="4936" data-end="4942">help</code> y <code
+        data-start="4945" data-end="4952">about</code>.</p>
+<hr>
+<p id="section5" class="class-prefs">Aquí es donde <strong data-start="22" data-end="80">todo lo que acabamos de
+        construir empieza a conectarse</strong>.
+    Las acciones que creamos antes ahora se vinculan con las entradas del menú.</p>
+<pre><code>menu.<span class="hljs-title function_">append</span>(<span class="hljs-title function_">_</span>(<span class="hljs-string">"Preferences"</span>),               <span class="hljs-string">"prefswindow.preferences"</span>);
+menu.<span class="hljs-title function_">append</span>(<span class="hljs-title function_">_</span>(<span class="hljs-string">"Help"</span>),                      <span class="hljs-string">"prefswindow.help"</span>       );
+menu.<span class="hljs-title function_">append</span>(<span class="hljs-title function_">_</span>(<span class="hljs-string">"About"</span>)+<span class="hljs-string">" Notification Center"</span>, <span class="hljs-string">"prefswindow.about"</span>      );
+
+actionGroup.<span class="hljs-title function_">add_action</span>(aboutDialogAction);
+actionGroup.<span class="hljs-title function_">add_action</span>(helpDialogAction);
+actionGroup.<span class="hljs-title function_">add_action</span>(preferencesDialogAction);
+
+<span class="hljs-variable language_">this</span>.<span class="hljs-property">toplevel</span>.<span class="hljs-title function_">insert_action_group</span>(<span class="hljs-string">'prefswindow'</span>, actionGroup);    
+<span class="hljs-variable language_">this</span>.<span class="hljs-property">headerBar</span>.<span class="hljs-title function_">pack_end</span>(appMenuButton);</code></pre>
+<h4>Construcción del menú</h4>
+<pre><code><span class="ͼm">menu</span><span class="ͼg">.</span>append(<span class="ͼm">_</span>(<span class="ͼk">"Preferences"</span>), <span class="ͼk">"prefswindow.preferences"</span>);
+<span class="ͼm">menu</span><span class="ͼg">.</span>append(<span class="ͼm">_</span>(<span class="ͼk">"Help"</span>),        <span class="ͼk">"prefswindow.help"</span>);
+<span class="ͼm">menu</span><span class="ͼg">.</span>append(<span class="ͼm">_</span>(<span class="ͼk">"About"</span>) <span class="ͼg">+</span> <span class="ͼk">" Notification Center"</span>, <span class="ͼk">"prefswindow.about"</span>);</code></pre>
+<p>Tenemos tres elementos:</p>
+<pre><samp>menu
+├── Preferences → prefswindow.preferences
+├── Help        → prefswindow.help
+└── About Notification Center → prefswindow.about</samp></pre>
+<p>El segundo argumento es especialmente importante, <code data-start="609"
+        data-end="636">"prefswindow.preferences"</code> significa, conceptualmente:</p>
+<pre><samp>grupo de acciones = prefswindow
+acción            = preferences</samp></pre>
+<p>Y eso coincide exactamente con lo que creamos: <span class="ͼg">new</span> <span class="ͼm">Gio</span><span
+        class="ͼg">.</span>SimpleAction({ name: <span class="ͼk">'preferences'</span> });</p>
+<p>Lo mismo ocurre con <code data-start="877" data-end="883">help</code> y <code data-start="886"
+        data-end="893">about</code>.</p>
+<h4>Agregar las acciones al grupo</h4>
+<pre><code><span class="ͼm">actionGroup</span><span class="ͼg">.</span>add_action(<span class="ͼm">aboutDialogAction</span>);
+<span class="ͼm">actionGroup</span><span class="ͼg">.</span>add_action(<span class="ͼm">helpDialogAction</span>);
+<span class="ͼm">actionGroup</span><span class="ͼg">.</span>add_action(<span class="ͼm">preferencesDialogAction</span>);</code></pre>
+<p>Ahora sí completamos el grupo:</p>
+<pre><samp>actionGroup
+├── aboutDialogAction     → "about"
+├── helpDialogAction      → "help"
+└── preferencesDialogAction → "preferences"</samp></pre>
+<p>Hasta este momento teníamos las acciones creadas, pero no estaban dentro del grupo.</p>
+<h4>Registrar el grupo en la ventana</h4>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>toplevel<span class="ͼg">.</span>insert_action_group(<span class="ͼk">'prefswindow'</span>, <span class="ͼm">actionGroup</span>);</code></pre>
+<p>Aquí aparece la otra mitad de:</p>
+<pre><samp>prefswindow.preferences
+prefswindow.help
+prefswindow.about</samp></pre>
+<p>Estamos registrando <code data-start="1601" data-end="1614">actionGroup</code> en <code data-start="1618"
+        data-end="1633">this.toplevel</code> bajo el nombre: <kbd class="inline-code">prefswindow</kbd></p>
+<p>Por eso ahora GTK puede resolver: </p>
+<pre><samp>prefswindow.preferences
+       ↓
+actionGroup
+       ↓
+preferencesDialogAction</samp></pre>
+<p>Y exactamente igual:</p>
+<pre><samp>prefswindow.help
+       ↓
+helpDialogAction</samp></pre>
+<pre><samp>prefswindow.about
+       ↓
+aboutDialogAction</samp></pre>
+<p>Esta línea es la que <strong data-start="1959" data-end="2056">hace posible que las rutas usadas en <code
+            data-start="1998" data-end="2013">menu.append()</code> encuentren las acciones correspondientes</strong>.
+</p>
+<h4>Colocar el botón</h4>
+<p>Finalmente:</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>headerBar<span class="ͼg">.</span>pack_end(<span class="ͼm">appMenuButton</span>);</code></pre>
+<p>Agrega el botón del menú al extremo de la barra de título. Por lo que nuestro resultado visual sería aproximadamente:
+</p>
+<pre><samp>┌─────────────────────────────────────────────┐
+│        [pestañas del StackSwitcher]    [☰] │
+├─────────────────────────────────────────────┤
+│                                             │
+│             Preferencias                    │
+│                                             │
+└─────────────────────────────────────────────┘</samp></pre>
+<p>Al pulsar <code data-start="2639" data-end="2642">☰</code>, aparece el <code data-start="2655"
+        data-end="2668">PopoverMenu</code> con:</p>
+<pre><samp>Preferences
+Help
+About Notification Center</samp></pre>
+<hr>
+<p id="section6" class="class-prefs">Este bloque es precisamente el que faltaba para darle <strong data-start="187"
+        data-end="205">comportamiento</strong>
+    a <code data-start="208" data-end="233">preferencesDialogAction</code>.</p>
+<pre><code><span class="ͼm">preferencesDialogAction</span><span class="ͼg">.</span>connect(<span class="ͼk">'activate'</span>, ()=&gt; {
+  <span class="ͼg">let</span> <span class="ͼm">dialog</span> <span class="ͼg">=</span> <span class="ͼg">new</span> <span class="ͼm">Gtk</span><span class="ͼg">.</span>Dialog({
+      title: <span class="ͼm">_</span>(<span class="ͼk">"Preferences"</span>),
+      transient_for: <span class="ͼj">this</span><span class="ͼg">.</span>toplevel,
+      use_header_bar: <span class="ͼj">true</span>,
+      modal: <span class="ͼj">true</span>
+  });
+
+  <span class="ͼg">let</span> <span class="ͼm">vbox</span> <span class="ͼg">=</span> <span class="ͼg">new</span> <span class="ͼm">Gtk</span><span class="ͼg">.</span>Box({
+      hexpand: <span class="ͼj">true</span>,
+      vexpand: <span class="ͼj">true</span>,
+      valign: <span class="ͼm">Gtk</span><span class="ͼg">.</span>Align<span class="ͼg">.</span>CENTER,
+      orientation: <span class="ͼm">Gtk</span><span class="ͼg">.</span>Orientation<span class="ͼg">.</span>VERTICAL
+  });
+
+  <span class="ͼj">this</span><span class="ͼg">.</span>resetExtensionButton <span class="ͼg">=</span>
+      <span class="ͼg">new</span> <span class="ͼm">ExtensionResetButton_NotificationCenterExtension</span>(<span class="ͼj">this</span><span class="ͼg">.</span>toplevel);
+
+  <span class="ͼm">vbox</span><span class="ͼg">.</span>append(<span class="ͼj">this</span><span class="ͼg">.</span>resetExtensionButton);
+  <span class="ͼm">dialog</span><span class="ͼg">.</span>get_content_area()<span class="ͼg">.</span>append(<span class="ͼm">vbox</span>);
+  <span class="ͼm">dialog</span><span class="ͼg">.</span>present();
+});</code></pre>
+<h4> ¿Cuándo se ejecuta?</h4>
+<p>Esto conecta la acción <code data-start="971" data-end="984">preferences</code> con una función que se ejecutará
+    cuando la acción sea <strong data-start="1039" data-end="1051">activada</strong>.</p>
+<pre><code><span class="ͼm">preferencesDialogAction</span><span class="ͼg">.</span>connect(<span class="ͼk">'activate'</span>, ()=&gt; { ... }</code></pre>
+<p>Recordemos nuestro circuito anterior:</p>
+<pre><samp>Usuario pulsa Preferences
+        ↓
+Gio.Menu
+        ↓
+prefswindow.preferences
+        ↓
+preferencesDialogAction
+        ↓
+activate
+        ↓
+este bloque</samp></pre>
+<p>Así que ahora sí tenemos comportamiento asociado a la acción.</p>
+<h4>Se crea un <code data-start="1358" data-end="1370">Gtk.Dialog</code></h4>
+<p>Crea una ventana de diálogo.</p>
+<pre><code><span class="ͼg">let</span> <span class="ͼm">dialog</span> <span class="ͼg">=</span> <span class="ͼg">new</span> <span class="ͼm">Gtk</span><span class="ͼg">.</span>Dialog({
+    title: <span class="ͼm">_</span>(<span class="ͼk">"Preferences"</span>),
+    transient_for: <span class="ͼj">this</span><span class="ͼg">.</span>toplevel,
+    use_header_bar: <span class="ͼj">true</span>,
+    modal: <span class="ͼj">true</span>
+});</code></pre>
+<p>Sus propiedades:</p>
+<pre><samp>dialog
+├── title
+│   └── "Preferences"
+├── transient_for
+│   └── this.toplevel
+├── use_header_bar
+│   └── true
+└── modal
+    └── true</samp></pre>
+<p><code data-start="1749" data-end="1779">transient_for: this.toplevel</code> establece la relación de esta ventana con
+    la ventana principal de preferencias.</p>
+<p>Y <code data-start="1863" data-end="1876">modal: true</code> significa que el diálogo se comporta como una ventana
+    modal: mientras está activo, la interacción queda centrada en él.</p>
+<h4>Se crea el <code data-start="2021" data-end="2027">vbox</code></h4>
+<p>Es un contenedor vertical.</p>
+<pre><code><span class="ͼg">let</span> <span class="ͼm">vbox</span> <span class="ͼg">=</span> <span class="ͼg">new</span> <span class="ͼm">Gtk</span><span class="ͼg">.</span>Box({
+    hexpand: <span class="ͼj">true</span>,
+    vexpand: <span class="ͼj">true</span>,
+    valign: <span class="ͼm">Gtk</span><span class="ͼg">.</span>Align<span class="ͼg">.</span>CENTER,
+    orientation: <span class="ͼm">Gtk</span><span class="ͼg">.</span>Orientation<span class="ͼg">.</span>VERTICAL
+});</code></pre>
+<p>Por ahora solo necesitamos visualizarlo como:</p>
+<pre><samp>vbox
+│
+├── hexpand: true
+├── vexpand: true
+├── valign: CENTER
+└── orientation: VERTICAL</samp></pre>
+<p>Y será el contenedor donde se agregará el contenido del diálogo.</p>
+<h4>this.resetExtensionButton</h4>
+<p>Esta es probablemente la línea más importante del bloque:</p>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>resetExtensionButton <span class="ͼg">=</span>
+    <span class="ͼg">new</span> <span class="ͼm">ExtensionResetButton_NotificationCenterExtension</span>(<span class="ͼj">this</span><span class="ͼg">.</span>toplevel);</code></pre>
+<p>Aquí aparece: <kbd class="inline-code">ExtensionResetButton_NotificationCenterExtension</kbd><strong
+        data-start="2770" data-end="2802"> otra clase del mismo archivo</strong>.</p>
+<p>Y se guarda como propiedad de nuestra clase actual: this.resetExtensionButton</p>
+<p>Por tanto tenemos una nueva relación:</p>
+<pre><code>ExtensionPreferencesWindow_NotificationCenterExtension
+│
+└── this.resetExtensionButton
+    │
+    └── ExtensionResetButton_NotificationCenterExtension</code></pre>
+<p>Todavía no sabemos qué hace esa clase. La estudiaremos cuando lleguemos a su declaración. Pero el nombre ya nos da
+    una pista razonable:</p>
+<blockquote>Probablemente es un botón que permite restablecer la configuración de la extensión.</blockquote>
+<p>Eso es una pista, no una conclusión todavía.</p>
+<h4>Se agrega el botón al <code data-start="3432" data-end="3438">vbox</code></h4>
+<pre><code><span class="ͼm">vbox</span><span class="ͼg">.</span>append(<span class="ͼj">this</span><span class="ͼg">.</span>resetExtensionButton);</code></pre>
+<p>Ahora:</p>
+<pre><samp>vbox
+└── resetExtensionButton</samp></pre>
+<h4>Se agrega el <code data-start="3599" data-end="3605">vbox</code> al diálogo</h4>
+<pre><code><span class="ͼm">dialog</span><span class="ͼg">.</span>get_content_area()<span class="ͼg">.</span>append(<span class="ͼm">vbox</span>);</code></pre>
+<p>La jerarquía queda:</p>
+<pre><samp>dialog
+└── content_area
+    └── vbox
+        └── resetExtensionButton</samp></pre>
+<h4>Finalmente se muestra</h4>
+<p>Presenta el diálogo al usuario.</p>
+<pre><code><span class="ͼm">dialog</span><span class="ͼg">.</span>present();</code></pre>
+<p>Por lo tanto, cuando se pulsa <strong data-start="3952" data-end="3967">Preferences</strong> en el menú,
+    aparentemente aparece un diálogo que contiene un botón relacionado con el restablecimiento de la extensión.</p>
+<hr>
+<p id="section7" class="class-prefs">Este bloque hace con <strong data-start="69" data-end="77">Help</strong>
+    prácticamente lo mismo que el anterior, pero
+    en lugar de crear un botón especializado, muestra información de la extensión.</p>
+<pre><code><span class="ͼm">helpDialogAction</span><span class="ͼg">.</span>connect(<span class="ͼk">'activate'</span>, ()=&gt; {
+  <span class="ͼg">let</span> <span class="ͼm">dialog</span> <span class="ͼg">=</span> <span class="ͼg">new</span> <span class="ͼm">Gtk</span><span class="ͼg">.</span>Dialog({
+      title: <span class="ͼm">_</span>(<span class="ͼk">"Help"</span>),
+      transient_for: <span class="ͼj">this</span><span class="ͼg">.</span>toplevel,
+      use_header_bar: <span class="ͼj">true</span>,
+      modal: <span class="ͼj">true</span>
+  });
+
+  <span class="ͼg">let</span> <span class="ͼm">vbox</span> <span class="ͼg">=</span> <span class="ͼg">new</span> <span class="ͼm">Gtk</span><span class="ͼg">.</span>Box({
+      hexpand: <span class="ͼj">true</span>,
+      vexpand: <span class="ͼj">true</span>,
+      valign: <span class="ͼm">Gtk</span><span class="ͼg">.</span>Align<span class="ͼg">.</span>CENTER,
+      orientation: <span class="ͼm">Gtk</span><span class="ͼg">.</span>Orientation<span class="ͼg">.</span>VERTICAL
+  });
+
+  <span class="ͼg">let</span> <span class="ͼm">firstInfo</span> <span class="ͼg">=</span> <span class="ͼg">new</span> <span class="ͼm">Gtk</span><span class="ͼg">.</span>Label({
+      justify: <span class="ͼj">0</span>,
+      use_markup: <span class="ͼj">true</span>,
+      label: <span class="ͼm">_</span>(<span class="ͼm">Metadata</span><span class="ͼg">.</span>description)
+  });
+
+  <span class="ͼm">vbox</span><span class="ͼg">.</span>append(<span class="ͼm">firstInfo</span>);
+  <span class="ͼm">dialog</span><span class="ͼg">.</span>get_content_area()<span class="ͼg">.</span>append(<span class="ͼm">vbox</span>);
+  <span class="ͼm">dialog</span><span class="ͼg">.</span>present();
+});</code></pre>
+<h4>La acción <code data-start="804" data-end="810">help</code></h4>
+<p>Ya conocíamos: &lt;span class="ͼm"&gt;helpDialogAction&lt;/span&gt;</p>
+<p>Ahora sabemos qué ocurre cuando se activa:</p>
+<pre><samp>Help
+ ↓
+prefswindow.help
+ ↓
+helpDialogAction
+ ↓
+activate
+ ↓
+Gtk.Dialog</samp></pre>
+<h4>El diálogo</h4>
+<pre><code><span class="ͼg">let</span> <span class="ͼm">dialog</span> <span class="ͼg">=</span> <span class="ͼg">new</span> <span class="ͼm">Gtk</span><span class="ͼg">.</span>Dialog({
+    title: <span class="ͼm">_</span>(<span class="ͼk">"Help"</span>),
+    transient_for: <span class="ͼj">this</span><span class="ͼg">.</span>toplevel,
+    use_header_bar: <span class="ͼj">true</span>,
+    modal: <span class="ͼj">true</span>
+});</code></pre>
+<p>Es prácticamente la misma configuración que el diálogo de <strong data-start="1261"
+        data-end="1276">Preferences</strong>.</p>
+<pre><samp>dialog
+├── title: Help
+├── transient_for: this.toplevel
+├── use_header_bar: true
+└── modal: true</samp></pre>
+<h4>El <code data-start="1416" data-end="1422">vbox</code></h4>
+<pre><code><span class="ͼg">let</span> <span class="ͼm">vbox</span> <span class="ͼg">=</span> <span class="ͼg">new</span> <span class="ͼm">Gtk</span><span class="ͼg">.</span>Box({
+    hexpand: <span class="ͼj">true</span>,
+    vexpand: <span class="ͼj">true</span>,
+    valign: <span class="ͼm">Gtk</span><span class="ͼg">.</span>Align<span class="ͼg">.</span>CENTER,
+    orientation: <span class="ͼm">Gtk</span><span class="ͼg">.</span>Orientation<span class="ͼg">.</span>VERTICAL
+});</code></pre>
+<p>Otro contenedor vertical:</p>
+<pre><samp>vbox
+└── orientación vertical</samp></pre>
+<p>Es exactamente el mismo patrón del diálogo anterior.</p>
+<h4>Aquí aparece <code data-start="1755" data-end="1777">Metadata.description</code></h4>
+<p>Esta es la parte que me parece más interesante:</p>
+<pre><code><span class="ͼg">let</span> <span class="ͼm">firstInfo</span> <span class="ͼg">=</span> <span class="ͼg">new</span> <span class="ͼm">Gtk</span><span class="ͼg">.</span>Label({
+    justify: <span class="ͼj">0</span>,
+    use_markup: <span class="ͼj">true</span>,
+    label: <span class="ͼm">_</span>(<span class="ͼm">Metadata</span><span class="ͼg">.</span>description)
+});</code></pre>
+<p>Recordemos que al principio del archivo teníamos: <span class="ͼg">const</span> <span class="ͼm">Metadata</span>
+    <span class="ͼg">=</span> <span class="ͼm">Extension</span><span class="ͼg">.</span>metadata;
+</p>
+<p>Ahora sabemos para qué se utilizaba. Está obteniendo: <kbd class="inline-code">Extension.metadata.description</kbd> y
+    utilizándolo como texto del <code data-start="2229" data-end="2240">Gtk.Label</code>.</p>
+<p>Por tanto:</p>
+<pre><samp>Extension.metadata
+       │
+       └── description
+             │
+             ▼
+        Metadata.description
+             │
+             ▼
+        Gtk.Label</samp></pre>
+<p>Esto conecta <code data-start="2451" data-end="2465">prefsGtk4.js</code> directamente con <strong data-start="2483"
+        data-end="2502"><code data-start="2485" data-end="2500">metadata.json</code></strong>.</p>
+<h5>use_markup: true</h5>
+<pre><code><span class="ͼo">use_markup</span>: <span class="ͼj">true</span></code></pre>
+<p>Esto le dice a GTK que el contenido de <code data-start="2624" data-end="2631">label</code> puede contener <strong
+        data-start="2647" data-end="2678">markup compatible con Pango</strong>, en lugar de tratarlo exclusivamente como
+    texto plano. Por eso tiene sentido que la descripción pueda contener algún formato.</p>
+<p>Y aquí aparece una pequeña peculiaridad: <span class="ͼo">label</span>: <span class="ͼm">_</span>(<span
+        class="ͼm">Metadata</span><span class="ͼg">.</span>description). La descripción viene de metadata y además pasa
+    por <code data-start="2962" data-end="2967">_()</code>, es decir, por gettext.</p>
+<p>Eso significa que Selenium-H está intentando que <strong data-start="3042" data-end="3075">la descripción sea
+        traducible</strong>. La efectividad real de eso dependerá de cómo estén preparadas las traducciones, algo que
+    podremos investigar cuando revisemos <code data-start="3204" data-end="3213">locale/</code>.</p>
+<h4>Agrega la etiqueta</h4>
+<pre><code><span class="ͼm">vbox</span><span class="ͼg">.</span>append(<span class="ͼm">firstInfo</span>);</code></pre>
+<p>Queda:</p>
+<pre><samp>vbox
+└── firstInfo
+    └── Gtk.Label</samp></pre>
+<p>Luego: <span class="ͼm">dialog</span><span class="ͼg">.</span>get_content_area()<span class="ͼg">.</span>append(<span
+        class="ͼm">vbox</span>);</p>
+<p>y después: <span class="ͼm">dialog</span><span class="ͼg">.</span>present();</p>
+<p>La estructura final:</p>
+<pre><samp>Help Dialog
+│
+└── content_area
+    └── vbox
+        └── firstInfo
+            └── Metadata.description</samp></pre>
+<hr>
+<p id="section8" class="class-prefs">Ahora completamos la tercera acción: <strong data-start="90"
+        data-end="99">About</strong>. Este bloque además nos da
+    varias conexiones interesantes con <code data-start="163" data-end="178">metadata.json</code> y con <code
+        data-start="185" data-end="196">eicon.png</code>.</p>
+<pre><code><span class="ͼm">aboutDialogAction</span><span class="ͼg">.</span>connect(<span class="ͼk">'activate'</span>, ()=&gt; {  
+  <span class="ͼg">let</span> <span class="ͼm">aboutDialog</span> <span class="ͼg">=</span> <span class="ͼg">new</span> <span class="ͼm">Gtk</span><span class="ͼg">.</span>AboutDialog({
+    transient_for: <span class="ͼj">this</span><span class="ͼg">.</span>toplevel,
+    modal: <span class="ͼj">true</span>,
+    logo: (<span class="ͼg">new</span> <span class="ͼm">Gtk</span><span class="ͼg">.</span>Image({
+      file: <span class="ͼm">Extension</span><span class="ͼg">.</span>dir<span class="ͼg">.</span>get_child(<span class="ͼk">'eicon.png'</span>)<span class="ͼg">.</span>get_path(),
+      pixel_size: <span class="ͼj">128</span>
+    }))<span class="ͼg">.</span>get_paintable(),
+    program_name: <span class="ͼm">Extension</span><span class="ͼg">.</span>metadata<span class="ͼg">.</span>name,
+    version: <span class="ͼm">Extension</span><span class="ͼg">.</span>metadata<span class="ͼg">.</span>version<span class="ͼg">.</span>toString() <span class="ͼg">+</span> <span class="ͼm">_</span>(<span class="ͼm">Extension</span><span class="ͼg">.</span>metadata<span class="ͼg">.</span>status),
+    comments: <span class="ͼm">_</span>(<span class="ͼm">Extension</span><span class="ͼg">.</span>metadata<span class="ͼg">.</span>comment),
+    license_type: <span class="ͼj">3</span>
+  });
+
+  <span class="ͼm">aboutDialog</span><span class="ͼg">.</span>get_titlebar()<span class="ͼg">.</span>get_title_widget()<span class="ͼg">.</span>visible <span class="ͼg">=</span> <span class="ͼj">true</span>;
+  <span class="ͼm">aboutDialog</span><span class="ͼg">.</span>present();      
+});</code></pre>
+<h4>aboutDialogAction</h4>
+<p>Ya teníamos:</p>
+<pre><samp>aboutDialogAction
+└── Gio.SimpleAction("about")</samp></pre>
+<p>Ahora sabemos qué ocurre al activarla:</p>
+<pre><samp>About
+ ↓
+prefswindow.about
+ ↓
+aboutDialogAction
+ ↓
+activate
+ ↓
+Gtk.AboutDialog</samp></pre>
+<h4>Gtk.AboutDialog</h4>
+<pre><code><span class="ͼg">let</span> <span class="ͼm">aboutDialog</span> <span class="ͼg">=</span> <span class="ͼg">new</span> <span class="ͼm">Gtk</span><span class="ͼg">.</span>AboutDialog({ ... })</code></pre>
+<p>Aquí no se crea un <code data-start="1169" data-end="1181">Gtk.Dialog</code> genérico como en <strong
+        data-start="1199" data-end="1214">Preferences</strong> y <strong data-start="1217"
+        data-end="1225">Help</strong>.</p>
+<p>Se utiliza específicamente: <kbd class="inline-code">Gtk.AboutDialog</kbd> que GTK proporciona para mostrar
+    información sobre una aplicación/extensión.</p>
+<h5><code class="inline-code">El icono</code></h5>
+<p>Esta parte es bastante interesante:</p>
+<pre><code><span class="ͼo">logo</span>: (<span class="ͼg">new</span> <span class="ͼm">Gtk</span><span class="ͼg">.</span>Image({
+    file: <span class="ͼm">Extension</span><span class="ͼg">.</span>dir<span class="ͼg">.</span>get_child(<span class="ͼk">'eicon.png'</span>)<span class="ͼg">.</span>get_path(),
+    pixel_size: <span class="ͼj">128</span>
+}))<span class="ͼg">.</span>get_paintable(),</code></pre>
+<p>Aquí tenemos varias operaciones encadenadas.</p>
+<p><b>Primero</b>: <span class="ͼm">Extension</span><span class="ͼg">.</span>dir representa el directorio de la
+    extensión.</p>
+<p><b>Después</b>: <span class="ͼm">get_child</span>(<span class="ͼk">'eicon.png'</span>) busca dentro de ese
+    directorio: <var class="inline-code">eicon.png</var></p>
+<p><b>Luego</b>: .<span class="ͼm">get_path</span>() obtiene la ruta del archivo.</p>
+<p>Así que conceptualmente:</p>
+<pre><samp>Extension.dir
+    │
+    └── eicon.png
+          │
+          ▼
+        path
+          │
+          ▼
+      Gtk.Image
+          │
+          └── pixel_size: 128
+                 │
+                 ▼
+           get_paintable()
+                 │
+                 ▼
+               logo</samp></pre>
+<p>Y esto confirma algo que ya conocíamos de la estructura original de la extensión: <strong data-start="2358"
+        data-end="2413"><code data-start="2360" data-end="2371">eicon.png</code> es utilizado como icono de la
+        extensión</strong>.</p>
+<h5><code class="inline-code">program_name</code></h5>
+<pre><code><span class="ͼo">program_name</span>: <span class="ͼm">Extension</span><span class="ͼg">.</span>metadata<span class="ͼg">.</span>name,</code></pre>
+<p>Otra conexión con <code data-start="2531" data-end="2546">metadata.json</code>.</p>
+<p>La ventana About toma: <var class="inline-code">Extension.metadata.name</var> como nombre del
+    programa/extensión.</p>
+<h5><code class="inline-code">version</code></h5>
+<p>Aquí tenemos algo especialmente interesante para nuestra futura investigación de versiones.</p>
+<pre><code><span class="ͼo">version</span>: <span class="ͼm">Extension</span><span class="ͼg">.</span>metadata<span class="ͼg">.</span>version<span class="ͼg">.</span>toString()
+       <span class="ͼg">+</span> <span class="ͼm">_</span>(<span class="ͼm">Extension</span><span class="ͼg">.</span>metadata<span class="ͼg">.</span>status),</code></pre>
+<p>La versión que muestra el diálogo <strong data-start="2925" data-end="2950">no sale del <code data-start="2939"
+            data-end="2948">gschema</code></strong>.</p>
+<p>Sale de: <var class="inline-code">Extension.metadata.version</var> y después le concatena: <var
+        class="inline-code">Extension.metadata.status</var></p>
+<p>Por ejemplo, conceptualmente podría resultar algo como: <kbd class="inline-code">1 beta</kbd> o: <var
+        class="inline-code">23.05 stable</var> dependiendo de los valores reales del metadata.</p>
+<p>Y esto refuerza nuestra observación anterior: metadata.version</p>
+<pre><samp>metadata.version
+    ≠
+gschema current-version
+    ≠
+comentario "Version 23.05" de prefsGtk4.js</samp></pre>
+<p>Son <strong data-start="3427" data-end="3475">tres cosas que debemos estudiar por separado</strong> hasta entender su
+    propósito.</p>
+<h5><code class="inline-code">comments</code></h5>
+<p>Nuevamente utiliza metadata.</p>
+<pre><code><span class="ͼo">comments</span>: <span class="ͼm">_</span>(<span class="ͼm">Extension</span><span class="ͼg">.</span>metadata<span class="ͼg">.</span>comment),</code></pre>
+<p>Así que el diálogo About obtiene el comentario desde: <var class="inline-code">metadata.comment</var> y pasa el
+    texto por gettext.</p>
+<h5><code class="inline-code">license_type: 3</code></h5>
+<p>Aquí Selenium-H está indicando el tipo de licencia que debe mostrar el <code data-start="3906"
+        data-end="3919">AboutDialog</code>.</p>
+<pre><code><span class="ͼo">license_type</span>: <span class="ͼj">3</span></code></pre>
+<p>El número <code data-start="3932" data-end="3935">3</code> es un valor del enum correspondiente de GTK. <strong
+        data-start="3982" data-end="4077">No lo interpretaría todavía como "GPL 3" solamente porque nuestro proyecto
+        utiliza GPL-3.0.</strong> El número corresponde al enum de GTK, no necesariamente al número de versión de la
+    licencia.</p>
+<p>Eso es importante. Si necesitamos saber exactamente qué valor representa <code data-start="4249"
+        data-end="4252">3</code>, lo podemos investigar cuando hagamos la revisión de compatibilidad GTK4.</p>
+<h4>Esta línea es curiosa</h4>
+<pre><code><span class="ͼm">aboutDialog</span><span class="ͼg">.</span>get_titlebar()<span class="ͼg">.</span>get_title_widget()<span class="ͼg">.</span>visible <span class="ͼg">=</span> <span class="ͼj">true</span>;</code></pre>
+<p>Aquí Selenium-H está accediendo a:</p>
+<pre><samp>AboutDialog
+   ↓
+titlebar
+   ↓
+title_widget
+   ↓
+visible = true</samp></pre>
+<p>Está haciendo visible el widget utilizado como título de la barra. Por ahora no necesitamos profundizar más; lo
+    importante es identificarlo como una manipulación específica de la interfaz GTK.</p>
+<h4>Finalmente</h4>
+<p>Muestra el diálogo.</p>
+<pre><code><span class="ͼm">aboutDialog</span><span class="ͼg">.</span>present();</code></pre>
+<h3 id="section9" class="class-prefs">createRefreshButton: function()</h3>
+<hr>
+<p>Aquí aparece algo que conecta directamente con uno de los métodos que ya habíamos estudiado.</p>
+<pre><code><span class="ͼo">createRefreshButton</span>: <span class="ͼg">function</span>() {
+
+  <span class="ͼg">let</span> <span class="ͼm">refreshButton</span> <span class="ͼg">=</span> <span class="ͼg">new</span> <span class="ͼm">Gtk</span><span class="ͼg">.</span>Button({
+      icon_name: <span class="ͼk">"view-refresh-symbolic"</span>,
+      visible: <span class="ͼj">true</span>
+  });
+
+  <span class="ͼm">refreshButton</span><span class="ͼg">.</span>connect(<span class="ͼk">'clicked'</span>, ()=&gt; {
+    <span class="ͼm">reloadExtension</span>();
+  });
+
+  <span class="ͼj">this</span><span class="ͼg">.</span>headerBar<span class="ͼg">.</span>pack_start(<span class="ͼm">refreshButton</span>);
+
+},</code></pre>
+<h4>refreshButton</h4>
+<p>Crea un botón GTK.</p>
+<pre><code><span class="ͼg">let</span> <span class="ͼm">refreshButton</span> <span class="ͼg">=</span> <span class="ͼg">new</span> <span class="ͼm">Gtk</span><span class="ͼg">.</span>Button({
+    icon_name: <span class="ͼk">"view-refresh-symbolic"</span>,
+    visible: <span class="ͼj">true</span>
+});</code></pre>
+<p>Su configuración:</p>
+<pre><samp>refreshButton
+├── Gtk.Button
+├── icon_name
+│   └── view-refresh-symbolic
+└── visible
+    └── true</samp></pre>
+<p>Visualmente sería el típico icono de <strong data-start="845" data-end="868">actualizar/recargar</strong>: <kbd
+        class="inline-code">↻</kbd> No tiene texto; solamente icono.</p>
+<h4>La conexión que estábamos buscando</h4>
+<pre><code><span class="ͼm">refreshButton</span><span class="ͼg">.</span>connect(<span class="ͼk">'clicked'</span>, ()=&gt; {
+    <span class="ͼm">reloadExtension</span>();
+});</code></pre>
+<p>Esto significa:</p>
+<blockquote>Cuando el usuario hace clic en el botón, se ejecuta <code data-start="1153"
+        data-end="1172">reloadExtension()</code>.</blockquote>
+<p>Y nosotros <strong data-start="1186" data-end="1223">ya habíamos estudiado esa función</strong>:</p>
+<pre><samp><span class="ͼg">function</span> <span class="ͼm">reloadExtension</span>() {
+    (<span class="ͼm">settings</span><span class="ͼg">.</span>get_boolean(<span class="ͼk">"reload-signal"</span>))
+        <span class="ͼg">?</span> <span class="ͼm">settings</span><span class="ͼg">.</span>set_boolean(<span class="ͼk">"reload-signal"</span>, <span class="ͼj">false</span>)
+        <span class="ͼg">:</span> <span class="ͼm">settings</span><span class="ͼg">.</span>set_boolean(<span class="ͼk">"reload-signal"</span>, <span class="ͼj">true</span>);
+}</samp></pre>
+<p>Así que ahora podemos completar el circuito:</p>
+<pre><samp>Usuario pulsa ↻
+      │
+      ▼
+refreshButton
+      │
+      │ clicked
+      ▼
+reloadExtension()
+      │
+      ▼
+settings
+      │
+      ▼
+reload-signal
+      │
+      ▼
+invierte false ↔ true
+      │
+      ▼
+¿algún listener reacciona?
+      │
+      └── pendiente de confirmar</samp></pre>
+<p>Y esto confirma algo que antes solamente sospechábamos: <code data-start="1845"
+        data-end="1864">reloadExtension()</code> sí es utilizada dentro de <code data-start="1891"
+        data-end="1905">prefsGtk4.js</code>. Por lo tanto, ya no es necesario preguntarnos si podría estar sin uso
+    dentro de este archivo.</p>
+<h4>Colocar el botón en la barra</h4>
+<pre><code><span class="ͼj">this</span><span class="ͼg">.</span>headerBar<span class="ͼg">.</span>pack_start(<span class="ͼm">refreshButton</span>);</code></pre>
+<p>Lo agrega al inicio de la <code data-start="2145" data-end="2156">headerBar</code>. Recordemos que en <code
+        data-start="2177" data-end="2194">createAppMenu()</code> encontramos: <span class="ͼj">this</span><span
+        class="ͼg">.</span>headerBar<span class="ͼg">.</span>pack_end(<span class="ͼm">appMenuButton</span>);</p>
+<p>Así que ahora podemos imaginar la barra:</p>
+<pre><samp>┌───────────────────────────────────────────────┐
+│ ↻   [ StackSwitcher / páginas ]          ☰   │
+└───────────────────────────────────────────────┘
+    ↑                                      ↑
+pack_start                              pack_end</samp></pre>
+<p>Esto nos permite entender por qué ambos métodos tienen acceso a: <span class="ͼj">this</span><span
+        class="ͼg">.</span>headerBar porque <code data-start="2709" data-end="2718">_init()</code> la guardó
+    previamente:</p>
+<pre><samp><span class="ͼj">this</span><span class="ͼg">.</span>headerBar <span class="ͼg">=</span> <span class="ͼj">this</span><span class="ͼg">.</span>toplevel<span class="ͼg">.</span>get_titlebar();</samp></pre>
+<h3 id="section10" class="class-prefs">Dependencias que descubrimos</h3>
+<hr>
+<p>Esta clase no vive aislada:</p>
+<pre><samp>ExtensionPreferencesWindow_NotificationCenterExtension
+│
+├── prefs.js
+│   └── la instancia y le pasa widget
+│
+├── metadata.json
+│   ├── name
+│   ├── version
+│   ├── status
+│   ├── comment
+│   └── description
+│
+├── eicon.png
+│   └── utilizado por AboutDialog
+│
+├── gschema
+│   └── reload-signal
+│
+└── otra clase
+    └── ExtensionResetButton_NotificationCenterExtension</samp></pre>
+<h3 id="section11" class="class-prefs">Pendientes que dejamos conscientemente</h3>
+<hr>
+<p>No son errores; simplemente todavía no tenemos suficiente información:</p>
+<ul>
+    <li><strong><code>ExtensionResetButton_NotificationCenterExtension</code></strong> → tendremos que estudiar su
+        propia declaración.</li>
+    <li><strong><code>reload-signal</code></strong> → ahora sabemos quién lo modifica, pero todavía falta ver quién lo
+        observa en la extensión.</li>
+    <li><strong><code>license_type: 3</code></strong> → podemos confirmar posteriormente qué enum de GTK representa.
+    </li>
+    <li><strong><code>Metadata.status</code> / <code>Metadata.comment</code></strong> → los veremos al revisar
+        <code>metadata.json</code>.
+    </li>
+    <li><strong><code>Gtk.StackSwitcher</code></strong> → ya entendemos su función general, pero veremos qué páginas
+        contiene cuando estudiemos el <code>widget</code>.</li>
+</ul>
+<p>Y algo importante: <strong data-start="3114" data-end="3213">esta clase no utiliza directamente la mayoría de las
+        keys que acabamos de estudiar en <code data-start="3202" data-end="3211">gschema</code></strong>. Solo hemos
+    encontrado una conexión directa con <code data-start="3262" data-end="3277">reload-signal</code>.</p>
+<p>Eso confirma que hicimos bien en estudiar primero <code data-start="3330" data-end="3339">gschema</code>: ahora
+    podemos distinguir inmediatamente entre una preferencia real y una señal interna.</p>
+<h3 id="section12" class="class-prefs">Estado de nuestro recorrido</h3>
+<hr>
+<pre><samp>prefsGtk4.js
+
+[✓] ExtensionPreferencesWindow_NotificationCenterExtension
+    ├── _init()
+    ├── createAppMenu()
+    └── createRefreshButton()
+
+[→] Siguiente variable/clase
+    └── pendiente de analizar</samp></pre>

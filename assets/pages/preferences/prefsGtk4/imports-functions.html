@@ -1,0 +1,620 @@
+<h2><code>prefsGtk4.js</code></h2>
+<hr>
+<h3>Imports</h3>
+<hr>
+<p>Aquí ya empieza a aparecer <strong data-start="37" data-end="100">mucho más claramente la infraestructura de las
+        preferencias</strong>. Y además varios imports nos dan pistas de lo que encontraremos después.</p>
+<pre><code><span class="hljs-keyword">const</span> <span class="hljs-title class_">Config</span>         = imports.<span class="hljs-property">misc</span>.<span class="hljs-property">config</span>;
+<span class="hljs-keyword">const</span> <span class="hljs-title class_">ExtensionUtils</span> = imports.<span class="hljs-property">misc</span>.<span class="hljs-property">extensionUtils</span>;
+<span class="hljs-keyword">const</span> <span class="hljs-title class_">Extension</span>      = <span class="hljs-title class_">ExtensionUtils</span>.<span class="hljs-title function_">getCurrentExtension</span>();
+<span class="hljs-keyword">const</span> <span class="hljs-title class_">Metadata</span>       = <span class="hljs-title class_">Extension</span>.<span class="hljs-property">metadata</span>;
+<span class="hljs-keyword">const</span> <span class="hljs-title class_">Gio</span>            = imports.<span class="hljs-property">gi</span>.<span class="hljs-property">Gio</span>;
+<span class="hljs-keyword">const</span> <span class="hljs-title class_">GLib</span>           = imports.<span class="hljs-property">gi</span>.<span class="hljs-property">GLib</span>;
+<span class="hljs-keyword">const</span> <span class="hljs-title class_">GObject</span>        = imports.<span class="hljs-property">gi</span>.<span class="hljs-property">GObject</span>;
+<span class="hljs-keyword">const</span> <span class="hljs-title class_">Gtk</span>            = imports.<span class="hljs-property">gi</span>.<span class="hljs-property">Gtk</span>;
+<span class="hljs-keyword">const</span> <span class="hljs-title class_">Lang</span>           = imports.<span class="hljs-property">lang</span>;
+<span class="hljs-keyword">const</span> _              = imports.<span class="hljs-property">gettext</span>.<span class="hljs-title function_">domain</span>(<span class="hljs-string">"notification-center"</span>).<span class="hljs-property">gettext</span>;
+
+<span class="hljs-keyword">let</span> settings = <span class="hljs-literal">null</span>;</code></pre>
+<h4>Versión del archivo</h4>
+<p>Es un comentario, así que no afecta al programa.</p>
+<pre><code><span class="ͼe">/*
+Version 23.05
+=============
+*/</span></code></pre>
+<p>Y nuevamente vemos algo interesante:</p>
+<ul>
+    <li><code>prefs.js</code> decía <strong>24.00</strong></li>
+    <li><code>prefsGtk4.js</code> dice <strong>23.05</strong></li>
+    <li><code>gschema</code> tenía <code>current-version</code> <strong>23.00</strong></li>
+</ul>
+<p>No debemos intentar reconciliarlos todavía. Claramente <strong data-start="519" data-end="581">no representan
+        necesariamente el mismo concepto de versión</strong>. Lo dejamos anotado porque cuando encontremos cómo <code
+        data-start="633" data-end="643">Metadata</code> o <code data-start="646" data-end="663">current-version</code>
+    se utilizan, podremos aclararlo.</p>
+<h4>Config</h4>
+<p>Ya lo conocemos de <code data-start="805" data-end="815">prefs.js</code>.</p>
+<pre><code><span class="ͼg">const</span> <span class="ͼm">Config</span> <span class="ͼg">=</span> <span class="ͼm">imports</span><span class="ͼg">.</span>misc<span class="ͼg">.</span>config;</code></pre>
+<p>Proporciona información de configuración de GNOME Shell, y en <code data-start="880" data-end="890">prefs.js</code>
+    lo utilizábamos para decidir:</p>
+<pre><samp>GNOME &lt; 40 → GTK3
+GNOME ≥ 40 → GTK4</samp></pre>
+<p>Aquí probablemente vuelva a utilizarse para alguna comprobación relacionada con la versión.</p>
+<h4>ExtensionUtils</h4>
+<p>Aquí aparece una pequeña diferencia respecto a <code data-start="1235" data-end="1245">prefs.js</code>.</p>
+<pre><code><span class="ͼg">const</span> <span class="ͼm">ExtensionUtils</span> <span class="ͼg">=</span> <span class="ͼm">imports</span><span class="ͼg">.</span>misc<span class="ͼg">.</span>extensionUtils;</code></pre>
+<p>En lugar de llamar directamente: </p>
+<pre><samp><span class="ͼm">imports</span><span class="ͼg">.</span>misc<span class="ͼg">.</span>extensionUtils<span class="ͼg">.</span>getCurrentExtension()</samp></pre>
+<p>Se guarda primero el módulo: <kbd class="inline-code">ExtensionUtils</kbd>. Esto permite utilizar posteriormente
+    otros métodos de <code data-start="1475" data-end="1491">extensionUtils</code>.</p>
+<h4>Extension</h4>
+<p>Obtiene la extensión que está ejecutando este código.</p>
+<pre><code><span class="ͼg">const</span> <span class="ͼm">Extension</span> <span class="ͼg">=</span> <span class="ͼm">ExtensionUtils</span><span class="ͼg">.</span>getCurrentExtension();</code></pre>
+<p>Ya conocemos este concepto de <code data-start="1690" data-end="1700">prefs.js</code>, pero aquí hay algo
+    nuevo: <var class="inline-code"> <span class="ͼm">Extension</span><span class="ͼg">.</span>metadata</var>
+    aparece inmediatamente después.</p>
+<h4>Metadata</h4>
+<p>Esto obtiene los <strong data-start="1920" data-end="1949">metadatos de la extensión</strong>.</p>
+<pre><code><span class="ͼg">const</span> <span class="ͼm">Metadata</span> <span class="ͼg">=</span> <span class="ͼm">Extension</span><span class="ͼg">.</span>metadata;</code></pre>
+<p>Aquí probablemente podremos acceder a información procedente de: <kbd class="inline-code">metadata.json</kbd>.
+</p>
+<p>Como:</p>
+<ul>
+    <li>nombre;</li>
+    <li>versión;</li>
+    <li>descripción;</li>
+    <li>UUID;</li>
+    <li>etc.</li>
+</ul>
+<p>Esto puede ser importante para nuestra investigación de versiones, porque ahora tenemos <strong data-start="2192"
+        data-end="2233">otra fuente de información de versión</strong> distinta de <code data-start="2246"
+        data-end="2263">current-version</code>.</p>
+<h4>Gio</h4>
+<p>Gio es una biblioteca muy importante dentro de GNOME/GObject.</p>
+<pre><code><span class="ͼg">const</span> <span class="ͼm">Gio</span> <span class="ͼg">=</span> <span class="ͼm">imports</span><span class="ͼg">.</span>gi<span class="ͼg">.</span>Gio;</code></pre>
+<p>Se utiliza, entre otras cosas, para trabajar con:</p>
+<ul>
+    <li>archivos;</li>
+    <li>directorios;</li>
+    <li>aplicaciones;</li>
+    <li>configuración;</li>
+    <li>streams;</li>
+    <li>procesos y otros recursos del sistema.</li>
+</ul>
+<p>Todavía no sabemos para qué la usa este archivo, así que <strong data-start="2627" data-end="2681">no vamos a
+        atribuirle una función concreta todavía</strong>.</p>
+<h4>GLib</h4>
+<p>También apareció en <code data-start="2784" data-end="2794">prefs.js</code>.</p>
+<pre><code><span class="ͼg">const</span> <span class="ͼm">GLib</span> <span class="ͼg">=</span> <span class="ͼm">imports</span><span class="ͼg">.</span>gi<span class="ͼg">.</span>GLib;</code></pre>
+<p>Aquí probablemente será utilizada para operaciones auxiliares relacionadas con el sistema/entorno de GNOME.</p>
+<p>La dejamos pendiente hasta encontrar su primera utilización.</p>
+<h4>GObject</h4>
+<p>Este sí nos da una pista importante.</p>
+<pre><code><span class="ͼg">const</span> <span class="ͼm">GObject</span> <span class="ͼg">=</span> <span class="ͼm">imports</span><span class="ͼg">.</span>gi<span class="ͼg">.</span>GObject;</code></pre>
+<p><code data-start="3095" data-end="3104">GObject</code> es la base del sistema de objetos utilizado por GTK/GNOME.
+    Cuando encontremos algo como:</p>
+<pre><samp><span class="ͼm">GObject</span><span class="ͼg">.</span>registerClass(...)</samp></pre>
+<p>O una clase que herede de un objeto GTK/GObject, probablemente aquí estará la razón de este import.</p>
+<h4>Gtk</h4>
+<p>Este es el protagonista que esperábamos: <b>GTK4</b></p>
+<pre><code><span class="ͼg">const</span> <span class="ͼm">Gtk</span> <span class="ͼg">=</span> <span class="ͼm">imports</span><span class="ͼg">.</span>gi<span class="ͼg">.</span>Gtk;</code></pre>
+<p>Aquí es donde se encuentran los widgets que compondrán la interfaz de preferencias. Por ejemplo, eventualmente
+    podríamos encontrarnos con:</p>
+<pre><samp>Gtk.Box
+Gtk.Grid
+Gtk.Button
+Gtk.Switch
+Gtk.ComboBox
+Gtk.Label</samp></pre>
+<h4>Lang</h4>
+<p>Este es interesante porque pertenece al modelo <strong data-start="3821" data-end="3861">antiguo de JavaScript de
+        GNOME Shell</strong>.</p>
+<pre><code><span class="ͼg">const</span> <span class="ͼm">Lang</span> <span class="ͼg">=</span> <span class="ͼm">imports</span><span class="ͼg">.</span>lang;</code></pre>
+<p><code data-start="3864" data-end="3870">Lang</code> era utilizado históricamente para cosas como: <span
+        class="ͼm">Lang</span><span class="ͼg">.</span>Class(...)</p>
+<p>En <b>código moderno</b> de GNOME probablemente ya no sería necesario. Por eso, sin siquiera llegar más lejos,
+    tenemos un posible candidato para revisar durante la modernización:</p>
+<blockquote><code data-start="4132" data-end="4146">imports.lang</code> podría ser código heredado de versiones antiguas
+    de GNOME.</blockquote>
+<h4>Traducciones</h4>
+<p>Esto es muy importante para las preferencias.</p>
+<pre><code><span class="ͼg">const</span> <span class="ͼm">_</span> <span class="ͼg">=</span> <span class="ͼm">imports</span><span class="ͼg">.</span>gettext<span class="ͼg">.</span>domain(<span class="ͼk">"notification-center"</span>)<span class="ͼg">.</span>gettext;</code></pre>
+<p>El <code data-start="4454" data-end="4457">_</code> normalmente se utiliza como una función de traducción:</p>
+<pre><samp><span class="ͼm">_</span>(<span class="ͼk">"Show Media Section"</span>)</samp></pre>
+<p>Permite obtener el texto traducido según el idioma del usuario. Esto conecta directamente con el directorio: <kbd
+        class="inline-code">locale/</kbd> que tenemos pendiente revisar.</p>
+<p>Así que ahora ya tenemos una relación:</p>
+<pre><samp>prefsGtk4.js
+      ↓
+gettext
+      ↓
+notification-center
+      ↓
+locale/
+      ↓
+traducciones</samp></pre>
+<h4>settings</h4>
+<p>Este es probablemente el import más importante hasta ahora.</p>
+<pre><code><span class="ͼg">let</span> <span class="ͼm">settings</span> <span class="ͼg">=</span> <span class="ͼj">null</span>;</code></pre>
+<p>Tenemos una variable global llamada: <kbd class="inline-code">settings</kbd> inicializada en <code data-start="5102"
+        data-end="5108">null</code> y teniendo fresco nuestro <code data-start="5137" data-end="5146">gschema</code>,
+    podemos sospechar qué va a contener:</p>
+<blockquote>Probablemente un objeto <code data-start="5212" data-end="5226">Gio.Settings</code> asociado al schema de la
+    extensión.</blockquote>
+<p>Algo conceptualmente parecido a:</p>
+<pre><samp>settings
+   ↓
+org.gnome.shell.extensions.notification-center
+   ↓
+gschema.xml
+   ↓
+show-media
+show-events
+banner-pos
+...</samp></pre>
+<p>Pero aquí quiero mantener nuestra metodología: <q class="inline-code">todavía no afirmamos que sea eso hasta ver
+        dónde se inicializa.</q></p>
+
+<h3>function <strong>init</strong>() { ... }</h3>
+<hr>
+<pre><code><span class="ͼg">function</span> <span class="ͼm">init</span>() {
+        
+          <span class="ͼm">ExtensionUtils</span><span class="ͼg">.</span>initTranslations(<span class="ͼk">"notification-center"</span>);
+          <span class="ͼm">settings</span> <span class="ͼg">=</span> <span class="ͼm">ExtensionUtils</span><span class="ͼg">.</span>getSettings(<span class="ͼk">"org.gnome.shell.extensions.notification-center"</span>);
+        
+        }</code></pre>
+<h4>Inicialización de traducciones</h4>
+<p>Aquí se inicializa el sistema de traducciones de la extensión.</p>
+<pre><code><span class="ͼm">ExtensionUtils</span><span class="ͼg">.</span>initTranslations(<span class="ͼk">"notification-center"</span>);</code></pre>
+<p>Y esto conecta directamente con lo que acabamos de ver:</p>
+<pre><samp><span class="ͼg">const</span> <span class="ͼm">_</span> <span class="ͼg">=</span> <span class="ͼm">imports</span><span class="ͼg">.</span>gettext<span class="ͼg">.</span>domain(<span class="ͼk">"notification-center"</span>)<span class="ͼg">.</span>gettext;</samp></pre>
+<p>Tenemos entonces:</p>
+<pre><samp>init()
+         │
+         └── initTranslations("notification-center")
+                     │
+                     ▼
+                locale/
+                     │
+                     ▼
+            traducciones de la extensión</samp></pre>
+<p>Después, cuando el código utiliza: <kbd class="inline-code"> <span class="ͼm">_</span>(<span class="ͼk">"algún
+            texto"</span>)</kbd> ese texto puede ser traducido.</p>
+<h4>settings</h4>
+<p>Ahora aparece nuestro <code data-start="1010" data-end="1020">settings</code></p>
+<pre><code><span class="ͼm">settings</span> <span class="ͼg">=</span> <span class="ͼm">ExtensionUtils</span><span class="ͼg">.</span>getSettings(
+            <span class="ͼk">"org.gnome.shell.extensions.notification-center"</span>
+        );</code></pre>
+<p>Aquí tenemos la conexión que estábamos esperando.</p>
+<p>El identificador: <kbd class="inline-code">org.gnome.shell.extensions.notification-center</kbd> es exactamente
+    el mismo que vimos en nuestro <code data-start="1335" data-end="1348">gschema.xml</code>:</p>
+<pre><samp><span class="ͼo">&lt;schema</span>
+            <span class="ͼn">id</span><span class="ͼg">=</span><span class="ͼk">"org.gnome.shell.extensions.notification-center"</span>
+            <span class="ͼn">path</span><span class="ͼg">=</span><span class="ͼk">"/org/gnome/shell/extensions/notification-center/"</span><span class="ͼo">&gt;</span></samp></pre>
+<p>Por lo tanto, ahora sí tenemos la conexión completa.:</p>
+<pre><samp>prefsGtk4.js
+              │
+              │ getSettings(...)
+              ▼
+        org.gnome.shell.extensions.notification-center
+              │
+              ▼
+            gschema.xml
+              │
+              ├── show-media
+              ├── show-notification
+              ├── show-events
+              ├── banner-pos
+              ├── indicator-pos
+              ├── blink-icon
+              ├── ...
+              └── current-version</samp></pre>
+<h5> ¿Qué es realmente <code data-start="1932" data-end="1942">settings</code>?</h5>
+<p>Podemos pensarlo como el <strong data-start="1970" data-end="2068">objeto que permite a <code data-start="1993"
+            data-end="2007">prefsGtk4.js</code> trabajar con las configuraciones definidas en el <code data-start="2057"
+            data-end="2066">gschema</code></strong>.</p>
+<p>Por ejemplo, posteriormente podremos encontrar algo como: <var class="inline-code"> <span
+            class="ͼm">settings</span><span class="ͼg">.</span>get_boolean(<span class="ͼk">"show-media"</span>)</var>
+    o <kbd class="inline-code"> <span class="ͼm">settings</span><span class="ͼg">.</span>set_boolean(<span
+            class="ͼk">"show-media"</span>, <span class="ͼj">true</span>)</kbd>.</p>
+<p>Y ahora sabemos exactamente qué significa: </p>
+<pre><samp>settings
+           ↓
+        schema
+           ↓
+        key: show-media
+           ↓
+        type: b
+           ↓
+        default: true/false según el schema</samp></pre>
+<p>Esto es justamente el contexto que queríamos obtener antes de volver a <code data-start="2508"
+        data-end="2522">extension.js</code>.</p>
+<h5>Nota importante</h5>
+<p>El <code data-start="2567" data-end="2576">gschema</code> <strong data-start="2577" data-end="2671">no es el que está
+        siendo leído directamente cada vez que el usuario cambia una preferencia</strong>.</p>
+<p>Aquí: <kbd class="inline-code"> <span class="ͼm">ExtensionUtils</span><span class="ͼg">.</span>getSettings(...)</kbd>
+    se obtiene el objeto de configuración.</p>
+<p>Después ese objeto es el que permite: <kbd class="inline-code">get_*()</kbd> y <kbd class="inline-code">set_*()</kbd>
+    sobre las keys.</p>
+<p>Así que podemos visualizarlo como:</p>
+<pre><samp>gschema.xml
+            │
+            │ define
+            ▼
+        GSettings schema
+            │
+            │ getSettings()
+            ▼
+        settings
+            │
+            ├── get_*
+            └── set_*
+                   │
+                   ▼
+             valores del usuario</samp></pre>
+<p>Y esto también confirma algo que habíamos hablado cuando terminamos <code data-start="3190"
+        data-end="3199">gschema</code>: <strong data-start="3201" data-end="3300">el archivo XML define el contrato,
+        pero los valores que el usuario modifica viven fuera del XML</strong>.</p>
+<h3>function reloadExtension () { ... }</h3>
+<hr>
+<p>Aquí aparece algo interesante porque <strong data-start="37" data-end="92">acabamos de encontrar quién utiliza <code
+            data-start="75" data-end="90">reload-signal</code></strong>, uno de los keys que dejamos pendientes en el
+    <code data-start="139" data-end="148">gschema</code>.
+</p>
+<pre><code><span class="ͼg">function</span> <span class="ͼm">reloadExtension</span> () {
+        
+          (<span class="ͼm">settings</span><span class="ͼg">.</span>get_boolean(<span class="ͼk">"reload-signal"</span>))
+            <span class="ͼg">?</span> <span class="ͼm">settings</span><span class="ͼg">.</span>set_boolean(<span class="ͼk">"reload-signal"</span>, <span class="ͼj">false</span>)
+            <span class="ͼg">:</span> <span class="ͼm">settings</span><span class="ͼg">.</span>set_boolean(<span class="ͼk">"reload-signal"</span>, <span class="ͼj">true</span>);
+        
+        }</code></pre>
+<h4>¿Qué está haciendo?</h4>
+<p>Primero lee: <kbd class="inline-code"> <span class="ͼm">settings</span><span class="ͼg">.</span>get_boolean(<span
+            class="ͼk">"reload-signal"</span>)</kbd></p>
+<p>Recordemos del <code data-start="486" data-end="495">gschema</code>:</p>
+<pre><samp><span class="ͼo">&lt;key</span> <span class="ͼn">name</span><span class="ͼg">=</span><span class="ͼk">"reload-signal"</span> <span class="ͼn">type</span><span class="ͼg">=</span><span class="ͼk">"b"</span><span class="ͼo">&gt;</span>
+            <span class="ͼo">&lt;default&gt;</span>false<span class="ͼo">&lt;/default&gt;</span>
+            ...
+        <span class="ͼo">&lt;/key&gt;</span></samp></pre>
+<p>Por lo tanto, obtiene un <code data-start="615" data-end="621">true</code> o <code data-start="624"
+        data-end="631">false</code>.</p>
+<p><span style="background-color: rgb(245, 245, 245);">Después hace lo contrario, es decir, </span><span
+        data-start="724" data-end="764" style="font-weight: bolder;">invierte el valor de <code data-start="747"
+            data-end="762">reload-signal</code></span><span style="background-color: rgb(245, 245, 245);">.</span></p>
+<pre><samp>true  → false
+        false → true</samp></pre>
+<h4>¿Por qué se llama <code data-start="797" data-end="816">reloadExtension()</code>?</h4>
+<p>Aquí empieza lo interesante, el método no está recargando directamente la extensión.</p>
+<p>No encontramos algo como:</p>
+<pre><samp><span class="ͼm">Extension</span><span class="ͼg">.</span>disable();
+        <span class="ͼm">Extension</span><span class="ͼg">.</span>enable();</samp></pre>
+<p>Ni un comando de GNOME para recargarla, en cambio hace esto:</p>
+<pre><samp>reloadExtension()
+               │
+               ▼
+        lee reload-signal
+               │
+               ▼
+        invierte el valor
+               │
+               ▼
+        GSettings cambia
+               │
+               ▼
+        otra parte de la extensión detecta el cambio
+               │
+               ▼
+        ¿recargar?</samp></pre>
+<p>Por lo tanto, <code data-start="1312" data-end="1327">reload-signal</code> funciona como un <strong data-start="1345"
+        data-end="1420">interruptor/señal de comunicación entre <code data-start="1387"
+            data-end="1401">prefsGtk4.js</code> y <code data-start="1404" data-end="1418">extension.js</code></strong>.
+</p>
+<p><span style="background-color: rgb(245, 245, 245);">Y esto explica perfectamente por qué el key existe en la sección:
+        <cite class="inline-code">Extension Variables</cite> del </span><code data-start="1527" data-end="1536"
+        style="font-size: medium;">gschema</code><span style="background-color: rgb(245, 245, 245);">.</span></p>
+<h4>¿Por qué no simplemente poner <code data-start="1581" data-end="1587">true</code>?</h4>
+<p>Imaginemos que inicialmente:</p>
+<pre><samp>reload-signal = false</samp></pre>
+<p>Si hacemos: <var class="inline-code"> <span class="ͼm">settings</span><span class="ͼg">.</span>set_boolean(<span
+            class="ͼk">"reload-signal"</span>, <span class="ͼj">true</span>);</var> podemos provocar un cambio.</p>
+<p>Pero si posteriormente queremos volver a solicitar otra recarga: <var class="inline-code"> <span
+            class="ͼm">settings</span><span class="ͼg">.</span>set_boolean(<span class="ͼk">"reload-signal"</span>,
+        <span class="ͼj">true</span>);</var><strong data-start="1928" data-end="1957"> ya no hay cambio de
+        valor</strong>.</p>
+<p>En cambio, haciendo esto, cada llamada genera un <strong data-start="2074" data-end="2101">cambio de
+        configuración</strong>.</p>
+<pre><samp>false → true
+        true → false
+        false → true
+        true → false
+        ...</samp></pre>
+<p>Eso permite que otra parte del programa pueda estar escuchando el cambio:</p>
+<pre><samp>false → true   → ¡cambió!
+        true → false   → ¡cambió!
+        false → true   → ¡cambió!</samp></pre>
+<p>Por eso <code data-start="2278" data-end="2293">reload-signal</code> es mejor entendido como un <strong
+        data-start="2321" data-end="2352">toggle utilizado como señal</strong>, no como una configuración cuyo estado
+    tenga significado permanente.</p>
+<p>Esto también explica el nombre. No es: <kbd class="inline-code">reload = true</kbd> sino: <kbd
+        class="inline-code">reload-signal</kbd> porque el valor en sí <strong data-start="2558" data-end="2611">no
+        representa "la extensión debe estar recargada"</strong>.</p>
+<p>Representa:</p>
+<blockquote>"Algo cambió; presta atención a esta modificación."</blockquote>
+<p>El significado está en la <strong data-start="2712" data-end="2726">transición</strong>, no en que el valor final sea
+    <code data-start="2757" data-end="2763">true</code> o <code data-start="2766" data-end="2773">false</code>.
+</p>
+<h4>Una pieza que antes nos faltaba</h4>
+<p>En el <code data-start="2843" data-end="2852">gschema</code> vimos:</p>
+<pre><samp>reload-signal
+            default: false</samp></pre>
+<p>No sabíamos quién lo modificaba. Ahora sabemos:</p>
+<pre><samp>prefsGtk4.js
+              │
+              │ reloadExtension()
+              ▼
+        reload-signal
+              │
+              │ cambio de false ↔ true
+              ▼
+        ¿algún listener en extension.js?
+              │
+              ▼
+        recargar extensión</samp></pre>
+<p>Y aquí <strong data-start="3161" data-end="3191">sí vale la pena detenernos</strong>.</p>
+<p>No necesitamos buscar todavía otra cosa: cuando volvamos a <code data-start="3253"
+        data-end="3267">extension.js</code>, una de las cosas que debemos localizar es <strong data-start="3311"
+        data-end="3352">quién está escuchando <code data-start="3335" data-end="3350">reload-signal</code></strong>.</p>
+<p>Ahí podremos confirmar exactamente qué significa "reload" en esta extensión y qué proceso realiza Selenium-H cuando
+    el usuario pulsa la opción correspondiente en Preferencias.</p>
+<p>Ese será un ejemplo perfecto de cómo <strong data-start="3569" data-end="3607">gschema + prefsGtk4 +
+        extension.js</strong> terminan formando una sola pieza de lógica.</p>
+<h3>function reloadApplicationProfiles () { ... }</h3>
+<hr>
+<p>Este es prácticamente el <strong data-start="29" data-end="53">gemelo especializado</strong> de <code data-start="57"
+        data-end="76">reloadExtension()</code> que acabamos de ver.</p>
+<pre><code><span class="ͼg">function</span> <span class="ͼm">reloadApplicationProfiles</span>() {
+
+  (<span class="ͼm">settings</span><span class="ͼg">.</span>get_boolean(<span class="ͼk">"reload-profiles-signal"</span>))
+    <span class="ͼg">?</span> <span class="ͼm">settings</span><span class="ͼg">.</span>set_boolean(<span class="ͼk">"reload-profiles-signal"</span>, <span class="ͼj">false</span>)
+    <span class="ͼg">:</span> <span class="ͼm">settings</span><span class="ͼg">.</span>set_boolean(<span class="ͼk">"reload-profiles-signal"</span>, <span class="ͼj">true</span>);
+
+}</code></pre>
+<h4>¿Qué hace?</h4>
+<p>Lee específicamente: <kbd class="inline-code"> <span class="ͼm">settings</span><span
+            class="ͼg">.</span>get_boolean(<span class="ͼk">"reload-profiles-signal"</span>)</kbd> y luego invierte su
+    valor: </p>
+<pre><samp>false → true
+true  → false</samp></pre>
+<div class="row">
+    <div class="col">
+        <p>Exactamente el mismo mecanismo que:</p>
+        <pre><samp>reloadExtension()
+    ↓
+reload-signal</samp></pre>
+    </div>
+    <div class="col">
+        <p>Pero ahora:</p>
+        <pre><samp>reloadApplicationProfiles()
+    ↓
+reload-profiles-signal</samp></pre>
+    </div>
+</div>
+<p>Y recordemos que en el <code data-start="746" data-end="755">gschema</code> encontramos:</p>
+<pre><samp><span class="ͼo">&lt;key</span> <span class="ͼn">name</span><span class="ͼg">=</span><span class="ͼk">"reload-profiles-signal"</span> <span class="ͼn">type</span><span class="ͼg">=</span><span class="ͼk">"b"</span><span class="ͼo">&gt;</span>
+    <span class="ͼo">&lt;default&gt;</span>false<span class="ͼo">&lt;/default&gt;</span>
+    ...
+<span class="ͼo">&lt;/key&gt;</span></samp></pre>
+<p>Así que ya tenemos <strong data-start="902" data-end="963">otra conexión directa entre el <code data-start="935"
+            data-end="944">gschema</code> y <code data-start="947" data-end="961">prefsGtk4.js</code></strong>.</p>
+<h4>¿Por qué invertirlo?</h4>
+<p>Por exactamente la misma razón que antes. No importa si termina en <code data-start="1065"
+        data-end="1071">true</code> o <code data-start="1074" data-end="1081">false</code>; lo importante es que <strong
+        data-start="1104" data-end="1123">el valor cambie</strong>. Por ejemplo:</p>
+<pre><samp>Estado inicial:
+reload-profiles-signal = false
+
+Usuario realiza una acción:
+false → true</samp></pre>
+<p>Eso genera un cambio detectable. Si vuelve a realizar la acción: <kbd class="inline-code">true</kbd> <kbd
+        class="inline-code">→</kbd> <kbd class="inline-code">false</kbd></p>
+<p>Tenemos otro cambio detectable, Es básicamente un <strong data-start="1386" data-end="1417">toggle utilizado como
+        señal</strong>.</p>
+
+
+<h3>Un breve resumen</h3>
+<hr>
+<p>Nuestro mapa hasta ahora:</p>
+<pre><samp>prefsGtk4.js
+│
+├── Config
+├── ExtensionUtils
+├── Extension
+├── Metadata
+├── Gio
+├── GLib
+├── GObject
+├── Gtk
+├── Lang
+├── _
+│   └── gettext / traducciones
+│
+└── settings = null</samp></pre>
+<p>Y tenemos varias pistas interesantes para lo que viene:</p>
+<ul>
+    <li><strong><code>Gtk</code></strong> → interfaz gráfica de preferencias.</li>
+    <li><strong><code>_()</code></strong> → textos traducibles.</li>
+    <li><strong><code>settings</code></strong> → probablemente será nuestro puente hacia el <code>gschema</code>.</li>
+    <li><strong><code>Metadata</code></strong> → puede ayudarnos a entender las versiones.</li>
+    <li><strong><code>Lang</code></strong> → posible código heredado.</li>
+    <li><strong><code>Gio</code>, <code>GLib</code>, <code>GObject</code></strong> → todavía debemos ver para qué se
+        utilizan realmente.</li>
+</ul>
+<p>Y ahora sí, tengo especial curiosidad por <strong data-start="6245" data-end="6283">dónde y cómo inicializa <code
+            data-start="6271" data-end="6281">settings</code></strong>, porque ese será el primer momento en que nuestro
+    <code data-start="6334" data-end="6343">gschema</code> empiece a conectarse directamente con la interfaz de
+    preferencias.
+</p>
+<p>Luego de ver el <code class="inline-code">init()</code>:</p>
+<table>
+    <thead>
+        <tr>
+            <th>Elemento</th>
+            <th>Función</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>initTranslations()</code></td>
+            <td>Inicializa las traducciones</td>
+        </tr>
+        <tr>
+            <td><code>getSettings(...)</code></td>
+            <td>Obtiene las configuraciones del schema de la extensión</td>
+        </tr>
+        <tr>
+            <td><code>settings</code></td>
+            <td>Objeto que permite leer/modificar los valores de los <code>key</code></td>
+        </tr>
+    </tbody>
+</table>
+<p>Y este es probablemente el primer punto realmente importante del archivo, porque acabamos de conectar <strong
+        data-start="3704" data-end="3738"><code data-start="3706" data-end="3720">prefsGtk4.js</code> ↔ <code
+            data-start="3723" data-end="3736">gschema.xml</code></strong>.</p>
+<p>A partir de aquí, cada vez que aparezca <code data-start="3781" data-end="3791">settings</code>, ya no tenemos que
+    preguntarnos <em data-start="3824" data-end="3848">"¿de dónde sale esto?"</em>. Sabemos que estamos trabajando con
+    <strong data-start="3885" data-end="3922">las keys que acabamos de estudiar</strong>.
+</p>
+<h4>Una nota para el futuro </h4>
+<pre><samp><span class="ͼm">settings</span> <span class="ͼg">=</span> <span class="ͼm">ExtensionUtils</span><span class="ͼg">.</span>getSettings(
+    <span class="ͼk">"org.gnome.shell.extensions.notification-center"</span>
+);</samp></pre>
+<p><strong data-start="13" data-end="81">Esto lo debemos marcar como una dependencia del cambio de nombre</strong>, no
+    como un simple texto que podemos reemplazar superficialmente.</p>
+<p>Ese string es el <strong data-start="285" data-end="315">ID del schema de GSettings</strong>. Por lo tanto, si algún
+    día cambiamos el identificador de la extensión, no basta con cambiar el nombre visible o el UUID.</p>
+<p>Tendremos que revisar, como mínimo:</p>
+<pre><samp>org.gnome.shell.extensions.notification-center
+        │
+        ├── prefsGtk4.js
+        ├── prefsGtk3.js
+        ├── gschema.xml
+        ├── cualquier otro código que haga getSettings()
+        └── cualquier referencia adicional</samp></pre>
+<p>Y en el <code data-start="728" data-end="737">gschema</code> tenemos además:</p>
+<pre><samp><span class="ͼo">&lt;schema</span>
+    <span class="ͼn">id</span><span class="ͼg">=</span><span class="ͼk">"org.gnome.shell.extensions.notification-center"</span>
+    <span class="ͼn">path</span><span class="ͼg">=</span><span class="ͼk">"/org/gnome/shell/extensions/notification-center/"</span><span class="ͼo">&gt;</span></samp></pre>
+<p>Así que ahí tenemos <strong data-start="912" data-end="944">dos referencias relacionadas</strong>:</p>
+<ul>
+    <li><code>id</code> → identidad del schema.</li>
+    <li><code>path</code> → ruta donde se almacenan los valores de ese schema.</li>
+</ul>
+<p>No necesariamente debemos cambiar ambos por obligación, pero <strong data-start="1102" data-end="1142">sí debemos
+        decidirlo conscientemente</strong> si cambiamos la identidad de la extensión.</p>
+<blockquote><strong data-start="1190" data-end="1246">Queda anotado como tarea para la fase de renombrado:</strong>
+    hacer una búsqueda global de <code data-start="1276"
+        data-end="1324">org.gnome.shell.extensions.notification-center</code> y revisar cada aparición antes de
+    modificarla.</blockquote>
+<h4>Corrección metodológica</h4>
+<p>No debemos asumir todavía que <code data-start="84" data-end="103">reloadExtension()</code> <strong data-start="104"
+        data-end="155">solo existe para comunicarse con <code data-start="139"
+            data-end="153">extension.js</code></strong>.</p>
+<p>Tenemos tres posibilidades:</p>
+<pre><samp>reloadExtension()
+       │
+       ├── llamada desde prefsGtk4.js
+       │
+       ├── llamada desde otro archivo de preferencias
+       │
+       └── llamada desde extension.js u otro componente</samp></pre>
+<p>Y también puede ocurrir que la función esté definida pero <strong data-start="451" data-end="480">no se utilice
+        actualmente</strong>, algo que ya hemos encontrado en este proyecto.</p>
+<p>Por ahora lo correcto es registrar únicamente lo que sabemos de <code data-start="613"
+        data-end="632">reloadExtension()</code>:</p>
+<div class="row">
+    <div class="col"><span>Lo que sabemos</span>
+        <ol>
+            <li>Lee <code>reload-signal</code>.</li>
+            <li>Invierte su valor.</li>
+            <li>Al hacerlo, genera un cambio en GSettings.</li>
+        </ol>
+    </div>
+    <div class="col"><span>Lo que todavía NO sabemos</span>
+        <ul>
+            <li>quién llama a <code>reloadExtension()</code>;</li>
+            <li>quién escucha <code>reload-signal</code>;</li>
+            <li>qué hace el receptor cuando cambia;</li>
+            <li>si realmente provoca una recarga completa;</li>
+            <li>si existe alguna otra función de <code>prefsGtk4.js</code> que dependa de ella.</li>
+        </ul>
+    </div>
+</div>
+<p>Así que cuando sigamos recorriendo <strong data-start="1019" data-end="1041">este mismo archivo</strong>, si
+    encontramos una llamada: <var class="inline-code"><span class="ͼm">reloadExtension</span>();</var> la
+    conectamos inmediatamente.</p>
+<p>Y cuando terminemos <code data-start="1161" data-end="1175">prefsGtk4.js</code>, podemos hacer una búsqueda
+    específica de:</p>
+<pre><samp>reloadExtension
+reload-signal</samp></pre>
+<p>Para cerrar el circuito dentro del archivo antes de pasar a <code data-start="1323"
+        data-end="1337">extension.js</code>.</p>
+<h4>Algo que me parece más interesante</h4>
+<p>Ahora tenemos dos mecanismos muy parecidos:</p>
+<pre><samp>reloadExtension()
+        │
+        └── reload-signal
+             → recargar extensión
+
+
+reloadApplicationProfiles()
+        │
+        └── reload-profiles-signal
+             → recargar perfiles de aplicaciones</samp></pre>
+<p>Pero, igual que dijiste anteriormente, <strong data-start="1789" data-end="1854">todavía no debemos asumir quién los
+        llama ni quién los recibe</strong>.</p>
+<p>Este archivo puede contener llamadas a: <kbd class="inline-code"> <span
+            class="ͼm">reloadApplicationProfiles</span>();</kbd> más adelante y también podría existir algún
+    listener en <code data-start="2004" data-end="2018">extension.js</code>.</p>
+<p>Por eso nuestro mapa queda:</p>
+<pre><samp>                 prefsGtk4.js
+                      │
+          ┌───────────┴───────────┐
+          ▼                       ▼
+ reloadExtension()     reloadApplicationProfiles()
+          │                       │
+          ▼                       ▼
+ reload-signal       reload-profiles-signal
+          │                       │
+          └───────────┬───────────┘
+                      ▼
+              ¿quién escucha?
+                      │
+              todavía pendiente</samp></pre>
+<p>Y esta vez tenemos una pista adicional: <strong data-start="2578" data-end="2679">el segundo signal confirma que
+        "Application Profiles" no es simplemente una lista de aplicaciones</strong>, sino que existe algún mecanismo
+    específico para volver a cargar/reprocesar esos perfiles.</p>
+<p>Cuando encontremos las funciones que llaman a estas dos funciones dentro de <code data-start="2848"
+        data-end="2862">prefsGtk4.js</code>, podremos empezar a entender <strong data-start="2892" data-end="2937">qué
+        acción del usuario provoca cada señal</strong>.</p>
+
+<h4>Los únicos métodos definidos</h4>
+<p>Si esos son <strong data-start="67" data-end="117">los únicos métodos definidos en <code data-start="101"
+            data-end="115">prefsGtk4.js</code></strong> y a partir de aquí aparecen variables o clases, entonces podemos
+    separar claramente dos responsabilidades.</p>
+<p>Lo que acabamos de encontrar</p>
+<pre><samp>prefsGtk4.js
+│
+├── init()
+│
+├── reloadExtension()
+│   └── cambia reload-signal
+│
+└── reloadApplicationProfiles()
+    └── cambia reload-profiles-signal</samp></pre>
+<p>Esos tres son los métodos propios que hemos visto hasta ahora y ahora, si empiezan las variables, probablemente
+    estamos entrando en la <strong data-start="552" data-end="631">definición de las clases/objetos que construyen la
+        interfaz de preferencias</strong>.</p>
+<p>Esto también explica por qué <code data-start="663" data-end="673">prefs.js</code> necesitaba hacer: <span
+        class="ͼg">new</span> <span class="ͼm">gtkVersion</span><span
+        class="ͼg">.</span>Prefs_NotificationCenterExtension() porque esa clase tiene que estar definida en algún punto
+    de este archivo.</p>

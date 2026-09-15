@@ -13,6 +13,14 @@ b {
     font-weight: bold;
 }
 
+p>span {
+    background-color: var(--cemphbg);
+    padding-left: 2px;
+    padding-right: 2px;
+    border: 1px solid var(--cemphbg);
+    border-radius: 4px;
+}
+
 .row {
     flex-wrap: wrap;
 }
@@ -87,7 +95,8 @@ body {
 #enum5,
 #enum6,
 #enum7,
-#enum8 {
+#enum8,
+.class-prefs {
     scroll-margin-top: 6rem;
 }
 
@@ -332,6 +341,7 @@ table :is(th, td) {
 }
 
 .list-blocks .card .list-links a {
+    direction: ltr;
     flex-shrink: 0;
     padding: 0.25rem 0.6rem;
     border-radius: 0.25rem;
@@ -346,6 +356,7 @@ table :is(th, td) {
 }
 
 .list-blocks .card .list-links a:hover {
+    text-overflow: clip;
     background-color: var(--cemphbg);
     outline-color: var(--cemph);
     outline-offset: 2px;
