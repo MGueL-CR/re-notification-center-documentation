@@ -1,0 +1,381 @@
+<aside class="list-blocks">
+    <div class="symbol-tab">
+        <div class="symbol">
+            <div class="icon-bar"></div>
+        </div>
+    </div>
+    <div class="card">
+        <p>Secciones:</p>
+        <div class="list-links">
+            <a href="#section1">Prefs</a>
+            <a href="#section2">_init ( ) { ... }</a>
+            <hr>
+            <a href="#section3">Observación importante</a>
+            <a href="#section4">Arquitectura actual</a>
+            <a href="#section5">Pendientes importantes</a>
+            <a href="#section6">Estado de prefsGtk4.js</a>
+        </div>
+    </div>
+</aside>
+<h2 id="section1" class="class-prefs">Prefs</h2>
+<hr>
+<p>Esta sí parece ser una pieza central de <code data-start="77" data-end="91">prefsGtk4.js</code>, porque ahora
+    encontramos algo que sospechábamos cuando vimos el <code data-start="157" data-end="176">Gtk.StackSwitcher</code>.
+</p>
+<pre><code><span class="ͼv">const</span> <span class="ͼ11">Prefs_NotificationCenterExtension</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">GObject</span><span class="ͼv">.</span>Class({
+
+  Name: <span class="ͼz">'Prefs_NotificationCenterExtension'</span>,
+  Extends: <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Stack,</code></pre>
+<h4>La clase</h4>
+<p>Ahora aparece algo nuevo: <span class="ͼ13">Extends</span>: <span class="ͼ11">Gtk</span><span
+        class="ͼv">.</span>Stack,</p>
+<pre><samp>Prefs_NotificationCenterExtension
+│
+├── Tipo
+│   └── GObject.Class
+│
+└── Name
+    └── Prefs_NotificationCenterExtension</samp></pre>
+<p>Esto confirma nuestra sospecha anterior, cuando estudiamos <code data-start="638" data-end="653">_init(widget)</code>
+    de la primera clase encontramos:</p>
+<pre><samp><span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>StackSwitcher({
+    stack: <span class="ͼ11">widget</span>
+});</samp></pre>
+<p>En ese momento dijimos:</p>
+<blockquote>Probablemente <code data-start="794" data-end="802">widget</code> sea un <code data-start="810"
+        data-end="821">Gtk.Stack</code>.</blockquote>
+<p>Ahora ya podemos quitar el <strong data-start="851" data-end="870">"probablemente"</strong>. </p>
+<p><code data-start="873" data-end="908">Prefs_NotificationCenterExtension</code> <strong data-start="909"
+        data-end="934">hereda de <code data-start="921" data-end="932">Gtk.Stack</code></strong>. Y en <code
+        data-start="942" data-end="952">prefs.js</code> vimos: <span class="ͼv">let</span> <span
+        class="ͼ11">widget</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span
+        class="ͼ11">gtkVersion</span><span class="ͼv">.</span>Prefs_NotificationCenterExtension();</p>
+<p>Por tanto, esto explica perfectamente la arquitectura:</p>
+<pre><samp>Prefs_NotificationCenterExtension
+        │
+        │ hereda de
+        ▼
+    Gtk.Stack
+        │
+        │ se convierte en
+        ▼
+     widget
+        │
+        │ utilizado por
+        ▼
+Gtk.StackSwitcher</samp></pre>
+<h4>¿Qué es <code data-start="1353" data-end="1364">Gtk.Stack</code> aquí?</h4>
+<p>Un <code data-start="1375" data-end="1386">Gtk.Stack</code> es un contenedor que puede tener <strong
+        data-start="1420" data-end="1444">varios hijos/páginas</strong>, mostrando normalmente una página a la vez. Así
+    que podemos imaginar que las preferencias están estructuradas aproximadamente así:</p>
+<pre><samp>Prefs_NotificationCenterExtension
+        │
+        └── Gtk.Stack
+            │
+            ├── Página de preferencias 1
+            ├── Página de preferencias 2
+            ├── Página de preferencias 3
+            └── ...</samp></pre>
+<p>Y el <code data-start="1831" data-end="1850">Gtk.StackSwitcher</code> que vimos anteriormente proporciona la interfaz
+    para cambiar entre esas páginas. Ahora tenemos el circuito completo:</p>
+<pre><samp>Prefs_NotificationCenterExtension
+        │
+        │ hereda
+        ▼
+     Gtk.Stack
+        │
+        │ widget
+        ▼
+ExtensionPreferencesWindow
+        │
+        ▼
+ Gtk.StackSwitcher
+        │
+        ▼
+ cambia entre las páginas</samp></pre>
+<h4>Nuestro mapa de <code data-start="2278" data-end="2292">prefsGtk4.js</code></h4>
+<p>Esto cambia bastante nuestro mapa, hasta ahora teníamos dos clases auxiliares:</p>
+<pre><samp>ExtensionPreferencesWindow
+        │
+        ├── menú
+        ├── Help
+        ├── About
+        └── Reset</samp></pre>
+<p>y:</p>
+<pre><samp>ExtensionResetButton
+        │
+        └── resetExtension()</samp></pre>
+<p>Ahora encontramos probablemente <strong data-start="2568" data-end="2602">el corazón de las preferencias</strong>:
+</p>
+<pre><samp>Prefs_NotificationCenterExtension
+        │
+        └── Gtk.Stack
+            └── páginas de configuración</samp></pre>
+<p>Y aquí es donde espero que finalmente aparezcan muchas de las keys que acabamos de estudiar en <code
+        data-start="2820" data-end="2829">gschema</code>.</p>
+<p>Pero todavía <strong data-start="2998" data-end="3036">no sabemos cómo están distribuidas</strong>. No debemos asumir
+    que cada página corresponde exactamente a los grupos que usamos mentalmente en <code data-start="3135"
+        data-end="3144">gschema</code>; eso lo confirmaremos leyendo el código.</p>
+<h3 id="section2" class="class-prefs">_init: function() { ... }</h3>
+<hr>
+<p>Aquí está el corazón de esta clase y ahora sí se confirma por completo cómo estaba construida la ventana de
+    preferencias, aparecen <strong data-start="1268" data-end="1292">cuatro nuevas clases</strong>, que serán los
+    siguientes nodos importantes.</p>
+<pre><code><span class="ͼ13">_init</span>: <span class="ͼv">function</span>() {
+
+  <span class="ͼy">this</span><span class="ͼv">.</span>notificationPrefs <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">PrefsWindowForNotifications_NotificationCenterExtension</span>();
+  <span class="ͼy">this</span><span class="ͼv">.</span>calendarPrefs     <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">PrefsWindowForCalendar_NotificationCenterExtension</span>();
+  <span class="ͼy">this</span><span class="ͼv">.</span>indicatorPrefs    <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">PrefsWindowForIndicator_NotificationCenterExtension</span>();
+  <span class="ͼy">this</span><span class="ͼv">.</span>appListPrefs      <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">PrefsWindowForAppList_NotificationCenterExtension</span>();
+
+  <span class="ͼy">this</span><span class="ͼv">.</span>parent({ transition_type: <span class="ͼy">6</span>, transition_duration: <span class="ͼy">200</span> });
+
+  <span class="ͼv">if</span> (<span class="ͼ11">settings</span><span class="ͼv">.</span>get_double(<span class="ͼz">"current-version"</span>) <span class="ͼv">&lt;</span> <span class="ͼy">23.03</span> ) {
+    <span class="ͼv">let</span> <span class="ͼ11">updatePage</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">UpdatePage_NotificationCenterExtension</span>(<span class="ͼy">this</span><span class="ͼv">.</span>profilePrefs);
+    <span class="ͼy">this</span><span class="ͼv">.</span>add_titled(<span class="ͼ11">updatePage</span>, <span class="ͼz">"Update"</span>, <span class="ͼ11">_</span>(<span class="ͼz">"Update"</span>));
+    <span class="ͼ11">updatePage</span><span class="ͼv">.</span>displayPrefs();
+  }
+
+  <span class="ͼy">this</span><span class="ͼv">.</span>add_titled(<span class="ͼy">this</span><span class="ͼv">.</span>notificationPrefs, <span class="ͼz">"Notifications"</span>, <span class="ͼ11">_</span>(<span class="ͼz">"Notifications"</span>));
+  <span class="ͼy">this</span><span class="ͼv">.</span>add_titled(<span class="ͼy">this</span><span class="ͼv">.</span>calendarPrefs, <span class="ͼz">"Calendar"</span>, <span class="ͼ11">_</span>(<span class="ͼz">"Calendar"</span>));
+  <span class="ͼy">this</span><span class="ͼv">.</span>add_titled(<span class="ͼy">this</span><span class="ͼv">.</span>indicatorPrefs, <span class="ͼz">"Indicator"</span>, <span class="ͼ11">_</span>(<span class="ͼz">"Indicator"</span>));
+  <span class="ͼy">this</span><span class="ͼv">.</span>add_titled(<span class="ͼy">this</span><span class="ͼv">.</span>appListPrefs, <span class="ͼz">"Profiles"</span>, <span class="ͼ11">_</span>(<span class="ͼz">"Profiles"</span>));
+
+  <span class="ͼy">this</span><span class="ͼv">.</span>notificationPrefs<span class="ͼv">.</span>displayPrefs();
+  <span class="ͼy">this</span><span class="ͼv">.</span>calendarPrefs<span class="ͼv">.</span>displayPrefs();
+  <span class="ͼy">this</span><span class="ͼv">.</span>indicatorPrefs<span class="ͼv">.</span>displayPrefs();
+  <span class="ͼy">this</span><span class="ͼv">.</span>appListPrefs<span class="ͼv">.</span>displayPrefs();
+}</code></pre>
+<h4>Las cuatro ventanas de preferencias</h4>
+<pre><samp>  <span class="ͼy">this</span><span class="ͼv">.</span>notificationPrefs <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">PrefsWindowForNotifications_NotificationCenterExtension</span>();
+  <span class="ͼy">this</span><span class="ͼv">.</span>calendarPrefs     <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">PrefsWindowForCalendar_NotificationCenterExtension</span>();
+  <span class="ͼy">this</span><span class="ͼv">.</span>indicatorPrefs    <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">PrefsWindowForIndicator_NotificationCenterExtension</span>();
+  <span class="ͼy">this</span><span class="ͼv">.</span>appListPrefs      <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">PrefsWindowForAppList_NotificationCenterExtension</span>();</samp></pre>
+<p>Esto ya nos permite ver la arquitectura:</p>
+<pre><samp>Prefs_NotificationCenterExtension
+│
+├── notificationPrefs
+│   └── PrefsWindowForNotifications
+│
+├── calendarPrefs
+│   └── PrefsWindowForCalendar
+│
+├── indicatorPrefs
+│   └── PrefsWindowForIndicator
+│
+└── appListPrefs
+    └── PrefsWindowForAppList</samp></pre>
+<p>Y ahora empieza a tener muchísimo sentido que antes viéramos las keys del <code data-start="2569"
+        data-end="2578">gschema</code> agrupadas conceptualmente.</p>
+<h4>this.parent(...)</h4>
+<pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>parent({
+    transition_type: <span class="ͼy">6</span>,
+    transition_duration: <span class="ͼy">200</span>
+});</samp></pre>
+<p>Como nuestra clase hereda de: <span class="ͼ13">Extends</span>: <span class="ͼ11">Gtk</span><span
+        class="ͼv">.</span>Stack. <code data-start="2796" data-end="2811">this.parent()</code> está invocando el
+    inicializador de la clase padre, es decir, el comportamiento de <code data-start="2894"
+        data-end="2905">Gtk.Stack</code> dentro de este modelo antiguo de <code data-start="2939"
+        data-end="2954">GObject.Class</code>.</p>
+<p>Además configura la transición:</p>
+<pre><samp>transition_type
+└── 6
+
+transition_duration
+└── 200 ms</samp></pre>
+<p>No necesitamos determinar todavía qué enum exacto representa <code data-start="3118" data-end="3121">6</code>;
+    podemos dejarlo como detalle de GTK pendiente si luego resulta relevante.</p>
+<h4>Reaparece current-version</h4>
+<p>Y aquí reaparece nuestro viejo conocido:</p>
+<pre><samp><span class="ͼv">if</span> (<span class="ͼ11">settings</span><span class="ͼv">.</span>get_double(<span class="ͼz">"current-version"</span>) <span class="ͼv">&lt;</span> <span class="ͼy">23.03</span>) {</samp></pre>
+<p>Aquí tenemos finalmente la pieza que buscábamos. En <code data-start="3401" data-end="3410">gschema</code> vimos:</p>
+<pre><samp><span class="ͼ13">&lt;key</span> <span class="ͼ12">name</span><span class="ͼv">=</span><span class="ͼz">"current-version"</span> <span class="ͼ12">type</span><span class="ͼv">=</span><span class="ͼz">"d"</span><span class="ͼ13">&gt;</span>
+    <span class="ͼ13">&lt;default&gt;</span>23.00<span class="ͼ13">&lt;/default&gt;</span>
+<span class="ͼ13">&lt;/key&gt;</span></samp></pre>
+<p>Y ahora vemos exactamente cómo se utiliza:</p>
+<pre><samp>settings.get_double("current-version")
+        │
+        ▼
+      &lt; 23.03
+        │
+        ▼
+  crear UpdatePage</samp></pre>
+<p>Esto confirma nuestra sospecha de que <code data-start="3712" data-end="3729">current-version</code> <strong
+        data-start="3730" data-end="3770">no era una preferencia visual normal</strong>. Era un mecanismo histórico de
+    migración/actualización de la configuración.</p>
+<h4>UpdatePage</h4>
+<p>Si la versión almacenada es menor que <code data-start="3911" data-end="3918">23.03</code>:</p>
+<pre><samp><span class="ͼv">let</span> <span class="ͼ11">updatePage</span> <span class="ͼv">=</span>
+    <span class="ͼv">new</span> <span class="ͼ11">UpdatePage_NotificationCenterExtension</span>(<span class="ͼy">this</span><span class="ͼv">.</span>profilePrefs);</samp></pre>
+<p>Se crea: <kbd class="inline-code">UpdatePage_NotificationCenterExtension</kbd> y después se agrega como una
+    página del <code data-start="4213" data-end="4224">Gtk.Stack</code>.</p>
+<pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>add_titled(
+    <span class="ͼ11">updatePage</span>,
+    <span class="ͼz">"Update"</span>,
+    <span class="ͼ11">_</span>(<span class="ͼz">"Update"</span>)
+);</samp></pre>
+<p>Luego: <span class="ͼ11">updatePage</span><span class="ͼv">.</span>displayPrefs(); la inicializa/muestra.</p>
+<p>Así que temporalmente la estructura podría ser:</p>
+<pre><samp>Prefs_NotificationCenterExtension
+│
+├── [condicional]
+│   └── UpdatePage
+│
+├── Notifications
+├── Calendar
+├── Indicator
+└── Profiles</samp></pre>
+<h5>Algo MUY importante</h5>
+<p>Hay una referencia: <span class="ͼy">this</span><span class="ͼv">.</span>profilePrefs, pero <strong data-start="4599"
+        data-end="4672">en el <code data-start="4607" data-end="4616">_init()</code> que acabamos de
+        ver nunca se crea <code data-start="4651" data-end="4670">this.profilePrefs</code></strong>. Eso merece quedar
+    anotado.</p>
+<p>No afirmemos todavía que es un error. Puede ser:</p>
+<ul>
+    <li>código histórico que quedó obsoleto;</li>
+    <li>una propiedad que se creó en una versión anterior;</li>
+    <li>un cambio incompleto;</li>
+    <li>o simplemente código que ya no funciona como originalmente estaba previsto.</li>
+</ul>
+<p>Pero es una <strong data-start="4960" data-end="4997">señal clara para nuestra revisión</strong>.</p>
+<h4>Las cuatro páginas normales</h4>
+<p>Después se agregan:</p>
+<pre><samp>  <span class="ͼy">this</span><span class="ͼv">.</span>add_titled(<span class="ͼy">this</span><span class="ͼv">.</span>notificationPrefs, <span class="ͼz">"Notifications"</span>, <span class="ͼ11">_</span>(<span class="ͼz">"Notifications"</span>));
+  <span class="ͼy">this</span><span class="ͼv">.</span>add_titled(<span class="ͼy">this</span><span class="ͼv">.</span>calendarPrefs, <span class="ͼz">"Calendar"</span>, <span class="ͼ11">_</span>(<span class="ͼz">"Calendar"</span>));
+  <span class="ͼy">this</span><span class="ͼv">.</span>add_titled(<span class="ͼy">this</span><span class="ͼv">.</span>indicatorPrefs, <span class="ͼz">"Indicator"</span>, <span class="ͼ11">_</span>(<span class="ͼz">"Indicator"</span>));
+  <span class="ͼy">this</span><span class="ͼv">.</span>add_titled(<span class="ͼy">this</span><span class="ͼv">.</span>appListPrefs, <span class="ͼz">"Profiles"</span>, <span class="ͼ11">_</span>(<span class="ͼz">"Profiles"</span>));</samp></pre>
+<p>Ahora podemos confirmar definitivamente lo que hacía el <code data-start="5520"
+        data-end="5539">Gtk.StackSwitcher</code>.</p>
+<p>La ventana tiene estas páginas:</p>
+<pre><samp>┌─────────────────────────────────────────────────┐
+│ Notifications │ Calendar │ Indicator │ Profiles │
+├─────────────────────────────────────────────────┤
+│                                                 │
+│              página seleccionada                │
+│                                                 │
+└─────────────────────────────────────────────────┘</samp></pre>
+<p>El segundo argumento, es el identificador de la página.</p>
+<pre><samp>"Notifications"
+"Calendar"
+"Indicator"
+"Profiles"</samp></pre>
+<p>El tercer argumento es el título que se muestra al usuario y que además puede traducirse.</p>
+<pre><samp>_("Notifications")
+...</samp></pre>
+<h4>displayPrefs()</h4>
+<p>Después de agregar las páginas:</p>
+<pre><samp>this.notificationPrefs.displayPrefs();
+this.calendarPrefs.displayPrefs();
+this.indicatorPrefs.displayPrefs();
+this.appListPrefs.displayPrefs();</samp></pre>
+<p>Cada una recibe la orden de construir/mostrar sus preferencias. Esto es muy importante para nuestro método de
+    estudio.</p>
+<p>Podemos imaginar:</p>
+<pre><samp>Prefs_NotificationCenterExtension
+│
+├── notificationPrefs
+│   └── displayPrefs()
+│
+├── calendarPrefs
+│   └── displayPrefs()
+│
+├── indicatorPrefs
+│   └── displayPrefs()
+│
+└── appListPrefs
+    └── displayPrefs()</samp></pre>
+<p>Y ahora tenemos una excelente pista de cómo continuar: <strong data-start="6811" data-end="6987">esas cuatro clases
+        son las que probablemente contienen las llamadas a <code data-start="6883"
+            data-end="6901">settings.get_*()</code> y <code data-start="6904" data-end="6922">settings.set_*()</code>
+        que conectan las opciones visuales con las keys del <code data-start="6975"
+            data-end="6984">gschema</code>.</strong></p>
+<h3 id="section3" class="class-prefs">Observación importante</h3>
+<hr>
+<p>Ahora podemos responder con mucha más precisión a aquella duda que teníamos sobre <strong data-start="8378"
+        data-end="8399"><code data-start="8380" data-end="8397">current-version</code></strong>.</p>
+<p>No es GNOME diciéndole a la extensión:</p>
+<blockquote>"Hay una nueva versión disponible."</blockquote>
+<p>La extensión está haciendo algo completamente distinto:</p>
+<pre><samp>current-version
+      │
+      ▼
+¿La configuración almacenada es anterior a 23.03?
+      │
+      ▼
+Sí → mostrar página Update</samp></pre>
+<p>Es decir, <strong data-start="8686" data-end="8749">es un mecanismo interno de migración de la propia
+        extensión</strong>, no el sistema de actualización de GNOME y precisamente por eso nuestra decisión de <strong
+        data-start="8836" data-end="8909">validar si este mecanismo sigue siendo necesario antes de conservarlo</strong>
+    está muy bien fundamentada.</p>
+<p>Además, ahora tenemos un segundo indicio de que podría haber código histórico alrededor de él: <code
+        data-start="9034" data-end="9053">this.profilePrefs</code>, que aparentemente ya no se inicializa aquí.</p>
+<p>Eso será muy interesante cuando volvamos a revisar el mecanismo de actualización con todo el contexto que estamos
+    reuniendo.</p>
+<h3 id="section4" class="class-prefs">Arquitectura que ya podemos ver</h3>
+<hr>
+<pre><samp>prefs.js
+   │
+   └── crea Prefs_NotificationCenterExtension
+              │
+              ▼
+          Gtk.Stack
+              │
+      ┌───────┼────────┬─────────┐
+      ▼       ▼        ▼         ▼
+Notifications Calendar Indicator Profiles
+      │       │        │         │
+      └───────┴────────┴─────────┘
+              │
+         displayPrefs()</samp></pre>
+<p>Y la ventana que estudiamos primero:</p>
+<pre><samp>ExtensionPreferencesWindow
+        │
+        └── Gtk.StackSwitcher
+                │
+                ▼
+        Prefs_NotificationCenterExtension</samp></pre>
+<p>Así que ahora <strong data-start="1820" data-end="1877">sí entendemos por qué existía ese <code data-start="1856"
+            data-end="1875">Gtk.StackSwitcher</code></strong> que vimos al principio.</p>
+<h3 id="section5" class="class-prefs">Pendientes importantes que quedan anotados</h3>
+<hr>
+<ol>
+    <li>Las cuatro clases de preferencias</li>
+    <ul>
+        <li><code>PrefsWindowForNotifications</code></li>
+        <li><code>PrefsWindowForCalendar</code></li>
+        <li><code>PrefsWindowForIndicator</code></li>
+        <li><code>PrefsWindowForAppList</code></li>
+    </ul>
+    <li>UpdatePage_NotificationCenterExtension</li>
+    <ul>
+        <li>relacionado con <code>current-version</code>.</li>
+    </ul>
+    <li>this.profilePrefs</li>
+    <ul>
+        <li>aparece al crear <code>UpdatePage</code>, pero no se inicializa en este <code>_init()</code>.</li>
+        <li>posible resto histórico o código obsoleto.</li>
+    </ul>
+    <li>current-version</li>
+    <ul>
+        <li>ya comprobamos que es un mecanismo interno de actualización/migración de la extensión, no el sistema de
+            actualización de GNOME.</li>
+        <li>queda pendiente decidir si sigue teniendo sentido conservarlo.</li>
+    </ul>
+    <li>reload-signal</li>
+    <ul>
+        <li>ya sabemos quién lo modifica, pero todavía falta encontrar quién lo escucha.</li>
+    </ul>
+</ol>
+<h3 id="section6" class="class-prefs">Estado de <code data-start="2723" data-end="2737">prefsGtk4.js</code></h3>
+<hr>
+<pre><samp>prefsGtk4.js
+│
+├── [✓] ExtensionPreferencesWindow_NotificationCenterExtension
+├── [✓] ExtensionResetButton_NotificationCenterExtension
+├── [✓] Prefs_NotificationCenterExtension
+│
+└── [→] Siguiente clase/variable</samp></pre>
+<p>Y aquí comienza una parte especialmente interesante: <strong data-start="3017" data-end="3144">las cuatro clases
+        <code data-start="3037" data-end="3053">PrefsWindow...</code> son probablemente donde finalmente veremos las
+        keys del <code data-start="3110" data-end="3119">gschema</code> utilizadas en contexto</strong>. Ahí nuestro
+    mapa de preferencias nos va a servir muchísimo.</p>

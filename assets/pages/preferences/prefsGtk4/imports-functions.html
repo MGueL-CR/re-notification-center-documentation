@@ -1,6 +1,25 @@
+<aside class="list-blocks">
+    <div class="symbol-tab">
+        <div class="symbol">
+            <div class="icon-bar"></div>
+        </div>
+    </div>
+    <div class="card">
+        <p>Secciones:</p>
+        <div class="list-links">
+            <a href="#section1">Imports</a>
+            <a href="#section2">_init ( ) { ... }</a>
+            <hr>
+            <a href="#section3">reloadExtension ( )</a>
+            <a href="#section4">reloadApplicationProfiles ( )</a>
+            <hr>
+            <a href="#section5">Un breve resumen</a>
+        </div>
+    </div>
+</aside>
 <h2><code>prefsGtk4.js</code></h2>
 <hr>
-<h3>Imports</h3>
+<h3 id="section1" class="class-prefs">Imports</h3>
 <hr>
 <p>Aquí ya empieza a aparecer <strong data-start="37" data-end="100">mucho más claramente la infraestructura de las
         preferencias</strong>. Y además varios imports nos dan pistas de lo que encontraremos después.</p>
@@ -155,7 +174,7 @@ banner-pos
 <p>Pero aquí quiero mantener nuestra metodología: <q class="inline-code">todavía no afirmamos que sea eso hasta ver
         dónde se inicializa.</q></p>
 
-<h3>function <strong>init</strong>() { ... }</h3>
+<h3 id="section2" class="class-prefs">function <strong>init</strong>() { ... }</h3>
 <hr>
 <pre><code><span class="ͼg">function</span> <span class="ͼm">init</span>() {
         
@@ -255,7 +274,7 @@ banner-pos
 <p>Y esto también confirma algo que habíamos hablado cuando terminamos <code data-start="3190"
         data-end="3199">gschema</code>: <strong data-start="3201" data-end="3300">el archivo XML define el contrato,
         pero los valores que el usuario modifica viven fuera del XML</strong>.</p>
-<h3>function reloadExtension () { ... }</h3>
+<h3 id="section3" class="class-prefs">function reloadExtension () { ... }</h3>
 <hr>
 <p>Aquí aparece algo interesante porque <strong data-start="37" data-end="92">acabamos de encontrar quién utiliza <code
             data-start="75" data-end="90">reload-signal</code></strong>, uno de los keys que dejamos pendientes en el
@@ -368,7 +387,7 @@ banner-pos
     el usuario pulsa la opción correspondiente en Preferencias.</p>
 <p>Ese será un ejemplo perfecto de cómo <strong data-start="3569" data-end="3607">gschema + prefsGtk4 +
         extension.js</strong> terminan formando una sola pieza de lógica.</p>
-<h3>function reloadApplicationProfiles () { ... }</h3>
+<h3 id="section4" class="class-prefs">function reloadApplicationProfiles () { ... }</h3>
 <hr>
 <p>Este es prácticamente el <strong data-start="29" data-end="53">gemelo especializado</strong> de <code data-start="57"
         data-end="76">reloadExtension()</code> que acabamos de ver.</p>
@@ -421,7 +440,7 @@ false → true</samp></pre>
         señal</strong>.</p>
 
 
-<h3>Un breve resumen</h3>
+<h3 id="section5" class="class-prefs">Un breve resumen</h3>
 <hr>
 <p>Nuestro mapa hasta ahora:</p>
 <pre><samp>prefsGtk4.js

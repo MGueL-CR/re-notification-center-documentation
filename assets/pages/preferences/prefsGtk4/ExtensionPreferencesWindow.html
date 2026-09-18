@@ -13,7 +13,7 @@
             <a href="#section3">_init ( ) { ... }</a>
             <hr>
             <a href="#section4">createAppMenu ( )</a>
-            <a href="#section5">Agregar las opciones al menú</a>
+            <a href="#section5">menu.append ( )</a>
             <a href="#section6">preferencesDialogAction</a>
             <a href="#section7">helpDialogAction</a>
             <a href="#section8">aboutDialogAction</a>
@@ -21,8 +21,8 @@
             <a href="#section9">createRefreshButton ( )</a>
             <hr>
             <a href="#section10">Dependencias que descubrimos</a>
-            <a href="#section11">Pendientes que dejamos conscientemente</a>
-            <a href="#section12">Estado de nuestro recorrido</a>
+            <a href="#section11">Pendientes que conservamos</a>
+            <a href="#section12">Estado de prefsGtk4.js</a>
         </div>
     </div>
 </aside>
@@ -370,8 +370,9 @@ Gtk.PopoverMenu</samp></pre>
 <p>Y ahí podremos empezar a entender para qué existen realmente <code data-start="4921"
         data-end="4934">preferences</code>, <code data-start="4936" data-end="4942">help</code> y <code
         data-start="4945" data-end="4952">about</code>.</p>
+<h3 id="section5" class="class-prefs"><strong>menu</strong>.append ( )</h3>
 <hr>
-<p id="section5" class="class-prefs">Aquí es donde <strong data-start="22" data-end="80">todo lo que acabamos de
+<p>Aquí es donde <strong data-start="22" data-end="80">todo lo que acabamos de
         construir empieza a conectarse</strong>.
     Las acciones que creamos antes ahora se vinculan con las entradas del menú.</p>
 <pre><code>menu.<span class="hljs-title function_">append</span>(<span class="hljs-title function_">_</span>(<span class="hljs-string">"Preferences"</span>),               <span class="hljs-string">"prefswindow.preferences"</span>);
@@ -452,9 +453,9 @@ aboutDialogAction</samp></pre>
 <pre><samp>Preferences
 Help
 About Notification Center</samp></pre>
+<h3 id="section6" class="class-prefs">preferencesDialogAction...</h3>
 <hr>
-<p id="section6" class="class-prefs">Este bloque es precisamente el que faltaba para darle <strong data-start="187"
-        data-end="205">comportamiento</strong>
+<p>Este bloque es precisamente el que faltaba para darle <strong data-start="187" data-end="205">comportamiento</strong>
     a <code data-start="208" data-end="233">preferencesDialogAction</code>.</p>
 <pre><code><span class="ͼm">preferencesDialogAction</span><span class="ͼg">.</span>connect(<span class="ͼk">'activate'</span>, ()=&gt; {
   <span class="ͼg">let</span> <span class="ͼm">dialog</span> <span class="ͼg">=</span> <span class="ͼg">new</span> <span class="ͼm">Gtk</span><span class="ͼg">.</span>Dialog({
@@ -567,8 +568,9 @@ este bloque</samp></pre>
 <pre><code><span class="ͼm">dialog</span><span class="ͼg">.</span>present();</code></pre>
 <p>Por lo tanto, cuando se pulsa <strong data-start="3952" data-end="3967">Preferences</strong> en el menú,
     aparentemente aparece un diálogo que contiene un botón relacionado con el restablecimiento de la extensión.</p>
+<h3 id="section7" class="class-prefs">helpDialogAction...</h3>
 <hr>
-<p id="section7" class="class-prefs">Este bloque hace con <strong data-start="69" data-end="77">Help</strong>
+<p>Este bloque hace con <strong data-start="69" data-end="77">Help</strong>
     prácticamente lo mismo que el anterior, pero
     en lugar de crear un botón especializado, muestra información de la extensión.</p>
 <pre><code><span class="ͼm">helpDialogAction</span><span class="ͼg">.</span>connect(<span class="ͼk">'activate'</span>, ()=&gt; {
@@ -684,9 +686,9 @@ Gtk.Dialog</samp></pre>
     └── vbox
         └── firstInfo
             └── Metadata.description</samp></pre>
+<h3 id="section8" class="class-prefs">aboutDialogAction...</h3>
 <hr>
-<p id="section8" class="class-prefs">Ahora completamos la tercera acción: <strong data-start="90"
-        data-end="99">About</strong>. Este bloque además nos da
+<p>Ahora completamos la tercera acción: <strong data-start="90" data-end="99">About</strong>. Este bloque además nos da
     varias conexiones interesantes con <code data-start="163" data-end="178">metadata.json</code> y con <code
         data-start="185" data-end="196">eicon.png</code>.</p>
 <pre><code><span class="ͼm">aboutDialogAction</span><span class="ͼg">.</span>connect(<span class="ͼk">'activate'</span>, ()=&gt; {  
@@ -923,7 +925,7 @@ pack_start                              pack_end</samp></pre>
 │
 └── otra clase
     └── ExtensionResetButton_NotificationCenterExtension</samp></pre>
-<h3 id="section11" class="class-prefs">Pendientes que dejamos conscientemente</h3>
+<h3 id="section11" class="class-prefs">Pendientes que conservamos</h3>
 <hr>
 <p>No son errores; simplemente todavía no tenemos suficiente información:</p>
 <ul>
@@ -944,7 +946,7 @@ pack_start                              pack_end</samp></pre>
     encontrado una conexión directa con <code data-start="3262" data-end="3277">reload-signal</code>.</p>
 <p>Eso confirma que hicimos bien en estudiar primero <code data-start="3330" data-end="3339">gschema</code>: ahora
     podemos distinguir inmediatamente entre una preferencia real y una señal interna.</p>
-<h3 id="section12" class="class-prefs">Estado de nuestro recorrido</h3>
+<h3 id="section12" class="class-prefs">Estado de prefsGtk4.js</h3>
 <hr>
 <pre><samp>prefsGtk4.js
 

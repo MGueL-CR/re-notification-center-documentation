@@ -81,22 +81,115 @@
             │
             └── headerBar.pack_start()</samp></pre>
     </div>
+
     <input type="radio" name="tabs-maps" id="tb2">
-    <label for="tb2">Tab Two</label>
+    <label for="tb2">ExtensionResetButton</label>
     <div class="tab">
-        <h4>Tab Two Content</h4>
-        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-            dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
-            ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat
-            nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
-            anim id est laborum.</p>
-        <pre><code>&lt;link rel="stylesheet" href="https://classless.de/classless-tiny.css"&gt;</code></pre>
+        <h4>Mapa completo del nodo: ExtensionResetButton</h4>
+        <pre><samp>ExtensionResetButton_NotificationCenterExtension
+            │
+            ├── Tipo
+            │   └── GObject.Class
+            │
+            ├── Name
+            │   └── ExtensionResetButton_NotificationCenterExtension
+            │
+            ├── Creada por
+            │   └── ExtensionPreferencesWindow_NotificationCenterExtension
+            │
+            ├── _init(object)
+            │   │
+            │   ├── crea Gtk.Button
+            │   │   ├── label
+            │   │   │   └── "Reset Notification Center Extension"
+            │   │   └── halign
+            │   │       └── CENTER
+            │   │
+            │   ├── conecta "clicked"
+            │   │   └── resetExtension(object, "updateDone", null)
+            │   │
+            │   └── retorna el botón
+            │
+            └── resetExtension(object, functionToBeCalledAtTheEnd, parameter)
+                │
+                ├── crea Gtk.MessageDialog
+                │
+                ├── solicita confirmación: "Reset Notification Center to defaults?"
+                │   ├── OK
+                │   └── Cancel
+                │
+                ├── Cancel
+                │   └── cierra el diálogo
+                │
+                └── OK
+                    │
+                    ├── settings.reset(...)
+                    │   │
+                    │   ├── Calendario / eventos
+                    │   ├── Indicador
+                    │   └── Aplicaciones / scripts
+                    │
+                    ├── current-version
+                    │   └── código histórico comentado
+                    │
+                    ├── ejecuta callback
+                    │   └── object["updateDone"](null)
+                    │
+                    ├── destruye diálogo
+                    │
+                    └── reloadExtension()
+                        └── cambia reload-signal</samp></pre>
     </div>
 
     <input type="radio" name="tabs-maps" id="tb3">
-    <label for="tb3">Tab Three</label>
+    <label for="tb3">Prefs</label>
     <div class="tab">
-        <h4>Tab Three Content</h4>
-        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+        <h4>Mapa completo del nodo: Prefs</h4>
+        <pre><samp>Prefs_NotificationCenterExtension
+            │
+            ├── Tipo
+            │   └── GObject.Class
+            │
+            ├── Name
+            │   └── Prefs_NotificationCenterExtension
+            │
+            ├── Extends
+            │   └── Gtk.Stack
+            │
+            └── _init()
+                │
+                ├── notificationPrefs
+                │   └── PrefsWindowForNotifications
+                │
+                ├── calendarPrefs
+                │   └── PrefsWindowForCalendar
+                │
+                ├── indicatorPrefs
+                │   └── PrefsWindowForIndicator
+                │
+                ├── appListPrefs
+                │   └── PrefsWindowForAppList
+                │
+                ├── inicializa Gtk.Stack
+                │   └── this.parent(...)
+                │
+                ├── mecanismo histórico de actualización
+                │   │
+                │   ├── settings.get_double("current-version")
+                │   ├── compara con 23.03
+                │   └── si es menor
+                │       └── UpdatePage
+                │
+                ├── agrega páginas al Stack
+                │   ├── Notifications
+                │   ├── Calendar
+                │   ├── Indicator
+                │   └── Profiles
+                │
+                └── displayPrefs()
+                    ├── Notifications
+                    ├── Calendar
+                    ├── Indicator
+                    └── Profiles</samp></pre>
     </div>
 </div>

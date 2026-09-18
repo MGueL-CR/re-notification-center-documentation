@@ -1,0 +1,449 @@
+<aside class="list-blocks">
+    <div class="symbol-tab">
+        <div class="symbol">
+            <div class="icon-bar"></div>
+        </div>
+    </div>
+    <div class="card">
+        <p>Secciones:</p>
+        <div class="list-links">
+            <a href="#section1">ExtensionResetButton</a>
+            <a href="#section2">_init ( ) { ... }</a>
+            <hr>
+            <a href="#section3">resetExtension ( )</a>
+            <a href="#section4">dialog.present()</a>
+            <hr>
+            <a href="#section5">Una observación</a>
+            <a href="#section6">Pendientes que conservamos</a>
+            <a href="#section7">Estado de prefsGtk4.js</a>
+        </div>
+    </div>
+</aside>
+<h2 id="section1" class="class-prefs">ExtensionResetButton</h2>
+<hr>
+<p>Este segundo nodo empieza de forma muy parecida al anterior:</p>
+<pre><code><span class="ͼv">const</span> <span class="ͼ11">ExtensionResetButton_NotificationCenterExtension</span> <span class="ͼv">=</span>
+    <span class="ͼv">new</span> <span class="ͼ11">GObject</span><span class="ͼv">.</span>Class({
+
+  Name: <span class="ͼz">'ExtensionResetButton_NotificationCenterExtension'</span>,</code></pre>
+<h4>¿Qué estamos creando?</h4>
+<p>La constante que será la referencia a esa clase:</p>
+<pre><code><span class="ͼ11">ExtensionResetButton_NotificationCenterExtension</span></code></pre>
+<p>Nuevamente: <span class="ͼv">new</span> <span class="ͼ11">GObject</span><span class="ͼv">.</span>Class({
+    significa que estamos definiendo una <strong data-start="352" data-end="379">clase basada en GObject</strong>.</p>
+<p>Y <code data-start="500" data-end="506">Name</code> establece el nombre registrado de la clase:</p>
+<pre><samp>ExtensionResetButton_NotificationCenterExtension</samp></pre>
+<p>Tenemos, por tanto:</p>
+<pre><samp>ExtensionResetButton_NotificationCenterExtension
+│
+├── Tipo
+│   └── GObject.Class
+│
+└── Name
+    └── ExtensionResetButton_NotificationCenterExtension</samp></pre>
+<h4>La relación con la clase anterior</h4>
+<p>Esto es precisamente lo interesante. En la clase que acabamos de terminar encontramos:</p>
+<pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>resetExtensionButton <span class="ͼv">=</span>
+    <span class="ͼv">new</span> <span class="ͼ11">ExtensionResetButton_NotificationCenterExtension</span>(
+        <span class="ͼy">this</span><span class="ͼv">.</span>toplevel
+    );</samp></pre>
+<p>Ahora llegamos a la <strong data-start="1083" data-end="1116">definición de esa misma clase</strong>. La relación
+    queda:</p>
+<pre><samp>ExtensionPreferencesWindow_NotificationCenterExtension
+│
+└── this.resetExtensionButton
+        │
+        │ new
+        ▼
+ExtensionResetButton_NotificationCenterExtension</samp></pre>
+<p>Así que ya sabemos que esta clase <strong data-start="1356" data-end="1379">no es independiente</strong>: es un
+    componente que la ventana de preferencias crea cuando el usuario solicita el diálogo de <em data-start="1475"
+        data-end="1488">Preferences</em> desde el menú.</p>
+<h4>Una pista importante</h4>
+<p>El nombre: <kbd class="inline-code">ExtensionResetButton</kbd> sugiere que se trata de un botón para <strong
+        data-start="1618" data-end="1646">restablecer la extensión</strong>.</p>
+<p>Pero aquí aplicamos nuestra regla: <strong data-start="1684" data-end="1739">todavía no afirmamos qué restablece ni
+        cómo lo hace</strong>. Tenemos que ver su <code data-start="1761" data-end="1770">_init()</code>, sus señales y
+    cualquier otro método que contenga.</p>
+<p>De hecho, ahora será especialmente interesante ver si utiliza <code data-start="1885"
+        data-end="1895">settings</code>, porque ahí podremos relacionarlo con las numerosas keys del <code
+        data-start="1957" data-end="1966">gschema</code> que estudiamos antes.</p>
+<p>Y esta última parte puede ser <strong data-start="2511" data-end="2529">muy reveladora</strong>: si encontramos que
+    toca muchas <code data-start="2562" data-end="2572">settings</code>, podremos finalmente ver en acción varias de las
+    keys que estudiamos en <code data-start="2645" data-end="2654">gschema</code>.</p>
+<h3 id="section2" class="class-prefs">_init: function ( )</h3>
+<hr>
+<p>Aquí ya podemos empezar a confirmar qué papel cumple realmente esta clase. Este <code data-start="80"
+        data-end="89">_init()</code> es pequeño, pero tiene dos conexiones importantes.</p>
+<pre><code><span class="ͼ13">_init</span>: <span class="ͼv">function</span>( <span class="ͼ11">object</span> ) {
+
+  <span class="ͼy">this</span><span class="ͼv">.</span>resetExtensionButton <span class="ͼv">=</span>
+      <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Button({
+          label: <span class="ͼ11">_</span>(<span class="ͼz">"Reset Notification Center Extension"</span>),
+          halign: <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Align<span class="ͼv">.</span>CENTER
+      });
+
+  <span class="ͼy">this</span><span class="ͼv">.</span>resetExtensionButton<span class="ͼv">.</span>connect(<span class="ͼz">'clicked'</span>, ()=&gt; {
+      <span class="ͼy">this</span><span class="ͼv">.</span>resetExtension(<span class="ͼ11">object</span>, <span class="ͼz">"updateDone"</span>, <span class="ͼy">null</span>)
+  });
+
+  <span class="ͼv">return</span> <span class="ͼy">this</span><span class="ͼv">.</span>resetExtensionButton;
+
+},</code></pre>
+<h4>_init(object)</h4>
+<p>La clase recibe: <b><i>object</i></b> </p>
+<h5>¿De dónde viene?</h5>
+<p>Ya lo vimos en la clase anterior:</p>
+<pre><samp><span class="ͼv">new</span> <span class="ͼ11">ExtensionResetButton_NotificationCenterExtension</span>(<span class="ͼy">this</span><span class="ͼv">.</span>toplevel);</samp></pre>
+<p>Por tanto:</p>
+<pre><samp>this.toplevel
+    │
+    ▼
+object
+    │
+    ▼
+ExtensionResetButton._init(object)</samp></pre>
+<p>Y podemos sospechar que <code data-start="889" data-end="897">object</code> representa la ventana principal sobre la
+    que está trabajando este botón. En este punto todavía no necesitamos afirmar más.</p>
+<h4>Crea el botón</h4>
+<p>Ahora confirmamos algo del nombre de la clase.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>resetExtensionButton <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Button({
+    label: <span class="ͼ11">_</span>(<span class="ͼz">"Reset Notification Center Extension"</span>),
+    halign: <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Align<span class="ͼv">.</span>CENTER
+});</code></pre>
+<p>Es literalmente un botón cuyo texto dice: </p>
+<blockquote>Reset Notification Center Extension</blockquote>
+<p>Y además: <span class="ͼ13">halign</span>: <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Align<span
+        class="ͼv">.</span>CENTER que lo centra horizontalmente. La estructura queda:</p>
+<pre><samp>this.resetExtensionButton
+│
+├── Gtk.Button
+├── label
+│   └── "Reset Notification Center Extension"
+└── halign
+    └── CENTER</samp></pre>
+<h4>¿Qué ocurre al hacer clic?</h4>
+<p>Esta es la línea importante:</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>resetExtensionButton<span class="ͼv">.</span>connect(<span class="ͼz">'clicked'</span>, ()=&gt; {
+    <span class="ͼy">this</span><span class="ͼv">.</span>resetExtension(<span class="ͼ11">object</span>, <span class="ͼz">"updateDone"</span>, <span class="ͼy">null</span>)
+});</code></pre>
+<p>Al pulsar el botón se llama: <span class="ͼy">this</span><span class="ͼv">.</span>resetExtension(...) con
+    <strong data-start="1911" data-end="1930">tres argumentos</strong>:
+</p>
+<pre><samp>resetExtension(
+    object,
+    "updateDone",
+    null
+)</samp></pre>
+<p>Por ahora tenemos que dejar pendiente el significado de estos pero ya sabemos algo muy importante: </p>
+<blockquote><strong data-start="2149" data-end="2236">El verdadero trabajo de este botón no está en <code
+            data-start="2197" data-end="2206">_init()</code>; está en <code data-start="2216"
+            data-end="2234">resetExtension()</code></strong>.</blockquote>
+<p>Así que cuando lleguemos a ese método tendremos que estudiar cuidadosamente qué hace.</p>
+<h4>return this.resetExtensionButton</h4>
+<p>Esto es particularmente interesante por cómo se utilizó la clase anteriormente.</p>
+<pre><code><span class="ͼv">return</span> <span class="ͼy">this</span><span class="ͼv">.</span>resetExtensionButton;</code></pre>
+<p>Recordemos:</p>
+<pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>resetExtensionButton <span class="ͼv">=</span>
+    <span class="ͼv">new</span> <span class="ͼ11">ExtensionResetButton_NotificationCenterExtension</span>(
+        <span class="ͼy">this</span><span class="ͼv">.</span>toplevel
+    );</samp></pre>
+<p>La clase devuelve su botón desde <code data-start="2712" data-end="2721">_init()</code>. Por eso el objeto creado
+    termina comportándose como el botón que después se agrega al <code data-start="2810" data-end="2816">vbox</code>:
+</p>
+<pre><samp><span class="ͼ11">vbox</span><span class="ͼv">.</span>append(<span class="ͼy">this</span><span class="ͼv">.</span>resetExtensionButton);</samp></pre>
+<p>El flujo completo es:</p>
+<pre><samp>ExtensionPreferencesWindow
+        │
+        │ new ExtensionResetButton(...)
+        ▼
+ExtensionResetButton._init()
+        │
+        ├── crea Gtk.Button
+        ├── conecta clicked
+        │       └── resetExtension(...)
+        │
+        └── return Gtk.Button
+                │
+                ▼
+        this.resetExtensionButton
+                │
+                ▼
+            vbox.append()</samp></pre>
+<p>Y aquí aparece una conexión que vale la pena guardar en nuestra lista de investigación: <var
+        class="inline-code">"updateDone"</var>. Ese nombre podría ser simplemente un valor de control que <code
+        data-start="4235" data-end="4253">resetExtension()</code> utiliza, pero <strong data-start="4268"
+        data-end="4305">no sabemos todavía qué representa</strong>. Así que lo dejamos como dato pendiente, no como
+    conclusión.</p>
+<h3 id="section3" class="class-prefs">resetExtension: function ( )</h3>
+<hr>
+<p>Ahora sí llegamos al <strong data-start="21" data-end="45">núcleo de esta clase</strong>. Y este método confirma
+    definitivamente para qué sirve el botón: <strong data-start="111" data-end="206">restablecer las preferencias
+        configurables de Notification Center a sus valores por defecto</strong>.</p>
+<h4>La firma del método</h4>
+<pre><code><span class="ͼ13">resetExtension</span>: <span class="ͼv">function</span>( <span class="ͼ11">object</span>, <span class="ͼ11">functionToBeCalledAtTheEnd</span>, <span class="ͼ11">parameter</span> ) {</code></pre>
+<div class="row">
+    <div class="col"><span>Recibe tres argumentos:</span>
+        <pre><samp>resetExtension()
+│
+├── object
+├── functionToBeCalledAtTheEnd
+└── parameter</samp></pre>
+    </div>
+    <div class="col"><span>Y desde <code>_init()</code> sabemos que se llama así:</span>
+        <pre><samp><span class="ͼy">this</span><span class="ͼv">.</span><span>resetExtension(</span><span class="ͼ11">object</span><span>, </span><span class="ͼz">"updateDone"</span><span>, </span><span class="ͼy">null</span><span>)</span></samp></pre>
+    </div>
+</div>
+<p>Por lo tanto, en este caso:</p>
+<pre><samp>object
+    → this.toplevel
+
+functionToBeCalledAtTheEnd
+    → "updateDone"
+
+parameter
+    → null</samp></pre>
+<p>Pero hay que esperar antes de interpretar completamente <code data-start="810" data-end="822">updateDone</code>. El
+    propio método nos va a revelar cómo se utiliza.</p>
+<h4>Crea un diálogo de confirmación</h4>
+<pre><code><span class="ͼv">let</span> <span class="ͼ11">dialog</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>MessageDialog({
+    transient_for: <span class="ͼ11">object</span><span class="ͼv">.</span>get_native <span class="ͼv">?</span> <span class="ͼ11">object</span><span class="ͼv">.</span>get_native() <span class="ͼv">:</span> <span class="ͼ11">object</span>,
+    modal: <span class="ͼy">true</span>
+});</code></pre>
+<p>Aquí tenemos una expresión interesante:</p>
+<pre><samp><span class="ͼ11">object</span><span class="ͼv">.</span>get_native <span class="ͼv">?</span> <span class="ͼ11">object</span><span class="ͼv">.</span>get_native() <span class="ͼv">:</span> <span class="ͼ11">object</span></samp></pre>
+<p>Es el mismo operador ternario que vimos anteriormente. Está preguntando:</p>
+<blockquote>¿<code data-start="1251" data-end="1259">object</code> tiene <code data-start="1266"
+        data-end="1278">get_native</code>?</blockquote>
+<div class="row">
+    <div class="col"><span>Si existe:</span>
+        <pre><samp><span class="ͼ11">object</span><span class="ͼv">.</span><span>get_native()</span></samp></pre>
+    </div>
+    <div class="col"><span>Si no existe:</span>
+        <pre><samp><span class="ͼ11">object</span></samp></pre>
+    </div>
+</div>
+<p>Es decir, intenta obtener el objeto nativo cuando <code data-start="1423" data-end="1431">object</code> es un widget
+    GTK, pero también permite trabajar directamente con un objeto que ya sea la ventana.</p>
+<p>Esto hace que <code data-start="1545" data-end="1563">resetExtension()</code> sea un poco más flexible.</p>
+<h4>La respuesta predeterminada</h4>
+<p>Si el diálogo tiene una respuesta predeterminada, será: <kbd class="inline-code">OK</kbd></p>
+<pre><code><span class="ͼ11">dialog</span><span class="ͼv">.</span>set_default_response(<span class="ͼ11">Gtk</span><span class="ͼv">.</span>ResponseType<span class="ͼv">.</span>OK);</code></pre>
+<p>Después agrega explícitamente los dos botones:</p>
+<pre><samp>dialog.add_button("Cancel", Gtk.ResponseType.CANCEL);
+dialog.add_button("OK", Gtk.ResponseType.OK);</samp></pre>
+<p>Por lo tanto el usuario verá algo conceptualmente así:</p>
+<pre><samp>┌──────────────────────────────────────────┐
+│ Reset Notification Center to defaults?   │
+│                                          │
+│ Resetting the extension will discard     │
+│ the current preferences configuration    │
+│ and restore default one.                 │
+│                                          │
+│                 [Cancel] [OK]            │
+└──────────────────────────────────────────┘</samp></pre>
+<h4>Mensaje de confirmación</h4>
+<p>Aquí usa markup de Pango para hacer el texto grande y en negrita.</p>
+<pre><code><span class="ͼ11">dialog</span><span class="ͼv">.</span>set_markup(
+    <span class="ͼz">"&lt;big&gt;&lt;b&gt;"</span><span class="ͼv">+</span><span class="ͼ11">_</span>(<span class="ͼz">"Reset Notification Center to defaults?"</span>)<span class="ͼv">+</span><span class="ͼz">"&lt;/b&gt;&lt;/big&gt;"</span>
+);</code></pre>
+<p>Después agrega una explicación:</p>
+<pre><samp><span class="ͼ11">dialog</span><span class="ͼv">.</span>get_message_area()<span class="ͼv">.</span>append(
+    <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Label({
+        wrap: <span class="ͼy">true</span>,
+        justify: <span class="ͼy">3</span>,
+        use_markup: <span class="ͼy">true</span>,
+        label: <span class="ͼ11">_</span>(<span class="ͼz">"Resetting the extension will discard the current preferences configuration and restore default one."</span>)
+    })
+);</samp></pre>
+<p>Por tanto el diálogo tiene dos niveles:</p>
+<pre><samp>MessageDialog
+│
+├── pregunta principal
+│   └── Reset Notification Center to defaults?
+│
+└── message area
+    └── explicación</samp></pre>
+<h4><span class="ͼ11">dialog</span><span class="ͼv">.</span>connect ( )</h4>
+<p>Aquí empieza la acción real cuando el usuario responde al diálogo, se ejecuta esta función.</p>
+<pre><code><span class="ͼ11">dialog</span><span class="ͼv">.</span>connect(<span class="ͼz">'response'</span>, <span class="ͼ11">Lang</span><span class="ͼv">.</span>bind(<span class="ͼy">this</span>, <span class="ͼv">function</span>(<span class="ͼ11">dialog</span>, <span class="ͼ11">id</span>) {</code></pre>
+<p>Y aparece <code data-start="3321" data-end="3325">id</code>, que representa qué respuesta seleccionó el usuario.
+    Luego:</p>
+<pre><samp><span class="ͼv">if</span>(<span class="ͼ11">id</span> <span class="ͼv">!=</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>ResponseType<span class="ͼv">.</span>OK) {
+    <span class="ͼ11">dialog</span><span class="ͼv">.</span>destroy();  
+    <span class="ͼv">return</span>;
+}</samp></pre>
+<p>Esto significa: Que <strong data-start="3619" data-end="3676">ninguna preferencia se modifica si el usuario
+        cancela</strong>.</p>
+<pre><samp>¿Respuesta == OK?
+│
+├── NO
+│   ├── cerrar diálogo
+│   └── salir
+│
+└── SÍ
+    └── continuar con el reset</samp></pre>
+<h4>Nuestra conexión con <code data-start="3726" data-end="3735">gschema</code></h4>
+<p>Aquí está la parte más interesante:</p>
+<pre><code><span class="ͼ11">settings</span><span class="ͼv">.</span>reset(<span class="ͼz">"show-media"</span>);
+<span class="ͼ11">settings</span><span class="ͼv">.</span>reset(<span class="ͼz">"show-notification"</span>);
+<span class="ͼ11">settings</span><span class="ͼv">.</span>reset(<span class="ͼz">"show-events"</span>);
+<span class="ͼ11">settings</span><span class="ͼv">.</span>reset(<span class="ͼz">"events-position"</span>);
+...</code></pre>
+<p>Esto confirma definitivamente que: <var class="inline-code">settings</var> es el objeto <code data-start="4007"
+        data-end="4021">Gio.Settings</code> que inicializamos al comienzo:</p>
+<pre><samp><span class="ͼ11">settings</span> <span class="ͼv">=</span> <span class="ͼ11">ExtensionUtils</span><span class="ͼv">.</span>getSettings(
+    <span class="ͼz">"org.gnome.shell.extensions.notification-center"</span>
+);</samp></pre>
+<p>Y: <span class="ͼ11">settings</span><span class="ͼv">.</span>reset(<span class="ͼz">"show-media"</span>);
+    significa:</p>
+<blockquote>Restablecer esa key al valor predeterminado definido por el schema.</blockquote>
+<p>Por ejemplo, nuestro <code data-start="4325" data-end="4334">gschema</code> decía: </p>
+<pre><samp><span class="ͼ13">&lt;key</span> <span class="ͼ12">name</span><span class="ͼv">=</span><span class="ͼz">"show-media"</span> <span class="ͼ12">type</span><span class="ͼv">=</span><span class="ͼz">"b"</span><span class="ͼ13">&gt;</span>
+    <span class="ͼ13">&lt;default&gt;</span>true<span class="ͼ13">&lt;/default&gt;</span>
+<span class="ͼ13">&lt;/key&gt;</span></samp></pre>
+<p>Entonces: <span class="ͼ11">settings</span><span class="ͼv">.</span>reset(<span class="ͼz">"show-media"</span>);
+    hace que vuelva a: <var class="inline-code">true</var></p>
+<p>No está inventando el valor aquí, el valor predeterminado está en <code data-start="4590"
+        data-end="4599">gschema</code>. Y esto demuestra exactamente por qué fue tan útil estudiar primero <code
+        data-start="4671" data-end="4680">gschema</code>.</p>
+<h4>Una ausencia interesante</h4>
+<p>Observa que aquí <strong data-start="5607" data-end="5622">no aparecen</strong>:</p>
+<pre><samp>reload-signal
+reload-profiles-signal
+current-version</samp></pre>
+<p>Eso tiene sentido. Esas keys las clasificamos como <strong data-start="5743" data-end="5789">variables/señales
+        internas de la extensión</strong>, no como preferencias del usuario.</p>
+<p>El botón Reset está restableciendo: <q class="inline-code">preferencias configurables</q> no todas las keys
+    existentes en el schema.</p>
+<p>Esto es una distinción muy importante que ahora podemos confirmar con código real.</p>
+<h4>La línea comentada</h4>
+<p>Tenemos:</p>
+<pre><code><span class="ͼt">//settings.set_int("current-version", Metadata.version);</span></code></pre>
+<p>Esta línea merece quedar marcada como pendiente. Y además tiene relación directa con nuestra investigación anterior
+    sobre: <var class="inline-code">current-version</var> Recordemos:</p>
+<pre><samp><span class="ͼ13">&lt;key</span> <span class="ͼ12">name</span><span class="ͼv">=</span><span class="ͼz">"current-version"</span> <span class="ͼ12">type</span><span class="ͼv">=</span><span class="ͼz">"d"</span><span class="ͼ13">&gt;</span>
+    <span class="ͼ13">&lt;default&gt;</span>23.00<span class="ͼ13">&lt;/default&gt;</span>
+<span class="ͼ13">&lt;/key&gt;</span></samp></pre>
+<p>Aquí vemos que Selenium-H <strong data-start="6420" data-end="6492">en algún momento consideró actualizar ese valor
+        desde el botón Reset</strong>, pero actualmente está comentado.</p>
+<p>Y además hay una pequeña inconsistencia que debemos revisar posteriormente: <span class="ͼ11">settings</span><span
+        class="ͼv">.</span>set_int(...) mientras que el schema decía: <var class="inline-code">type="d"</var>, <code
+        data-start="6698" data-end="6701">d</code> en GSettings es <code data-start="6718"
+        data-end="6726">double</code>, no entero.</p>
+<p>No debemos concluir todavía si esto es simplemente código histórico, código incorrecto o si hubo un cambio de tipo en
+    algún momento. Lo anotamos para investigación.</p>
+<h4>Cierra el diálogo y ejecuta callback</h4>
+<p>Después de resetear: <span class="ͼ11">dialog</span><span class="ͼv">.</span>destroy(); Y aparece algo muy
+    interesante:</p>
+<pre><code><span class="ͼv">if</span>(<span class="ͼ11">object</span>[<span class="ͼ11">functionToBeCalledAtTheEnd</span>]) {
+    <span class="ͼ11">object</span>[<span class="ͼ11">functionToBeCalledAtTheEnd</span>]( <span class="ͼ11">parameter</span> );
+}</code></pre>
+<p>Recordemos los argumentos originales: <span class="ͼy">this</span><span class="ͼv">.</span>resetExtension(<span
+        class="ͼ11">object</span>, <span class="ͼz">"updateDone"</span>, <span class="ͼy">null</span>)</p>
+<p>Por tanto, conceptualmente queda:</p>
+<pre><samp><span class="ͼv">if</span>(<span class="ͼ11">object</span>[<span class="ͼz">"updateDone"</span>]) {
+    <span class="ͼ11">object</span>[<span class="ͼz">"updateDone"</span>](<span class="ͼy">null</span>);
+}</samp></pre>
+<p>Es decir: </p>
+<blockquote>Si <code data-start="7399" data-end="7407">object</code> tiene un método llamado <code data-start="7432"
+        data-end="7444">updateDone</code>, ejecútalo pasando <code data-start="7464" data-end="7470">null</code>.
+</blockquote>
+<p>Esto explica por qué el método recibe el parámetro: <kbd class="inline-code">functionToBeCalledAtTheEnd</kbd>
+</p>
+<p>No es necesariamente una función directamente; es <strong data-start="7616" data-end="7677">el nombre de un método
+        que debe buscar dentro de <code data-start="7667" data-end="7675">object</code></strong>. Esto hace que <code
+        data-start="7694" data-end="7712">resetExtension()</code> sea reutilizable.</p>
+<h4>Finalmente: <code data-start="7755" data-end="7774">reloadExtension()</code></h4>
+<pre><code><span class="ͼ11">reloadExtension</span>();</code></pre>
+<p>Y aquí cerramos otro circuito que ya conocíamos:</p>
+<pre><samp>Reset
+ │
+ ├── settings.reset(...)
+ │       │
+ │       └── devuelve todas las preferencias a defaults
+ │
+ ├── callback updateDone(...)
+ │
+ └── reloadExtension()
+         │
+         ▼
+    reload-signal</samp></pre>
+<p>Así que el reset no solamente cambia las preferencias: <strong data-start="8132" data-end="8181">también solicita que
+        la extensión se recargue</strong> para que los nuevos valores tengan efecto.</p>
+<h3 id="section4" class="class-prefs">dialog.present()</h3>
+<hr>
+<pre><code><span class="ͼm">dialog</span><span class="ͼg">.</span>present();</code></pre>
+<p>Independiente de la opción que se haya seleccionado, volverá a mostrar el diálogo que contiene el botón
+    relacionado con el restablecimiento de la extensión.</p>
+<h3 id="section5" class="class-prefs">Una observación</h3>
+<hr>
+<p>Esta clase nos acaba de dar algo que buscábamos desde el principio. Ahora tenemos una demostración práctica de la
+    relación:</p>
+<pre><samp>gschema.xml
+     │
+     │ define defaults
+     ▼
+Gio.Settings
+     │
+     │ settings.reset()
+     ▼
+preferencias restauradas
+     │
+     ▼
+reloadExtension()
+     │
+     ▼
+reload-signal</samp></pre>
+<p>Por eso estudiar primero <code data-start="10022" data-end="10031">gschema</code> fue una muy buena decisión: ahora
+    podemos leer estos <code data-start="10085" data-end="10108">settings.reset("...")</code> y <strong
+        data-start="10111" data-end="10200">saber exactamente qué key está tocando cada línea y cuál será su valor
+        predeterminado</strong>.</p>
+<p>Y algo que me parece especialmente valioso: <strong data-start="1787" data-end="1858">esta clase confirmó nuestra
+        clasificación de las keys del <code data-start="1847" data-end="1856">gschema</code></strong>.</p>
+<pre><samp>ExtensionPreferencesWindow
+        │
+        │ crea
+        ▼
+ExtensionResetButton
+        │
+        │ settings.reset()
+        ▼
+     gschema
+        │
+        │ valores default
+        ▼
+preferencias restauradas
+        │
+        ▼
+ reloadExtension()
+        │
+        ▼
+ reload-signal</samp></pre>
+<p>Las keys que aparecen aquí son preferencias del usuario. En cambio:</p>
+<pre><samp>current-version
+reload-signal
+reload-profiles-signal</samp></pre>
+<p>No participan en el reset normal.</p>
+<h3 id="section6" class="class-prefs">Pendientes que conservamos</h3>
+<hr>
+<ul>
+    <li><code>updateDone()</code> → debemos localizar quién lo implementa.</li>
+    <li><code>reload-signal</code> → debemos localizar quién lo observa.</li>
+    <li><code>reload-profiles-signal</code> → todavía no hemos visto su uso aquí.</li>
+    <li><code>current-version</code> → queda como parte de nuestra investigación sobre el antiguo mecanismo de
+        actualización.</li>
+</ul>
+<p>Y además queda pendiente el tema de <code data-start="2391" data-end="2404">script-list</code>, que ya habíamos
+    decidido investigar más adelante cuando volvamos a <code data-start="2473" data-end="2487">extension.js</code>.</p>
+<h3 id="section7" class="class-prefs">Estado de <code data-start="2509" data-end="2523">prefsGtk4.js</code></h3>
+<hr>
+<pre><samp>prefsGtk4.js
+│
+├── [✓] ExtensionPreferencesWindow_NotificationCenterExtension
+│
+├── [✓] ExtensionResetButton_NotificationCenterExtension
+│
+└── [→] Siguiente variable/clase</samp></pre>
+<p>Dos nodos importantes ya están completos. Ahora podemos seguir con la siguiente declaración exactamente con la misma
+    metodología.</p>
