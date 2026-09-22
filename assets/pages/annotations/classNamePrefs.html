@@ -1,0 +1,205 @@
+<h2>ClassName_NotificationCenterExtension</h2>
+<hr>
+<p>En las clases de las preferencias del archivo PrefsGtk4.js, los nombres de cada clase viene acompañado de
+    "_NotificationCenterExtension".</p>
+<p>Por ejemplo:</p>
+<pre><code><span class="ͼv">const</span> <span class="ͼ11">PrefsWindow_NotificationCenterExtension</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">GObject</span><span class="ͼv">.</span>Class({
+    Name: <span class="ͼz">"PrefsWindow_NotificationCenterExtension"</span>,
+    Extends: <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Grid,
+});</code></pre>
+<h4>¿Esto es necesario incluirlo en el nombre las clases?</h4>
+<p>No, <strong data-start="4" data-end="23">no es necesario</strong> incluir <code data-start="32"
+        data-end="61">NotificationCenterExtension</code> en cada nombre. En este proyecto es principalmente una <strong
+        data-start="117" data-end="170">convención de nomenclatura que utilizó Selenium-H</strong>, no una exigencia de
+    GObject, GTK ni JavaScript.</p>
+<p>Podría llamarse perfectamente:</p>
+<pre><code><span class="ͼv">const</span> <span class="ͼ11">PrefsWindow</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">GObject</span><span class="ͼv">.</span>Class({
+    Name: <span class="ͼz">"PrefsWindow"</span>,
+    Extends: <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Grid,
+});</code></pre>
+<p>Siempre que no haya conflictos de nombres y las referencias se actualicen correctamente.</p>
+<h4>¿Por qué lo hizo Selenium-H?</h4>
+<p>Probablemente para dejar claro el <strong data-start="703" data-end="728">ámbito de pertenencia</strong> de cada
+    clase.</p>
+<p>Mira la cantidad de algunas clases:</p>
+<pre><samp>ExtensionPreferencesWindow_NotificationCenterExtension
+ExtensionResetButton_NotificationCenterExtension
+Prefs_NotificationCenterExtension
+PrefsWindow_NotificationCenterExtension
+PrefsWindowForNotifications_NotificationCenterExtension
+PrefsWindowForCalendar_NotificationCenterExtension
+PrefsWindowForIndicator_NotificationCenterExtension
+PrefsWindowForAppList_NotificationCenterExtension</samp></pre>
+<p>Sin el sufijo son mucho más fáciles de leer:</p>
+<pre><samp>ExtensionPreferencesWindow
+ExtensionResetButton
+Prefs
+PrefsWindow
+PrefsWindowForNotifications
+PrefsWindowForCalendar
+PrefsWindowForIndicator
+PrefsWindowForAppList</samp></pre>
+<h4>¿Qué inconveniente tiene mantenerlo?</h4>
+<p>Principalmente <strong data-start="1470" data-end="1486">ruido visual</strong>. Por ejemplo:</p>
+<pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>notificationPrefs <span class="ͼv">=</span>
+    <span class="ͼv">new</span> <span class="ͼ11">PrefsWindowForNotifications_NotificationCenterExtension</span>();</samp></pre>
+<p>Frente a:</p>
+<pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>notificationPrefs <span class="ͼv">=</span>
+    <span class="ͼv">new</span> <span class="ͼ11">PrefsWindowForNotifications</span>();</samp></pre>
+<p>La segunda nos permite concentrarnos en <strong data-start="1748" data-end="1769">qué hace la clase</strong>, en
+    lugar de repetir constantemente a qué extensión pertenece y esto encaja perfectamente con una de tus decisiones
+    anteriores para el proyecto: <strong data-start="1917" data-end="1976">no queremos reinventar ni renombrar cosas sin
+        necesidad</strong>.</p>
+<h4>¿Podríamos considerar eliminar el sufijo?</h4>
+<p>Yo lo trataría así para RE: Notification Center, no cambiaría todos esos nombres solamente por estética.</p>
+<p>Primero determinaría si el cambio de nombre de la extensión nos obliga a modificar alguna referencia. Si no existe
+    una razón técnica, podemos dejarlos. Pero si durante la modernización vamos a tocar esas clases de todas formas,
+    <strong data-start="2320" data-end="2394">sí podríamos considerar eliminar el sufijo como una limpieza de
+        código</strong>, siempre que hagamos el cambio de forma consistente.
+</p>
+<p>Y hay una razón adicional para no apresurarnos: en GObject tenemos dos nombres relacionados:</p>
+<pre><samp><span class="ͼv">const</span> <span class="ͼ11">PrefsWindow_NotificationCenterExtension</span> <span class="ͼv">=</span> ...</samp></pre>
+<p>Y:</p>
+<pre><samp><span class="ͼ13">Name</span>: <span class="ͼz">"PrefsWindow_NotificationCenterExtension"</span></samp></pre>
+<p>Si cambiamos uno, <strong data-start="2703" data-end="2769">tenemos que revisar el otro y todas las referencias a la
+        clase</strong>. Así que lo podemos dejar como una <strong data-start="2806" data-end="2840">posible mejora de
+        nomenclatura</strong>, pero <strong data-start="2847" data-end="2880">no como una tarea
+        prioritaria</strong>. </p>
+<h4>En resumen:</h4>
+<blockquote>No es obligatorio. Es una convención del autor original.</blockquote>
+<p>Y para nuestro proyecto mantendría la filosofía que ya definimos: <strong data-start="3026" data-end="3109"
+        data-is-last-node="">conservar nombres existentes salvo que haya una razón concreta para cambiarlos.</strong>
+</p>
+<h3>Carga visual innecesaria</h3>
+<hr>
+<p>En una situación ordinaria sería algo como:</p>
+<blockquote>Le pedí el nombre y me dio el árbol genealógico completo.</blockquote>
+<p>Exactamente. Es como:</p>
+<blockquote>—¿Cómo te llamas?<br data-start="45" data-end="48">
+    —Carlos.<br data-start="58" data-end="61">
+    —Perfecto.<br data-start="73" data-end="76">
+    —Carlos Rodríguez Pérez, hijo de Juan Rodríguez Pérez y nieto de...<br data-start="145" data-end="148">
+    —<strong data-start="151" data-end="175">¡Carlos estaba bien!</strong></blockquote>
+<p>Y aquí pasa exactamente eso: <b>PrefsWindow_NotificationCenterExtension.</b></p>
+<p>Cuando para entender el código lo que realmente necesitamos recordar es: <b>PrefsWindow.</b></p>
+<p>El resto es información repetida en prácticamente todas las clases. De hecho, mientras estabamos haciendo este
+    <strong data-start="478" data-end="493">mapa mental</strong>, ese sufijo nos perjudica un poco porque aumenta la
+    carga visual. Si tenemos:
+</p>
+<pre><samp>PrefsWindowForNotifications_NotificationCenterExtension
+PrefsWindowForCalendar_NotificationCenterExtension
+PrefsWindowForIndicator_NotificationCenterExtension
+PrefsWindowForAppList_NotificationCenterExtension
+...</samp></pre>
+<p>Nuestro cerebro tiene que procesar varias veces: <kbd class="inline-code">_NotificationCenterExtension</kbd> para
+    encontrar las diferencias importantes:
+</p>
+<pre><samp>Notifications
+Calendar
+Indicator
+AppList
+...</samp></pre>
+<p>Así que durante nuestro análisis podemos hacer algo muy sencillo: <strong data-start="1059"
+        data-end="1120">mentalmente lo tratamos como un apellido que ya conocemos</strong>. Por ejemplo:</p>
+<pre><samp>PrefsWindow_NotificationCenterExtension
+        ↓
+PrefsWindow
+
+PrefsWindowForNotifications_NotificationCenterExtension
+        ↓
+PrefsWindowForNotifications</samp></pre>
+<p>El código <strong data-start="1328" data-end="1362">no vamos a modificarlo todavía</strong>, cuando llegue el momento
+    de modernizar el proyecto, podemos decidir si vale la pena quitar esa repetición. No porque técnicamente sea
+    necesario, sino porque <strong data-start="1524" data-end="1588">la legibilidad también es parte del mantenimiento
+        del código</strong>.</p>
+<p>De hecho, me parece una buena regla para nuestro proyecto:</p>
+<blockquote>No cambiar un nombre porque sea viejo; cambiarlo si el nuevo nombre hace que el código sea más claro o si la
+    modernización lo requiere.</blockquote>
+<h3>Alternativas del nombre</h3>
+<hr>
+<p>Entre las opciones para modificar el nombre, tenemos:</p>
+<ul>
+    <li>Eliminar por completo la parte de <code>*_NotificationCenterExtension</code></li>
+    <li>Colocarlo al inicio <code>NotificationCenterExtension_*</code></li>
+    <li>Reducirlo a las iniciales <code>*_NCE</code></li>
+</ul>
+<p>Las tres opciones son técnicamente posibles, pero <strong data-start="54" data-end="112">yo descartaría <code
+            data-start="71" data-end="77">_NCE</code> y <code data-start="80"
+            data-end="110">NotificationCenterExtension_</code></strong> para este proyecto.</p>
+<h4>Las tres opciones</h4>
+<h5>Eliminarlo por completo</h5>
+<p>Es la opción más limpia. El contexto ya está dado por el propio proyecto/archivo.</p>
+<pre><samp>PrefsWindow
+PrefsWindowForNotifications
+PrefsWindowForCalendar
+PrefsWindowForIndicator
+PrefsWindowForAppList</samp></pre>
+<p>Por ejemplo:</p>
+<pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>notificationPrefs <span class="ͼv">=</span>
+    <span class="ͼv">new</span> <span class="ͼ11">PrefsWindowForNotifications</span>();</samp></pre>
+<p>Se entiende inmediatamente.</p>
+<h5>Reducirlo a <code data-start="556" data-end="562">_NCE</code></h5>
+<p>Es más corto, pero introduces una abreviatura que tenemos que recordar.</p>
+<pre><samp>PrefsWindow_NCE
+PrefsWindowForNotifications_NCE</samp></pre>
+<div class="row">
+    <div class="col">
+        <p>Y terminamos pasando de:</p>
+        <blockquote>"¿Qué significa toda esta cola?"</blockquote>
+    </div>
+    <div class="col">
+        <p>a:</p>
+        <blockquote>"¿Qué significaba NCE?"</blockquote>
+    </div>
+</div>
+<p>No ganamos demasiado.</p>
+<h5>Ponerlo al principio</h5>
+<p>Personalmente me parece peor para este caso. Sí agrupa alfabéticamente todas las clases de la extensión, pero vuelve
+    todavía más difícil identificar rápidamente <strong data-start="1123" data-end="1146">qué hace cada clase</strong>.
+</p>
+<pre><samp>NotificationCenterExtension_PrefsWindow
+NotificationCenterExtension_PrefsWindowForNotifications</samp></pre>
+<h4>¿Cúal elegiría?</h4>
+<p>Para <strong data-start="1192" data-end="1219">RE: Notification Center</strong>, yo elegiría esta convención:</p>
+<pre><samp>Prefs
+PrefsWindow
+PrefsWindowForNotifications
+PrefsWindowForCalendar
+PrefsWindowForIndicator
+PrefsWindowForAppList
+ExtensionPreferencesWindow
+ExtensionResetButton
+UpdatePage</samp></pre>
+<p>Es decir, que <strong data-start="1423" data-end="1479">el nombre describa la función de la clase y nada
+        más</strong>. Además, esto combina muy bien con lo que estamos haciendo ahora: cuando construimos el mapa
+    mental, podemos reconocer inmediatamente:</p>
+<pre><samp>Prefs
+ └── Gtk.Stack
+
+PrefsWindow
+ └── Gtk.Grid
+
+PrefsWindowForNotifications
+ └── preferencias de notificaciones
+
+PrefsWindowForCalendar
+ └── preferencias del calendario
+
+PrefsWindowForIndicator
+ └── preferencias del indicador
+
+PrefsWindowForAppList
+ └── perfiles/aplicaciones</samp></pre>
+<p>Muchísimo más fácil de leer.</p>
+<p>En la fase de modernización, podemos hacer una pasada específica de <strong data-start="2174"
+        data-end="2202">limpieza de nomenclatura</strong> y cambiar todos los nombres de manera consistente.</p>
+<p>Y si finalmente eliminamos <code data-start="2282" data-end="2312">_NotificationCenterExtension</code>, habrá que
+    cambiar tanto:</p>
+<pre><samp><span class="ͼv">const</span> <span class="ͼ11">PrefsWindow_NotificationCenterExtension</span> <span class="ͼv">=</span> ...</samp></pre>
+<p>Como: <span class="ͼ13">Name</span>: <span class="ͼz">"PrefsWindow_NotificationCenterExtension"</span> y
+    todas las referencias:</p>
+<pre><samp><span class="ͼv">new</span> <span class="ͼ11">PrefsWindow_NotificationCenterExtension</span>()</samp></pre>
+<p>Así que sería una modificación sistemática, no algo que convenga hacer a mitad de la investigación. Lo anotaría
+    como <b>una posible mejora de nomenclatura del proyecto</b>: eliminar el sufijo <code
+        class="inline-code">_NotificationCenterExtension</code> por redundante, salvo que durante la revisión
+    descubramos alguna razón técnica para conservarlo.</p>

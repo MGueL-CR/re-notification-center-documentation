@@ -1,0 +1,513 @@
+<h2>PrefsWindow</h2>
+<hr>
+<p>El nombre ya nos da una pista de que probablemente será una clase base o componente común para las ventanas de
+    preferencias.</p>
+<pre><code><span class="ͼv">const</span> <span class="ͼ11">PrefsWindow_NotificationCenterExtension</span> <span class="ͼv">=</span>
+    <span class="ͼv">new</span> <span class="ͼ11">GObject</span><span class="ͼv">.</span>Class({
+        Name: <span class="ͼz">"PrefsWindow_NotificationCenterExtension"</span>,
+        Extends: <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Grid,</code></pre>
+<h4>Identificamos la clase</h4>
+<pre><samp>PrefsWindow_NotificationCenterExtension
+│
+├── Tipo
+│   └── GObject.Class
+│
+├── Name
+│   └── PrefsWindow_NotificationCenterExtension
+│
+└── Extends
+    └── Gtk.Grid</samp></pre>
+<p>Aquí tenemos una diferencia importante respecto a la clase anterior.</p>
+
+<div class="row">
+    <div class="col">
+        <p>Teniamos:</p>
+        <pre><samp>Prefs_NotificationCenterExtension
+└── Gtk.Stack</samp></pre>
+    </div>
+    <div class="col">
+        <p>Mientras que esta:</p>
+        <pre><samp>PrefsWindow_NotificationCenterExtension
+└── Gtk.Grid</samp></pre>
+    </div>
+</div>
+<p>Por lo tanto, <strong data-start="785" data-end="833">no es el contenedor principal de las páginas</strong>, sino un
+    componente basado en una cuadrícula GTK.</p>
+<h4>¿Por qué <code data-start="905" data-end="915">Gtk.Grid</code>?</h4>
+<p><code data-start="918" data-end="928">Gtk.Grid</code> permite colocar widgets en una estructura de filas y columnas.
+    Conceptualmente:</p>
+<pre><samp>Gtk.Grid
+
+        columna
+       0       1       2
+    ┌───────┬───────┬───────┐
+ 0  │       │       │       │
+    ├───────┼───────┼───────┤
+ 1  │       │       │       │
+    ├───────┼───────┼───────┤
+ 2  │       │       │       │
+    └───────┴───────┴───────┘</samp></pre>
+<p>Esto encaja muy bien con una ventana de preferencias, porque podemos tener:</p>
+<pre><samp>Opción:        [ control ]
+Otra opción:   [ control ]
+Otra opción:   [ control ]</samp></pre>
+<p>Así que esta clase probablemente proporciona <strong data-start="1501" data-end="1531">la estructura visual
+        común</strong> que utilizan las diferentes páginas de preferencias.</p>
+<p>Pero aquí todavía hay que ser cuidadosos: <strong data-start="1628" data-end="1746">no sabemos si realmente es una
+        clase base para las cuatro páginas o si simplemente es otro componente reutilizable</strong>.</p>
+<h4>Relación con la clase anterior</h4>
+<div class="row">
+    <div class="col">
+        <p>Ahora tenemos:</p>
+        <pre><samp>Prefs_NotificationCenterExtension
+│
+├── notificationPrefs
+├── calendarPrefs
+├── indicatorPrefs
+└── appListPrefs</samp></pre>
+    </div>
+    <div class="col">
+        <p>Y esta nueva clase:</p>
+        <pre><samp>PrefsWindow_NotificationCenterExtension
+└── Gtk.Grid</samp></pre>
+    </div>
+</div>
+<p>El nombre de las siguientes clases será especialmente importante. Porque si encontramos algo como:</p>
+<pre><samp>Extends: PrefsWindow_NotificationCenterExtension</samp></pre>
+<p>Entonces sabremos inmediatamente que las páginas específicas heredan de esta clase.</p>
+<p>Por ejemplo, conceptualmente podría existir:</p>
+<pre><samp>PrefsWindow_NotificationCenterExtension
+          │
+          ├── PrefsWindowForNotifications
+          ├── PrefsWindowForCalendar
+          ├── PrefsWindowForIndicator
+          └── PrefsWindowForAppList</samp></pre>
+<p><strong data-start="2564" data-end="2603">Pero todavía no lo damos por hecho.</strong> Vamos a confirmarlo cuando
+    aparezcan sus declaraciones.</p>
+<h3>_init: function(page) { ... }</h3>
+<hr>
+<p>Aquí no hay demasiada lógica, pero sí nos dice <strong data-start="415" data-end="463">cómo se configura la
+        estructura visual común</strong> de esta clase.</p>
+<pre><code><span class="ͼ13">_init</span>: <span class="ͼv">function</span>(<span class="ͼ11">page</span>) {
+    
+    <span class="ͼy">this</span><span class="ͼv">.</span>parent({
+        column_spacing: <span class="ͼy">80</span>,
+        halign: <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Align<span class="ͼv">.</span>CENTER,
+        margin_top: <span class="ͼy">20</span>,
+        margin_end: <span class="ͼy">20</span>,
+        margin_bottom: <span class="ͼy">20</span>,
+        margin_start: <span class="ͼy">20</span>,
+        row_spacing: <span class="ͼy">20</span>
+    });
+
+},</code></pre>
+<h4>(page)</h4>
+<p>El método recibe: <b><i>page</i></b> pero en este bloque <strong data-start="558" data-end="575">no se
+        utiliza</strong>. Por ahora simplemente lo anotamos:</p>
+<pre><samp>_init(page)
+└── page
+    └── actualmente no utilizado</samp></pre>
+<p>No vamos a asumir todavía que sea innecesario; podría haber sido utilizado en alguna versión anterior o simplemente
+    formar parte de una interfaz común esperada por las clases derivadas.</p>
+<h4>this.parent(...)</h4>
+<p>Como la clase: <span class="ͼ13">Extends</span>: <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Grid
+    tenemos nuevamente: <span class="ͼy">this</span><span class="ͼv">.</span>parent(...) que inicializa el <code
+        data-start="1040" data-end="1050">Gtk.Grid</code> padre con estas propiedades.</p>
+<pre><samp>Gtk.Grid
+│
+├── column_spacing
+│   └── 80
+│
+├── row_spacing
+│   └── 20
+│
+├── halign
+│   └── Gtk.Align.CENTER
+│
+└── márgenes
+    ├── top
+    │   └── 20
+    ├── end
+    │   └── 20
+    ├── bottom
+    │   └── 20
+    └── start
+        └── 20</samp></pre>
+<h4>¿Qué significa visualmente?</h4>
+<p>La cuadrícula tendrá:</p>
+<ul>
+    <li>80 px entre columnas</li>
+    <li>20 px entre filas</li>
+    <li>estará centrada horizontalmente</li>
+    <li>tendrá un margen de 20 px alrededor.</li>
+</ul>
+<p>Podemos imaginarlo así:</p>
+<pre><samp>          margen 20
+    ┌───────────────────────────┐
+    │                           │
+    │   [ widget ]    80px      │
+    │                           │
+    │   [ widget ]    80px      │
+    │                           │
+    └───────────────────────────┘
+       ↑                   ↑
+      20                  20</samp></pre>
+<p>El <code data-start="1883" data-end="1900">row_spacing: 20</code> hace lo mismo verticalmente.</p>
+<p>Este <code data-start="2342" data-end="2351">_init()</code> solamente establece la configuración base del <code
+        data-start="2398" data-end="2408">Gtk.Grid</code>; ahora necesitamos ver qué otros métodos o bloques tiene esta
+    clase y, sobre todo, si las clases específicas de preferencias heredan de ella.</p>
+<h3>attachLabel: function(KEY, pos)</h3>
+<hr>
+<p>Aquí aparece el <strong data-start="16" data-end="87">primer método auxiliar </strong>y este es bastante
+    interesante porque hace de puente directo entre la interfaz y el <code data-start="173"
+        data-end="182">gschema</code>.</p>
+<pre><code><span class="ͼ13">attachLabel</span>: <span class="ͼv">function</span>(<span class="ͼ11">KEY</span>, <span class="ͼ11">pos</span>) {
+  <span class="ͼv">let</span> <span class="ͼ11">prefLabel</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Label({
+    xalign: <span class="ͼy">1</span>,
+    label: <span class="ͼ11">_</span>(<span class="ͼ11">settings</span><span class="ͼv">.</span>settings_schema<span class="ͼv">.</span>get_key(<span class="ͼ11">KEY</span>)<span class="ͼv">.</span>get_summary()),
+    halign: <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Align<span class="ͼv">.</span>START
+  });
+
+  <span class="ͼy">this</span><span class="ͼv">.</span>attach(<span class="ͼ11">prefLabel</span>, <span class="ͼy">0</span>, <span class="ͼ11">pos</span>, <span class="ͼy">1</span>, <span class="ͼy">1</span>);
+}</code></pre>
+<h4>¿Qué recibe?</h4>
+<p>El método recibe dos valores:</p>
+<pre><samp>attachLabel(KEY, pos)
+│
+├── KEY
+│   └── nombre de una key del gschema
+│
+└── pos
+    └── posición/fila donde colocar el label</samp></pre>
+<p>Aquí <code data-start="626" data-end="631">KEY</code> es especialmente importante. No recibe directamente: <var
+        class="inline-code">"Show media"</var> sino algo como: <var class="inline-code">"show-media"</var> y a
+    partir de ese nombre <strong data-start="793" data-end="830">busca la información en el schema</strong>.</p>
+<h4>La parte más interesante</h4>
+<p>Esta expresión: <span class="ͼ11">settings</span><span class="ͼv">.</span>settings_schema<span
+        class="ͼv">.</span>get_key(<span class="ͼ11">KEY</span>)<span class="ͼv">.</span>get_summary() hace varias cosas
+    encadenadas:</p>
+<pre><samp>settings
+   │
+   ▼
+settings.settings_schema
+   │
+   ▼
+get_key(KEY)
+   │
+   ▼
+get_summary()</samp></pre>
+<p>Podemos traducirlo como:</p>
+<blockquote>"Ve al schema de estas preferencias, busca la key cuyo nombre es <code data-start="1187"
+        data-end="1192">KEY</code> y dame su <code data-start="1203" data-end="1212">summary</code>."</blockquote>
+<p>Y esto conecta directamente con algo que acabamos de estudiar. Por ejemplo, nuestro <code data-start="1301"
+        data-end="1310">gschema</code> tiene:</p>
+<pre><samp><span class="ͼ13">&lt;key</span> <span class="ͼ12">name</span><span class="ͼv">=</span><span class="ͼz">"show-media"</span> <span class="ͼ12">type</span><span class="ͼv">=</span><span class="ͼz">"b"</span><span class="ͼ13">&gt;</span>
+    <span class="ͼ13">&lt;default&gt;</span>true<span class="ͼ13">&lt;/default&gt;</span>
+    <span class="ͼ13">&lt;summary&gt;</span>Show Media Notifications<span class="ͼ13">&lt;/summary&gt;</span>
+    ...
+<span class="ͼ13">&lt;/key&gt;</span></samp></pre>
+<p>Si alguien llama: <span class="ͼ11">attachLabel</span>(<span class="ͼz">"show-media"</span>, <span
+        class="ͼy">0</span>); el método obtiene:</p>
+<pre><samp>KEY
+└── "show-media"
+       │
+       ▼
+gschema.get_key("show-media")
+       │
+       ▼
+get_summary()
+       │
+       ▼
+"Show Media Notifications"</samp></pre>
+<p>Y ese texto termina siendo el contenido del <code data-start="1746" data-end="1757">Gtk.Label</code>.</p>
+<h5>Esto es muy importante</h5>
+<p>La interfaz <strong data-start="1803" data-end="1864">no tiene que escribir manualmente el texto de cada
+        opción</strong>. El texto ya está definido en el <code data-start="1899" data-end="1908">gschema</code>. Así que
+    tenemos:</p>
+<pre><samp>gschema
+│
+├── name
+│   └── show-media
+│
+└── summary
+    └── Show Media Notifications
+          │
+          ▼
+     attachLabel()
+          │
+          ▼
+      Gtk.Label</samp></pre>
+<p>Esto explica también por qué los <code data-start="2143" data-end="2152">summary</code> que estuvimos revisando
+    tienen importancia práctica: <strong data-start="2206" data-end="2240">no son solamente documentación</strong>; este
+    código los utiliza para construir la interfaz.</p>
+<h4>El <code data-start="2309" data-end="2314">_()</code> que rodea al summary</h4>
+<p>Tenemos:</p>
+<pre><samp><span class="ͼ13">label</span>: <span class="ͼ11">_</span>(
+    <span class="ͼ11">settings</span><span class="ͼv">.</span>settings_schema
+        <span class="ͼv">.</span>get_key(<span class="ͼ11">KEY</span>)
+        <span class="ͼv">.</span>get_summary()
+)</samp></pre>
+<p>El <code data-start="2455" data-end="2460">_()</code> es la función de traducción que vimos al principio:</p>
+<pre><samp><span class="ͼv">const</span> <span class="ͼ11">_</span> <span class="ͼv">=</span> <span class="ͼ11">imports</span><span class="ͼv">.</span>gettext<span class="ͼv">.</span>domain(<span class="ͼz">"notification-center"</span>)<span class="ͼv">.</span>gettext;</samp></pre>
+<p>Por lo tanto el flujo completo es:</p>
+<pre><samp>summary del gschema
+       │
+       ▼
+gettext (_)
+       │
+       ▼
+texto traducido
+       │
+       ▼
+Gtk.Label</samp></pre>
+<p>Esto conecta también con la carpeta <code data-start="2795" data-end="2803">locale</code> que estudiamos
+    anteriormente.</p>
+<h4>xalign y halign</h4>
+<p>El label se crea con:</p>
+<pre><samp><span class="ͼ13">xalign</span>: <span class="ͼy">1</span>,
+<span class="ͼ11">halign</span>: <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Align<span class="ͼv">.</span>START</samp></pre>
+<p>Aquí hay una pequeña diferencia entre ambos conceptos.</p>
+<p><code data-start="3000" data-end="3011">xalign: 1</code> indica la alineación del <strong data-start="3037"
+        data-end="3084">contenido del texto dentro del propio label</strong>. Mientras que: <span
+        class="ͼ13">halign</span>: <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Align<span
+        class="ͼv">.</span>START, indica cómo se posiciona el widget <code data-start="3180"
+        data-end="3191">Gtk.Label</code> dentro del espacio que le proporciona el <code data-start="3233"
+        data-end="3243">Gtk.Grid</code>.</p>
+<p>No necesitamos profundizar más ahora; lo importante para nuestro mapa es que se está preparando el label para formar
+    parte de la cuadrícula.</p>
+<h4>Finalmente lo coloca en el <code data-start="3426" data-end="3436">Gtk.Grid</code></h4>
+<pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>attach(<span class="ͼ11">prefLabel</span>, <span class="ͼy">0</span>, <span class="ͼ11">pos</span>, <span class="ͼy">1</span>, <span class="ͼy">1</span>);</samp></pre>
+<p>Como esta clase hereda de: <span class="ͼ13">Extends</span>: <span class="ͼ11">Gtk</span><span
+        class="ͼv">.</span>Grid, <code data-start="3560" data-end="3575">this.attach()</code> es el método del
+    <code data-start="3593" data-end="3603">Gtk.Grid</code>.
+</p>
+<p>Los parámetros son: <code class="inline-code">attach</code>(<kbd class="inline-code">widget</kbd>, <kbd
+        class="inline-code">column</kbd>, <kbd class="inline-code">row</kbd>, <kbd class="inline-code">width</kbd>, <kbd
+        class="inline-code">height</kbd>) Así que:</p>
+<pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>attach(<span class="ͼ11">prefLabel</span>, <span class="ͼy">0</span>, <span class="ͼ11">pos</span>, <span class="ͼy">1</span>, <span class="ͼy">1</span>);</samp></pre>
+<p>Significa:</p>
+<pre><samp>widget
+└── prefLabel
+
+columna
+└── 0
+
+fila
+└── pos
+
+ancho
+└── 1 columna
+
+alto
+└── 1 fila</samp></pre>
+<p>Visualmente:</p>
+<pre><samp>          columna 0       columna 1
+        ┌─────────────┬─────────────┐
+fila 0  │ Label       │             │
+        ├─────────────┼─────────────┤
+fila 1  │ Label       │             │
+        ├─────────────┼─────────────┤
+fila 2  │ Label       │             │
+        └─────────────┴─────────────┘</samp></pre>
+<p>Y aquí aparece una pista muy buena: <strong data-start="4228" data-end="4300">la otra parte de la opción
+        probablemente se colocará en la columna 1</strong>. Es decir, podríamos terminar viendo algo parecido a:</p>
+<pre><samp>┌──────────────────────────┬──────────────────┐
+│ Show Media Notifications │ [checkbox]       │
+├──────────────────────────┼──────────────────┤
+│ Show Events              │ [checkbox]       │
+├──────────────────────────┼──────────────────┤
+│ Maximum Height           │ [spin button]    │
+└──────────────────────────┴──────────────────┘</samp></pre>
+<p>No lo damos por hecho todavía, pero el <code data-start="4746" data-end="4766">column_spacing: 80</code> que vimos en
+    <code data-start="4780" data-end="4789">_init()</code> ahora empieza a tener bastante sentido.
+</p>
+<h4>Una conexión que debemos conservar</h4>
+<p>Esta es una conexión que debemos conservar en nuestro mapa mental:</p>
+<pre><samp>gschema
+  │
+  │ name + summary
+  ▼
+attachLabel(KEY, pos)
+  │
+  │ get_key(KEY)
+  │ get_summary()
+  ▼
+Gtk.Label
+  │
+  ▼
+Gtk.Grid</samp></pre>
+<p>Esto es exactamente el tipo de contexto que queríamos obtener antes de volver a <code data-start="5628"
+        data-end="5642">extension.js</code>: <strong data-start="5644" data-end="5754">ya no solo sabemos que existe una
+        key; estamos viendo cómo el código la utiliza para construir la interfaz</strong>.</p>
+<h3>prefCombo: function(KEY, pos, options, items)</h3>
+<hr>
+<p>Aquí aparece otro método auxiliar muy importante. <code data-start="50" data-end="63">prefCombo()</code> ya no solo
+    construye la interfaz: <strong data-start="98" data-end="216">lee una key del <code data-start="116"
+            data-end="125">gschema</code>, crea un selector y escribe nuevamente en <code data-start="168"
+            data-end="179">GSettings</code> cuando el usuario cambia la opción</strong>.</p>
+<pre><code><span class="hljs-attr">prefCombo</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params">KEY, pos, options, items</span>) {
+  
+    <span class="hljs-keyword">let</span> <span class="hljs-title class_">SettingCombo</span> = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Gtk</span>.<span class="hljs-title class_">ComboBoxText</span>();
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; options.<span class="hljs-property">length</span>; i++) {
+      <span class="hljs-title class_">SettingCombo</span>.<span class="hljs-title function_">append</span>(options[i],  items[i]);
+    }
+    <span class="hljs-title class_">SettingCombo</span>.<span class="hljs-title function_">set_active</span>(options.<span class="hljs-title function_">indexOf</span>(settings.<span class="hljs-title function_">get_string</span>(<span class="hljs-variable constant_">KEY</span>)));
+    <span class="hljs-title class_">SettingCombo</span>.<span class="hljs-title function_">connect</span>(<span class="hljs-string">'changed'</span>, <span class="hljs-title class_">Lang</span>.<span class="hljs-title function_">bind</span>(<span class="hljs-variable language_">this</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params">widget</span>) {
+      settings.<span class="hljs-title function_">set_string</span>(<span class="hljs-variable constant_">KEY</span>, options[widget.<span class="hljs-title function_">get_active</span>()]);
+      <span class="hljs-title function_">reloadExtension</span>();
+    }));
+    
+    <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">attachLabel</span>(<span class="hljs-variable constant_">KEY</span>,pos);
+    <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">attach</span>(<span class="hljs-title class_">SettingCombo</span>, <span class="hljs-number">1</span>, pos, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>);
+    
+  }</code></pre>
+<h4>Los cuatro parámetros</h4>
+<pre><code><span class="ͼ13">prefCombo</span>: <span class="ͼv">function</span>(<span class="ͼ11">KEY</span>, <span class="ͼ11">pos</span>, <span class="ͼ11">options</span>, <span class="ͼ11">items</span>) {</code></pre>
+<pre><samp>prefCombo()
+│
+├── KEY
+│   └── nombre de la key de GSettings
+│
+├── pos
+│   └── fila del Grid
+│
+├── options
+│   └── valores internos que se guardarán
+│
+└── items
+    └── textos que verá el usuario</samp></pre>
+<p>Aquí aparece una distinción muy importante: <code data-start="582" data-end="591">options</code> y <code
+        data-start="594" data-end="601">items</code> no son necesariamente lo mismo. Por ejemplo, podría tener
+    conceptualmente:</p>
+<pre><samp><span class="ͼ11">options</span> <span class="ͼv">=</span> [<span class="ͼz">"dot"</span>, <span class="ͼz">"count"</span>];
+<span class="ͼ11">items</span>   <span class="ͼv">=</span> [<span class="ͼz">"Dot"</span>, <span class="ͼz">"Count"</span>];</samp></pre>
+<p>El usuario ve: <kbd class="inline-code">Dot</kbd> y <kbd class="inline-code">Count</kbd> pero el programa guarda:
+    <var class="inline-code">"dot"</var> y <var class="inline-code">"count"</var>. Esto encaja directamente con nuestros
+    enums del <code data-start="896" data-end="905">gschema</code>.
+</p>
+<h4>Crea el ComboBox</h4>
+<pre><samp><span class="ͼv">let</span> <span class="ͼ11">SettingCombo</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>ComboBoxText();</samp></pre>
+<p>Creamos un selector de texto:</p>
+<pre><samp>Gtk.ComboBoxText
+└── lista desplegable</samp></pre>
+<h4>Llena las opciones</h4>
+<pre><samp><span class="ͼv">for</span> (<span class="ͼv">let</span> <span class="ͼ11">i</span> <span class="ͼv">=</span> <span class="ͼy">0</span>; <span class="ͼ11">i</span> <span class="ͼv">&lt;</span> <span class="ͼ11">options</span><span class="ͼv">.</span>length; <span class="ͼ11">i</span><span class="ͼv">++</span>) {
+    <span class="ͼ11">SettingCombo</span><span class="ͼv">.</span>append(<span class="ͼ11">options</span>[<span class="ͼ11">i</span>], <span class="ͼ11">items</span>[<span class="ͼ11">i</span>]);
+}</samp></pre>
+<p>Aquí está la relación:</p>
+<pre><samp>options[i]
+    │
+    └── valor interno / ID
+
+items[i]
+    │
+    └── texto visible</samp></pre>
+<p>Y: <span class="ͼ11">append</span>(<span class="ͼ11">options</span>[<span class="ͼ11">i</span>], <span
+        class="ͼ11">items</span>[<span class="ͼ11">i</span>]) agrega cada opción al ComboBox. Por ejemplo:</p>
+<pre><samp>options              items
+────────────         ─────────────
+"dot"       ───────► "Dot"
+"count"     ───────► "Count"</samp></pre>
+<h4>Lee el valor actual de GSettings</h4>
+<p>Esta línea es fundamental.</p>
+<pre><code><span class="ͼ11">SettingCombo</span><span class="ͼv">.</span>set_active(
+    <span class="ͼ11">options</span><span class="ͼv">.</span>indexOf(<span class="ͼ11">settings</span><span class="ͼv">.</span>get_string(<span class="ͼ11">KEY</span>))
+);</code></pre>
+<p>Primero: <span class="ͼ11">settings</span><span class="ͼv">.</span>get_string(<span class="ͼ11">KEY</span>) lee
+    el valor actual almacenado.</p>
+<p>Supongamos: <var class="inline-code">KEY</var> =<var class="inline-code"> "new-notification"</var> y en
+    GSettings actualmente tenemos:<var class="inline-code">"dot"</var>. Entonces: <span class="ͼ11">options</span><span
+        class="ͼv">.</span>indexOf(<span class="ͼz">"dot"</span>) devuelve, por ejemplo:
+    <kbd class="inline-code">0</kbd> y: <span class="ͼ11">SettingCombo</span><span class="ͼv">.</span>set_active(<span
+        class="ͼy">0</span>); hace que el ComboBox muestre <strong data-start="2186" data-end="2193">Dot</strong>.
+</p>
+<p>Así que el flujo es:</p>
+<pre><samp>GSettings
+    │
+    │ get_string(KEY)
+    ▼
+valor guardado
+    │
+    │ indexOf()
+    ▼
+posición dentro de options
+    │
+    ▼
+ComboBox
+    │
+    ▼
+opción visible</samp></pre>
+<h4>¿Qué ocurre cuando el usuario cambia la opción?</h4>
+<pre><code><span class="ͼ11">SettingCombo</span><span class="ͼv">.</span>connect(<span class="ͼz">'changed'</span>, <span class="ͼ11">Lang</span><span class="ͼv">.</span>bind(<span class="ͼy">this</span>, <span class="ͼv">function</span>(<span class="ͼ11">widget</span>) { ... }</code></pre>
+<p>Se conecta la señal: <kbd class="inline-code">changed</kbd>. Cuando el usuario selecciona otra opción, se
+    ejecuta la función. Y aquí viene la operación inversa:</p>
+<pre><samp><span class="ͼ11">settings</span><span class="ͼv">.</span>set_string(
+    <span class="ͼ11">KEY</span>,
+    <span class="ͼ11">options</span>[<span class="ͼ11">widget</span><span class="ͼv">.</span>get_active()]
+);</samp></pre>
+<p>Es decir:</p>
+<ol>
+    <li>Obtiene qué posición seleccionó el usuario.</li>
+    <li>Busca esa posición en <code>options</code>.</li>
+    <li>Guarda ese valor en GSettings.</li>
+</ol>
+<div class="row">
+    <div class="col">
+        <p>Ejemplo:</p>
+        <pre><samp>Usuario selecciona:
+    Count
+       │
+       ▼
+get_active() → 1
+       │
+       ▼
+options[1] → "count"
+       │
+       ▼
+settings.set_string(KEY, "count")</samp></pre>
+    </div>
+    <div class="col">
+        <p>Por tanto:</p>
+        <pre><samp>GSettings ──────► ComboBox
+   ▲                 │
+   │                 │ usuario cambia
+   │                 ▼
+   └────────────── nuevo valor</samp></pre>
+    </div>
+</div>
+<p>Es un <strong data-start="3309" data-end="3332">flujo bidireccional</strong> entre la preferencia y la interfaz.</p>
+<h4>Después recarga la extensión</h4>
+<p>Esto conecta directamente con lo que vimos anteriormente.</p>
+<pre><code><span class="ͼ11">reloadExtension</span>();</code></pre>
+<p>Al modificar una preferencia:</p>
+<pre><samp>settings.set_string(...)
+        │
+        ▼
+reloadExtension()
+        │
+        ▼
+reload-signal</samp></pre>
+<p>Así que este método está implementando una política muy sencilla:</p>
+<blockquote>Cambió una preferencia → guardarla → pedir que la extensión se recargue.</blockquote>
+<h4>Finalmente construye la fila</h4>
+<p>Esto reutiliza el método que acabamos de estudiar.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>attachLabel(<span class="ͼ11">KEY</span>, <span class="ͼ11">pos</span>);</code></pre>
+<p>Por tanto, automáticamente obtiene del <code data-start="4009" data-end="4018">gschema</code> el <code
+        data-start="4022" data-end="4031">summary</code> de la key y lo coloca en la columna 0.</p>
+<p>Después: <span class="ͼy">this</span><span class="ͼv">.</span>attach(<span class="ͼ11">SettingCombo</span>,
+    <span class="ͼy">1</span>, <span class="ͼ11">pos</span>, <span class="ͼy">1</span>, <span class="ͼy">1</span>);
+    coloca el ComboBox en:
+</p>
+<pre><samp>columna = 1
+fila     = pos
+ancho    = 1
+alto     = 1</samp></pre>
+<p>Y ahora podemos confirmar nuestra sospecha anterior. La estructura es efectivamente:</p>
+<pre><samp>         columna 0                  columna 1
+   ┌───────────────────────────┬──────────────────┐
+   │ summary de la preferencia │ ComboBox         │
+   └───────────────────────────┴──────────────────┘</samp></pre>
+<p>Y <code data-start="4555" data-end="4575">column_spacing: 80</code> de <code data-start="4579"
+        data-end="4588">_init()</code> empieza a tener todo el sentido.</p>
+<blockquote><span class="font-medium">dom, 16 ago</span> <span class="font-normal">a las 10:45 a.m. </span>→
+    prefStr: function(KEY, pos, options, items) </blockquote>
