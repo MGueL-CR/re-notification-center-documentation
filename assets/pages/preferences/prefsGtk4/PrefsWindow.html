@@ -509,5 +509,495 @@ alto     = 1</samp></pre>
    └───────────────────────────┴──────────────────┘</samp></pre>
 <p>Y <code data-start="4555" data-end="4575">column_spacing: 80</code> de <code data-start="4579"
         data-end="4588">_init()</code> empieza a tener todo el sentido.</p>
-<blockquote><span class="font-medium">dom, 16 ago</span> <span class="font-normal">a las 10:45 a.m. </span>→
-    prefStr: function(KEY, pos, options, items) </blockquote>
+<h3>prefStr: function(KEY, pos, options, items) </h3>
+<hr>
+<p>Aquí comienza <code data-start="24" data-end="35">prefStr()</code>, y de entrada podemos notar que <strong
+        data-start="68" data-end="118">comparte bastante estructura con <code data-start="103"
+            data-end="116">prefCombo()</code></strong> que acabamos de estudiar.</p>
+<pre><code><span class="ͼ13">prefStr</span>: <span class="ͼv">function</span>(<span class="ͼ11">KEY</span>, <span class="ͼ11">pos</span>, <span class="ͼ11">options</span>, <span class="ͼ11">items</span>) {
+
+    <span class="ͼv">let</span> <span class="ͼ11">SettingCombo</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>ComboBoxText();
+
+    <span class="ͼv">for</span> (<span class="ͼv">let</span> <span class="ͼ11">i</span> <span class="ͼv">=</span> <span class="ͼy">0</span>; <span class="ͼ11">i</span> <span class="ͼv">&lt;</span> <span class="ͼ11">options</span><span class="ͼv">.</span>length; <span class="ͼ11">i</span><span class="ͼv">++</span>) {
+        <span class="ͼ11">SettingCombo</span><span class="ͼv">.</span>append(<span class="ͼ11">options</span>[<span class="ͼ11">i</span>], <span class="ͼ11">items</span>[<span class="ͼ11">i</span>]);
+    }</code></pre>
+<h4>¿Qué recibe?</h4>
+<p>Exactamente la misma estructura:</p>
+<pre><samp>prefStr(KEY, pos, options, items)
+        │
+        ├── KEY
+        │   └── key de GSettings
+        │
+        ├── pos
+        │   └── fila del Grid
+        │
+        ├── options
+        │   └── valores internos
+        │
+        └── items
+            └── textos visibles</samp></pre>
+<p>Y vuelve a crear: <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>ComboBoxText()
+    para presentar una lista desplegable.</p>
+<h4>Carga las opciones</h4>
+<pre><code><span class="ͼv">for</span> (<span class="ͼv">let</span> <span class="ͼ11">i</span> <span class="ͼv">=</span> <span class="ͼy">0</span>; <span class="ͼ11">i</span> <span class="ͼv">&lt;</span> <span class="ͼ11">options</span><span class="ͼv">.</span>length; <span class="ͼ11">i</span><span class="ͼv">++</span>) {
+    <span class="ͼ11">SettingCombo</span><span class="ͼv">.</span>append(<span class="ͼ11">options</span>[<span class="ͼ11">i</span>], <span class="ͼ11">items</span>[<span class="ͼ11">i</span>]);
+}</code></pre>
+<p>Es exactamente el mismo patrón que vimos en <code data-start="931" data-end="944">prefCombo()</code>:</p>
+<pre><samp>options[i] ──► valor interno
+        items[i]   ──► texto visible</samp></pre>
+<p>Por ejemplo:</p>
+<pre><samp>options             items
+        ───────             ─────
+        "left"       ───►   "Left"
+        "right"      ───►   "Right"</samp></pre>
+<details>
+    <summary>¡Observación momentánea!</summary>
+    <div>
+        <p>Pero aquí hay algo que todavía NO podemos concluir, aunque el método se
+            llama: <kbd>prefStr</kbd> todavía no sabemos <strong>qué diferencia pretende establecer el autor
+                entre <code>prefStr()</code> y <code>prefCombo()</code></strong>.</p>
+        <p>De hecho, hasta este punto son prácticamente idénticos. La diferencia tiene que estar en las siguientes
+            líneas, probablemente en <strong>cómo obtiene/guarda el valor</strong> o en algún comportamiento adicional.
+        </p>
+        <p>Por eso no vamos a asumir que <code>prefStr</code> significa simplemente "ComboBox para strings". Esperemos a
+            ver el resto del método.</p>
+    </div>
+</details>
+<h4>Lo diferente</h4>
+<p>Aquí aparece finalmente la diferencia importante. <code data-start="57" data-end="68">prefStr()</code> <strong
+        data-start="69" data-end="102">no es realmente otro ComboBox</strong>; el <code data-start="107"
+        data-end="121">ComboBoxText</code> que vimos al principio es solo una parte del método.</p>
+<p>Tenemos:</p>
+<pre><code><span class="ͼv">let</span> <span class="ͼ11">keyVal</span> <span class="ͼv">=</span> <span class="ͼ11">settings</span><span class="ͼv">.</span>get_strv(<span class="ͼ11">KEY</span>);</code></pre>
+<p>Aquí <code data-start="266" data-end="271">KEY</code> es una key de tipo <code data-start="291"
+        data-end="295">as</code> y esto conecta directamente con lo que vimos en <code data-start="343"
+        data-end="352">gschema</code>: <kbd class="inline-code">type="as"</kbd> que significa <strong data-start="391"
+        data-end="411">array de strings</strong>.</p>
+<p>Por ejemplo, <code data-start="427" data-end="440">script-list</code>, <code data-start="442"
+        data-end="460">application-list</code> y <code data-start="463" data-end="474">name-list</code> son de ese tipo.
+</p>
+<p>Así que: <span class="ͼ11">settings</span><span class="ͼv">.</span>get_strv(<span class="ͼ11">KEY</span>)
+    devuelve algo como: </p>
+<div class="row">
+    <div class="col"><span>Esto:</span>
+        <pre><samp>[
+    "algo"
+]</samp></pre>
+    </div>
+    <div class="col"><span>o potencialmente:</span>
+        <pre><samp>[
+    "algo",
+    "otro"
+]</samp></pre>
+    </div>
+</div>
+<p>Pero este método está trabajando específicamente con el <strong data-start="721" data-end="740">primer
+        elemento</strong>: <span class="ͼ11">keyVal</span>[<span class="ͼy">0</span>]</p>
+<h4>Una transformación interesante</h4>
+<pre><code><span class="ͼ11">keyVal</span>[<span class="ͼy">0</span>]<span class="ͼv">.</span>substring(
+    <span class="ͼy">1</span> <span class="ͼv">+</span> <span class="ͼ11">keyVal</span>[<span class="ͼy">0</span>]<span class="ͼv">.</span>indexOf(<span class="ͼz">'&gt;'</span>)
+)</code></pre>
+<p>Esto está buscando un carácter: <kbd class="inline-code">&gt;</kbd> dentro del string. Supongamos que el valor
+    almacenado fuera: <var class="inline-code">"app<b>&gt;</b>algo"</var>. Entonces:</p>
+<pre><samp>indexOf('&gt;')
+       ↓
+      3</samp></pre>
+<p>Se suma <code data-start="1134" data-end="1137">1</code>: <kbd class="inline-code">4</kbd> y: <span
+        class="ͼ11">substring</span>(<span class="ͼy">4</span>) devuelve: "<var class="inline-code">algo</var>"</p>
+<p>Por tanto, <strong data-start="1257" data-end="1328">el método está asumiendo que el string tiene una estructura con
+        <code data-start="1323" data-end="1326">&gt;</code></strong> y que lo que interesa mostrar en el <code
+        data-start="1365" data-end="1376">Gtk.Entry</code> es lo que viene después. Esto es una pista MUY importante
+    sobre el formato interno de alguna de esas listas.</p>
+<p>Y precisamente aquí tenemos una razón más para no modificar <code data-start="1548"
+        data-end="1561">script-list</code> todavía: <strong data-start="1571" data-end="1709">ahora estamos empezando a
+        descubrir que los valores almacenados pueden tener una estructura que no estaba documentada en el <code
+            data-start="1697" data-end="1706">gschema</code>.</strong></p>
+<h4>Se crea el campo de texto</h4>
+<pre><code><span class="ͼv">let</span> <span class="ͼ11">strSetting</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Entry({
+    text: <span class="ͼ11">keyVal</span>[<span class="ͼy">0</span>]<span class="ͼv">.</span>substring(
+        <span class="ͼy">1</span> <span class="ͼv">+</span> <span class="ͼ11">keyVal</span>[<span class="ͼy">0</span>]<span class="ͼv">.</span>indexOf(<span class="ͼz">'&gt;'</span>)
+    )
+});</code></pre>
+<p>Así que:</p>
+<pre><samp>GSettings
+   │
+   │ get_strv(KEY)
+   ▼
+array de strings
+   │
+   │ keyVal[0]
+   ▼
+string con formato especial
+   │
+   │ busca "&gt;"
+   ▼
+extrae parte posterior
+   │
+   ▼
+Gtk.Entry</samp></pre>
+<p>El usuario verá solamente esa parte extraída.</p>
+<h4>Finalmente:</h4>
+<p>Aquí simplemente crea un <code data-start="2284" data-end="2293">Gtk.Box</code> alineado al final.</p>
+<pre><code><span class="ͼv">let</span> <span class="ͼ11">box</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Box({
+    halign: <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Align<span class="ͼv">.</span>END
+});</code></pre>
+<p>Todavía <strong data-start="2322" data-end="2360">no sabemos qué va dentro del <code data-start="2353"
+            data-end="2358">box</code></strong>, porque nos falta el resto del método.</p>
+
+<h4>strSetting.set_width_chars(1)</h4>
+<p><code data-start="327" data-end="339">strSetting</code> es el <code data-start="346" data-end="357">Gtk.Entry</code>
+    que acabamos de crear.</p>
+<pre><code><span class="ͼ11">strSetting</span><span class="ͼv">.</span>set_width_chars(<span class="ͼy">1</span>);</code></pre>
+<p>Esto establece un ancho aproximado de <strong data-start="420" data-end="435">un carácter</strong> para el campo de
+    texto. Probablemente la intención es que ese <code data-start="499" data-end="506">Entry</code> contenga una parte
+    muy pequeña del valor, posiblemente un carácter que acompaña al elemento seleccionado.</p>
+<h4>Aquí aparece la otra mitad del formato</h4>
+<pre><code><span class="ͼ11">SettingCombo</span><span class="ͼv">.</span>set_active(
+    <span class="ͼ11">options</span><span class="ͼv">.</span>indexOf(
+        <span class="ͼ11">keyVal</span>[<span class="ͼy">0</span>]<span class="ͼv">.</span>substring(
+            <span class="ͼy">0</span>,
+            <span class="ͼy">1</span> <span class="ͼv">+</span> <span class="ͼ11">keyVal</span>[<span class="ͼy">0</span>]<span class="ͼv">.</span>indexOf(<span class="ͼz">'&gt;'</span>)
+        )
+    )
+);</code></pre>
+<p>Esta línea es muy interesante porque anteriormente hicimos:</p>
+<pre><samp><span class="ͼ11">keyVal</span>[<span class="ͼy">0</span>]<span class="ͼv">.</span>substring(
+    <span class="ͼy">1</span> <span class="ͼv">+</span> <span class="ͼ11">keyVal</span>[<span class="ͼy">0</span>]<span class="ͼv">.</span>indexOf(<span class="ͼz">'&gt;'</span>)
+)</samp></pre>
+<p>Que obtenía <strong data-start="1070" data-end="1102">lo que estaba después de <code data-start="1097"
+            data-end="1100">&gt;</code></strong>. Ahora hacemos lo contrario:</p>
+<pre><samp><span class="ͼ11">keyVal</span>[<span class="ͼy">0</span>]<span class="ͼv">.</span>substring(
+    <span class="ͼy">0</span>,
+    <span class="ͼy">1</span> <span class="ͼv">+</span> <span class="ͼ11">keyVal</span>[<span class="ͼy">0</span>]<span class="ͼv">.</span>indexOf(<span class="ͼz">'&gt;'</span>)
+)</samp></pre>
+<p>Obtiene <strong data-start="1234" data-end="1277">desde el principio hasta después de <code data-start="1272"
+            data-end="1275">&gt;</code></strong>.</p>
+<h5>Ejemplo hipotético</h5>
+<blockquote><strong data-start="1840" data-end="1895">Esto es solo un ejemplo para entender el mecanismo.</strong>
+    Todavía necesitamos ver dónde se construyen realmente los valores de <code data-start="1965"
+        data-end="1974">options</code> y qué formato tienen las listas.</blockquote>
+<p>Supongamos: <var class="inline-code">keyVal</var>[0] = "<var class="inline-code">Firefox&gt;algo</var>".
+    Entonces conceptualmente tenemos:</p>
+<pre><samp>Firefox &gt; algo
+─────────┬────
+         │
+         └── separador</samp></pre>
+<p>La primera operación: <span class="ͼ11">substring</span>(<span class="ͼy">1</span> <span class="ͼv">+</span>
+    <span class="ͼ11">indexOf</span>(<span class="ͼz">'&gt;'</span>)) obtiene: "<var class="inline-code">algo</var>".
+</p>
+<p>Mientras que esta: <span class="ͼ11">substring</span>(<span class="ͼy">0</span>, <span class="ͼy">1</span> <span
+        class="ͼv">+</span> <span class="ͼ11">indexOf</span>(<span class="ͼz">'&gt;'</span>)) obtiene: "<var
+        class="inline-code">Firefox&gt;</var>" y luego:<span class="ͼ11">options</span><span
+        class="ͼv">.</span>indexOf(<span class="ͼz">"Firefox&gt;"</span>) determina qué opción corresponde.</p>
+<h4>Se conecta con <code data-start="2034" data-end="2048">SettingCombo</code></h4>
+<pre><code><span class="ͼ11">SettingCombo</span><span class="ͼv">.</span>set_active(...)</code></pre>
+<p>Así que ahora tenemos:</p>
+<pre><samp>keyVal[0]
+    │
+    ├── parte inicial + "&gt;"
+    │       │
+    │       ▼
+    │   busca en options[]
+    │       │
+    │       ▼
+    │   selecciona ComboBox
+    │
+    └── parte posterior
+            │
+            ▼
+        Gtk.Entry</samp></pre>
+<p>Esto es bastante elegante, aunque el formato es poco evidente porque <strong data-start="2459" data-end="2514">no hay
+        documentación que explique qué significa <code data-start="2509" data-end="2512">&gt;</code></strong>.</p>
+<h4>El usuario cambia el ComboBox</h4>
+<pre><code><span class="ͼ11">SettingCombo</span><span class="ͼv">.</span>connect(
+    <span class="ͼz">'changed'</span>,
+    <span class="ͼ11">Lang</span><span class="ͼv">.</span>bind(<span class="ͼy">this</span>, <span class="ͼv">function</span>(<span class="ͼ11">widget</span>) {</code></pre>
+<p>Cuando cambia la opción: <span class="ͼ11">keyVal</span><span class="ͼv">.</span>pop(); Elimina el último
+    elemento del array y después agrega nuevamente un elemento.</p>
+<pre><code><span class="ͼ11">keyVal</span><span class="ͼv">.</span>push(
+    <span class="ͼ11">options</span>[<span class="ͼ11">widget</span><span class="ͼv">.</span>get_active()] <span class="ͼv">+</span> <span class="ͼ11">strSetting</span><span class="ͼv">.</span>text
+);</code></pre>
+<p>Por tanto: </p>
+<pre><samp>ANTES
+
+keyVal
+└── [valor anterior]
+
+
+        │
+        │ pop()
+        ▼
+
+keyVal
+└── []
+
+
+        │
+        │ push(nuevo valor)
+        ▼
+
+keyVal
+└── [nuevo valor]</samp></pre>
+<p>Y finalmente: <span class="ͼ11">settings</span><span class="ͼv">.</span>set_strv(<span class="ͼ11">KEY</span>,
+    <span class="ͼ11">keyVal</span>); guarda nuevamente el array completo.
+</p>
+<h4>Algo MUY interesante</h4>
+<p>Fíjate en cómo se construye el nuevo valor:</p>
+<pre><code><span class="ͼ11">options</span>[<span class="ͼ11">widget</span><span class="ͼv">.</span>get_active()] <span class="ͼv">+</span> <span class="ͼ11">strSetting</span><span class="ͼv">.</span>text</code></pre>
+<p>No aparece ningún <code data-start="3436" data-end="3439">&gt;</code> añadido aquí. Eso significa que <strong
+        data-start="3473" data-end="3546">muy probablemente <code data-start="3493" data-end="3504">options[]</code> ya
+        contiene la parte que termina en <code data-start="3541" data-end="3544">&gt;</code></strong>. Por ejemplo,
+    conceptualmente:</p>
+<pre><samp>options[0] = "Firefox&gt;"
+options[1] = "Thunderbird&gt;"
+options[2] = "Chrome&gt;"</samp></pre>
+<p>y: <kbd class="inline-code">strSetting.text</kbd> = "<var class="inline-code">algo</var>" entonces:</p>
+<pre><samp>options[1] + strSetting.text
+          │
+          ▼
+"Thunderbird&gt;" + "algo"
+          │
+          ▼
+"Thunderbird&gt;algo"</samp></pre>
+<p>Esto encaja perfectamente con las dos operaciones anteriores.</p>
+<h4>Pequeña observación</h4>
+<p>Ahora el método <code data-start="3979" data-end="3990">prefStr()</code> empieza a revelar su propósito. Tenemos algo
+    parecido a:</p>
+<pre><samp>            keyVal[0]
+                │
+        ┌───────┴────────┐
+        │                │
+        ▼                ▼
+   parte inicial     parte final
+      + "&gt;"              │
+        │                │
+        ▼                ▼
+   ComboBox            Entry
+        │                │
+        └───────┬────────┘
+                │
+                ▼
+       options + strSetting.text
+                │
+                ▼
+          settings.set_strv()</samp></pre>
+<p>Eso es importante porque <strong data-start="4554" data-end="4630">el ComboBox y el Entry están editando partes
+        diferentes del mismo string</strong>.</p>
+<p>Y hay algo que <strong data-start="5303" data-end="5357">yo dejaría marcado como pendiente de investigación</strong>:
+</p>
+<blockquote>El formato real de los strings almacenados en esta key y el significado de la parte antes/después de <code
+        data-start="5463" data-end="5466">&gt;</code>.</blockquote>
+<p>Ahora tenemos evidencia del formato, pero todavía <strong data-start="5519" data-end="5560">no conocemos su
+        significado funcional</strong>. Y eso es justamente lo que podremos descubrir cuando veamos quién llama a <code
+        data-start="5636" data-end="5647">prefStr()</code> y qué <code data-start="5654" data-end="5663">options</code>
+    le pasa.</p>
+<h4>El <code data-start="222" data-end="233">Gtk.Entry</code> también tiene un evento <code data-start="258"
+        data-end="267">changed</code></h4>
+<p>Con este bloque ya <strong data-start="29" data-end="91">se completa prácticamente el comportamiento de <code
+            data-start="78" data-end="89">prefStr()</code></strong>. Ahora podemos ver que tanto el <code
+        data-start="124" data-end="134">ComboBox</code> como el <code data-start="143" data-end="150">Entry</code>
+    modifican el mismo valor almacenado.</p>
+<p>Ya habíamos visto que cambiar el <code data-start="302" data-end="312">ComboBox</code> reconstruía el valor:</p>
+<pre><samp><span class="ͼ11">keyVal</span><span class="ͼv">.</span>pop();
+<span class="ͼ11">keyVal</span><span class="ͼv">.</span>push(<span class="ͼ11">options</span>[<span class="ͼ11">widget</span><span class="ͼv">.</span>get_active()] <span class="ͼv">+</span> <span class="ͼ11">strSetting</span><span class="ͼv">.</span>text);
+<span class="ͼ11">settings</span><span class="ͼv">.</span>set_strv(<span class="ͼ11">KEY</span>, <span class="ͼ11">keyVal</span>);</samp></pre>
+<p>Ahora ocurre lo mismo cuando el usuario modifica el <code data-start="514" data-end="521">Entry</code>:</p>
+<pre><code><span class="ͼ11">strSetting</span><span class="ͼv">.</span>connect(<span class="ͼz">'changed'</span>, <span class="ͼ11">Lang</span><span class="ͼv">.</span>bind(<span class="ͼy">this</span>, <span class="ͼv">function</span>() {
+    <span class="ͼ11">keyVal</span><span class="ͼv">.</span>pop(); 
+    <span class="ͼ11">keyVal</span><span class="ͼv">.</span>push(
+        <span class="ͼ11">options</span>[<span class="ͼ11">SettingCombo</span><span class="ͼv">.</span>get_active()] <span class="ͼv">+</span> <span class="ͼ11">strSetting</span><span class="ͼv">.</span>text
+    );
+    <span class="ͼ11">settings</span><span class="ͼv">.</span>set_strv(<span class="ͼ11">KEY</span>, <span class="ͼ11">keyVal</span>);
+}));</code></pre>
+<p>La diferencia es <strong data-start="776" data-end="835">qué parte está proporcionando el usuario en ese
+        momento</strong>.</p>
+<div class="row">
+    <div class="col"><span>Si cambia el ComboBox:</span>
+        <pre><samp>ComboBox
+   │
+   ▼
+options[selección]
+   │
+   ├── parte 1
+   │
+   └── strSetting.text
+        │
+        ▼
+      nuevo string</samp></pre>
+    </div>
+    <div class="col"><span>Si cambia el Entry:</span>
+        <pre><samp>Entry
+   │
+   ▼
+strSetting.text
+   │
+   ├── options[selección actual]
+   │
+   ▼
+nuevo string</samp></pre>
+    </div>
+</div>
+<p>En ambos casos:</p>
+<pre><samp>options[selección] + strSetting.text
+                │
+                ▼
+          keyVal[0]
+                │
+                ▼
+       settings.set_strv()</samp></pre>
+<p>Así que ambos controles están editando <strong data-start="1360" data-end="1391">un único elemento del
+        array</strong>.</p>
+<h4>¿Por qué <code data-start="1413" data-end="1420">pop()</code> y <code data-start="1423"
+        data-end="1431">push()</code>?</h4>
+<p>Aquí el autor podría haber hecho algo como:</p>
+<pre><samp><span class="ͼ11">keyVal</span>[<span class="ͼy">0</span>] <span class="ͼv">=</span> <span class="ͼ11">nuevoValor</span>;</samp></pre>
+<p>Pero en lugar de eso utiliza:</p>
+<pre><code>keyVal.pop();
+keyVal.push(nuevoValor);</code></pre>
+<p>Eso nos dice algo interesante sobre su supuesto modelo de datos:</p>
+<pre><samp>keyVal
+└── probablemente contiene un solo elemento</samp></pre>
+<p>Porque está eliminando el último elemento y agregando uno nuevo.</p>
+<div class="row">
+    <div class="col"><span>Si hubiera:</span>
+        <pre><samp>keyVal = ["A", "B", "C"]</samp></pre>
+    </div>
+    <div class="col"><span>entonces:</span>
+        <pre><samp><span class="ͼ11">keyVal</span><span class="ͼv">.</span>pop();</samp></pre>
+    </div>
+</div>
+<blockquote>Eliminaría solamente <code data-start="1923" data-end="1928">"C"</code>.</blockquote>
+<p>No estaría reemplazando necesariamente el elemento que se está editando.</p>
+<p>Por eso <strong data-start="2013" data-end="2093">no debemos generalizar que <code data-start="2042"
+            data-end="2050">keyVal</code> siempre sea un array de un solo elemento</strong> solo por ver este código. Lo
+    que sí podemos decir es:</p>
+<blockquote><code data-start="2151" data-end="2162">prefStr()</code> está diseñado para modificar el último elemento del
+    array.</blockquote>
+<p>Y el hecho de que inmediatamente después use <code data-start="2268" data-end="2279">keyVal[0]</code> al
+    inicializarlo hace bastante probable que en el uso normal ese array tenga un solo elemento.</p>
+<h4>Ahora vemos finalmente el <code data-start="2412" data-end="2417">box</code></h4>
+<p>¡Aquí se entiende perfectamente por qué creó <code data-start="2590" data-end="2595">box</code>!</p>
+<pre><code><span class="ͼ11">box</span><span class="ͼv">.</span>append(<span class="ͼ11">SettingCombo</span>);
+<span class="ͼ11">box</span><span class="ͼv">.</span>append(<span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Label({label: <span class="ͼz">"  +  "</span>}));
+<span class="ͼ11">box</span><span class="ͼv">.</span>append(<span class="ͼ11">strSetting</span>);</code></pre>
+<div class="row">
+    <div class="col">
+        <p>Los tres elementos se colocan horizontalmente:</p>
+        <pre><samp>┌──────────────────────────────────┐
+│  [ ComboBox ]    +    [ Entry ]  │
+└──────────────────────────────────┘</samp></pre>
+    </div>
+    <div class="col">
+        <p>Por ejemplo, visualmente podría terminar siendo:</p>
+        <pre><samp>[ Firefox&gt; ]  +  [ algo ]</samp></pre>
+    </div>
+</div>
+<p>El <code data-start="2911" data-end="2914">+</code> es simplemente <strong data-start="2930" data-end="2952">un
+        elemento visual</strong>, no forma parte del valor almacenado. Y esto es importante:</p>
+<pre><samp>ComboBox       +       Entry
+   │                    │
+   │                    │
+   └─────── NO ─────────┘
+           │
+       el "+" no se guarda</samp></pre>
+<p>El valor se construye mediante:</p>
+<pre><code><span class="ͼ11">options</span>[<span class="ͼ11">SettingCombo</span><span class="ͼv">.</span>get_active()] <span class="ͼv">+</span> <span class="ͼ11">strSetting</span><span class="ͼv">.</span>text</code></pre>
+<p>El <code data-start="3295" data-end="3304">"  +  "</code> solo ayuda al usuario a entender que está combinando dos
+    partes.</p>
+<h4>Finalmente</h4>
+<p>Aquí coloca toda la combinación en el Grid</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>attachLabel(<span class="ͼ11">KEY</span>, <span class="ͼ11">pos</span>);
+<span class="ͼy">this</span><span class="ͼv">.</span>attach(<span class="ͼ11">box</span>, <span class="ͼy">1</span>, <span class="ͼ11">pos</span>, <span class="ͼy">1</span>, <span class="ͼy">1</span>);</code></pre>
+<p>Así que nuevamente tenemos:</p>
+<pre><samp>         columna 0                 columna 1
+┌────────────────────────┬──────────────────────────┐
+│ summary de KEY         │ [ Combo ] + [ Entry ]    │
+└────────────────────────┴──────────────────────────┘</samp></pre>
+<p>Y esto reutiliza nuestro método anterior: <span class="ͼ11">attachLabel</span>(<span class="ͼ11">KEY</span>,
+    <span class="ͼ11">pos</span>);
+</p>
+<p>Por lo que el nombre de la preferencia se obtiene automáticamente desde el <code data-start="3943"
+        data-end="3952">summary</code> del <code data-start="3957" data-end="3966">gschema</code>.</p>
+
+
+
+<hr>
+<hr>
+<h3><code>settings.get_strv(KEY)</code> como arreglo de strings</h3>
+<hr>
+<h4>¿Cómo sabes que es un arreglo de strings y no solo un string?</h4>
+<p>Porque aquí intervienen <strong data-start="24" data-end="48">dos cosas diferentes</strong>: el método que se está
+    llamando y el tipo de la key en <code data-start="104" data-end="113">gschema</code>.</p>
+<p>La parte decisiva es: <span class="ͼ11">settings</span><span class="ͼv">.</span>get_strv(<span
+        class="ͼ11">KEY</span>)</p>
+<h4><code data-start="185" data-end="197">get_strv()</code> significa "string vector"</h4>
+<p>En <code data-start="228" data-end="239">GSettings</code>, los métodos tienen nombres que indican el tipo de dato que
+    recuperan:</p>
+<pre><samp>get_boolean()  → boolean
+        get_int()      → entero
+        get_double()   → double
+        get_string()   → string
+        get_strv()     → vector de strings</samp></pre>
+<p>Ese <code data-start="461" data-end="464">v</code> de <code data-start="468" data-end="474">strv</code> viene de
+    <strong data-start="484" data-end="501">string vector</strong>. Por eso:
+</p>
+<pre><samp><span class="ͼv">let</span> <span class="ͼ11">keyVal</span> <span class="ͼv">=</span> <span class="ͼ11">settings</span><span class="ͼv">.</span>get_strv(<span class="ͼ11">KEY</span>);</samp></pre>
+<p><code data-start="570" data-end="578">keyVal</code> es un <strong data-start="585" data-end="605">array de
+        strings</strong>.</p>
+<p>Por ejemplo: <span class="ͼv">let</span> <span class="ͼ11">keyVal</span> <span class="ͼv">=</span> <span
+        class="ͼ11">settings</span><span class="ͼv">.</span>get_strv(<span class="ͼz">"name-list"</span>); podría
+    producir:</p>
+<pre><samp>[
+            <span class="ͼz">"Firefox"</span>,
+            <span class="ͼz">"Thunderbird"</span>,
+            <span class="ͼz">"Rhythmbox"</span>
+        ]</samp></pre>
+<p>Y por eso inmediatamente después el código puede hacer: <span class="ͼ11">keyVal</span>[<span class="ͼy">0</span>]
+    para acceder al primer string.</p>
+<h4>Y además </h4>
+<p>Tenemos la confirmación del <code data-start="941" data-end="950">gschema</code> antes vimos:</p>
+<pre><samp><span class="ͼ13">&lt;key</span> <span class="ͼ12">name</span><span class="ͼv">=</span><span class="ͼz">"name-list"</span> <span class="ͼ12">type</span><span class="ͼv">=</span><span class="ͼz">"as"</span><span class="ͼ13">&gt;</span></samp></pre>
+<p>El tipo: <kbd class="inline-code">as</kbd> significa: <var class="inline-code">as → array de strings</var></p>
+<pre><samp>a  → array
+        s  → string
+        
+        as → array de strings</samp></pre>
+<p>Por tanto tenemos dos pistas independientes:</p>
+<pre><samp>gschema
+        type="as"
+           │
+           ▼
+        array de strings
+           │
+           │
+           ▼
+        GSettings
+        get_strv(KEY)
+           │
+           ▼
+        array de strings</samp></pre>
+<p>Y por eso esto: <span class="ͼ11">keyVal</span>[<span class="ͼy">0</span>] tiene sentido.</p>
+<h4>¿Y qué pasa con <code data-start="1365" data-end="1379">get_string()</code>?</h4>
+<p>Si fuera:</p>
+<pre><code><span class="ͼv">let</span> <span class="ͼ11">keyVal</span> <span class="ͼv">=</span> <span class="ͼ11">settings</span><span class="ͼv">.</span>get_string(<span class="ͼ11">KEY</span>);</code></pre>
+<p>Entonces <code data-start="1460" data-end="1468">keyVal</code> sería directamente: "<var
+        class="inline-code">Firefox</var>" y esto: <span class="ͼ11">keyVal</span>[<span class="ͼy">0</span>] <strong
+        data-start="1551" data-end="1598">no significaría "primer elemento del
+        array"</strong>.</p>
+<p>En JavaScript, tratándose de un string, sería el primer carácter: </p>
+<pre><samp>"Firefox"[0]
+             ↓
+            "F"</samp></pre>
+<p>Así que en este código:</p>
+<pre><samp><span class="ͼv">let</span> <span class="ͼ11">keyVal</span> <span class="ͼv">=</span> <span class="ͼ11">settings</span><span class="ͼv">.</span>get_strv(<span class="ͼ11">KEY</span>);
+        <span class="ͼ11">keyVal</span>[<span class="ͼy">0</span>]</samp></pre>
+<p>Queda bastante claro que el autor está esperando un <strong data-start="1851" data-end="1878">array/vector de
+        strings</strong>. Y esto conecta muy bien con la pregunta que me hiciste anteriormente sobre:</p>
+<blockquote><code data-start="1960" data-end="1971">type="ai"</code> → arreglo de enteros.</blockquote>
+<p>Exactamente. La misma lógica:</p>
+<pre><samp>ai → array de integers
+        as → array de strings</samp></pre>
+<p>Y ahora ya estamos viendo cómo esa definición del <code data-start="2134" data-end="2143">gschema</code> se refleja
+    directamente en el código JavaScript.</p>
+<hr>
+<hr>
