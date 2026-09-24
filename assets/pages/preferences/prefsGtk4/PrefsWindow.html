@@ -1,4 +1,27 @@
-<h2>PrefsWindow</h2>
+<aside class="list-blocks">
+    <div class="symbol-tab">
+        <div class="symbol">
+            <div class="icon-bar"></div>
+        </div>
+    </div>
+    <div class="card">
+        <p>Secciones:</p>
+        <div class="list-links">
+            <a href="#section1">PrefsWindow</a>
+            <a href="#section2">_init ( ) { ... }</a>
+            <hr>
+            <a href="#section3">attachLabel ( )</a>
+            <a href="#section4">prefCombo ( )</a>
+            <a href="#section5">prefStr ( )</a>
+            <a href="#section6">prefSwitch ( )</a>
+            <a href="#section7">prefTime ( )</a>
+            <hr>
+            <a href="#section8">settings.get_strv ( )</a>
+            <a href="#section9">lang.bind ( )</a>
+        </div>
+    </div>
+</aside>
+<h2 id="section1" class="class-prefs">PrefsWindow</h2>
 <hr>
 <p>El nombre ya nos da una pista de que probablemente será una clase base o componente común para las ventanas de
     preferencias.</p>
@@ -84,7 +107,7 @@ Otra opción:   [ control ]</samp></pre>
           └── PrefsWindowForAppList</samp></pre>
 <p><strong data-start="2564" data-end="2603">Pero todavía no lo damos por hecho.</strong> Vamos a confirmarlo cuando
     aparezcan sus declaraciones.</p>
-<h3>_init: function(page) { ... }</h3>
+<h3 id="section2" class="class-prefs">_init: function(page) { ... }</h3>
 <hr>
 <p>Aquí no hay demasiada lógica, pero sí nos dice <strong data-start="415" data-end="463">cómo se configura la
         estructura visual común</strong> de esta clase.</p>
@@ -156,7 +179,7 @@ Otra opción:   [ control ]</samp></pre>
 <p>Este <code data-start="2342" data-end="2351">_init()</code> solamente establece la configuración base del <code
         data-start="2398" data-end="2408">Gtk.Grid</code>; ahora necesitamos ver qué otros métodos o bloques tiene esta
     clase y, sobre todo, si las clases específicas de preferencias heredan de ella.</p>
-<h3>attachLabel: function(KEY, pos)</h3>
+<h3 id="section3" class="class-prefs">attachLabel: function(KEY, pos)</h3>
 <hr>
 <p>Aquí aparece el <strong data-start="16" data-end="87">primer método auxiliar </strong>y este es bastante
     interesante porque hace de puente directo entre la interfaz y el <code data-start="173"
@@ -339,7 +362,7 @@ Gtk.Grid</samp></pre>
 <p>Esto es exactamente el tipo de contexto que queríamos obtener antes de volver a <code data-start="5628"
         data-end="5642">extension.js</code>: <strong data-start="5644" data-end="5754">ya no solo sabemos que existe una
         key; estamos viendo cómo el código la utiliza para construir la interfaz</strong>.</p>
-<h3>prefCombo: function(KEY, pos, options, items)</h3>
+<h3 id="section4" class="class-prefs">prefCombo: function(KEY, pos, options, items)</h3>
 <hr>
 <p>Aquí aparece otro método auxiliar muy importante. <code data-start="50" data-end="63">prefCombo()</code> ya no solo
     construye la interfaz: <strong data-start="98" data-end="216">lee una key del <code data-start="116"
@@ -509,7 +532,7 @@ alto     = 1</samp></pre>
    └───────────────────────────┴──────────────────┘</samp></pre>
 <p>Y <code data-start="4555" data-end="4575">column_spacing: 80</code> de <code data-start="4579"
         data-end="4588">_init()</code> empieza a tener todo el sentido.</p>
-<h3>prefStr: function(KEY, pos, options, items) </h3>
+<h3 id="section5" class="class-prefs">prefStr: function(KEY, pos, options, items) </h3>
 <hr>
 <p>Aquí comienza <code data-start="24" data-end="35">prefStr()</code>, y de entrada podemos notar que <strong
         data-start="68" data-end="118">comparte bastante estructura con <code data-start="103"
@@ -918,12 +941,205 @@ keyVal.push(nuevoValor);</code></pre>
 </p>
 <p>Por lo que el nombre de la preferencia se obtiene automáticamente desde el <code data-start="3943"
         data-end="3952">summary</code> del <code data-start="3957" data-end="3966">gschema</code>.</p>
-
-
-
+<h3 id="section6" class="class-prefs">prefSwitch: function(KEY, pos)</h3>
 <hr>
+<p><code data-start="10" data-end="24">prefSwitch()</code> es bastante más sencillo que <code data-start="54"
+        data-end="65">prefStr()</code>, pero tiene un detalle importante: aquí podemos ver claramente el patrón <strong
+        data-start="139" data-end="190">leer → mostrar → modificar → guardar → recargar</strong>.</p>
+<pre><code><span class="ͼ13">prefSwitch</span>: <span class="ͼv">function</span>(<span class="ͼ11">KEY</span>, <span class="ͼ11">pos</span>) {
+
+    <span class="ͼv">let</span> <span class="ͼ11">SettingSwitch</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Switch({
+        hexpand: <span class="ͼy">false</span>,
+        active: <span class="ͼ11">settings</span><span class="ͼv">.</span>get_boolean(<span class="ͼ11">KEY</span>),
+        halign: <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Align<span class="ͼv">.</span>END
+    });
+
+    <span class="ͼ11">SettingSwitch</span><span class="ͼv">.</span>connect(<span class="ͼz">"notify::active"</span>, <span class="ͼ11">Lang</span><span class="ͼv">.</span>bind(<span class="ͼy">this</span>, <span class="ͼv">function</span>(<span class="ͼ11">button</span>) {
+        <span class="ͼ11">settings</span><span class="ͼv">.</span>set_boolean(<span class="ͼ11">KEY</span>, <span class="ͼ11">button</span><span class="ͼv">.</span>active);
+        <span class="ͼ11">reloadExtension</span>();
+    }));
+
+    <span class="ͼy">this</span><span class="ͼv">.</span>attachLabel(<span class="ͼ11">KEY</span>,<span class="ͼ11">pos</span>);
+    <span class="ͼy">this</span><span class="ͼv">.</span>attach(<span class="ͼ11">SettingSwitch</span>, <span class="ͼy">1</span>, <span class="ͼ11">pos</span>, <span class="ͼy">1</span>, <span class="ͼy">1</span>);
+
+}</code></pre>
+<h4>Crea el interruptor</h4>
+<pre><code><span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Switch(...)</code></pre>
+<p>Es el típico:</p>
+<pre><samp>OFF  ◯
+ON   ●</samp></pre>
+<p>Y la propiedad: <span class="ͼ13">active</span>: <span class="ͼ11">settings</span><span
+        class="ͼv">.</span>get_boolean(<span class="ͼ11">KEY</span>) hace que el interruptor <strong data-start="878"
+        data-end="933">comience reflejando el valor que ya tiene GSettings</strong>.</p>
+<p>Por ejemplo, si tenemos en <code data-start="963" data-end="972">gschema</code>:</p>
+<pre><samp><span class="ͼ13">&lt;key</span> <span class="ͼ12">name</span><span class="ͼv">=</span><span class="ͼz">"animate-icon"</span> <span class="ͼ12">type</span><span class="ͼv">=</span><span class="ͼz">"b"</span><span class="ͼ13">&gt;</span>
+    <span class="ͼ13">&lt;default&gt;</span>false<span class="ͼ13">&lt;/default&gt;</span>
+<span class="ͼ13">&lt;/key&gt;</span></samp></pre>
+<p>Y actualmente: <kbd class="inline-code">animate-icon</kbd> = <var class="inline-code">false</var> entonces: <span
+        class="ͼ11">settings</span><span class="ͼv">.</span>get_boolean(<span class="ͼz">"animate-icon"</span>)
+    devuelve: <var class="inline-code">false</var> y el Switch comienza apagado.</p>
+<h4>Cuando cambia el Switch</h4>
+<p>Aquí tenemos: </p>
+<pre><code><span class="ͼ11">SettingSwitch</span><span class="ͼv">.</span>connect(<span class="ͼz">"notify::active"</span>, ...)</code></pre>
+<p><code data-start="1363" data-end="1379">notify::active</code> significa, en términos sencillos:</p>
+<blockquote>"Avísame cuando cambie la propiedad <code data-start="1453" data-end="1461">active</code>."</blockquote>
+<p>Entonces: <span class="ͼ11">button</span><span class="ͼv">.</span>active representa el nuevo estado:</p>
+<pre><samp>true  → activado
+false → desactivado</samp></pre>
+<p>Y se guarda: <span class="ͼ11">settings</span><span class="ͼv">.</span>set_boolean(<span class="ͼ11">KEY</span>,
+    <span class="ͼ11">button</span><span class="ͼv">.</span>active); Por ejemplo:
+</p>
+<pre><samp>Usuario activa Switch
+        │
+        ▼
+button.active = true
+        │
+        ▼
+settings.set_boolean("animate-icon", true)</samp></pre>
+<h4>Después recarga la extensión</h4>
+<pre><code><span class="ͼ11">reloadExtension</span>();</code></pre>
+<p>Así que tenemos exactamente el patrón:</p>
+<pre><samp>GSettings
+    │
+    │ get_boolean()
+    ▼
+Gtk.Switch
+    │
+    │ usuario cambia
+    ▼
+button.active
+    │
+    │ set_boolean()
+    ▼
+GSettings
+    │
+    ▼
+reloadExtension()</samp></pre>
+<p>Y esto conecta directamente con <code data-start="2201" data-end="2216">reload-signal</code>, que ya conocemos del
+    <code data-start="2239" data-end="2248">gschema</code>.
+</p>
+<h4>Finalmente</h4>
+<p>Utiliza los dos métodos auxiliares anteriores:</p>
+<p><span class="ͼy">this</span><span class="ͼv">.</span>attachLabel(<span class="ͼ11">KEY</span>,<span
+        class="ͼ11">pos</span>); - pone el nombre/descripción de la opción en la columna 0.</p>
+<p>Después: <span class="ͼy">this</span><span class="ͼv">.</span>attach(<span class="ͼ11">SettingSwitch</span>,
+    <span class="ͼy">1</span>, <span class="ͼ11">pos</span>, <span class="ͼy">1</span>, <span class="ͼy">1</span>); pone
+    el Switch en la columna 1.
+</p>
+<p>Así que la fila completa queda:</p>
+<pre><samp>┌──────────────────────────────┬────────────┐
+│ Summary de la key            │   [ ON ]   │
+└──────────────────────────────┴────────────┘
+        columna 0                  columna 1</samp></pre>
+<h3 id="section7" class="class-prefs">prefTime: function(KEY, pos, mn, mx, st)</h3>
 <hr>
-<h3><code>settings.get_strv(KEY)</code> como arreglo de strings</h3>
+<p><code data-start="10" data-end="22">prefTime()</code> introduce otro tipo de control, pero mantiene el patrón que ya
+    estamos identificando.</p>
+<pre><code><span class="ͼ13">prefTime</span>: <span class="ͼv">function</span>(<span class="ͼ11">KEY</span>, <span class="ͼ11">pos</span>, <span class="ͼ11">mn</span>, <span class="ͼ11">mx</span>, <span class="ͼ11">st</span>) {
+
+    <span class="ͼv">let</span> <span class="ͼ11">timeSetting</span> <span class="ͼv">=</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>SpinButton<span class="ͼv">.</span>new_with_range(<span class="ͼ11">mn</span>, <span class="ͼ11">mx</span>, <span class="ͼ11">st</span>);
+
+    <span class="ͼ11">timeSetting</span><span class="ͼv">.</span>set_value(<span class="ͼ11">settings</span><span class="ͼv">.</span>get_int(<span class="ͼ11">KEY</span>));
+
+    <span class="ͼ11">timeSetting</span><span class="ͼv">.</span>connect(<span class="ͼz">'notify::value'</span>, <span class="ͼv">function</span>(<span class="ͼ11">spin</span>) {
+        <span class="ͼ11">settings</span><span class="ͼv">.</span>set_int(<span class="ͼ11">KEY</span>, <span class="ͼ11">spin</span><span class="ͼv">.</span>get_value_as_int());
+    });
+
+    <span class="ͼy">this</span><span class="ͼv">.</span>attachLabel(<span class="ͼ11">KEY</span>,<span class="ͼ11">pos</span>);
+    <span class="ͼy">this</span><span class="ͼv">.</span>attach(<span class="ͼ11">timeSetting</span>, <span class="ͼy">1</span>, <span class="ͼ11">pos</span>, <span class="ͼy">1</span>, <span class="ͼy">1</span>);
+
+}</code></pre>
+<h4>Los parámetros</h4>
+<p>Aunque el método se llama <code data-start="770" data-end="780">prefTime</code>, realmente <strong data-start="792"
+        data-end="822">no está limitado a tiempos</strong>. Está creando un <code data-start="840"
+        data-end="856">Gtk.SpinButton</code> para un valor entero.</p>
+<pre><samp>prefTime(KEY, pos, mn, mx, st)
+│
+├── KEY
+│   └── key de GSettings
+│
+├── pos
+│   └── fila del Grid
+│
+├── mn
+│   └── valor mínimo
+│
+├── mx
+│   └── valor máximo
+│
+└── st
+    └── incremento / paso</samp></pre>
+<p>El nombre parece venir de que probablemente se utilizó para preferencias relacionadas con tiempo.</p>
+<h4>Crea el SpinButton</h4>
+<pre><code><span class="ͼ11">Gtk</span><span class="ͼv">.</span>SpinButton<span class="ͼv">.</span>new_with_range(<span class="ͼ11">mn</span>, <span class="ͼ11">mx</span>, <span class="ͼ11">st</span>)</code></pre>
+<p>Esto crea un control parecido a:</p>
+<pre><samp>┌──────────┐
+│  500 ▼ ▲ │
+└──────────┘</samp></pre>
+<p>Con:</p>
+<pre><samp>mínimo = mn
+máximo = mx
+paso   = st</samp></pre>
+<p>Por ejemplo:</p>
+<pre><samp><span class="ͼ11">prefTime</span>(<span class="ͼz">"blink-time"</span>, <span class="ͼy">1</span>, <span class="ͼy">0</span>, <span class="ͼy">5000</span>, <span class="ͼy">100</span>)</samp></pre>
+<p>Conceptualmente permitiría:</p>
+<pre><samp>0
+100
+200
+300
+...
+5000</samp></pre>
+<h4>Obtiene el valor actual</h4>
+<p>Aquí vuelve a aparecer nuestra conexión con <code data-start="1569" data-end="1578">gschema</code>.</p>
+<pre><code><span class="ͼ11">timeSetting</span><span class="ͼv">.</span>set_value(<span class="ͼ11">settings</span><span class="ͼv">.</span>get_int(<span class="ͼ11">KEY</span>));</code></pre>
+<p>Si tenemos:</p>
+<pre><samp><span class="ͼ13">&lt;key</span> <span class="ͼ12">name</span><span class="ͼv">=</span><span class="ͼz">"blink-time"</span> <span class="ͼ12">type</span><span class="ͼv">=</span><span class="ͼz">"i"</span><span class="ͼ13">&gt;</span>
+    <span class="ͼ13">&lt;default&gt;</span>500<span class="ͼ13">&lt;/default&gt;</span>
+<span class="ͼ13">&lt;/key&gt;</span></samp></pre>
+<p>Entonces: <span class="ͼ11">settings</span><span class="ͼv">.</span>get_int(<span class="ͼz">"blink-time"</span>)
+    devuelve: <var class="inline-code">500</var> y el SpinButton comienza
+    mostrando <code data-start="1833" data-end="1838">500</code>.</p>
+<p>El flujo es:</p>
+<pre><samp>gschema
+    │
+    ▼
+blink-time
+type="i"
+    │
+    ▼
+get_int()
+    │
+    ▼
+SpinButton</samp></pre>
+<h4>Cuando cambia el valor</h4>
+<pre><code><span class="ͼ11">timeSetting</span><span class="ͼv">.</span>connect(<span class="ͼz">'notify::value'</span>, <span class="ͼv">function</span>(<span class="ͼ11">spin</span>) {
+    <span class="ͼ11">settings</span><span class="ͼv">.</span>set_int(<span class="ͼ11">KEY</span>, <span class="ͼ11">spin</span><span class="ͼv">.</span>get_value_as_int());
+});</code></pre>
+<p>Aquí tenemos otra señal de GTK: <kbd class="inline-code">notify::value</kbd> que se dispara cuando cambia el
+    valor del SpinButton.</p>
+<p>Entonces: <span class="ͼ11">spin</span><span class="ͼv">.</span>get_value_as_int() obtiene el nuevo valor como
+    entero y: <span class="ͼ11">settings</span><span class="ͼv">.</span>set_int(<span class="ͼ11">KEY</span>, ...)
+    lo guarda en GSettings.</p>
+<h4>¿Y reloadExtension()?</h4>
+<p>Curiosamente aquí NO aparece: <span class="ͼ11">reloadExtension</span>(); a diferencia de <code data-start="2551"
+        data-end="2565">prefSwitch()</code> y <code data-start="2568" data-end="2581">prefCombo()</code>.</p>
+<p>Eso <strong data-start="2588" data-end="2647">es una diferencia que debemos conservar en nuestro mapa</strong>,
+    porque puede tener una razón.</p>
+<h4>Finalmente construye la fila</h4>
+<p>Como ya conocemos: <span class="ͼy">this</span><span class="ͼv">.</span>attachLabel(<span
+        class="ͼ11">KEY</span>,<span class="ͼ11">pos</span>); tenemos:</p>
+<pre><samp>columna 0
+└── summary de KEY</samp></pre>
+<p>y: <span class="ͼy">this</span><span class="ͼv">.</span>attach(<span class="ͼ11">timeSetting</span>, <span
+        class="ͼy">1</span>, <span class="ͼ11">pos</span>, <span class="ͼy">1</span>, <span class="ͼy">1</span>); pone
+    el SpinButton en:</p>
+<pre><samp>columna 1
+fila pos</samp></pre>
+<p>Por tanto:</p>
+<pre><samp>┌──────────────────────────────┬─────────────┐
+│ Summary                      │ [ 500 ▼ ▲ ] │
+└──────────────────────────────┴─────────────┘</samp></pre>
+<h3 id="section8" class="class-prefs"><code>settings.get_strv(KEY)</code> como arreglo de strings</h3>
 <hr>
 <h4>¿Cómo sabes que es un arreglo de strings y no solo un string?</h4>
 <p>Porque aquí intervienen <strong data-start="24" data-end="48">dos cosas diferentes</strong>: el método que se está
@@ -934,10 +1150,10 @@ keyVal.push(nuevoValor);</code></pre>
 <p>En <code data-start="228" data-end="239">GSettings</code>, los métodos tienen nombres que indican el tipo de dato que
     recuperan:</p>
 <pre><samp>get_boolean()  → boolean
-        get_int()      → entero
-        get_double()   → double
-        get_string()   → string
-        get_strv()     → vector de strings</samp></pre>
+get_int()      → entero
+get_double()   → double
+get_string()   → string
+get_strv()     → vector de strings</samp></pre>
 <p>Ese <code data-start="461" data-end="464">v</code> de <code data-start="468" data-end="474">strv</code> viene de
     <strong data-start="484" data-end="501">string vector</strong>. Por eso:
 </p>
@@ -948,10 +1164,10 @@ keyVal.push(nuevoValor);</code></pre>
         class="ͼ11">settings</span><span class="ͼv">.</span>get_strv(<span class="ͼz">"name-list"</span>); podría
     producir:</p>
 <pre><samp>[
-            <span class="ͼz">"Firefox"</span>,
-            <span class="ͼz">"Thunderbird"</span>,
-            <span class="ͼz">"Rhythmbox"</span>
-        ]</samp></pre>
+    <span class="ͼz">"Firefox"</span>,
+    <span class="ͼz">"Thunderbird"</span>,
+    <span class="ͼz">"Rhythmbox"</span>
+]</samp></pre>
 <p>Y por eso inmediatamente después el código puede hacer: <span class="ͼ11">keyVal</span>[<span class="ͼy">0</span>]
     para acceder al primer string.</p>
 <h4>Y además </h4>
@@ -959,23 +1175,23 @@ keyVal.push(nuevoValor);</code></pre>
 <pre><samp><span class="ͼ13">&lt;key</span> <span class="ͼ12">name</span><span class="ͼv">=</span><span class="ͼz">"name-list"</span> <span class="ͼ12">type</span><span class="ͼv">=</span><span class="ͼz">"as"</span><span class="ͼ13">&gt;</span></samp></pre>
 <p>El tipo: <kbd class="inline-code">as</kbd> significa: <var class="inline-code">as → array de strings</var></p>
 <pre><samp>a  → array
-        s  → string
-        
-        as → array de strings</samp></pre>
+s  → string
+
+as → array de strings</samp></pre>
 <p>Por tanto tenemos dos pistas independientes:</p>
 <pre><samp>gschema
-        type="as"
-           │
-           ▼
-        array de strings
-           │
-           │
-           ▼
-        GSettings
-        get_strv(KEY)
-           │
-           ▼
-        array de strings</samp></pre>
+    type="as"
+        │
+        ▼
+    array de strings
+        │
+        │
+        ▼
+    GSettings
+    get_strv(KEY)
+        │
+        ▼
+    array de strings</samp></pre>
 <p>Y por eso esto: <span class="ͼ11">keyVal</span>[<span class="ͼy">0</span>] tiene sentido.</p>
 <h4>¿Y qué pasa con <code data-start="1365" data-end="1379">get_string()</code>?</h4>
 <p>Si fuera:</p>
@@ -986,18 +1202,84 @@ keyVal.push(nuevoValor);</code></pre>
         array"</strong>.</p>
 <p>En JavaScript, tratándose de un string, sería el primer carácter: </p>
 <pre><samp>"Firefox"[0]
-             ↓
-            "F"</samp></pre>
+     ↓
+    "F"</samp></pre>
 <p>Así que en este código:</p>
 <pre><samp><span class="ͼv">let</span> <span class="ͼ11">keyVal</span> <span class="ͼv">=</span> <span class="ͼ11">settings</span><span class="ͼv">.</span>get_strv(<span class="ͼ11">KEY</span>);
-        <span class="ͼ11">keyVal</span>[<span class="ͼy">0</span>]</samp></pre>
+<span class="ͼ11">keyVal</span>[<span class="ͼy">0</span>]</samp></pre>
 <p>Queda bastante claro que el autor está esperando un <strong data-start="1851" data-end="1878">array/vector de
         strings</strong>. Y esto conecta muy bien con la pregunta que me hiciste anteriormente sobre:</p>
 <blockquote><code data-start="1960" data-end="1971">type="ai"</code> → arreglo de enteros.</blockquote>
 <p>Exactamente. La misma lógica:</p>
 <pre><samp>ai → array de integers
-        as → array de strings</samp></pre>
+as → array de strings</samp></pre>
 <p>Y ahora ya estamos viendo cómo esa definición del <code data-start="2134" data-end="2143">gschema</code> se refleja
     directamente en el código JavaScript.</p>
+<h3 id="section9" class="class-prefs">¿lang.bind()?</h3>
 <hr>
-<hr>
+<p><code data-start="12" data-end="25">Lang.bind()</code> es importante porque aparece repetidamente en el código
+    antiguo de GNOME Shell.</p>
+<pre><code><span class="ͼ11">Lang</span><span class="ͼv">.</span>bind(<span class="ͼy">this</span>, <span class="ͼv">function</span>(<span class="ͼ11">button</span>) {
+        ...
+    });</code></pre>
+<h4>¿Qué hace?</h4>
+<p><code data-start="189" data-end="202">Lang.bind()</code> sirve para <strong data-start="214" data-end="268">asegurar
+        qué significa <code data-start="239" data-end="245">this</code> dentro de la función</strong>.</p>
+<p>En este caso le está diciendo:</p>
+<blockquote>"Cuando ejecutes esta función posteriormente, quiero que <code data-start="362" data-end="368">this</code>
+    siga siendo el objeto actual de esta clase."</blockquote>
+<p>Por ejemplo, aquí:</p>
+<pre><code><span class="ͼ11">SettingSwitch</span><span class="ͼv">.</span>connect(<span class="ͼz">"notify::active"</span>, <span class="ͼ11">Lang</span><span class="ͼv">.</span>bind(<span class="ͼy">this</span>, <span class="ͼv">function</span>(<span class="ͼ11">button</span>) {
+        <span class="ͼ11">settings</span><span class="ͼv">.</span>set_boolean(<span class="ͼ11">KEY</span>, <span class="ͼ11">button</span><span class="ͼv">.</span>active);
+        <span class="ͼ11">reloadExtension</span>();
+    }));</code></pre>
+<p>El <code data-start="606" data-end="617">connect()</code> no ejecuta inmediatamente esa función. La función queda
+    registrada y GTK la ejecutará <strong data-start="704" data-end="717">más tarde</strong>, cuando cambie el Switch.
+</p>
+<p>El problema es que, al ejecutarse como callback, el <code data-start="797" data-end="803">this</code> de la función
+    podría no ser el objeto de nuestra clase, <code data-start="861" data-end="883">Lang.bind(this, ...)</code>
+    soluciona eso.</p>
+<h4>Conceptualmente</h4>
+<div class="row">
+    <div class="col">
+        <p>Sin <code>bind</code>: </p>
+        <pre><samp>this dentro de _init()
+            │
+            ▼
+    objeto PrefsWindow</samp></pre>
+    </div>
+    <div class="col">
+        <p>Pero posteriormente:</p>
+        <pre><samp>callback ejecutado por GTK
+            │
+            ▼
+    this podría no ser PrefsWindow</samp></pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <p>Con <code>bind</code>:</p>
+        <pre><samp><span class="ͼ11">Lang</span><span class="ͼv">.</span>bind(<span class="ͼy">this</span>, <span class="ͼv">function</span>() {})</samp></pre>
+    </div>
+    <div class="col">
+        <p>Tenemos:</p>
+        <pre><samp>this de la clase
+            │
+            │ Lang.bind()
+            ▼
+    callback
+            │
+            ▼
+    this sigue siendo la clase</samp></pre>
+    </div>
+</div>
+<h4>¿Y por qué es necesario aquí?</h4>
+<p>Imagina que dentro del callback hacemos:</p>
+<pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>attachLabel(...);</samp></pre>
+<p>Queremos que <code data-start="1444" data-end="1450">this</code> sea: <kbd class="inline-code">PrefsWindow</kbd> y no
+    algún objeto relacionado con GTK.</p>
+<p>Por eso aparece: <span class="ͼ11">Lang</span><span class="ͼv">.</span>bind(<span class="ͼy">this</span>, <span
+        class="ͼv">function</span>(...) { ... })</p>
+<blockquote>Un detalle interesante para nuestra futura modernización <code data-start="1686"
+        data-end="1699">Lang.bind()</code> pertenece al estilo <strong data-start="1720" data-end="1751">antiguo de
+        JavaScript/GNOME</strong>.</blockquote>

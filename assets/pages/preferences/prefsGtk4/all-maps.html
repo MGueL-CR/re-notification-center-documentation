@@ -192,4 +192,65 @@
                     ├── Indicator
                     └── Profiles</samp></pre>
     </div>
+
+    <input type="radio" name="tabs-maps" id="tb4">
+    <label for="tb4">PrefsWindow</label>
+    <div class="tab">
+        <h4>Mapa completo del nodo: PrefsWindow</h4>
+        <pre><samp>PrefsWindow_NotificationCenterExtension
+│
+├── _init(page)
+│
+├── attachLabel(KEY, pos)
+│   └── gschema.summary → Label
+│
+├── prefCombo(...)
+│   └── String → ComboBox
+│       ├── get_string()
+│       ├── set_string()
+│       └── reloadExtension()
+│
+├── prefStr(...)
+│   └── String vector → ComboBox + Entry
+│       ├── formato compuesto
+│       └── set_strv()
+│
+├── prefSwitch(...)
+│   └── Boolean → Switch
+│       ├── get_boolean()
+│       ├── set_boolean()
+│       └── reloadExtension()
+│
+└── prefTime(KEY, pos, mn, mx, st)
+    └── Integer → SpinButton
+        ├── get_int()
+        ├── set_int()
+        ├── mínimo
+        ├── máximo
+        └── paso</samp></pre>
+        <p>Su responsabilidad quedó bastante clara: es una <strong data-start="205" data-end="264">clase base de
+                construcción de controles de preferencias</strong> sobre un <code data-start="274"
+                data-end="284">Gtk.Grid</code>.</p>
+        <pre><samp>PrefsWindow
+│
+├── _init()
+│   └── configuración del Grid
+│
+├── attachLabel()
+│   └── KEY → gschema → summary → Label
+│
+├── prefCombo()
+│   └── GSettings string → ComboBox
+│
+├── prefStr()
+│   └── GSettings string-vector
+│       └── ComboBox + Entry
+│           └── formato compuesto con "&gt;"
+│
+├── prefSwitch()
+│   └── GSettings boolean → Switch
+│
+└── prefTime()
+    └── GSettings integer → SpinButton</samp></pre>
+    </div>
 </div>
