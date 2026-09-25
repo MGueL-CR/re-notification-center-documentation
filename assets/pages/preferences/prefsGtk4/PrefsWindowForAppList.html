@@ -549,4 +549,768 @@ script-list</samp></pre>
 </ol>
 <p>No vamos a cerrar todavía el significado de ninguno de los tres; los iremos descubriendo cuando lleguemos a sus
     métodos.</p>
-<h1>makeList: function() { ... } - L418</h1>
+<h3>makeList: function() { ... }</h3>
+<hr>
+<p>Aquí <code data-start="5" data-end="17">makeList()</code> empieza a mostrar <strong data-start="36"
+        data-end="94">cómo se construye visualmente la lista de aplicaciones</strong> que luego utiliza <code
+        data-start="113" data-end="130">appViewChange()</code>.</p>
+<p>Y ahora varias piezas que antes estaban sueltas —<code data-start="182" data-end="195">this._store</code>, <code
+        data-start="197" data-end="212">this.treeView</code>, <code data-start="214" data-end="220">iter</code>, <code
+        data-start="222" data-end="242">get_value(iter, 0)</code>— empiezan a encajar.</p>
+<h4>Crea el modelo de datos</h4>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>_store <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>ListStore();</code></pre>
+<p><code data-start="367" data-end="382">Gtk.ListStore</code> es el <strong data-start="389" data-end="453">modelo que
+        contiene los datos que va a mostrar el <code data-start="441" data-end="451">TreeView</code></strong>. Podemos
+    pensar en él como una tabla en memoria:</p>
+<pre><samp>_store
+    ┌──────────────┬──────────────┬──────────────┐
+    │ aplicación   │ nombre       │ icono        │
+    ├──────────────┼──────────────┼──────────────┤
+    │ AppInfo      │ "Firefox"    │ Gio.Icon     │
+    │ AppInfo      │ "Terminal"   │ Gio.Icon     │
+    └──────────────┴──────────────┴──────────────┘</samp></pre>
+<p>Esto conecta directamente con el <code data-start="852" data-end="862">addApp()</code> que vimos:</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>_store<span class="ͼv">.</span>set(
+    <span class="ͼy">this</span><span class="ͼv">.</span>_store<span class="ͼv">.</span>append(),
+    [<span class="ͼy">0</span>, <span class="ͼy">2</span>, <span class="ͼy">1</span>],
+    [<span class="ͼ11">appInfo</span>, <span class="ͼ11">appInfo</span><span class="ͼv">.</span>get_icon(), <span class="ͼ11">appInfo</span><span class="ͼv">.</span>get_name()]
+);</code></pre>
+<p>Ahora podemos entender mejor qué estaba haciendo.</p>
+<h4>Define los tipos de las columnas</h4>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>_store<span class="ͼv">.</span>set_column_types([
+    <span class="ͼ11">Gio</span><span class="ͼv">.</span>AppInfo,
+    <span class="ͼ11">GObject</span><span class="ͼv">.</span>TYPE_STRING,
+    <span class="ͼ11">Gio</span><span class="ͼv">.</span>Icon
+]);</code></pre>
+<p>Tenemos tres columnas:</p>
+<pre><samp>columna 0 → Gio.AppInfo
+columna 1 → String
+columna 2 → Gio.Icon</samp></pre>
+<p>Y esto explica perfectamente: <span class="ͼy">this</span><span class="ͼv">.</span>_store<span
+        class="ͼv">.</span>get_value(<span class="ͼ11">iter</span>, <span class="ͼy">0</span>); que vimos en <code
+        data-start="1457" data-end="1474">appViewChange()</code>.</p>
+<p>La columna <code data-start="1488" data-end="1491">0</code> contiene el objeto <code data-start="1511"
+        data-end="1524">Gio.AppInfo</code>. Por eso después puede hacer:</p>
+<pre><samp><span class="ͼ11">appInfo</span><span class="ͼv">.</span>get_id()
+<span class="ͼ11">appInfo</span><span class="ͼv">.</span>get_icon()</samp></pre>
+<h4>Crea el TreeView</h4>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>treeView <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>TreeView({
+    model: <span class="ͼy">this</span><span class="ͼv">.</span>_store,
+    hexpand: <span class="ͼy">true</span>,
+    vexpand: <span class="ͼy">true</span>,
+    halign: <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Align<span class="ͼv">.</span>START
+});</code></pre>
+<p>Aquí se establece la relación:</p>
+<pre><samp>_store
+    │
+    │ model:
+    ▼
+treeView</samp></pre>
+<p>Es decir:</p>
+<blockquote><code data-start="1920" data-end="1928">_store</code> contiene los datos y <code data-start="1950"
+        data-end="1960">treeView</code> los muestra.</blockquote>
+<p>Esta relación es fundamental.</p>
+<h4>Crea los renderizadores</h4>
+<p>Aquí define <strong data-start="2176" data-end="2212">cómo se dibuja cada tipo de dato</strong>.</p>
+<pre><code><span class="ͼv">let</span> <span class="ͼ11">iconRenderer</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>CellRendererPixbuf;
+<span class="ͼv">let</span> <span class="ͼ11">nameRenderer</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>CellRendererText;</code></pre>
+<p>Tenemos:</p>
+<pre><samp>Gio.Icon
+    │
+    ▼
+CellRendererPixbuf
+    │
+    ▼
+🖼️ icono
+
+String
+    │
+    ▼
+CellRendererText
+    │
+    ▼
+"Firefox"</samp></pre>
+<h4>Crea la columna visual</h4>
+<p>Aunque el modelo tiene tres columnas, visualmente se está creando <strong data-start="2662" data-end="2694">una sola
+        columna de TreeView</strong>.</p>
+<pre><code><span class="ͼv">let</span> <span class="ͼ11">appColumn</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>TreeViewColumn({
+    expand: <span class="ͼy">true</span>,
+    resizable: <span class="ͼy">true</span>,
+    alignment: <span class="ͼy">0.5</span>,
+    sort_column_id: <span class="ͼy">1</span>,
+    title: <span class="ͼ11">_</span>(<span class="ͼz">"Application List"</span>)
+});</code></pre>
+<div class="row">
+    <div class="col"><span>Esa columna contendrá:</span>
+        <pre><samp>[icono]  Nombre</samp></pre>
+    </div>
+    <div class="col"><span>El título será:</span>
+        <pre><samp>Application List</samp></pre>
+    </div>
+</div>
+<h5>Un detalle interesante: <code data-start="2853" data-end="2872">sort_column_id: 1</code></h5>
+<p>Esto indica que cuando se ordena esa columna, GTK debe utilizar la:</p>
+<pre><samp>columna 1 → String</samp></pre>
+<p>Es decir, el nombre de la aplicación.</p>
+<p>Tiene sentido porque no queremos ordenar por el objeto <code data-start="3081" data-end="3094">Gio.AppInfo</code> ni
+    por el icono.</p>
+<h4>Crea el contenedor con scroll</h4>
+<p>La lista puede tener muchas aplicaciones, así que necesita desplazamiento.</p>
+<pre><code><span class="ͼv">let</span> <span class="ͼ11">listBox</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>ScrolledWindow({
+    hexpand: <span class="ͼy">true</span>
+});</code></pre>
+<p>Conceptualmente:</p>
+<pre><samp>ScrolledWindow
+└── TreeView
+    └── Application List</samp></pre>
+<h4>Dentro de la columna</h4>
+<p>Mete los dos renderizadores dentro de la columna</p>
+<pre><code><span class="ͼ11">appColumn</span><span class="ͼv">.</span>pack_start(<span class="ͼ11">iconRenderer</span>, <span class="ͼy">false</span>);
+    <span class="ͼ11">appColumn</span><span class="ͼv">.</span>pack_start(<span class="ͼ11">nameRenderer</span>, <span class="ͼy">true</span>);</code></pre>
+<p>Ahora la columna queda:</p>
+<pre><samp>Application List
+    ┌──────────────────────────────────────┐
+    │ [ICON]   Nombre de aplicación        │
+    └──────────────────────────────────────┘</samp></pre>
+<p>El segundo parámetro indica si el renderer puede expandirse.</p>
+<pre><samp>iconRenderer → false
+    nameRenderer → true</samp></pre>
+<p>Por eso el texto ocupa el espacio restante.</p>
+<h4>Conecta cada renderer</h4>
+<p>Ahora, conecta cada renderer con una columna del modelo y aquí está una de las partes más importantes:</p>
+<pre><code><span class="ͼ11">appColumn</span><span class="ͼv">.</span>add_attribute(<span class="ͼ11">iconRenderer</span>, <span class="ͼz">"gicon"</span>, <span class="ͼy">2</span>);
+<span class="ͼ11">appColumn</span><span class="ͼv">.</span>add_attribute(<span class="ͼ11">nameRenderer</span>, <span class="ͼz">"text"</span>, <span class="ͼy">1</span>);</code></pre>
+<div class="row">
+    <div class="col"><span>Significa:</span>
+        <pre><samp>_store columna 2
+        │
+        ▼
+    Gio.Icon
+        │
+        ▼
+    iconRenderer
+        │
+        ▼
+    icono</samp></pre>
+    </div>
+    <div class="col"><span>Y:</span>
+        <pre><samp>_store columna 1
+        │
+        ▼
+    String
+        │
+        ▼
+    nameRenderer
+        │
+        ▼
+    nombre</samp></pre>
+    </div>
+</div>
+<p>La columna <code data-start="4457" data-end="4460">0</code>, mientras tanto, <strong data-start="4478"
+        data-end="4508">no se muestra directamente</strong>. Contiene el objeto <code data-start="4530"
+        data-end="4543">Gio.AppInfo</code>, que se utiliza cuando necesitamos identificar la aplicación seleccionada.
+</p>
+<p>Esto explica perfectamente el diseño:</p>
+<pre><samp>STORE
+    │
+    ├── [0] Gio.AppInfo ──► datos internos
+    │
+    ├── [1] String ───────► nombre visible
+    │
+    └── [2] Gio.Icon ─────► icono visible</samp></pre>
+<h4>Añade la columna al TreeView</h4>
+<p>Ahora el TreeView sabe qué columna debe mostrar.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>treeView<span class="ͼv">.</span>append_column(<span class="ͼ11">appColumn</span>);</code></pre>
+<h4>Tamaño y ubicación</h4>
+<p>La columna tendrá un ancho fijo de aproximadamente 370 píxeles.</p>
+<pre><code><span class="ͼ11">appColumn</span><span class="ͼv">.</span>set_fixed_width(<span class="ͼy">370</span>);</code></pre>
+<p>Después: <span class="ͼ11">listBox</span><span class="ͼv">.</span>set_child(<span class="ͼy">this</span><span
+        class="ͼv">.</span>treeView); establece:</p>
+<pre><samp>ScrolledWindow
+    │
+    └── TreeView</samp></pre>
+<p>Y finalmente: <span class="ͼy">this</span><span class="ͼv">.</span>attach(<span class="ͼ11">listBox</span>,
+    <span class="ͼy">0</span>, <span class="ͼy">0</span>, <span class="ͼy">1</span>, <span class="ͼy">1</span>); coloca
+    todo el <code data-start="5377" data-end="5393">ScrolledWindow</code> en el Grid de la clase:
+</p>
+<pre><samp>PrefsWindowForAppList
+└── Grid
+    └── ScrolledWindow
+        └── TreeView
+            └── Application List</samp></pre>
+<h4>Ahora podemos entender mejor <code data-start="5591" data-end="5608">appViewChange()</code></h4>
+<p>Antes teníamos:</p>
+<pre><samp><span class="ͼv">let</span> [<span class="ͼ11">any</span>, <span class="ͼ11">model</span>, <span class="ͼ11">iter</span>] <span class="ͼv">=</span>get_selected();</samp></pre>
+<p>Ahora sabemos exactamente de dónde sale <code data-start="5773" data-end="5779">iter</code>.</p>
+<pre><samp>TreeView
+    │
+    └── selección
+        │
+        ▼
+        iter
+        │
+        ▼
+_store.get_value(iter, 0)
+        │
+        ▼
+    Gio.AppInfo</samp></pre>
+<p>Y entonces: <span class="ͼ11">appInfo</span><span class="ͼv">.</span>get_id() permite relacionar la aplicación
+    seleccionada con: <kbd class="inline-code">application-list</kbd> mediante <code data-start="6115"
+        data-end="6126">indexOf()</code>.</p>
+<h4>Y una observación importante</h4>
+<p>Ahora sabemos que <code data-start="6953" data-end="6966">script-list</code> <strong data-start="6967"
+        data-end="7005">no forma parte del <code data-start="6988" data-end="7003">Gtk.ListStore</code></strong>. El
+    <code data-start="7011" data-end="7022">ListStore</code> solamente mantiene: <kbd class="inline-code">AppInfo</kbd>
+    + <kbd class="inline-code">nombre</kbd> + <kbd class="inline-code">icono</kbd>
+</p>
+<p>El script se mantiene aparte en GSettings y se busca mediante: </p>
+<pre><samp>selectedIndex
+        │
+        ▼
+script-list[selectedIndex]</samp></pre>
+<p>Eso refuerza la idea de que <code data-start="7256" data-end="7269">script-list</code> es <strong data-start="7273"
+        data-end="7304">metadato asociado al perfil</strong>, no una propiedad visual de la lista. Todavía nos falta
+    saber qué hacen <code data-start="7378" data-end="7391">showPrefs()</code> y <code data-start="7394"
+        data-end="7409">refreshList()</code>, y esos dos métodos seguramente terminarán de explicar cómo se presenta y
+    modifica ese dato.</p>
+<h3>prefCombo: function(KEY, pos, options, items, box) </h3>
+<hr>
+<p>Aquí aparece una variante de <code data-start="29" data-end="42">prefCombo()</code> bastante más interesante que la
+    que vimos en la clase genérica. La diferencia importante está en <strong data-start="140" data-end="186">qué hace
+        después de guardar la preferencia</strong>.</p>
+<pre><code><span class="ͼ13">prefCombo</span>: <span class="ͼv">function</span>(<span class="ͼ11">KEY</span>, <span class="ͼ11">pos</span>, <span class="ͼ11">options</span>, <span class="ͼ11">items</span>, <span class="ͼ11">box</span>) { <span class="ͼ13">...</span> }</code></pre>
+<p>Recibe ahora:</p>
+<pre><samp>KEY
+pos
+options
+items
+box</samp></pre>
+<p>El <code data-start="318" data-end="323">box</code> tiene el mismo propósito que vimos en <code data-start="362"
+        data-end="377">attachLabel()</code>: esta clase está construyendo la interfaz dentro de un <code
+        data-start="433" data-end="443">Gtk.Grid</code> que recibe externamente.</p>
+<h4>Construcción del ComboBox</h4>
+<pre><code><span class="ͼv">let</span> <span class="ͼ11">SettingCombo</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>ComboBoxText();
+
+<span class="ͼv">for</span> (<span class="ͼv">let</span> <span class="ͼ11">i</span> <span class="ͼv">=</span> <span class="ͼy">0</span>; <span class="ͼ11">i</span> <span class="ͼv">&lt;</span> <span class="ͼ11">options</span><span class="ͼv">.</span>length; <span class="ͼ11">i</span><span class="ͼv">++</span>) {
+    <span class="ͼ11">SettingCombo</span><span class="ͼv">.</span>append(<span class="ͼ11">options</span>[<span class="ͼ11">i</span>], <span class="ͼ11">items</span>[<span class="ͼ11">i</span>]);
+}</code></pre>
+<p>Esto es exactamente el patrón que ya conocemos:</p>
+<pre><samp>options[i] → valor que se guarda
+items[i]   → texto que ve el usuario</samp></pre>
+<p>Por ejemplo, conceptualmente:</p>
+<pre><samp>options              items
+────────────────────────────────
+"none"               "None"
+"all"                "All applications"</samp></pre>
+<p>El usuario ve <code data-start="981" data-end="988">items</code>, pero GSettings recibe <code data-start="1012"
+        data-end="1021">options</code>.</p>
+<h4>Selecciona el valor actual</h4>
+<pre><code><span class="ͼ11">SettingCombo</span><span class="ͼv">.</span>set_active(
+    <span class="ͼ11">options</span><span class="ͼv">.</span>indexOf(<span class="ͼ11">settings</span><span class="ͼv">.</span>get_string(<span class="ͼ11">KEY</span>))
+);</code></pre>
+<p>El flujo es:</p>
+<pre><samp>GSettings
+   │
+   │ get_string(KEY)
+   ▼
+valor almacenado
+   │
+   │ indexOf()
+   ▼
+posición dentro de options[]
+   │
+   ▼
+ComboBox selecciona esa opción</samp></pre>
+<p>Esto ya lo vimos en el <code data-start="1359" data-end="1372">prefCombo()</code> anterior.</p>
+<h4>Aquí empieza lo nuevo</h4>
+<pre><code><span class="ͼ11">SettingCombo</span><span class="ͼv">.</span>connect(<span class="ͼz">'changed'</span>, <span class="ͼ11">Lang</span><span class="ͼv">.</span>bind(<span class="ͼy">this</span>, <span class="ͼv">function</span>(<span class="ͼ11">widget</span>) { ... }</code></pre>
+<p>Cuando cambia la selección:</p>
+<p>Primero guarda la preferencia, hasta aquí, comportamiento normal.</p>
+<pre><code><span class="ͼ11">settings</span><span class="ͼv">.</span>set_string(
+    <span class="ͼ11">KEY</span>,
+    <span class="ͼ11">options</span>[<span class="ͼ11">widget</span><span class="ͼv">.</span>get_active()]
+);</code></pre>
+<p>Pero inmediatamente después aparece esto:</p>
+<pre><code><span class="ͼ11">settings</span><span class="ͼv">.</span>get_strv(<span class="ͼz">'application-list'</span>)<span class="ͼv">.</span>forEach(<span class="ͼv">function</span>(<span class="ͼ11">application</span>) { ... }</code></pre>
+<p>Aquí esta clase empieza a hacer algo mucho más específico.</p>
+<h4>Recorre todas las aplicaciones</h4>
+<pre><code><span class="ͼ11">settings</span><span class="ͼv">.</span>get_strv(<span class="ͼz">'application-list'</span>)</code></pre>
+<p>Y obtiene nuestra lista:</p>
+<pre><samp>application-list
+[
+    app1,
+    app2,
+    app3,
+    ...
+]</samp></pre>
+<p>y: .<span class="ͼ11">forEach</span>(<span class="ͼv">function</span>(<span class="ͼ11">application</span>) {
+    ... } ejecuta la función para <strong data-start="2175" data-end="2194">cada aplicación</strong>.</p>
+<p>Conceptualmente:</p>
+<pre><samp>application-list
+      │
+      ├── application 0 ──► procesar
+      ├── application 1 ──► procesar
+      ├── application 2 ──► procesar
+      └── ...</samp></pre>
+<p>Ahora aparece <code data-start="2402" data-end="2433">setNotificationBannerPolicy()</code></p>
+<p>Esta es probablemente la parte que merece más atención. El método está construyendo una <strong data-start="2810"
+        data-end="2885">ruta de GSettings relacionada con las notificaciones de cada aplicación</strong>.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>setNotificationBannerPolicy(
+    <span class="ͼz">"/org/gnome/desktop/notifications/application/"</span>
+    <span class="ͼv">+</span> <span class="ͼ11">application</span><span class="ͼv">.</span>toLowerCase()
+        <span class="ͼv">.</span>replace(<span class="ͼz">/[^a-z0-9-]/g</span>, <span class="ͼz">'-'</span>)
+        <span class="ͼv">.</span>replace(<span class="ͼz">/--+/g</span>, <span class="ͼz">'-'</span>)
+        <span class="ͼv">.</span>substring(<span class="ͼy">0</span>, <span class="ͼ11">application</span><span class="ͼv">.</span>length<span class="ͼv">-</span><span class="ͼy">8</span>)
+    <span class="ͼv">+</span> <span class="ͼz">"/"</span>,
+    <span class="ͼ11">widget</span><span class="ͼv">.</span>get_active()
+);</code></pre>
+<p>La ruta comienza: </p>
+<pre><samp>/org/gnome/desktop/notifications/application/</samp></pre>
+<p>Y después agrega algo derivado del ID de la aplicación. Por ejemplo, conceptualmente:</p>
+<pre><samp>application ID
+      │
+      ▼
+normalización
+      │
+      ▼
+/org/gnome/desktop/notifications/application/&lt;app&gt;/</samp></pre>
+<p>Luego pasa: <span class="ͼ11">widget</span><span class="ͼv">.</span>get_active() como segundo parámetro. Es
+    decir, la opción seleccionada en el ComboBox se está aplicando a <strong data-start="3325" data-end="3377">cada
+        aplicación registrada en <code data-start="3357" data-end="3375">application-list</code></strong>.</p>
+<h4>¿Qué hacen estas transformaciones?</h4>
+<p>Tenemos: <span class="ͼ11">application</span><span class="ͼv">.</span>toLowerCase() que convierte a minúsculas.
+</p>
+<p>Después: .<span class="ͼ11">replace</span>(<span class="ͼz">/[^a-z0-9-]/g</span>, <span class="ͼz">'-'</span>) que
+    reemplaza cualquier carácter que <strong data-start="3597" data-end="3607">no sea</strong>: <kbd
+        class="inline-code">a-z</kbd> <kbd class="inline-code">0-9</kbd> <kbd class="inline-code">-</kbd> por <code
+        data-start="3637" data-end="3640">-</code>.</p>
+<p>Después: .<span class="ͼ11">replace</span>(<span class="ͼz">/--+/g</span>, <span class="ͼz">'-'</span>) que reduce
+    secuencias de varios <code data-start="3722" data-end="3725">-</code> a uno.</p>
+<p>Y finalmente: .<span class="ͼ11">substring</span>(<span class="ͼy">0</span>, <span
+        class="ͼ11">application</span><span class="ͼv">.</span>length<span class="ͼv">-</span><span class="ͼy">8</span>)
+    recorta el resultado.</p>
+<p>Aquí yo <strong data-start="3838" data-end="3882">no intentaría todavía justificar el <code data-start="3876"
+            data-end="3880">-8</code></strong>. Es una de esas cosas que conviene investigar con ejemplos reales y con
+    el formato que devuelve <code data-start="3979" data-end="4001">Gio.AppInfo.get_id()</code>.</p>
+<h4>El <code data-start="4017" data-end="4023">this</code> dentro del <code data-start="4035"
+        data-end="4044">forEach</code></h4>
+<p>Tenemos: { ... }, <span class="ͼy">this</span>); al final del <code data-start="4098" data-end="4107">forEach</code>.
+    La función:</p>
+<pre><code><span class="ͼv">function</span>(<span class="ͼ11">application</span>) {
+    <span class="ͼy">this</span><span class="ͼv">.</span>setNotificationBannerPolicy(...);
+}</code></pre>
+<p>Es una función tradicional, por lo que su <code data-start="4320" data-end="4326">this</code> no conserva
+    automáticamente el de la clase.</p>
+<p>Por eso: { ... }, <span class="ͼy">this</span>); le dice a <code data-start="4421" data-end="4432">forEach()</code>:
+</p>
+<blockquote>utiliza este objeto como <code data-start="4462" data-end="4468">this</code> dentro de la función.
+</blockquote>
+<p>Es conceptualmente parecido al problema que solucionaba <code data-start="4548" data-end="4561">Lang.bind()</code>.
+</p>
+<h4>Finalmente</h4>
+<pre><code><span class="ͼ11">reloadApplicationProfiles</span>();</code></pre>
+<p>Esto vuelve a activar nuestro: <var class="inline-code">reload-profiles-signal</var>.</p>
+<p>Así que el flujo completo es:</p>
+<pre><samp>Usuario cambia ComboBox
+        │
+        ▼
+settings.set_string(KEY, nuevoValor)
+        │
+        ▼
+lee application-list
+        │
+        ▼
+por cada aplicación
+        │
+        ▼
+construye ruta de GSettings
+        │
+        ▼
+setNotificationBannerPolicy(...)
+        │
+        ▼
+reloadApplicationProfiles()</samp></pre>
+<h4>Una Observación</h4>
+<p><code data-start="5925" data-end="5938">prefCombo()</code> nos acaba de mostrar que <strong data-start="5964"
+        data-end="6062">al menos una preferencia de esta página no es simplemente una preferencia local de la
+        interfaz</strong>.</p>
+<p>Al cambiarla, el código:</p>
+<ol>
+    <li>guarda la preferencia;</li>
+    <li>recorre todas las aplicaciones configuradas;</li>
+    <li>modifica la política de banners de notificaciones de cada aplicación;</li>
+    <li>solicita que los perfiles sean recargados.</li>
+</ol>
+<p>Esto conecta directamente con las preferencias que vimos en <code data-start="6345" data-end="6354">gschema</code>,
+    pero <strong data-start="6361" data-end="6432">todavía necesitamos saber qué <code data-start="6393"
+            data-end="6398">KEY</code> se le pasa a este <code data-start="6417"
+            data-end="6430">prefCombo()</code></strong> para saber exactamente qué configuración está modificando.</p>
+<p>Así que no intentaría identificarla todavía. Cuando lleguemos a <code data-start="6557"
+        data-end="6570">showPrefs()</code> probablemente tendremos la respuesta.</p>
+<h3>prefSwitch: function(KEY, pos, box) </h3>
+<hr>
+<p>Sí, aquí tenemos nuevamente la variante de <code data-start="43" data-end="57">prefSwitch()</code>, y en realidad es
+    casi idéntica a la que vimos en la clase genérica.</p>
+<pre><code><span class="ͼ13">prefSwitch</span>: <span class="ͼv">function</span>(<span class="ͼ11">KEY</span>, <span class="ͼ11">pos</span>, <span class="ͼ11">box</span>) { <span class="ͼ13">...</span> }</code></pre>
+<p>Recibe:</p>
+<pre><samp>KEY  → key de GSettings
+pos  → fila del Grid
+box  → Gtk.Grid donde se coloca el control</samp></pre>
+<h4>Crea el Switch con el valor actual</h4>
+<pre><code><span class="ͼv">let</span> <span class="ͼ11">SettingSwitch</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Switch({
+    hexpand: <span class="ͼy">false</span>,
+    active: <span class="ͼ11">settings</span><span class="ͼv">.</span>get_boolean(<span class="ͼ11">KEY</span>),
+    halign: <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Align<span class="ͼv">.</span>END
+});</code></pre>
+<p>El valor inicial sale directamente de GSettings:</p>
+<pre><samp>settings.get_boolean(KEY)
+        │
+        ▼
+   Gtk.Switch.active</samp></pre>
+<p>Por ejemplo, si <code data-start="629" data-end="634">KEY</code> fuera <code data-start="641"
+        data-end="655">"run-script"</code>:</p>
+<pre><samp>run-script = false
+       ↓
+Switch = OFF</samp></pre>
+<h4>Cuando cambia el Switch</h4>
+<pre><code><span class="ͼ11">SettingSwitch</span><span class="ͼv">.</span>connect(<span class="ͼz">"notify::active"</span>, <span class="ͼ11">Lang</span><span class="ͼv">.</span>bind(<span class="ͼy">this</span>, <span class="ͼv">function</span>(<span class="ͼ11">button</span>) {
+    <span class="ͼ11">settings</span><span class="ͼv">.</span>set_boolean(<span class="ͼ11">KEY</span>, <span class="ͼ11">button</span><span class="ͼv">.</span>active);
+    <span class="ͼ11">reloadExtension</span>();
+}));</code></pre>
+<p>El flujo es:</p>
+<pre><samp>Usuario cambia Switch
+        ↓
+button.active
+        ↓
+set_boolean(KEY, ...)
+        ↓
+reloadExtension()</samp></pre>
+<p>Aquí, a diferencia del <code data-start="1073" data-end="1086">prefCombo()</code> que acabamos de ver, <strong
+        data-start="1108" data-end="1157">no hay lógica adicional específica de AppList</strong>. La preferencia
+    simplemente se guarda y se solicita una recarga completa de la extensión.</p>
+<h4>Coloca el Label y el Switch</h4>
+<p>Recordemos que <code data-start="1399" data-end="1414">attachLabel()</code> ya sabe obtener el <code
+        data-start="1434" data-end="1443">summary</code> desde el <code data-start="1453"
+        data-end="1462">gschema</code>.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>attachLabel(<span class="ͼ11">KEY</span>, <span class="ͼ11">pos</span>, <span class="ͼ11">box</span>);
+<span class="ͼ11">box</span><span class="ͼv">.</span>attach(<span class="ͼ11">SettingSwitch</span>, <span class="ͼy">1</span>, <span class="ͼ11">pos</span>, <span class="ͼy">1</span>, <span class="ͼy">1</span>);</code></pre>
+<p>La fila termina siendo:</p>
+<pre><samp>┌─────────────────────────────┬──────────────┐
+│ Summary de KEY              │   [ ON/OFF ] │
+└─────────────────────────────┴──────────────┘
+             0                       1</samp></pre>
+<h4>Una observación</h4>
+<p>Todavía <strong data-start="2355" data-end="2415">no sabemos qué <code data-start="2372" data-end="2377">KEY</code>
+        se suministra a este <code data-start="2399" data-end="2413">prefSwitch()</code></strong>. Eso lo podremos
+    determinar cuando lleguemos a <code data-start="2463" data-end="2476">showPrefs()</code>.</p>
+<p>Y eso es importante porque, como ya conocemos el <code data-start="2528" data-end="2537">gschema</code>, cuando
+    veamos algo como: <span class="ͼy">this</span><span class="ͼv">.</span>prefSwitch(<span
+        class="ͼz">"run-script"</span>, ... ) ya podremos conectar inmediatamente:</p>
+<pre><samp>prefSwitch()
+      ↓
+run-script
+      ↓
+gschema
+      ↓
+"Run scripts on new notification"</samp></pre>
+<p>Y entonces podremos interpretar el propósito real del control en lugar de hacerlo solamente por el nombre del método.
+</p>
+<h3>refreshList: function() { ... }</h3>
+<hr>
+<p>Aquí <code data-start="5" data-end="20">refreshList()</code> confirma varias cosas que veníamos deduciendo y además
+    aparece una función de <strong data-start="99" data-end="144">limpieza automática de perfiles inválidos</strong>.
+</p>
+<pre><code><span class="ͼ13">refreshList</span>: <span class="ͼv">function</span>() { <span class="ͼ13">...</span> }</code></pre>
+<p>Su trabajo general es:</p>
+<blockquote>Vaciar la lista visual, reconstruirla desde GSettings y eliminar perfiles cuya aplicación ya no existe.
+</blockquote>
+<h4>Vacía la lista visual</h4>
+<p><span class="ͼy">this</span><span class="ͼv">.</span>_store<span class="ͼv">.</span>clear();</p>
+<p>Recordemos:</p>
+<pre><samp>_store
+  │
+  └── modelo del TreeView</samp></pre>
+<p>Así que primero elimina todas las filas que estaban mostrando. No está borrando todavía las preferencias de
+    GSettings; solamente limpia <strong data-start="633" data-end="661">la representación visual</strong>.</p>
+<h4>Obtiene las tres listas</h4>
+<pre><code><span class="ͼv">let</span> <span class="ͼ11">applicationList</span> <span class="ͼv">=</span> <span class="ͼ11">settings</span><span class="ͼv">.</span>get_strv(<span class="ͼz">'application-list'</span>);
+<span class="ͼv">let</span> <span class="ͼ11">nameList</span> <span class="ͼv">=</span> <span class="ͼ11">settings</span><span class="ͼv">.</span>get_strv(<span class="ͼz">'name-list'</span>);
+<span class="ͼv">let</span> <span class="ͼ11">scriptList</span> <span class="ͼv">=</span> <span class="ͼ11">settings</span><span class="ͼv">.</span>get_strv(<span class="ͼz">'script-list'</span>);</code></pre>
+<p>Y aquí vuelve a aparecer nuestra estructura paralela:</p>
+<pre><samp>índice i
+   │
+   ├── applicationList[i]
+   ├── nameList[i]
+   └── scriptList[i]</samp></pre>
+<p>Esta vez las tres listas se manipulan juntas.</p>
+<h4>Recorre todas las aplicaciones</h4>
+<pre><code><span class="ͼv">for</span> (<span class="ͼv">let</span> <span class="ͼ11">i</span> <span class="ͼv">=</span> <span class="ͼy">0</span>; <span class="ͼ11">i</span> <span class="ͼv">&lt;</span> <span class="ͼ11">applicationList</span><span class="ͼv">.</span>length; <span class="ͼ11">i</span><span class="ͼv">++</span>) { ... }</code></pre>
+<p>Por cada perfil intenta recuperar la aplicación:</p>
+<pre><code><span class="ͼv">let</span> <span class="ͼ11">appInfo</span> <span class="ͼv">=</span> <span class="ͼ11">Gio</span><span class="ͼv">.</span>DesktopAppInfo<span class="ͼv">.</span>new(<span class="ͼ11">applicationList</span>[<span class="ͼ11">i</span>]);</code></pre>
+<p><code data-start="1360" data-end="1386">Gio.DesktopAppInfo.new()</code> intenta crear un objeto que representa la
+    aplicación a partir de su identificador <code data-start="1469" data-end="1479">.desktop</code>.</p>
+<p>Por ejemplo, conceptualmente:</p>
+<pre><samp>"firefox.desktop"
+       │
+       ▼
+Gio.DesktopAppInfo.new(...)
+       │
+       ▼
+DesktopAppInfo</samp></pre>
+<h4>Comprueba si la aplicación todavía existe</h4>
+<p>Tenemos:</p>
+<pre><code><span class="ͼv">if</span> (<span class="ͼ11">Gio</span><span class="ͼv">.</span>DesktopAppInfo<span class="ͼv">.</span>new(<span class="ͼ11">applicationList</span>[<span class="ͼ11">i</span>]) <span class="ͼv">==</span> <span class="ͼy">null</span>) { ... }</code></pre>
+<p>Si devuelve <code data-start="1799" data-end="1805">null</code>, significa que <strong data-start="1821"
+        data-end="1860">ya no pudo localizar esa aplicación</strong>.</p>
+<p>Por ejemplo:</p>
+<pre><samp>application-list
+    │
+    ▼
+"programa-que-ya-no-esta.desktop"
+    │
+    ▼
+DesktopAppInfo.new(...)
+    │
+    ▼
+null</samp></pre>
+<p>Y entonces el perfil se considera inválido.</p>
+<h5>Pequeña observación</h5>
+<p>El código ya hizo: <span class="ͼv">let</span> <span class="ͼ11">appInfo</span> <span class="ͼv">=</span> <span
+        class="ͼ11">Gio</span><span class="ͼv">.</span>DesktopAppInfo<span class="ͼv">.</span>new(<span
+        class="ͼ11">applicationList</span>[<span class="ͼ11">i</span>]); pero vuelve a llamar: <span
+        class="ͼ11">Gio</span><span class="ͼv">.</span>DesktopAppInfo<span class="ͼv">.</span>new(<span
+        class="ͼ11">applicationList</span>[<span class="ͼ11">i</span>]) para comprobarlo.</p>
+<p>Es redundante, podría haber hecho: <span class="ͼv">if</span> (<span class="ͼ11">appInfo</span> <span
+        class="ͼv">==</span> <span class="ͼy">null</span>) pero <strong data-start="2407" data-end="2463">por ahora
+        simplemente lo anotamos; no lo modificamos</strong>.</p>
+<h4>Elimina el perfil inválido</h4>
+<p>Si la aplicación ya no existe:</p>
+<pre><code><span class="ͼ11">applicationList</span><span class="ͼv">.</span>splice(<span class="ͼ11">i</span>,<span class="ͼy">1</span>);
+<span class="ͼ11">nameList</span><span class="ͼv">.</span>splice(<span class="ͼ11">i</span>,<span class="ͼy">1</span>);
+<span class="ͼ11">scriptList</span><span class="ͼv">.</span>splice(<span class="ͼ11">i</span>,<span class="ͼy">1</span>);</code></pre>
+<p>Esto es muy importante, no elimina solamente la aplicación. Elimina el mismo índice de <strong data-start="2731"
+        data-end="2750">las tres listas</strong>:</p>
+<pre><samp>applicationList[i] ──┐
+nameList[i]        ──┼──► eliminar perfil completo
+scriptList[i]      ──┘</samp></pre>
+<p>Esto demuestra nuevamente que las tres listas representan <strong data-start="2933" data-end="2986">una misma entidad
+        lógica: un perfil de aplicación</strong>.</p>
+<h4>¿Por qué <code data-start="3009" data-end="3014">i--</code>?</h4>
+<p>Esto es necesario porque acabamos de eliminar un elemento</p>
+<pre><code><span class="ͼ11">i</span><span class="ͼv">--</span>;</code></pre>
+<p>Imaginemos:</p>
+<pre><samp>antes:
+
+0 → Firefox
+1 → VLC
+2 → Terminal</samp></pre>
+<p>Estamos en: <kbd class="inline-code">i</kbd> = <var class="inline-code">1</var> y eliminamos VLC. Ahora:
+</p>
+<pre><samp>0 → Firefox
+1 → Terminal</samp></pre>
+<p>Pero el <code data-start="3321" data-end="3326">for</code> al final hará automáticamente: <kbd
+        class="inline-code">i++</kbd> Si no hacemos: <span class="ͼ11">i</span><span class="ͼv">--</span>;
+    terminaríamos saltándonos <code data-start="3466" data-end="3476">Terminal</code>. Por eso:</p>
+<pre><samp>elimina índice i
+      ↓
+i--
+      ↓
+for hace i++
+      ↓
+volvemos al mismo índice</samp></pre>
+<p>Es un patrón clásico al eliminar elementos mientras recorremos un array.</p>
+<h4>Si la aplicación sí existe</h4>
+<p>Agrega la aplicación al modelo visual.</p>
+<pre><code><span class="ͼv">else</span> {
+    <span class="ͼy">this</span><span class="ͼv">.</span>_store<span class="ͼv">.</span>set(
+        <span class="ͼy">this</span><span class="ͼv">.</span>_store<span class="ͼv">.</span>append(),
+        [<span class="ͼy">0</span>, <span class="ͼy">2</span>, <span class="ͼy">1</span>],
+        [<span class="ͼ11">appInfo</span>, <span class="ͼ11">appInfo</span><span class="ͼv">.</span>get_icon(), <span class="ͼ11">nameList</span>[<span class="ͼ11">i</span>]]
+    );
+}</code></pre>
+<p>Y ahora podemos relacionarlo directamente con <code data-start="3963" data-end="3975">makeList()</code>:</p>
+<pre><samp>_store columnas
+│
+├── 0 → AppInfo
+├── 1 → nombre
+└── 2 → icono</samp></pre>
+<p>Se agregan:</p>
+<pre><samp>[0, 2, 1]
+ │  │  │
+ │  │  └── nameList[i]
+ │  └───── appInfo.get_icon()
+ └──────── appInfo</samp></pre>
+<p>Por eso el TreeView termina mostrando:</p>
+<pre><samp>[icono]  nameList[i]</samp></pre>
+<p>Mientras conserva internamente el <code data-start="4327" data-end="4340">Gio.AppInfo</code>.</p>
+<h4>Finalmente guarda las tres listas</h4>
+<pre><code><span class="ͼ11">settings</span><span class="ͼv">.</span>set_strv(<span class="ͼz">'application-list'</span>, <span class="ͼ11">applicationList</span>);
+<span class="ͼ11">settings</span><span class="ͼv">.</span>set_strv(<span class="ͼz">'name-list'</span>, <span class="ͼ11">nameList</span>);
+<span class="ͼ11">settings</span><span class="ͼv">.</span>set_strv(<span class="ͼz">'script-list'</span>, <span class="ͼ11">scriptList</span>);</code></pre>
+<p>Esto tiene una consecuencia interesante: <code data-start="4609" data-end="4624">refreshList()</code> no
+    solamente "refresca". También <strong data-start="4659" data-end="4698">corrige la configuración
+        almacenada</strong>.</p>
+<p>Si detecta una aplicación que ya no existe:</p>
+<pre><samp>Aplicación desaparecida
+        ↓
+elimina applicationList[i]
+        ↓
+elimina nameList[i]
+        ↓
+elimina scriptList[i]
+        ↓
+guarda nuevamente las tres listas</samp></pre>
+<p>Por tanto, <code data-start="4949" data-end="4964">refreshList()</code> funciona como una especie de:</p>
+<blockquote>Sincronización/limpieza de los perfiles almacenados con las aplicaciones que realmente existen en el
+    sistema.</blockquote>
+<h3>removeApp: function() { ... }</h3>
+<hr>
+<p><code data-start="4" data-end="17">removeApp()</code> es prácticamente la operación inversa de <code data-start="59"
+        data-end="69">addApp()</code>, y ahora que ya conocemos la estructura de las tres listas, se entiende bastante
+    bien.</p>
+<pre><code><span class="ͼ13">removeApp</span>: <span class="ͼv">function</span>() { <span class="ͼ13">...</span> }</code></pre>
+<h4>Obtiene la aplicación seleccionada</h4>
+<pre><code><span class="ͼv">let</span> [<span class="ͼ11">any</span>, <span class="ͼ11">model</span>, <span class="ͼ11">iter</span>] <span class="ͼv">=</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>treeView<span class="ͼv">.</span>get_selection()<span class="ͼv">.</span>get_selected();</code></pre>
+<p>Exactamente como en <code data-start="357" data-end="374">appViewChange()</code>:</p>
+<pre><samp>TreeView
+  │
+  └── selección
+       │
+       ├── any  → ¿hay selección?
+       ├── model
+       └── iter  → fila seleccionada</samp></pre>
+<h4>Carga las tres listas</h4>
+<pre><code><span class="ͼv">let</span> <span class="ͼ11">applicationList</span> <span class="ͼv">=</span> <span class="ͼ11">settings</span><span class="ͼv">.</span>get_strv(<span class="ͼz">'application-list'</span>);
+<span class="ͼv">let</span> <span class="ͼ11">nameList</span> <span class="ͼv">=</span> <span class="ͼ11">settings</span><span class="ͼv">.</span>get_strv(<span class="ͼz">'name-list'</span>);
+<span class="ͼv">let</span> <span class="ͼ11">scriptList</span> <span class="ͼv">=</span> <span class="ͼ11">settings</span><span class="ͼv">.</span>get_strv(<span class="ͼz">'script-list'</span>);</code></pre>
+<p>Ya sabemos que son listas paralelas:</p>
+<pre><samp>índice i
+   │
+   ├── applicationList[i]
+   ├── nameList[i]
+   └── scriptList[i]</samp></pre>
+<h4>Solo continúa si hay una aplicación seleccionada</h4>
+<p>Si no hay selección, no modifica nada.</p>
+<pre><code><span class="ͼv">if</span> (<span class="ͼ11">any</span>) { ... }</code></pre>
+<h4>Obtiene el <code data-start="1012" data-end="1025">Gio.AppInfo</code></h4>
+<pre><code><span class="ͼv">let</span> <span class="ͼ11">indx</span>, <span class="ͼ11">appInfo</span> <span class="ͼv">=</span> <span class="ͼy">this</span><span class="ͼv">.</span>_store<span class="ͼv">.</span>get_value(<span class="ͼ11">iter</span>, <span class="ͼy">0</span>);</code></pre>
+<p>La columna <code data-start="1109" data-end="1112">0</code> de <code data-start="1116" data-end="1124">_store</code>
+    sabemos que contiene: <kbd class="inline-code">Gio.AppInfo</kbd> por lo que: <span class="ͼ11">appInfo</span><span
+        class="ͼv">.</span>get_id() nos da el ID de la aplicación.</p>
+<h4>Aquí tenemos una línea interesante</h4>
+<pre><code><span class="ͼ11">applicationList</span><span class="ͼv">.</span>splice(
+    (<span class="ͼ11">indx</span> <span class="ͼv">=</span> <span class="ͼ11">applicationList</span><span class="ͼv">.</span>indexOf(<span class="ͼ11">appInfo</span><span class="ͼv">.</span>get_id())),
+    <span class="ͼy">1</span>
+);</code></pre>
+<p>Primero ocurre: <span class="ͼ11">applicationList</span><span class="ͼv">.</span>indexOf(<span
+        class="ͼ11">appInfo</span><span class="ͼv">.</span>get_id()). Supongamos:</p>
+<pre><samp>applicationList
+[
+    "firefox.desktop",    // 0
+    "vlc.desktop",        // 1
+    "terminal.desktop"    // 2
+]</samp></pre>
+<p>Si hemos seleccionado <kbd class="inline-code">VLC</kbd>: <kbd class="inline-code">indexOf</kbd>("<var
+        class="inline-code">vlc</var>.<var class="inline-code">desktop"</var>) → 1 y simultáneamente: <span
+        class="ͼ11">indx</span> <span class="ͼv">=</span> <span class="ͼy">1</span>. Por eso la línea equivale
+    conceptualmente a:</p>
+<pre><code><span class="ͼv">let</span> <span class="ͼ11">indx</span> <span class="ͼv">=</span> <span class="ͼ11">applicationList</span><span class="ͼv">.</span>indexOf(<span class="ͼ11">appInfo</span><span class="ͼv">.</span>get_id());
+
+<span class="ͼ11">applicationList</span><span class="ͼv">.</span>splice(<span class="ͼ11">indx</span>, <span class="ͼy">1</span>);</code></pre>
+<p>El autor simplemente lo escribió de forma compacta.</p>
+<h4>Elimina el mismo índice </h4>
+<p>Elimina el mismo índice de las otras listas</p>
+<pre><code><span class="ͼ11">nameList</span><span class="ͼv">.</span>splice(<span class="ͼ11">indx</span>, <span class="ͼy">1</span>);
+<span class="ͼ11">scriptList</span><span class="ͼv">.</span>splice(<span class="ͼ11">indx</span>, <span class="ͼy">1</span>);</code></pre>
+<p>Esto es fundamental. Si eliminamos: <kbd class="inline-code">applicationList[1]</kbd> también eliminamos:</p>
+<pre><samp>nameList[1]
+scriptList[1]</samp></pre>
+<p>Por tanto:</p>
+<pre><samp>┌─────────────────────────────────────────┐
+│          PERFIL DE APLICACIÓN           │
+├─────────────────────────────────────────┤
+│ applicationList[i]                      │
+│ nameList[i]                             │
+│ scriptList[i]                           │
+└─────────────────────────────────────────┘
+                 │
+                 ▼
+             eliminar</samp></pre>
+<p>Esto confirma nuevamente que las tres entradas forman <strong data-start="2658" data-end="2684">una sola unidad
+        lógica</strong>.</p>
+<h4>Reinicia la selección</h4>
+<p>Recordemos que <code data-start="2780" data-end="2795">selectedIndex</code> lo utilizaba <code data-start="2809"
+        data-end="2826">appViewChange()</code>.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>selectedIndex <span class="ͼv">=</span> <span class="ͼv">-</span><span class="ͼy">1</span>;</code></pre>
+<p>El valor: <kbd class="inline-code">-1</kbd> representa aquí:</p>
+<blockquote>No hay ninguna aplicación seleccionada.</blockquote>
+<p>Y eso coincide con la lógica que vimos anteriormente:</p>
+<pre><code><span class="ͼv">if</span> (<span class="ͼy">this</span><span class="ͼv">.</span>selectedIndex <span class="ͼv">&gt;=</span> <span class="ͼy">0</span>) {
+    ...
+} <span class="ͼv">else</span> {
+    ...
+}</code></pre>
+<p>Por tanto, después de eliminar:</p>
+<pre><samp>selectedIndex = -1
+       │
+       ▼
+no hay perfil activo</samp></pre>
+<h4>Guarda las tres listas</h4>
+<p>Así la eliminación no es solamente visual.</p>
+<pre><code><span class="ͼ11">settings</span><span class="ͼv">.</span>set_strv(<span class="ͼz">'application-list'</span>, <span class="ͼ11">applicationList</span>);
+<span class="ͼ11">settings</span><span class="ͼv">.</span>set_strv(<span class="ͼz">'name-list'</span>, <span class="ͼ11">nameList</span>);
+<span class="ͼ11">settings</span><span class="ͼv">.</span>set_strv(<span class="ͼz">'script-list'</span>, <span class="ͼ11">scriptList</span>);</code></pre>
+<p>Se persiste en GSettings.</p>
+<h4>Elimina la fila del TreeView</h4>
+<p>Aquí vemos la otra mitad de la operación.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>_store<span class="ͼv">.</span>remove(<span class="ͼ11">iter</span>);</code></pre>
+<p>Ya eliminamos el perfil de GSettings:</p>
+<pre><samp>GSettings
+   │
+   ├── application-list
+   ├── name-list
+   └── script-list</samp></pre>
+<p>Ahora eliminamos también la fila visible:</p>
+<pre><samp>_store
+   │
+   └── TreeView</samp></pre>
+<p>Por lo tanto la interfaz se actualiza inmediatamente.</p>
+<h4>Y finalmente...</h4>
+<pre><code><span class="ͼ11">reloadApplicationProfiles</span>();</code></pre>
+<p>Vuelve a emitir: <kbd class="inline-code">reload-profiles-signal</kbd></p>
+<p>Así que cualquier parte de la extensión que esté observando esa señal puede reconstruir/recargar los perfiles.</p>
+<h4>Comparativa con addApp()</h4>
+<p>Ahora podemos ver claramente la pareja <code data-start="4717" data-end="4727">addApp()</code> ↔ <code
+        data-start="4730" data-end="4743">removeApp()</code></p>
+<table>
+    <thead>
+        <tr>
+            <th><code>addApp()</code></th>
+            <th><code>removeApp()</code></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Selecciona aplicación</td>
+            <td>Selecciona aplicación</td>
+        </tr>
+        <tr>
+            <td><code>push()</code> a las 3 listas</td>
+            <td><code>splice()</code> de las 3 listas</td>
+        </tr>
+        <tr>
+            <td>Crea nueva fila en <code>_store</code></td>
+            <td>Elimina fila de <code>_store</code></td>
+        </tr>
+        <tr>
+            <td>Guarda las 3 listas</td>
+            <td>Guarda las 3 listas</td>
+        </tr>
+        <tr>
+            <td><code>reloadApplicationProfiles()</code></td>
+            <td><code>reloadApplicationProfiles()</code></td>
+        </tr>
+    </tbody>
+</table>
+<h1>fileManagementDialogWindow: function(action) </h1>
