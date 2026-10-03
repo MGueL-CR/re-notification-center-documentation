@@ -4,78 +4,77 @@
 */
 
 :root {
-    interpolate-size: allow-keywords;
-    scroll-behavior: smooth;
+	interpolate-size: allow-keywords;
+	scroll-behavior: smooth;
 }
 
 strong,
 b {
-    font-weight: bold;
+	font-weight: bold;
 }
 
-p>span {
-    background-color: var(--cemphbg);
-    padding-left: 2px;
-    padding-right: 2px;
-    border: 1px solid var(--cemphbg);
-    border-radius: 4px;
+p > span {
+	background-color: var(--cemphbg);
+	padding-left: 2px;
+	padding-right: 2px;
+	border: 1px solid var(--cemphbg);
+	border-radius: 4px;
 }
 
 .row {
-    flex-wrap: wrap;
+	flex-wrap: wrap;
 }
 
 .row .col {
-    flex: 1;
-    max-width: 100%;
+	flex: 1;
+	max-width: 100%;
 }
 
-.row>.col>li {
-    margin-left: 1rem;
+.row > .col > li {
+	margin-left: 1rem;
 }
 
 @media (width <=720px) {
-    .row>[class^="col"] {
-        flex: 1 1 100%;
-    }
+	.row > [class^="col"] {
+		flex: 1 1 100%;
+	}
 }
 
 @media (width <=640px) {
-    .row {
-        flex-wrap: nowrap;
-    }
+	.row {
+		flex-wrap: nowrap;
+	}
 }
 
 body {
-    display: grid;
-    min-height: 100vh;
-    grid-template-rows: auto 1fr auto;
+	display: grid;
+	min-height: 100vh;
+	grid-template-rows: auto 1fr auto;
 }
 
-
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(15px);
-    }
+	from {
+		opacity: 0;
+		transform: translateY(15px);
+	}
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
 }
 
 .fade-in :not(aside) {
-    animation: fadeIn 600ms ease-in-out forwards;
+	animation: fadeIn 600ms ease-in-out forwards;
 }
 
 #headerPage,
 #mainContent {
-    scroll-margin-top: 4rem;
+	scroll-margin-top: 4rem;
 }
 
 #show-content {
-    position: relative;
+	position: relative;
 }
 
 #bloque01,
@@ -85,7 +84,7 @@ body {
 #bloque05,
 #bloque06,
 #bloque07 {
-    scroll-margin-top: 6rem;
+	scroll-margin-top: 6rem;
 }
 
 #enum1,
@@ -97,164 +96,162 @@ body {
 #enum7,
 #enum8,
 .class-prefs {
-    scroll-margin-top: 6rem;
+	scroll-margin-top: 6rem;
 }
 
 .keys-schemas {
-    scroll-margin-top: 6rem;
-    text-transform: capitalize;
+	scroll-margin-top: 6rem;
+	text-transform: capitalize;
 }
 
 .main-content {
-
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr;
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-template-rows: 1fr;
 }
 
 .logo-web {
-    position: relative;
-    background-image: url(/assets/images/favicon.ico);
-    background-repeat: no-repeat;
-    background-size: contain;
-    padding-left: 3rem !important;
-    font-weight: bold;
+	position: relative;
+	background-image: url(/assets/images/favicon.ico);
+	background-repeat: no-repeat;
+	background-size: contain;
+	padding-left: 3rem !important;
+	font-weight: bold;
 }
 
-
 .logo-web::before {
-    content: "Re:";
-    position: absolute;
-    top: 0;
-    left: 2.75rem;
-    font-style: italic;
-    color: var(--cfg);
+	content: "Re:";
+	position: absolute;
+	top: 0;
+	left: 2.75rem;
+	font-style: italic;
+	color: var(--cfg);
 }
 
 .logo-web::after {
-    content: "Documentación";
-    position: absolute;
-    right: 0.5rem;
-    bottom: -0.005rem;
-    font-size: smaller;
-    font-style: oblique;
-    color: var(--cmed);
+	content: "Documentación";
+	position: absolute;
+	right: 0.5rem;
+	bottom: -0.005rem;
+	font-size: smaller;
+	font-style: oblique;
+	color: var(--cmed);
 }
 
 .borderless {
-    border: none;
-    outline: none;
+	border: none;
+	outline: none;
 }
 
 .float-banner {
-    position: absolute;
-    margin: 0;
-    display: flex;
-    gap: 0.25rem;
-    left: 0;
-    right: 0;
-    counter-reset: bloque;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+	position: absolute;
+	margin: 0;
+	display: flex;
+	gap: 0.25rem;
+	left: 0;
+	right: 0;
+	counter-reset: bloque;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 }
 
 .float-span {
-    flex: 1 0 1rem;
-    cursor: pointer;
-    padding: 0.25em 0.5em;
-    background-color: var(--cemphbg);
-    border-top: 2px solid var(--cfg);
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
-    font-size: medium;
-    text-transform: uppercase;
-    text-align: center;
-    color: var(--cfg);
-    transition: all 300ms ease-out;
+	flex: 1 0 1rem;
+	cursor: pointer;
+	padding: 0.25em 0.5em;
+	background-color: var(--cemphbg);
+	border-top: 2px solid var(--cfg);
+	border-bottom-left-radius: 8px;
+	border-bottom-right-radius: 8px;
+	font-size: medium;
+	text-transform: uppercase;
+	text-align: center;
+	color: var(--cfg);
+	transition: all 300ms ease-out;
 }
 
 .float-span.select {
-    flex: 2;
-    background-color: var(--cmed);
-    border-top: 2px solid var(--clink);
-    font-weight: bold;
+	flex: 2;
+	background-color: var(--cmed);
+	border-top: 2px solid var(--clink);
+	font-weight: bold;
 }
 
 .float-span:hover {
-    flex: 3;
-    color: var(--cemph);
-    background-color: var(--cmed);
-    border-top: 2px solid var(--clink);
-    font-weight: bold;
+	flex: 3;
+	color: var(--cemph);
+	background-color: var(--cmed);
+	border-top: 2px solid var(--clink);
+	font-weight: bold;
 }
 
 .float-span::after {
-    counter-increment: bloque;
-    content: "B0" counter(bloque);
+	counter-increment: bloque;
+	content: "B0" counter(bloque);
 }
 
 .float-span:hover::after {
-    content: "bloque 0" counter(bloque);
+	content: "bloque 0" counter(bloque);
 }
 
 .float-span.select::after {
-    content: "bloque 0" counter(bloque) ":";
+	content: "bloque 0" counter(bloque) ":";
 }
 
-pre+hr,
-p+hr,
-table+hr {
-    margin-top: 1.75rem;
+pre + hr,
+p + hr,
+table + hr {
+	margin-top: 1.75rem;
 }
 
-hr:has(+pre),
-hr:has(+p),
+hr:has(+ pre),
+hr:has(+ p),
 hr:has(table) {
-    margin-bottom: 1.75rem;
+	margin-bottom: 1.75rem;
 }
 
 pre {
-    text-wrap: auto;
-    max-width: 100%;
-    white-space: pre-wrap;
-    overflow-wrap: break-word;
+	text-wrap: auto;
+	max-width: 100%;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
 }
 
 pre:has(> samp) {
-    padding: 0.8rem;
-    border-radius: 0.4rem;
-    background-color: var(--clight);
-    border: 1px solid var(--cmed);
-    color: var(--cfg);
+	padding: 0.8rem;
+	border-radius: 0.4rem;
+	background-color: var(--clight);
+	border: 1px solid var(--cmed);
+	color: var(--cfg);
 }
 
-pre>samp {
-    display: block;
+pre > samp {
+	display: block;
 }
 
 pre:has(> .cm-line) {
-    padding: 0.8rem;
-    border-radius: 0.4rem;
-    background-color: var(--clight);
-    border: 1px solid var(--cmed);
-    border-left: .4rem solid var(--cemph);
-    color: var(--cfg);
+	padding: 0.8rem;
+	border-radius: 0.4rem;
+	background-color: var(--clight);
+	border: 1px solid var(--cmed);
+	border-left: 0.4rem solid var(--cemph);
+	color: var(--cfg);
 }
 
-pre>.cm-line {
-    font: var(--font-c);
-    margin: 0;
-    position: relative;
-    padding: .2em;
+pre > .cm-line {
+	font: var(--font-c);
+	margin: 0;
+	position: relative;
+	padding: 0.2em;
 }
 
 table th {
-    background-color: var(--clight);
+	background-color: var(--clight);
 }
 
 table :is(th, td) {
-    text-align: start;
-    white-space: normal;
+	text-align: start;
+	white-space: normal;
 }
 
 /**
@@ -263,103 +260,106 @@ table :is(th, td) {
 */
 
 .list-blocks {
-    position: fixed;
-    display: flex;
-    justify-content: end;
-    width: fit-content;
-    top: 50%;
-    right: 1rem;
-    transform: translateY(-50%);
-    z-index: 1;
-    gap: 0;
+	position: fixed;
+	display: flex;
+	justify-content: end;
+	width: fit-content;
+	top: 50%;
+	right: 1rem;
+	transform: translateY(-50%);
+	z-index: 1;
+	gap: 0;
 }
 
 .list-blocks .symbol-tab {
-    place-self: center;
+	place-self: center;
 }
 
 .list-blocks .symbol-tab .symbol {
-    cursor: pointer;
-    padding: 1rem 0.5rem;
-    border-start-start-radius: 6px;
-    border-end-start-radius: 6px;
-    background-color: var(--cbg);
-    border: 1px solid var(--cmed);
+	cursor: pointer;
+	padding: 1rem 0.5rem;
+	border-start-start-radius: 6px;
+	border-end-start-radius: 6px;
+	background-color: var(--cbg);
+	border: 1px solid var(--cmed);
 }
 
-.list-blocks .symbol-tab:has(+.card:hover) .symbol {
-    visibility: hidden;
+.list-blocks .symbol-tab:has(+ .card:hover) .symbol {
+	visibility: hidden;
 }
 
 .list-blocks .symbol-tab .symbol .icon-bar {
-    height: 2rem;
-    border: 1px solid var(--clink);
+	height: 2rem;
+	border: 1px solid var(--clink);
 }
 
 .list-blocks .card {
-    visibility: collapse;
-    opacity: 0;
-    display: flex;
-    flex-direction: column;
-    width: 0;
-    margin: 0;
-    padding: 0;
-    background-color: var(--cbg);
-    gap: 0.25rem;
-    transition: all 750ms ease-in-out;
+	visibility: collapse;
+	opacity: 0;
+	display: flex;
+	flex-direction: column;
+	width: 0;
+	margin: 0;
+	padding: 0;
+	background-color: var(--cbg);
+	gap: 0.25rem;
+	transition: all 750ms ease-in-out;
 }
 
-.list-blocks .symbol-tab:hover+.card,
+.list-blocks .symbol-tab:hover + .card,
 .list-blocks .card:hover {
-    visibility: visible;
-    opacity: 1;
-    width: fit-content;
-    box-shadow: 0 0 6px 1px var(--cemphbg), 0 0 4px 0 var(--cmed), 0 0 3px 0 var(--cemph);
+	visibility: visible;
+	opacity: 1;
+	width: fit-content;
+	box-shadow:
+		0 0 6px 1px var(--cemphbg),
+		0 0 4px 0 var(--cmed),
+		0 0 3px 0 var(--cemph);
 }
 
 .list-blocks .card p {
-    position: relative;
-    font-size: large;
-    font-weight: bold;
-    margin: 0.6rem;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
+	position: relative;
+	font-size: large;
+	font-weight: bold;
+	margin: 0.6rem;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
 }
 
 .list-blocks .card .list-links {
-    display: flex;
-    flex-direction: column;
-    gap: 0.55rem;
-    max-height: 60vh;
-    max-width: 14rem;
-    margin: 0.6rem;
-    margin-top: 0;
-    padding: 0.3rem;
-    overflow-y: auto;
-    scrollbar-width: none;
+	display: flex;
+	flex-direction: column;
+	gap: 0.55rem;
+	max-height: 60vh;
+	max-width: 14rem;
+	margin: 0.6rem;
+	margin-top: 0;
+	padding: 0.3rem;
+	overflow-y: auto;
+	scrollbar-width: none;
 }
 
 .list-blocks .card .list-links a {
-    direction: ltr;
-    flex-shrink: 0;
-    padding: 0.25rem 0.6rem;
-    border-radius: 0.25rem;
-    outline: 1px solid transparent;
-    outline-offset: -1px;
-    font-size: clamp(12px, 1.5vw, 18px);
-    font-weight: 600;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    transition: all 150ms ease-in-out;
+	direction: ltr;
+	flex-shrink: 0;
+	padding: 0.25rem 0.6rem;
+	border-radius: 0.25rem;
+	outline: 1px solid transparent;
+	outline-offset: -1px;
+	font-size: clamp(12px, 1.2vw, 16px);
+	font-weight: 600;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	transition: all 150ms ease-in-out;
 }
 
 .list-blocks .card .list-links a:hover {
-    text-overflow: clip;
-    background-color: var(--cemphbg);
-    outline-color: var(--cemph);
-    outline-offset: 2px;
+	text-overflow: clip;
+	background-color: var(--cemphbg);
+	outline-color: var(--cemph);
+	outline-offset: 2px;
 }
 
 /**
@@ -368,32 +368,31 @@ table :is(th, td) {
 */
 
 .menu-top li {
-    color: var(--cemph);
+	color: var(--cemph);
 }
 
-.menu-top li>a {
-    font-size: large;
+.menu-top li > a {
+	font-size: large;
 }
 
 .menu-top li:hover:not(.logo-web) {
-    cursor: pointer;
-    color: var(--clink);
-    background-color: var(--cemphbg);
+	cursor: pointer;
+	color: var(--clink);
+	background-color: var(--cemphbg);
 }
 
-.menu-top ul>li>ul {
-    margin-top: 0.75rem;
-    padding: 0.5rem 0;
+.menu-top ul > li > ul {
+	margin-top: 0.75rem;
+	padding: 0.5rem 0;
 }
 
-.menu-top ul>li>ul hr {
-    margin: 0.5rem;
+.menu-top ul > li > ul hr {
+	margin: 0.5rem;
 }
 
-.menu-top ul>li>ul>li {
-    padding: 0.5rem 1rem;
+.menu-top ul > li > ul > li {
+	padding: 0.5rem 1rem;
 }
-
 
 /**
 *   Seccion para personalizar la pagina de error 404.
@@ -401,27 +400,27 @@ table :is(th, td) {
 */
 
 .error-404-page {
-    position: relative;
-    height: 60vh;
+	position: relative;
+	height: 60vh;
 }
 
 .error-404-code {
-    position: absolute;
-    bottom: 0;
-    width: fit-content;
+	position: absolute;
+	bottom: 0;
+	width: fit-content;
 }
 
 .error-404-icon {
-    position: absolute;
-    top: 5rem;
-    right: 0;
-    background-image: url(/assets/images/404-icon.png);
-    background-repeat: no-repeat;
-    background-position: right center;
-    background-size: contain;
-    background-clip: border-box;
-    height: 50vh;
-    z-index: -1;
+	position: absolute;
+	top: 5rem;
+	right: 0;
+	background-image: url(/assets/images/404-icon.png);
+	background-repeat: no-repeat;
+	background-position: right center;
+	background-size: contain;
+	background-clip: border-box;
+	height: 50vh;
+	z-index: -1;
 }
 
 /**
@@ -434,114 +433,114 @@ table :is(th, td) {
 .list-level-2,
 .list-level-3,
 .list-level-4 {
-    list-style: none;
-    margin: 0;
+	list-style: none;
+	margin: 0;
 }
 
 .main-list {
-    position: sticky;
-    top: 4rem;
-    counter-reset: section;
+	position: sticky;
+	top: 4rem;
+	counter-reset: section;
 }
 
-.main-list>li {
-    counter-reset: section-1;
-    cursor: pointer;
+.main-list > li {
+	counter-reset: section-1;
+	cursor: pointer;
 }
 
 .list-level-1,
 .list-level-2,
 .list-level-3,
 .list-level-4 {
-    padding-left: 1rem;
+	padding-left: 1rem;
 }
 
 .main-list .list-item {
-    padding: 2px 4px;
-    border-radius: 3px;
-    transition: all 150ms ease;
-    background-color: var(--cemphbg);
+	padding: 2px 4px;
+	border-radius: 3px;
+	transition: all 150ms ease;
+	background-color: var(--cemphbg);
 }
 
-.main-list .list-item+.list-level-1,
-.main-list .list-item+.list-level-2,
-.main-list .list-item+.list-level-3 {
-    visibility: collapse;
-    height: 0;
-    transition: height 350ms ease-in 150ms;
+.main-list .list-item + .list-level-1,
+.main-list .list-item + .list-level-2,
+.main-list .list-item + .list-level-3 {
+	visibility: collapse;
+	height: 0;
+	transition: height 350ms ease-in 150ms;
 }
 
-.main-list .list-item:hover+.list-level-1,
-.main-list .list-item:hover+.list-level-2,
-.main-list .list-item:hover+.list-level-3 {
-    height: auto;
-    visibility: visible;
+.main-list .list-item:hover + .list-level-1,
+.main-list .list-item:hover + .list-level-2,
+.main-list .list-item:hover + .list-level-3 {
+	height: auto;
+	visibility: visible;
 }
 
-.main-list .list-item+.list-level-1:hover,
-.main-list .list-item+.list-level-2:hover,
-.main-list .list-item+.list-level-3:hover {
-    height: fit-content;
-    visibility: visible;
+.main-list .list-item + .list-level-1:hover,
+.main-list .list-item + .list-level-2:hover,
+.main-list .list-item + .list-level-3:hover {
+	height: fit-content;
+	visibility: visible;
 }
 
 .main-list .list-item:hover {
-    color: var(--cemph);
-    background-color: var(--cbg);
+	color: var(--cemph);
+	background-color: var(--cbg);
 }
 
-.main-list>li::before {
-    counter-increment: section;
-    content: counter(section) ". ";
+.main-list > li::before {
+	counter-increment: section;
+	content: counter(section) ". ";
 }
 
-.main-list .list-level-1>li {
-    counter-reset: section-2;
-    cursor: pointer;
+.main-list .list-level-1 > li {
+	counter-reset: section-2;
+	cursor: pointer;
 }
 
-.main-list .list-level-1>li::before {
-    counter-increment: section-1;
-    content: counter(section) "." counter(section-1) ". ";
+.main-list .list-level-1 > li::before {
+	counter-increment: section-1;
+	content: counter(section) "." counter(section-1) ". ";
 }
 
-.main-list .list-item:has(+.list-level-1)::after,
-.main-list .list-item:has(+.list-level-2)::after,
-.main-list .list-item:has(+.list-level-3)::after,
-.main-list .list-item:has(+.list-level-4)::after {
-    content: '⯆';
-    margin-left: 0.25rem;
-    transition: all 350ms ease;
+.main-list .list-item:has(+ .list-level-1)::after,
+.main-list .list-item:has(+ .list-level-2)::after,
+.main-list .list-item:has(+ .list-level-3)::after,
+.main-list .list-item:has(+ .list-level-4)::after {
+	content: "⯆";
+	margin-left: 0.25rem;
+	transition: all 350ms ease;
 }
 
-.main-list .list-level-1 .list-level-2>li {
-    counter-reset: section-3;
-    cursor: pointer;
+.main-list .list-level-1 .list-level-2 > li {
+	counter-reset: section-3;
+	cursor: pointer;
 }
 
-.main-list .list-level-1 .list-level-2>li::before {
-    counter-increment: section-2;
-    content: counter(section) "." counter(section-1) "." counter(section-2) ". ";
+.main-list .list-level-1 .list-level-2 > li::before {
+	counter-increment: section-2;
+	content: counter(section) "." counter(section-1) "." counter(section-2) ". ";
 }
 
-.main-list .list-level-1 .list-level-2 .list-level-3>li {
-    counter-reset: section-4;
-    cursor: pointer;
+.main-list .list-level-1 .list-level-2 .list-level-3 > li {
+	counter-reset: section-4;
+	cursor: pointer;
 }
 
-.main-list .list-level-1 .list-level-2 .list-level-3>li::before {
-    counter-increment: section-3;
-    content: counter(section) "." counter(section-1) "." counter(section-2) "." counter(section-3) ". ";
+.main-list .list-level-1 .list-level-2 .list-level-3 > li::before {
+	counter-increment: section-3;
+	content: counter(section) "." counter(section-1) "." counter(section-2) "." counter(section-3) ". ";
 }
 
-
-.main-list .list-level-1 .list-level-2 .list-level-3 .list-level-4>li {
-    cursor: pointer;
+.main-list .list-level-1 .list-level-2 .list-level-3 .list-level-4 > li {
+	cursor: pointer;
 }
 
-.main-list .list-level-1 .list-level-2 .list-level-3 .list-level-4>li::before {
-    counter-increment: section-4;
-    content: counter(section) "." counter(section-1) "." counter(section-2) "." counter(section-3) "." counter(section-4) ". ";
+.main-list .list-level-1 .list-level-2 .list-level-3 .list-level-4 > li::before {
+	counter-increment: section-4;
+	content: counter(section) "." counter(section-1) "." counter(section-2) "." counter(section-3) "."
+		counter(section-4) ". ";
 }
 
 /** 
@@ -550,79 +549,79 @@ table :is(th, td) {
 */
 
 .ͼe {
-    color: var(--cemph);
-    font-style: italic;
-    filter: sepia(55%)
+	color: var(--cemph);
+	font-style: italic;
+	filter: sepia(55%);
 }
 
 .ͼf,
 .ͼo {
-    /* color: #1f4e94; */
-    color: var(--clink);
-    filter: brightness(33%);
+	/* color: #1f4e94; */
+	color: var(--clink);
+	filter: brightness(33%);
 }
 
 .ͼg {
-    color: #ab4f7a;
-    padding: 0 3px;
-    font-weight: bold;
+	color: #ab4f7a;
+	padding: 0 3px;
+	font-weight: bold;
 }
 
 .ͼj {
-    color: var(--clink);
-    filter: sepia(40%)
+	color: var(--clink);
+	filter: sepia(40%);
 }
 
 .ͼk {
-    color: #3a843f;
+	color: #3a843f;
 }
 
 .ͼl {
-    color: #ac4f23;
+	color: #ac4f23;
 }
 
 .ͼm {
-    color: var(--cemph);
-    filter: brightness(65%);
+	color: var(--cemph);
+	filter: brightness(65%);
 }
 
 .ͼn {
-    color: #b8802b;
+	color: #b8802b;
 }
 
 .ͼt {
-    color: #8d8d8d;
+	color: #8d8d8d;
 }
 
 .ͼv {
-    color: #f8a6c8;
+	color: #f8a6c8;
 }
 
 .ͼz {
-    color: #83d197;
+	color: #83d197;
 }
 
 .ͼy {
-    color: #f1a275;
+	color: #f1a275;
 }
 
 .cm-line {
-    display: block;
-    padding: 0 2px 0 6px;
+	display: block;
+	padding: 0 2px 0 6px;
 }
 
 .ͼ10 {
-    color: #f1a275;
+	color: #f1a275;
 }
 
 .ͼ11 {
-    color: #b897f4;
+	color: #b897f4;
 }
 
 .ͼ12 {
-    color: #f9dc78;
+	color: #f9dc78;
 }
 
 .ͼ13 {
-    color: #63a8f8;
+	color: #63a8f8;
 }

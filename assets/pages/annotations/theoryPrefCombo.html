@@ -1,0 +1,91 @@
+<h3>Una teoría en prefCombo()</h3>
+<hr>
+<p>Recuerdas esta parte: .<span class="ͼ11">substring</span>(<span class="ͼy">0</span>, <span
+        class="ͼ11">application</span><span class="ͼv">.</span>length <span class="ͼv">-</span> <span
+        class="ͼy">8</span>) de la funcion <span class="ͼ11">appInfo</span>().</p>
+<blockquote>Me parece que de cierta forma esta relacionado con el nombre original del programa. Busca eliminar el <q
+        class="inline-code">.desktop</q>.</blockquote>
+<p>Por ejemplo:</p>
+<p>Si tenemos "firefox.desktop" y le restamos las ultimas 8 posiciones solo queda como "<var
+        class="inline-code">firefox</var>", quiere decir que esta removiendo ".<var class="inline-code">desktop</var>".
+    Solo lo propongo por que coincide con la cantidad de caracteres o la logitud, igual aplicaria con "Terminal.desktop"
+</p>
+<h4>El análisis</h4>
+<p>Sí, <strong data-start="4" data-end="36">esa observación es muy buena</strong> y ahora que vimos <code
+        data-start="55" data-end="70">refreshList()</code> podemos darle mucho más sentido.</p>
+<p>Tienes razón con el cálculo: ".<b><i>desktop</i></b>" tiene <strong data-start="165" data-end="181">8
+        caracteres</strong>:</p>
+<pre><samp>. d e s k t o p
+1 2 3 4 5 6 7 8</samp></pre>
+<p>Por tanto: .<span class="ͼ11">substring</span>(<span class="ͼy">0</span>, <span class="ͼ11">application</span><span
+        class="ͼv">.</span>length <span class="ͼv">-</span> <span class="ͼy">8</span>) está tomando todo el string
+    <strong data-start="326" data-end="362">excepto los últimos 8 caracteres</strong>.
+</p>
+<h5>Ejemplo:</h5>
+<p>Si: <code class="inline-code">application</code> = "<var class="inline-code">firefox.desktop</var>" tenemos:</p>
+<pre><samp>firefox.desktop
+&lt;-------&gt;&lt;----&gt;
+ firefox  .desktop
+    7        8</samp></pre>
+<p>Entonces: <span class="ͼ11">application</span><span class="ͼv">.</span>length <span class="ͼv">-</span> <span
+        class="ͼy">8 </span>deja: firefox y con: <span class="ͼ11">application</span><span
+        class="ͼv">.</span>substring(<span class="ͼy">0</span>, <span class="ͼy">7</span>) obtenemos: "<var
+        class="inline-code">firefox</var>"</p>
+<h4>Pero hay un detalle importante</h4>
+<p>En <code data-start="732" data-end="745">prefCombo()</code> no solamente hace: <span
+        class="ͼ11">substring</span>(...)</p>
+<p>Antes transforma el ID:</p>
+<pre><samp><span class="ͼ11">application</span>
+    <span class="ͼ11">↓</span>
+<span class="ͼ11">toLowerCase</span>()
+    <span class="ͼ11">↓</span>
+<span class="ͼ11">replace</span>(<span class="ͼz">/[^a-z0-9-]/g</span>, <span class="ͼz">'-'</span>)
+    <span class="ͼ11">↓</span>
+<span class="ͼ11">replace</span>(<span class="ͼz">/--+/g</span>, <span class="ͼz">'-'</span>)
+    <span class="ͼ11">↓</span>
+<span class="ͼ11">substring</span>(<span class="ͼy">0</span>, <span class="ͼ11">application</span><span class="ͼv">.</span>length<span class="ͼv">-</span><span class="ͼy">8</span>)</samp></pre>
+<p>Así que <strong data-start="986" data-end="1150">parece estar intentando transformar el identificador <code
+            data-start="1041" data-end="1051">.desktop</code> en el nombre que utiliza GNOME para la ruta de
+        configuración de notificaciones de esa aplicación</strong>.</p>
+<p>Y esto encaja especialmente bien con la ruta: <kbd
+        class="inline-code">/org/gnome/desktop/notifications/application/</kbd> que vimos.</p>
+<h4>¿Y <code data-start="1283" data-end="1301">Terminal.desktop</code>?</h4>
+<p>Sí: <kbd class="inline-code">Terminal</kbd>.<var class="inline-code">desktop</var> tiene 16 caracteres.</p>
+<pre><samp>Terminal = 8
+.desktop  = 8</samp></pre>
+<p>Entonces: <span class="ͼz">"Terminal.desktop"</span><span class="ͼv">.</span>substring(<span class="ͼy">0</span>,
+    <span class="ͼy">16</span> <span class="ͼv">-</span> <span class="ͼy">8</span>)
+    produce: "<kbd class="inline-code">Terminal</kbd>". Después <code data-start="1515"
+        data-end="1530">toLowerCase()</code> produciría: "<var class="inline-code">terminal</var>"
+</p>
+<h4>Una pista que debemos comprobar</h4>
+<p>El código utiliza: <span class="ͼ11">application</span><span class="ͼv">.</span>length <span class="ͼv">-</span>
+    <span class="ͼy">8</span> pero el <code data-start="1701" data-end="1714">substring()</code> se aplica <strong
+        data-start="1725" data-end="1760">después de las transformaciones</strong>:
+</p>
+<pre><code><span class="ͼ11">application</span>
+    <span class="ͼv">.</span>toLowerCase()
+    <span class="ͼv">.</span>replace(...)
+    <span class="ͼv">.</span>replace(...)
+    <span class="ͼv">.</span>substring(<span class="ͼy">0</span>, <span class="ͼ11">application</span><span class="ͼv">.</span>length <span class="ͼv">-</span> <span class="ͼy">8</span>)</code></pre>
+<p>El <code data-start="1894" data-end="1914">application.length</code> utilizado como segundo parámetro sigue siendo la
+    longitud del <strong data-start="1977" data-end="1996">string original</strong>, porque <code data-start="2005"
+        data-end="2018">application</code> no fue reasignado. Eso puede funcionar mientras las transformaciones
+    anteriores no cambien la longitud de forma relevante, pero es un código bastante frágil.</p>
+<p>Por ejemplo, si el ID contiene caracteres que <code data-start="2225" data-end="2236">replace()</code> convierte en
+    <code data-start="2250" data-end="2253">-</code>, la longitud podría cambiar por las sustituciones/reducciones de
+    <code data-start="2319" data-end="2323">--</code>. Así que <strong data-start="2334" data-end="2425">no debemos
+        asumir todavía que simplemente está haciendo un "remove <code data-start="2403" data-end="2413">.desktop</code>"
+        perfecto</strong>.
+</p>
+<p>Pero tu hipótesis sobre la intención es muy razonable:</p>
+<blockquote>Probablemente está eliminando el sufijo <code data-start="2528" data-end="2538">.desktop</code> del ID de la
+    aplicación para construir el identificador utilizado por el esquema de notificaciones de GNOME.</blockquote>
+<p>Y ahora que conocemos <code data-start="2673" data-end="2717">Gio.DesktopAppInfo.new(applicationList[i])</code>,
+    tenemos todavía más contexto: <code data-start="2749" data-end="2767">application-list</code> efectivamente contiene
+    identificadores de aplicaciones <code data-start="2823" data-end="2833">.desktop</code>.</p>
+<p>En <strong data-start="2839" data-end="3006"><code data-start="2972"
+            data-end="3003">setNotificationBannerPolicy()</code>.</strong> Esa función debería decirnos exactamente qué
+    espera como primer parámetro y ahí podremos comprobar si <code data-start="3109"
+        data-end="3118">firefox</code>/<code data-start="3119" data-end="3129">terminal</code> es realmente el formato
+    requerido.</p>

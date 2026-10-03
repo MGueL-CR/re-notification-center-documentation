@@ -253,4 +253,87 @@
 └── prefTime()
     └── GSettings integer → SpinButton</samp></pre>
     </div>
+    <input type="radio" name="tabs-maps" id="tb5">
+    <label for="tb5">PrefsWindowForAppList</label>
+    <div class="tab">
+        <h4>Mapa completo del nodo: PrefsWindowForAppList</h4>
+        <pre><samp>PrefsWindowForAppList_NotificationCenterExtension
+            │
+            ├── _init()
+            │   └── inicializa Gtk.Grid
+            │
+            ├── appViewChange()
+            │   ├── obtiene las listas
+            │   │   ├── application-list
+            │   │   ├── name-list
+            │   │   └── script-list
+            │   ├── determina selectedIndex
+            │   ├── carga script-list[selectedIndex]
+            │   ├── actualiza scriptLocation
+            │   ├── actualiza AppLabel
+            │   └── actualiza AppIcon
+            │
+            ├── attachLabel()
+            │   └── obtiene summary desde GSettings
+            │
+            ├── addApp()
+            │   ├── selecciona aplicación
+            │   ├── abre AppChooser
+            │   ├── obtiene Gio.AppInfo
+            │   ├── agrega:
+            │   │   ├── application-list
+            │   │   ├── name-list
+            │   │   └── script-list
+            │   ├── actualiza _store
+            │   └── reloadApplicationProfiles()
+            │
+            ├── displayPrefs()
+            │   ├── makeList()
+            │   ├── showPrefs()
+            │   └── refreshList()
+            │
+            ├── makeList()
+            │   └── construye TreeView + ListStore
+            │   ├── crea Gtk.ListStore
+            │   ├── define columnas
+            │   ├── crea Gtk.TreeView
+            │   └── configura Application List
+            │
+            ├── prefCombo()
+            │   └── configura una key string
+            │       └── para for-list también modifica show-banners
+            │
+            ├── prefSwitch()
+            │   └── configura una key boolean
+            │
+            ├── refreshList()
+            │   ├── reconstruye la lista
+            │   └── elimina aplicaciones inexistentes
+            │
+            ├── removeApp()
+            │   ├── elimina application-list[i]
+            │   ├── elimina name-list[i]
+            │   ├── elimina script-list[i]
+            │   └── reloadApplicationProfiles()
+            │
+            ├── fileManagementDialogWindow()
+            │   ├── selector de archivos
+            │   ├── filtro *.sh
+            │   └── coloca ruta en scriptLocation
+            │
+            ├── showPrefs()
+            │   ├── construye interfaz
+            │   ├── conecta botones
+            │   ├── gestiona for-list
+            │   ├── gestiona run-script
+            │   ├── gestiona scriptLocation
+            │   ├── Set → guarda script-list[i]
+            │   ├── Clear → limpia script-list[i]
+            │   └── TreeView → appViewChange()
+            │
+            └── setNotificationBannerPolicy()
+                └── modifica:
+                    org.gnome.desktop.notifications.application
+                        └── show-banners</samp></pre>
+    </div>
 </div>

@@ -1,4 +1,33 @@
-<h2>PrefsWindowForAppList</h2>
+<aside class="list-blocks">
+    <div class="symbol-tab">
+        <div class="symbol">
+            <div class="icon-bar"></div>
+        </div>
+    </div>
+    <div class="card">
+        <p>Secciones:</p>
+        <div class="list-links">
+            <a href="#section1">PrefsWindowForAppList</a>
+            <a href="#section2">_init ( ) { ... }</a>
+            <hr>
+            <a href="#section3">appViewChange()</a>
+            <a href="#section4">attachLabel()</a>
+            <a href="#section5">addApp ()</a>
+            <a href="#section6">displayPrefs ()</a>
+            <a href="#section7">makeList ()</a>
+            <a href="#section8">prefCombo ()</a>
+            <a href="#section9">prefSwitch ()</a>
+            <a href="#section10">refreshList ()</a>
+            <a href="#section11">removeApp ()</a>
+            <a href="#section12">fileManagementDialogWindow ()</a>
+            <a href="#section13">showPrefs ()</a>
+            <a href="#section14">setNotificationBannerPolicy ()</a>
+            <hr>
+            <a href="#section15">Observaciones</a>
+        </div>
+    </div>
+</aside>
+<h2 id="section1" class="class-prefs">PrefsWindowForAppList</h2>
 <hr>
 <p>Aquí empezamos con otra de las clases <strong data-start="48" data-end="63">específicas</strong> de preferencias,
     esta ya tiene una responsabilidad concreta: <strong data-start="184" data-end="255">las preferencias relacionadas
@@ -42,7 +71,7 @@
 <p>Esto significa que esta clase puede utilizar directamente: <span class="ͼy">this</span><span
         class="ͼv">.</span>attach(...) igual que la clase anterior. Por lo tanto, probablemente construirá su interfaz
     como una cuadrícula.</p>
-<h3>_init: ( ) { ... }</h3>
+<h3 id="section2" class="class-prefs">_init: ( ) { ... }</h3>
 <hr>
 <pre><code><span class="ͼ13">_init</span>: <span class="ͼv">function</span>() {
     <span class="ͼy">this</span><span class="ͼv">.</span>parent();
@@ -63,7 +92,7 @@ inicializa Gtk.Grid</samp></pre>
 <p>A diferencia de la clase anterior, aquí no está pasando parámetros: <span class="ͼy">this</span><span
         class="ͼv">.</span>parent(); Así que está utilizando la configuración predeterminada del <code data-start="2045"
         data-end="2055">Gtk.Grid</code>.</p>
-<h3> appViewChange: function() { ... }</h3>
+<h3 id="section3" class="class-prefs">appViewChange: function() { ... }</h3>
 <hr>
 <p>Aquí sí aparece una pieza <strong data-start="26" data-end="44">muy importante</strong> para nuestros expedientes.
     Este método empieza a revelar cómo se relacionan <code data-start="121" data-end="139">application-list</code>,
@@ -233,7 +262,7 @@ browseButton
 <p>Eso probablemente significa que <strong data-start="6099" data-end="6194">alguna otra acción tiene que modificar el
         Entry antes de permitir guardar/aplicar el cambio</strong>. Lo veremos cuando encontremos qué hace <code
         data-start="6236" data-end="6247">setButton</code>.</p>
-<h3>attachLabel: function(KEY, pos, box)</h3>
+<h3 id="section4" class="class-prefs">attachLabel: function(KEY, pos, box)</h3>
 <hr>
 <p>Este método es sencillo y además nos muestra que esta clase tiene su <strong data-start="73" data-end="111">propia
         variante de <code data-start="94" data-end="109">attachLabel()</code></strong>, adaptada a un <code
@@ -312,7 +341,7 @@ Clase AppList:
 <p>Y esto nos da una pista de que más adelante probablemente veremos métodos que crean distintos <code data-start="2353"
         data-end="2363">Gtk.Grid</code>/contenedores y luego utilizan este <code data-start="2399"
         data-end="2414">attachLabel()</code> para construirlos.</p>
-<h3>addApp: function() { ... }</h3>
+<h3 id="section5" class="class-prefs">addApp: function() { ... }</h3>
 <hr>
 <pre><code><span class="ͼ13">addApp</span>: <span class="ͼv">function</span>() { <span class="ͼ13">...</span> }</code></pre>
 <p>La finalidad general es:</p>
@@ -512,7 +541,7 @@ scriptList.push("")</samp></pre>
 }</code></pre>
 <p>No recarga toda la extensión. Está enviando específicamente la señal: <var
         class="inline-code">reload-profiles-signal</var> que solicita una recarga general de la extensión.</p>
-<h3>displayPrefs: function() { ... }</h3>
+<h3 id="section6" class="class-prefs">displayPrefs: function() { ... }</h3>
 <hr>
 <p>Este método es corto, pero cumple una función importante: <strong data-start="68" data-end="139">coordina la
         construcción y carga inicial de la interfaz de Profiles</strong>.</p>
@@ -549,7 +578,7 @@ script-list</samp></pre>
 </ol>
 <p>No vamos a cerrar todavía el significado de ninguno de los tres; los iremos descubriendo cuando lleguemos a sus
     métodos.</p>
-<h3>makeList: function() { ... }</h3>
+<h3 id="section7" class="class-prefs">makeList: function() { ... }</h3>
 <hr>
 <p>Aquí <code data-start="5" data-end="17">makeList()</code> empieza a mostrar <strong data-start="36"
         data-end="94">cómo se construye visualmente la lista de aplicaciones</strong> que luego utiliza <code
@@ -773,7 +802,7 @@ script-list[selectedIndex]</samp></pre>
     saber qué hacen <code data-start="7378" data-end="7391">showPrefs()</code> y <code data-start="7394"
         data-end="7409">refreshList()</code>, y esos dos métodos seguramente terminarán de explicar cómo se presenta y
     modifica ese dato.</p>
-<h3>prefCombo: function(KEY, pos, options, items, box) </h3>
+<h3 id="section8" class="class-prefs">prefCombo: function(KEY, pos, options, items, box) </h3>
 <hr>
 <p>Aquí aparece una variante de <code data-start="29" data-end="42">prefCombo()</code> bastante más interesante que la
     que vimos en la clase genérica. La diferencia importante está en <strong data-start="140" data-end="186">qué hace
@@ -947,7 +976,7 @@ reloadApplicationProfiles()</samp></pre>
             data-end="6430">prefCombo()</code></strong> para saber exactamente qué configuración está modificando.</p>
 <p>Así que no intentaría identificarla todavía. Cuando lleguemos a <code data-start="6557"
         data-end="6570">showPrefs()</code> probablemente tendremos la respuesta.</p>
-<h3>prefSwitch: function(KEY, pos, box) </h3>
+<h3 id="section9" class="class-prefs">prefSwitch: function(KEY, pos, box) </h3>
 <hr>
 <p>Sí, aquí tenemos nuevamente la variante de <code data-start="43" data-end="57">prefSwitch()</code>, y en realidad es
     casi idéntica a la que vimos en la clase genérica.</p>
@@ -1015,7 +1044,7 @@ gschema
 "Run scripts on new notification"</samp></pre>
 <p>Y entonces podremos interpretar el propósito real del control en lugar de hacerlo solamente por el nombre del método.
 </p>
-<h3>refreshList: function() { ... }</h3>
+<h3 id="section10" class="class-prefs">refreshList: function() { ... }</h3>
 <hr>
 <p>Aquí <code data-start="5" data-end="20">refreshList()</code> confirma varias cosas que veníamos deduciendo y además
     aparece una función de <strong data-start="99" data-end="144">limpieza automática de perfiles inválidos</strong>.
@@ -1163,7 +1192,7 @@ guarda nuevamente las tres listas</samp></pre>
 <p>Por tanto, <code data-start="4949" data-end="4964">refreshList()</code> funciona como una especie de:</p>
 <blockquote>Sincronización/limpieza de los perfiles almacenados con las aplicaciones que realmente existen en el
     sistema.</blockquote>
-<h3>removeApp: function() { ... }</h3>
+<h3 id="section11" class="class-prefs">removeApp: function() { ... }</h3>
 <hr>
 <p><code data-start="4" data-end="17">removeApp()</code> es prácticamente la operación inversa de <code data-start="59"
         data-end="69">addApp()</code>, y ahora que ya conocemos la estructura de las tres listas, se entiende bastante
@@ -1313,4 +1342,911 @@ no hay perfil activo</samp></pre>
         </tr>
     </tbody>
 </table>
-<h1>fileManagementDialogWindow: function(action) </h1>
+<h3 id="section12" class="class-prefs">fileManagementDialogWindow: function( action )</h3>
+<hr>
+<p>Aquí ya entramos directamente en la parte que maneja <strong data-start="53" data-end="96">el archivo de script
+        asociado al perfil</strong>, así que este método es bastante relevante para nuestro expediente de <code
+        data-start="167" data-end="180">script-list</code>.</p>
+<pre><code><span class="ͼ13">fileManagementDialogWindow</span>: <span class="ͼv">function</span>(<span class="ͼ11">action</span>) { ... }</code></pre>
+<p>Recibe <code data-start="256" data-end="264">action</code>, que posteriormente se entrega a <code data-start="298"
+        data-end="321">Gtk.FileChooserDialog</code>.</p>
+<h4>Define el filtro de archivos</h4>
+<p>Crea un filtro para decidir qué archivos aparecen como válidos en el selector.</p>
+<pre><code><span class="ͼv">let</span> <span class="ͼ11">fileFormats</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>FileFilter();</code></pre>
+<p>Luego: <span class="ͼ11">fileFormats</span><span class="ͼv">.</span>add_pattern(<span class="ͼz">"*.sh"</span>);
+</p>
+<p>Esto nos confirma algo importante:</p>
+<blockquote>El script que espera esta interfaz es un archivo <strong data-start="651" data-end="675">Shell Script (<code
+            data-start="667" data-end="672">.sh</code>)</strong>.</blockquote>
+<p>Por ejemplo:</p>
+<pre><samp>mi-script.sh
+notificacion.sh
+accion.sh</samp></pre>
+<h4>Crea el selector de archivos</h4>
+<pre><code><span class="ͼv">let</span> <span class="ͼ11">dialog</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>FileChooserDialog({
+    title: <span class="ͼ11">_</span>(<span class="ͼz">"Choose a Script file"</span>)<span class="ͼv">+</span><span class="ͼz">" "</span>,
+    action: <span class="ͼ11">action</span>,
+    filter: <span class="ͼ11">fileFormats</span>,
+    transient_for: <span class="ͼy">this</span><span class="ͼv">.</span>get_native(),
+    use_header_bar: <span class="ͼy">true</span>,
+    modal: <span class="ͼy">true</span>
+});</code></pre>
+<p>Aquí <code data-start="1021" data-end="1029">action</code> es importante porque el mismo método podría utilizar
+    diferentes modos de <code data-start="1103" data-end="1126">Gtk.FileChooserDialog</code>.</p>
+<p>Por ejemplo, conceptualmente:</p>
+<pre><samp>action
+  │
+  ├── seleccionar archivo existente
+  │
+  └── guardar/exportar archivo</samp></pre>
+<p>Pero <strong data-start="1260" data-end="1346">todavía no sabemos qué valores concretos le pasan a <code
+            data-start="1314" data-end="1344">fileManagementDialogWindow()</code></strong>. Eso lo veremos cuando
+    encontremos sus llamadas.</p>
+<h4>Botón "Set"</h4>
+<pre><code><span class="ͼv">let</span> <span class="ͼ11">exportButton</span> <span class="ͼv">=</span>
+    <span class="ͼ11">dialog</span><span class="ͼv">.</span>add_button(<span class="ͼ11">_</span>(<span class="ͼz">"Set"</span>), <span class="ͼ11">Gtk</span><span class="ͼv">.</span>ResponseType<span class="ͼv">.</span>OK);</code></pre>
+<p>Crea el botón: [ Set ] y lo asocia con: <kbd class="inline-code">Gtk.ResponseType.OK</kbd></p>
+<p>El nombre: <span class="ͼ11">exportButton</span> es un poco engañoso, porque aquí no necesariamente estamos
+    exportando nada. Simplemente parece ser un nombre heredado del desarrollo anterior. Lo anotamos, pero no lo
+    cambiamos.</p>
+<h4>Botón Cancel</h4>
+<pre><code><span class="ͼ11">dialog</span><span class="ͼv">.</span>add_button(
+    <span class="ͼ11">_</span>(<span class="ͼz">"Cancel"</span>),
+    <span class="ͼ11">Gtk</span><span class="ͼv">.</span>ResponseType<span class="ͼv">.</span>CANCEL
+);</code></pre>
+<p>Tenemos:</p>
+<pre><samp>┌─────────────────────────────┐
+│ Choose a Script file        │
+│                             │
+│   archivos *.sh             │
+│                             │
+│              Cancel   Set   │
+└─────────────────────────────┘</samp></pre>
+<h4>Presenta el diálogo</h4>
+<p>Lo muestra al usuario.</p>
+<pre><code><span class="ͼ11">dialog</span><span class="ͼv">.</span>present();</code></pre>
+<h4>¿Cuando el usuario responde?</h4>
+<p>Ya conocemos este patrón.</p>
+<pre><code><span class="ͼ11">dialog</span><span class="ͼv">.</span>connect(<span class="ͼz">'response'</span>, <span class="ͼ11">Lang</span><span class="ͼv">.</span>bind(<span class="ͼy">this</span>, <span class="ͼv">function</span>(<span class="ͼ11">dialog</span>, <span class="ͼ11">id</span>) { ... }</code></pre>
+<p>Cuando el usuario pulsa <kbd class="inline-code">Set</kbd> o <kbd class="inline-code">Cancel</kbd>, se ejecuta la
+    función.</p>
+<pre><samp>Set     → Gtk.ResponseType.OK
+Cancel  → Gtk.ResponseType.CANCEL</samp></pre>
+<h4>Si pulsó Set</h4>
+<p>Esta es la parte más importante.</p>
+<pre><code><span class="ͼv">if</span>(<span class="ͼ11">id</span> <span class="ͼv">==</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>ResponseType<span class="ͼv">.</span>OK) {
+    <span class="ͼy">this</span><span class="ͼv">.</span>scriptLocation<span class="ͼv">.</span>text <span class="ͼv">=</span>
+        <span class="ͼ11">dialog</span><span class="ͼv">.</span>get_file()<span class="ͼv">.</span>get_path();
+}</code></pre>
+<p>Primero: <span class="ͼ11">dialog</span><span class="ͼv">.</span>get_file() obtiene el archivo seleccionado.
+    Después: .<span class="ͼ11">get_path</span>() obtiene su ruta.</p>
+<p>Por ejemplo: <kbd class="inline-code">/home/user/scripts/notificacion.sh</kbd> y finalmente: <span
+        class="ͼy">this</span><span class="ͼv">.</span>scriptLocation<span class="ͼv">.</span>text <span
+        class="ͼv">=</span> ... coloca esa ruta en el campo de texto de la interfaz. Por tanto:</p>
+<pre><samp>Usuario selecciona:
+    /home/miguel/scripts/notificacion.sh
+              │
+              ▼
+       get_file().get_path()
+              │
+              ▼
+       scriptLocation.text</samp></pre>
+<h5>Esto es muy importante.</h5>
+<blockquote>Aquí <strong data-start="3298" data-end="3336">todavía NO se guarda <code data-start="3321"
+            data-end="3334">script-list</code></strong>.</blockquote>
+<p>Este método solamente hace:</p>
+<pre><samp>archivo seleccionado
+       ↓
+scriptLocation.text</samp></pre>
+<p>No vemos todavía: <span class="ͼ11">settings</span><span class="ͼv">.</span>set_strv(<span
+        class="ͼz">"script-list"</span>, ...)</p>
+<p>Por lo tanto, debe existir otro método —probablemente relacionado con <code data-start="3601"
+        data-end="3612">setButton</code> que vimos anteriormente— que tome el contenido de <code data-start="3663"
+        data-end="3684">scriptLocation.text</code> y finalmente lo guarde en <code data-start="3711"
+        data-end="3724">script-list</code>.</p>
+<h4>Finalmente cierra el diálogo</h4>
+<p>Tanto si seleccionó un archivo como si canceló, el diálogo termina cerrándose.</p>
+<pre><code><span class="ͼ11">dialog</span><span class="ͼv">.</span>destroy();
+<span class="ͼv">return</span>;</code></pre>
+<h3 id="section13" class="class-prefs">showPrefs: function() { ... }</h3>
+<hr>
+<h4>El <code data-start="181" data-end="187">Grid</code></h4>
+<p>Crea un <code data-start="456" data-end="466">Gtk.Grid</code> local llamado <code data-start="481"
+        data-end="486">box</code>. Será el contenedor donde se colocarán los controles que siguen.</p>
+<pre><code><span class="ͼv">let</span> <span class="ͼ11">box</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Grid({
+    column_spacing: <span class="ͼy">20</span>,
+    halign: <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Align<span class="ͼv">.</span>CENTER,
+    margin_top: <span class="ͼy">20</span>,
+    margin_end: <span class="ͼy">20</span>,
+    margin_bottom: <span class="ͼy">20</span>,
+    margin_start: <span class="ͼy">20</span>,
+    row_spacing: <span class="ͼy">20</span>
+});</code></pre>
+<p>Visualmente podemos imaginar:</p>
+<pre><samp>box
+┌──────────────────────────────────────┐
+│                                      │
+│      controles de Profiles           │
+│                                      │
+└──────────────────────────────────────┘</samp></pre>
+<p>Los <code data-start="823" data-end="827">20</code> son principalmente separación y márgenes.</p>
+<h4>Botón Add</h4>
+<pre><code><span class="ͼv">let</span> <span class="ͼ11">addButton</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Button({
+    label: <span class="ͼ11">_</span>(<span class="ͼz">"     Add    "</span>),
+    halign: <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Align<span class="ͼv">.</span>START
+});</code></pre>
+<p>Crea el botón y <code data-start="1074" data-end="1091">Gtk.Align.START</code> hace que se alinee hacia el
+    inicio de su espacio.</p>
+<pre><samp>[     Add    ]</samp></pre>
+<p>Todavía no sabemos qué ocurre al pulsarlo; eso vendrá cuando aparezca el <code data-start="1216"
+        data-end="1227">connect()</code> correspondiente.</p>
+<h4>Botón Remove</h4>
+<pre><code><span class="ͼv">let</span> <span class="ͼ11">delButton</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Button({
+    label: <span class="ͼ11">_</span>(<span class="ͼz">" Remove "</span>),
+    halign: <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Align<span class="ͼv">.</span>END
+});</code></pre>
+<p>Es el botón: </p>
+<pre><samp>[ Remove ]</samp></pre>
+<p>Y aquí ya conocemos su futuro método: <span class="ͼ11">removeApp</span>(). Así que probablemente más adelante
+    veremos: <span class="ͼ11">delButton</span><span class="ͼv">.</span>connect(... <span class="ͼ11">removeApp</span>
+    <span class="ͼv">...</span>). Pero todavía no adelantamos acontecimientos.
+</p>
+<h4>Campo <code data-start="1697" data-end="1713">scriptLocation</code></h4>
+<p>Este es especialmente importante para nuestro expediente.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>scriptLocation <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Entry({
+    text: <span class="ͼz">""</span>,
+    sensitive: <span class="ͼy">false</span>
+});</code></pre>
+<p>Es el campo de texto donde vimos que: <span class="ͼ11">fileManagementDialogWindow</span>() coloca la ruta
+    seleccionada:</p>
+<pre><samp>this.scriptLocation.text = dialog.get_file().get_path();</samp></pre>
+<p>Inicialmente:</p>
+<pre><samp>scriptLocation
+└── ""</samp></pre>
+<p>y: <kbd class="inline-code">sensitive</kbd>: <var class="inline-code">false</var> significa que
+    inicialmente está deshabilitado. Eso tiene sentido porque todavía no hay una aplicación seleccionada.</p>
+<h4>Botón Set</h4>
+<p>Este probablemente será el botón que <strong data-start="2521" data-end="2561">termine guardando la ruta del
+        script</strong>.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>setButton <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Button({
+    label: <span class="ͼ11">_</span>(<span class="ͼz">"Set"</span>),
+    halign: <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Align<span class="ͼv">.</span>END,
+    sensitive: <span class="ͼy">false</span>
+});</code></pre>
+<p>Esto es importante porque acabamos de descubrir:</p>
+<pre><samp>fileManagementDialogWindow()
+        ↓
+scriptLocation.text
+        ↓
+¿setButton?
+        ↓
+script-list[i]</samp></pre>
+<p>Todavía no sabemos exactamente cómo, pero este botón es un candidato muy claro.</p>
+<h4>Botón Clear</h4>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>clearButton <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Button({
+    label: <span class="ͼ11">_</span>(<span class="ͼz">"Clear"</span>),
+    halign: <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Align<span class="ͼv">.</span>START,
+    sensitive: <span class="ͼy">false</span>
+});</code></pre>
+<p>Probablemente permitirá eliminar la ruta del script asociado. De nuevo, no asumimos todavía qué hace hasta ver su
+    <code data-start="3108" data-end="3119">connect()</code>.
+</p>
+<h4>Botón Browse</h4>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>browseButton <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Button({
+    label: <span class="ͼ11">_</span>(<span class="ͼz">"Browse"</span>),
+    halign: <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Align<span class="ͼv">.</span>START,
+    sensitive: <span class="ͼy">false</span>
+});</code></pre>
+<p>Este encaja directamente con: <span class="ͼ11">fileManagementDialogWindow</span>(...). Probablemente:</p>
+<pre><samp>Browse
+  ↓
+fileManagementDialogWindow()
+  ↓
+seleccionar .sh
+  ↓
+scriptLocation.text</samp></pre>
+<p>Y nuevamente está inicialmente deshabilitado porque no hay aplicación seleccionada.</p>
+<h4>Label de la aplicación</h4>
+<p>Es el texto que identifica la aplicación actualmente seleccionada.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>AppLabel <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Label({
+    xalign: <span class="ͼy">1</span>,
+    use_markup: <span class="ͼy">true</span>,
+    halign: <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Align<span class="ͼv">.</span>CENTER
+});</code></pre>
+<p>Y enseguida:</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>AppLabel<span class="ͼv">.</span>label <span class="ͼv">=</span> <span class="ͼ11">_</span>(<span class="ͼz">"No application selected"</span>);</code></pre>
+<p>Por tanto, inicialmente veremos: <var class="inline-code">No</var> <var class="inline-code">application</var>
+    <var class="inline-code">selected</var> y cuando seleccionemos una aplicación, <code data-start="4048"
+        data-end="4065">appViewChange()</code> ya sabemos que hace:
+</p>
+<pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>AppLabel<span class="ͼv">.</span>label <span class="ͼv">=</span>
+    <span class="ͼ11">_</span>(<span class="ͼz">"Custom script location for"</span>) <span class="ͼv">+</span>
+    <span class="ͼz">" "</span> <span class="ͼv">+</span>
+    <span class="ͼ11">nameList</span>[<span class="ͼy">this</span><span class="ͼv">.</span>selectedIndex];</samp></pre>
+<p>Así que ahora podemos conectar las piezas:</p>
+<pre><samp>ninguna selección
+      ↓
+"No application selected"
+
+selección de aplicación
+      ↓
+"Custom script location for Firefox"</samp></pre>
+<h4>Icono de la aplicación</h4>
+<p>Crea la imagen inicialmente vacía.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>AppIcon <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Image({
+    gicon: <span class="ͼy">null</span>,
+    pixel_size: <span class="ͼy">96</span>
+})</code></pre>
+<p>Después <code data-start="4594" data-end="4611">appViewChange()</code> hace:</p>
+<pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>AppIcon<span class="ͼv">.</span>gicon <span class="ͼv">=</span> <span class="ͼ11">appInfo</span><span class="ͼv">.</span>get_icon();</samp></pre>
+<p>Así que:</p>
+<pre><samp>AppInfo
+   │
+   └── get_icon()
+          ↓
+       AppIcon</samp></pre>
+<p>Y si no hay aplicación: <span class="ͼy">this</span><span class="ͼv">.</span>AppIcon<span class="ͼv">.</span>gicon
+    <span class="ͼv">=</span> <span class="ͼy">null</span>;
+</p>
+<h4>iconImageBox</h4>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>iconImageBox <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Box({
+    halign: <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Align<span class="ͼv">.</span>CENTER
+});
+
+<span class="ͼy">this</span><span class="ͼv">.</span>iconImageBox<span class="ͼv">.</span>append(<span class="ͼy">this</span><span class="ͼv">.</span>AppIcon);</code></pre>
+<p>Crea un contenedor para el icono:</p>
+<pre><samp>iconImageBox
+    │
+    └── AppIcon</samp></pre>
+<p>Esto probablemente facilita colocar el icono dentro del Grid posteriormente.</p>
+<h4>Lo más interesante</h4>
+<p>Ya tenemos prácticamente identificada la <strong data-start="5934" data-end="5964">zona de gestión del
+        script</strong>:</p>
+<pre><samp>seleccionar aplicación
+        │
+        ▼
+   selectedIndex
+        │
+        ├───────────────┐
+        ▼               ▼
+script-list[i]      name-list[i]
+        │
+        ▼
+scriptLocation
+        │
+        ├── Browse
+        ├── Set
+        └── Clear</samp></pre>
+<p>Pero todavía falta ver <strong data-start="6268" data-end="6301">cómo se conectan esos botones</strong>. Ahí
+    seguramente aparecerá por fin el paso que falta entre <code data-start="6361"
+        data-end="6382">scriptLocation.text</code> y <code data-start="6385" data-end="6401">script-list[i]</code>.</p>
+<h4>Estado inicial de selección</h4>
+<p>Ya lo habíamos encontrado en <code data-start="342" data-end="355">removeApp()</code> y <code data-start="358"
+        data-end="375">appViewChange()</code>.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>selectedIndex <span class="ͼv">=</span> <span class="ͼv">-</span><span class="ͼy">1</span>;</code></pre>
+<p>Aquí se establece inicialmente:</p>
+<pre><samp>selectedIndex = -1
+        ↓
+no hay aplicación seleccionada</samp></pre>
+<p>Esto será la condición que permite saber si acciones como <code data-start="542" data-end="547">Set</code> o <code
+        data-start="550" data-end="557">Clear</code> tienen un perfil al cual aplicarse.</p>
+<h4>Botón Add</h4>
+<pre><code><span class="ͼ11">addButton</span><span class="ͼv">.</span>connect(<span class="ͼz">'clicked'</span>, <span class="ͼ11">Lang</span><span class="ͼv">.</span>bind(<span class="ͼy">this</span>, <span class="ͼy">this</span><span class="ͼv">.</span>addApp));</code></pre>
+<p>Al hacer clic:</p>
+<pre><samp>Add
+ ↓
+addApp()</samp></pre>
+<p>Y <code data-start="743" data-end="753">addApp()</code> ya lo conocemos:</p>
+<pre><samp>selecciona aplicación
+       ↓
+application-list
+name-list
+script-list
+       ↓
+agrega perfil
+       ↓
+reloadApplicationProfiles()</samp></pre>
+<p>Aquí <code data-start="920" data-end="942">Lang.bind(this, ...)</code> permite que <code data-start="955"
+        data-end="965">addApp()</code> se ejecute con el <code data-start="984" data-end="990">this</code> de esta
+    clase.</p>
+<h4>Botón Remove</h4>
+<pre><code><span class="ͼ11">delButton</span><span class="ͼv">.</span>connect(<span class="ͼz">'clicked'</span>, <span class="ͼ11">Lang</span><span class="ͼv">.</span>bind(<span class="ͼy">this</span>, <span class="ͼy">this</span><span class="ͼv">.</span>removeApp));</code></pre>
+<p>Mismo patrón:</p>
+<pre><samp>Remove
+   ↓
+removeApp()
+   ↓
+elimina las tres listas
+   ↓
+elimina fila del TreeView
+   ↓
+reloadApplicationProfiles()</samp></pre>
+<h4>Botón Browse</h4>
+<p>Ahora podemos cerrar otra pieza que habíamos dejado pendiente.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>browseButton<span class="ͼv">.</span>connect(
+    <span class="ͼz">"clicked"</span>,
+    ()=&gt;<span class="ͼy">this</span><span class="ͼv">.</span>fileManagementDialogWindow(<span class="ͼy">0</span>)
+);</code></pre>
+<p>Al pulsar:</p>
+<pre><samp>Browse
+   ↓
+fileManagementDialogWindow(0)
+   ↓
+selector de archivos
+   ↓
+*.sh
+   ↓
+scriptLocation.text = ruta</samp></pre>
+<p>El <code data-start="1592" data-end="1595">0</code> es el valor que recibe: <span
+        class="ͼ11">fileManagementDialogWindow</span>(<span class="ͼ11">action</span>) y se convierte en: <span
+        class="ͼ13">action</span>: <span class="ͼy">0</span> en: <span class="ͼv">new</span> <span
+        class="ͼ11">Gtk</span><span class="ͼv">.</span>FileChooserDialog(...)</p>
+<p>Todavía podemos investigar qué representa exactamente ese <code data-start="1837" data-end="1840">0</code>, pero
+    <strong data-start="1847" data-end="1927">ya sabemos que en esta llamada está indicando el modo de acción del
+        selector</strong>.
+</p>
+<h4>Cuando cambia <code data-start="1954" data-end="1970">scriptLocation</code></h4>
+<p>Este bloque es interesante:</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>scriptLocation<span class="ͼv">.</span>connect(<span class="ͼz">"changed"</span>, ()=&gt; { ... }</code></pre>
+<p>Se ejecuta cada vez que cambia el contenido del campo de texto.</p>
+<p>Entonces:<span class="ͼv">if</span>(<span class="ͼy">this</span><span class="ͼv">.</span>scriptLocation<span
+        class="ͼv">.</span>text <span class="ͼv">!=</span> <span class="ͼz">""</span>) { ... }</p>
+<p>Si contiene algo:<kbd class="inline-code">scriptLocation</kbd> = "<var class="inline-code">/home/.../script.sh</var>"
+    habilita:</p>
+<pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>setButton<span class="ͼv">.</span>sensitive <span class="ͼv">=</span> <span class="ͼy">true</span>;
+<span class="ͼy">this</span><span class="ͼv">.</span>clearButton<span class="ͼv">.</span>sensitive <span class="ͼv">=</span> <span class="ͼy">true</span>;</samp></pre>
+<p>Por el contrario, si está vacío:</p>
+<pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>setButton<span class="ͼv">.</span>sensitive <span class="ͼv">=</span> <span class="ͼy">false</span>;
+<span class="ͼy">this</span><span class="ͼv">.</span>clearButton<span class="ͼv">.</span>sensitive <span class="ͼv">=</span> <span class="ͼy">false</span>;</samp></pre>
+<p>Así que la interfaz tiene esta lógica:</p>
+<pre><samp>scriptLocation
+     │
+     ├── vacío
+     │    ├── Set   OFF
+     │    └── Clear OFF
+     │
+     └── tiene texto
+          ├── Set   ON
+          └── Clear ON</samp></pre>
+<p>Esto también explica por qué inicialmente ambos botones fueron creados con:<span class="ͼ13">sensitive</span>:
+    <span class="ͼy">false</span>
+</p>
+<h4>El guardado de <code data-start="2864" data-end="2877">script-list</code></h4>
+<p>Este es el paso que estábamos buscando.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>setButton<span class="ͼv">.</span>connect(<span class="ͼz">'clicked'</span>, ()=&gt; {
+    <span class="ͼv">if</span>(<span class="ͼy">this</span><span class="ͼv">.</span>selectedIndex <span class="ͼv">&gt;</span> <span class="ͼv">-</span><span class="ͼy">1</span>) {
+        <span class="ͼv">let</span> <span class="ͼ11">scriptList</span> <span class="ͼv">=</span> <span class="ͼ11">settings</span><span class="ͼv">.</span>get_strv(<span class="ͼz">'script-list'</span>);
+        <span class="ͼ11">scriptList</span>[<span class="ͼy">this</span><span class="ͼv">.</span>selectedIndex] <span class="ͼv">=</span> <span class="ͼy">this</span><span class="ͼv">.</span>scriptLocation<span class="ͼv">.</span>text;
+        <span class="ͼ11">settings</span><span class="ͼv">.</span>set_strv(<span class="ͼz">'script-list'</span>, <span class="ͼ11">scriptList</span>);
+    }
+});</code></pre>
+<p>El flujo completo es:</p>
+<pre><samp>Browse
+  ↓
+fileManagementDialogWindow()
+  ↓
+usuario selecciona archivo .sh
+  ↓
+scriptLocation.text
+  ↓
+Set
+  ↓
+get_strv("script-list")
+  ↓
+scriptList[selectedIndex] = scriptLocation.text
+  ↓
+set_strv("script-list", scriptList)</samp></pre>
+<p>Por tanto ahora podemos afirmar con seguridad:</p>
+<blockquote><code data-start="3519" data-end="3535">script-list[i]</code> almacena la ruta del script <code
+        data-start="3564" data-end="3569">.sh</code> asociado a la aplicación que ocupa el índice <code
+        data-start="3615" data-end="3618">i</code> de <code data-start="3622" data-end="3640">application-list</code>.
+</blockquote>
+<h4>¿Por qué <code data-start="3751" data-end="3771">selectedIndex &gt; -1</code>?</h4>
+<div class="row">
+    <div class="col"><span>Porque:</span>
+        <pre><samp>-1 = no hay selección
+ 0 = primera aplicación
+ 1 = segunda
+ 2 = tercera
+ ...</samp></pre>
+    </div class="col">
+    <div><span>Por eso:</span>
+        <pre><samp><span class="ͼv">if</span>(<span class="ͼy">this</span><span class="ͼv">.</span>selectedIndex <span class="ͼv">&gt;</span> <span class="ͼv">-</span><span class="ͼy">1</span>)</samp></pre>
+    </div>
+</div>
+<p>Significa:</p>
+<blockquote>"Solo modifica <code data-start="3959" data-end="3972">script-list</code> si existe una aplicación
+    seleccionada."</blockquote>
+<h4>Botón Clear</h4>
+<p>Ahora la operación inversa:</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>clearButton<span class="ͼv">.</span>connect(<span class="ͼz">'clicked'</span>, ()=&gt; {
+    <span class="ͼv">if</span>(<span class="ͼy">this</span><span class="ͼv">.</span>selectedIndex <span class="ͼv">&gt;</span> <span class="ͼv">-</span><span class="ͼy">1</span>) {
+        <span class="ͼv">let</span> <span class="ͼ11">scriptList</span> <span class="ͼv">=</span> <span class="ͼ11">settings</span><span class="ͼv">.</span>get_strv(<span class="ͼz">'script-list'</span>);
+        <span class="ͼy">this</span><span class="ͼv">.</span>scriptLocation<span class="ͼv">.</span>text <span class="ͼv">=</span> <span class="ͼz">""</span>;
+        <span class="ͼ11">scriptList</span>[<span class="ͼy">this</span><span class="ͼv">.</span>selectedIndex] <span class="ͼv">=</span> <span class="ͼz">""</span>;
+        <span class="ͼ11">settings</span><span class="ͼv">.</span>set_strv(<span class="ͼz">'script-list'</span>, <span class="ͼ11">scriptList</span>);
+    }
+});</code></pre>
+<p>Hace dos cosas:</p>
+<div class="row">
+    <div class="col">
+        <span>Primero limpia la interfaz</span>
+        <pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>scriptLocation<span class="ͼv">.</span>text <span class="ͼv">=</span> <span class="ͼz">""</span>;</samp></pre>
+    </div>
+    <div class="col">
+        <span>Después limpia la configuración</span>
+        <pre><samp><span class="ͼ11">scriptList</span>[<span class="ͼy">this</span><span class="ͼv">.</span>selectedIndex] <span class="ͼv">=</span> <span class="ͼz">""</span>;</samp></pre>
+    </div>
+</div>
+<p>Y la guarda:<span class="ͼ11">settings</span><span class="ͼv">.</span>set_strv(<span class="ͼz">'script-list'</span>,
+    <span class="ͼ11">scriptList</span>); Entonces:
+</p>
+<pre><samp>Clear
+ ├── scriptLocation.text = ""
+ └── script-list[selectedIndex] = ""</samp></pre>
+<p>Y como <code data-start="4738" data-end="4754">scriptLocation</code> cambió, además se dispara:<span
+        class="ͼ11">scriptLocation</span><span class="ͼv">.</span>connect(<span class="ͼz">"changed"</span>, ...) que
+    deshabilitará automáticamente a:</p>
+<pre><samp>Set
+Clear</samp></pre>
+<p>Es un pequeño encadenamiento interesante:</p>
+<pre><samp>Clear
+  ↓
+scriptLocation.text = ""
+  ↓
+"changed"
+  ↓
+Set.sensitive = false
+Clear.sensitive = false</samp></pre>
+<h4>En modo de resumen</h4>
+<h5><code data-start="5786" data-end="5794">Browse</code> <strong data-start="5795" data-end="5808">no guarda</strong>
+    el script.</h5>
+<p>Solo selecciona el archivo y coloca su ruta en:<kbd class="inline-code">scriptLocation.text</kbd></p>
+<h5><code data-start="5907" data-end="5912">Set</code> <strong data-start="5913" data-end="5926">sí guarda</strong> la
+    ruta.</h5>
+<pre><samp>scriptLocation.text
+        ↓
+script-list[selectedIndex]</samp></pre>
+<h5><code data-start="6011" data-end="6018">Clear</code> elimina la asociación.</h5>
+<pre><samp>script-list[selectedIndex] = ""</samp></pre>
+<h4>El siguiente bloque</h4>
+<p>Este bloque ya no crea controles ni define comportamiento; aquí <strong data-start="74" data-end="105">arma la
+        distribución visual</strong> de la página y conecta la selección del <code data-start="146"
+        data-end="156">TreeView</code> con <code data-start="161" data-end="178">appViewChange()</code>.</p>
+<p>Hay además un detalle que vale la pena observar: los números que parecen coordenadas son efectivamente las posiciones
+    dentro del <code data-start="310" data-end="320">Gtk.Grid</code>.</p>
+<h4>Botones Add y Remove</h4>
+<pre><code><span class="ͼ11">box</span><span class="ͼv">.</span>attach(<span class="ͼ11">addButton</span>, <span class="ͼy">0</span>, <span class="ͼy">0</span>, <span class="ͼy">1</span>, <span class="ͼy">1</span>);
+<span class="ͼ11">box</span><span class="ͼv">.</span>attach(<span class="ͼ11">delButton</span>, <span class="ͼy">1</span>, <span class="ͼy">0</span>, <span class="ͼy">1</span>, <span class="ͼy">1</span>);</code></pre>
+<p>La estructura empieza así:</p>
+<pre><samp>        columna 0       columna 1
+fila 0  [ Add ]          [ Remove ]</samp></pre>
+<p>Esto explica por qué antes vimos:<span class="ͼ13">halign</span>: <span class="ͼ11">Gtk</span><span
+        class="ͼv">.</span>Align<span class="ͼv">.</span>START para <code data-start="639" data-end="644">Add</code>
+    y:<span class="ͼ13">halign</span>: <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Align<span
+        class="ͼv">.</span>END para <code data-start="695" data-end="703">Remove</code>.</p>
+<p>El <code data-start="709" data-end="715">Grid</code> ya los coloca en columnas distintas, y <code data-start="755"
+        data-end="763">halign</code> determina cómo se alinean dentro de su celda.</p>
+<h4>Primera etiqueta vacía</h4>
+<pre><code><span class="ͼ11">box</span><span class="ͼv">.</span>attach(<span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Label({label: <span class="ͼz">""</span>}), <span class="ͼy">0</span>, <span class="ͼy">1</span>, <span class="ͼy">2</span>, <span class="ͼy">1</span>);</code></pre>
+<p>Esto crea una etiqueta sin texto que ocupa:</p>
+<pre><samp>columna 0 → 2 columnas
+fila 1</samp></pre>
+<p>Es básicamente <strong data-start="1020" data-end="1042">espaciado vertical</strong>. Es un recurso bastante
+    rudimentario, pero común en código GTK antiguo:</p>
+<pre><samp>fila 0  botones
+fila 1  espacio
+fila 2  título
+fila 3  espacio</samp></pre>
+<h4>Título "For All Applications on the List"</h4>
+<pre><code><span class="ͼ11">box</span><span class="ͼv">.</span>attach(
+    <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Label({
+        use_markup: <span class="ͼy">true</span>,
+        label: <span class="ͼz">"&lt;big&gt;&lt;b&gt;"</span><span class="ͼv">+</span><span class="ͼ11">_</span>(<span class="ͼz">"For All Applications on the List"</span>)<span class="ͼv">+</span><span class="ͼz">"&lt;/b&gt;&lt;/big&gt;"</span>,
+        halign: <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Align<span class="ͼv">.</span>CENTER
+    }),
+    <span class="ͼy">0</span>, <span class="ͼy">2</span>, <span class="ͼy">2</span>, <span class="ͼy">1</span>
+);</code></pre>
+<p>Aquí tenemos:</p>
+<pre><samp>┌──────────────────────────────┐
+│  For All Applications on     │
+│          the List            │
+└──────────────────────────────┘</samp></pre>
+<p>La etiqueta ocupa <strong data-start="1638" data-end="1658">las dos columnas</strong>, por eso:</p>
+<pre><samp>columna inicial = 0
+ancho = 2</samp></pre>
+<p>Y se centra dentro de ellas.</p>
+<p><code data-start="1743" data-end="1761">use_markup: true</code> permite:<span
+        class="ͼ13">&lt;big&gt;&lt;b&gt;</span>...<span class="ͼ13">&lt;/b&gt;&lt;/big&gt;</span></p>
+<h4>Otro espacio</h4>
+<p>Otra fila utilizada como separación.</p>
+<pre><code><span class="ͼ11">box</span><span class="ͼv">.</span>attach(
+    <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Label({label: <span class="ͼz">""</span>}),
+    <span class="ͼy">0</span>, <span class="ͼy">3</span>, <span class="ͼy">2</span>, <span class="ͼy">1</span>
+);</code></pre>
+<p>Ya podemos visualizar:</p>
+<pre><samp>fila 0   Add             Remove
+fila 1   [espacio]
+fila 2   For All Applications on the List
+fila 3   [espacio]</samp></pre>
+<h4>for-list</h4>
+<p>Ahora aparece una de nuestras <strong data-start="2152" data-end="2172">keys del gschema</strong>:</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>prefCombo(
+    <span class="ͼz">'for-list'</span>,
+    <span class="ͼy">4</span>,
+    [<span class="ͼz">'none'</span>,<span class="ͼz">'count'</span>,<span class="ͼz">'banner'</span>,<span class="ͼz">'both'</span>],
+    [
+        <span class="ͼ11">_</span>(<span class="ͼz">'Show them'</span>),
+        <span class="ͼ11">_</span>(<span class="ͼz">'Show counts only'</span>),
+        <span class="ͼ11">_</span>(<span class="ͼz">'Show banner only'</span>),
+        <span class="ͼ11">_</span>(<span class="ͼz">'Ignore them'</span>)
+    ],
+    <span class="ͼ11">box</span>
+);</code></pre>
+<p>Esto es muy bueno porque ahora podemos conectar tres capas:</p>
+<pre><samp>gschema
+   │
+   └── for-list
+          │
+          ▼
+      prefCombo()
+          │
+          ▼
+      Gtk.ComboBoxText</samp></pre>
+<div class="row">
+    <div class="col"><span>Los valores reales almacenados son:</span>
+        <pre><samp>none
+count
+banner
+both</samp></pre>
+    </div>
+    <div class="col"><span>Mientras que el usuario ve:</span>
+        <pre><samp>Show them
+Show counts only
+Show banner only
+Ignore them</samp></pre>
+    </div>
+</div>
+<p>Esto es exactamente la separación entre <strong data-start="2809" data-end="2826">valor interno</strong> y <strong
+        data-start="2829" data-end="2860">texto presentado al usuario</strong> que vimos en <code data-start="2874"
+        data-end="2887">prefCombo()</code>.</p>
+<p>Además, <code data-start="2898" data-end="2911">prefCombo()</code> hace:<span class="ͼ11">settings</span><span
+        class="ͼv">.</span>get_string(<span class="ͼ11">KEY</span>) y:<span class="ͼ11">settings</span><span
+        class="ͼv">.</span>set_string(<span class="ͼ11">KEY</span>, ...) por lo que ahora sabemos que <code
+        data-start="3045" data-end="3055">for-list</code> es un <strong data-start="3062" data-end="3086">GSettings
+        string key</strong>.</p>
+<h4>run-script</h4>
+<p>Otra key que ya conocemos del gschema.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>prefSwitch(<span class="ͼz">"run-script"</span>, <span class="ͼy">5</span>, <span class="ͼ11">box</span>);</code></pre>
+<p>Aquí se utiliza <code data-start="3227" data-end="3241">prefSwitch()</code>, por lo que sabemos inmediatamente que:
+</p>
+<div class="row">
+    <div class="col"><span>Tenemos:</span>
+        <pre><samp>run-script
+    ↓
+boolean
+    ↓
+Gtk.Switch</samp></pre>
+    </div>
+    <div class="col"><span>Y al cambiarlo:</span>
+        <pre><samp>Gtk.Switch
+   ↓
+settings.set_boolean("run-script", ...)
+   ↓
+reloadExtension()</samp></pre>
+    </div>
+</div>
+<p>Esto conecta directamente con el propósito que estamos investigando de <code data-start="3518"
+        data-end="3531">script-list</code>.</p>
+<h4>Separador</h4>
+<p>Otra fila vacía.</p>
+<pre><code><span class="ͼ11">box</span><span class="ͼv">.</span>attach(
+    <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Label({label: <span class="ͼz">""</span>}),
+    <span class="ͼy">0</span>, <span class="ͼy">6</span>, <span class="ͼy">2</span>, <span class="ͼy">1</span>
+);</code></pre>
+<h4>Segundo título</h4>
+<pre><code><span class="ͼ11">box</span><span class="ͼv">.</span>attach(
+    <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Label({
+        use_markup: <span class="ͼy">true</span>,
+        label: <span class="ͼz">"&lt;big&gt;&lt;b&gt;"</span><span class="ͼv">+</span><span class="ͼ11">_</span>(<span class="ͼz">"For Selected Application"</span>)<span class="ͼv">+</span><span class="ͼz">"&lt;/b&gt;&lt;/big&gt;"</span>,
+        halign: <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Align<span class="ͼv">.</span>CENTER
+    }),
+    <span class="ͼy">0</span>, <span class="ͼy">7</span>, <span class="ͼy">2</span>, <span class="ͼy">1</span>
+);</code></pre>
+<p>Ahora cambia el contexto:</p>
+<pre><samp>For All Applications on the List
+              │
+              ▼
+       configuración global
+              │
+              │
+              ▼
+For Selected Application
+              │
+              ▼
+      configuración individual</samp></pre>
+<p>Y esto es muy importante para entender esta página.</p>
+<h4>Icono</h4>
+<p>El <code data-start="4301" data-end="4315">iconImageBox</code> ocupa ambas columnas.</p>
+<pre><code><span class="ͼ11">box</span><span class="ͼv">.</span>attach(
+    <span class="ͼy">this</span><span class="ͼv">.</span>iconImageBox,
+    <span class="ͼy">0</span>, <span class="ͼy">9</span>, <span class="ͼy">2</span>, <span class="ͼy">1</span>
+);</code></pre>
+<p>Recordemos:</p>
+<pre><samp>iconImageBox
+    └── AppIcon</samp></pre>
+<p>Por eso el icono de la aplicación seleccionada queda centrado en la página.</p>
+<h4>Nombre de la aplicación</h4>
+<p>También ocupa las dos columnas.</p>
+<pre><code><span class="ͼ11">box</span><span class="ͼv">.</span>attach(
+    <span class="ͼy">this</span><span class="ͼv">.</span>AppLabel,
+    <span class="ͼy">0</span>, <span class="ͼy">10</span>, <span class="ͼy">2</span>, <span class="ͼy">1</span>
+);</code></pre>
+<p>Inicialmente: <kbd class="inline-code">No application selected</kbd>. Después <code data-start="4669"
+        data-end="4686">appViewChange()</code> lo cambia por algo como:</p>
+<pre><samp>Custom script location for Firefox</samp></pre>
+<h4>Ruta del script</h4>
+<pre><code><span class="ͼ11">box</span><span class="ͼv">.</span>attach(
+    <span class="ͼy">this</span><span class="ͼv">.</span>scriptLocation,
+    <span class="ͼy">0</span>, <span class="ͼy">11</span>, <span class="ͼy">2</span>, <span class="ͼy">1</span>
+);</code></pre>
+<p>Otra vez ocupa ambas columnas:</p>
+<pre><samp>┌──────────────────────────────────┐
+│ /home/miguel/scripts/foo.sh      │
+└──────────────────────────────────┘</samp></pre>
+<h4>Botones de script</h4>
+<p>Aquí hay un detalle interesante:</p>
+<pre><code><span class="ͼ11">box</span><span class="ͼv">.</span>attach(<span class="ͼy">this</span><span class="ͼv">.</span>setButton,      <span class="ͼy">1</span>, <span class="ͼy">12</span>, <span class="ͼy">1</span>, <span class="ͼy">1</span>);
+<span class="ͼ11">box</span><span class="ͼv">.</span>attach(<span class="ͼy">this</span><span class="ͼv">.</span>browseButton,   <span class="ͼy">0</span>, <span class="ͼy">12</span>, <span class="ͼy">1</span>, <span class="ͼy">1</span>);
+<span class="ͼ11">box</span><span class="ͼv">.</span>attach(<span class="ͼy">this</span><span class="ͼv">.</span>clearButton,    <span class="ͼy">1</span>, <span class="ͼy">12</span>, <span class="ͼy">1</span>, <span class="ͼy">1</span>);</code></pre>
+<p>Las posiciones son:</p>
+<div class="row">
+    <div class="col">
+        <pre><samp>             columna 0       columna 1
+fila 12     [ Browse ]       [ Clear ]
+                                ↑
+                             Set también
+                             aquí</samp></pre>
+    </div>
+    <div class="col">
+        <p>Y aquí aparece algo que debemos <strong>marcar para investigar</strong>, porque <code>setButton</code> y
+            <code>clearButton</code> están siendo colocados en <strong>la misma celda del Grid</strong>:
+        </p>
+        <pre><samp>setButton   → (1,12)
+clearButton → (1,12)</samp></pre>
+    </div>
+</div>
+<h4>El<code data-start="6229" data-end="6239">attach()</code></h4>
+<p>Estepertenece al Grid exterior.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>attach(<span class="ͼ11">box</span>, <span class="ͼy">1</span>, <span class="ͼy">0</span>, <span class="ͼy">1</span>, <span class="ͼy">1</span>);</code></pre>
+<p>Recordemos que esta clase: <span class="ͼ11">PrefsWindowForAppList_NotificationCenterExtension</span> extiende: <span
+        class="ͼ11">Gtk</span><span class="ͼv">.</span>Grid. Por lo tanto tenemos <strong data-start="6474"
+        data-end="6487">dos grids</strong>:</p>
+<pre><samp>this
+└── Gtk.Grid exterior
+     │
+     └── box
+          └── Gtk.Grid interior</samp></pre>
+<p>El <code data-start="6585" data-end="6590">box</code> que construimos durante <code data-start="6615"
+        data-end="6628">showPrefs()</code> se coloca dentro del Grid principal de la clase.</p>
+<h4>Finalmente: selección del TreeView</h4>
+<p>Y aquí conectamos otra pieza que ya habíamos estudiado.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>treeView<span class="ͼv">.</span>connect(
+    <span class="ͼz">"cursor-changed"</span>,
+    ()=&gt;<span class="ͼy">this</span><span class="ͼv">.</span>appViewChange()
+);</code></pre>
+<p>Cuando cambia el cursor/selección de la lista:</p>
+<pre><samp>TreeView
+   │
+   │ cursor-changed
+   ▼
+appViewChange()</samp></pre>
+<p>Y <code data-start="6997" data-end="7014">appViewChange()</code>:</p>
+<pre><samp>obtiene aplicación seleccionada
+        ↓
+selectedIndex
+        ↓
+script-list[selectedIndex]
+        ↓
+scriptLocation.text
+
+name-list[selectedIndex]
+        ↓
+AppLabel
+
+appInfo.get_icon()
+        ↓
+AppIcon</samp></pre>
+<p>Ahora sí se empieza a ver <strong data-start="7265" data-end="7301">el flujo completo de la interfaz</strong>.</p>
+<h3 id="section14" class="class-prefs">setNotificationBannerPolicy: function(caninicalizedNameWithPath, value)</h3>
+<hr>
+<pre><code><span class="ͼ13">setNotificationBannerPolicy</span>: <span class="ͼv">function</span>(<span class="ͼ11">caninicalizedNameWithPath</span>, <span class="ͼ11">value</span>) { ... }</code></pre>
+<p>Recibe dos parámetros:</p>
+<pre><samp>caninicalizedNameWithPath
+value</samp></pre>
+<p>El nombre de la primera variable tiene un pequeño detalle ortográfico:<kbd
+        class="inline-code">caninicalized</kbd>probablemente pretendía ser:<kbd class="inline-code">canonicalized</kbd>
+    pero por ahora <strong data-start="636" data-end="655">no lo
+        cambiamos</strong>.</p>
+<h4>El <code data-start="672" data-end="680">switch</code></h4>
+<p>Aquí <code data-start="722" data-end="729">value</code> determina la política que se aplicará a los banners de
+    notificaciones.</p>
+<pre><code><span class="ͼv">switch</span>(<span class="ͼ11">value</span>) { ... }</code></pre>
+<p>Tenemos tres casos relevantes:</p>
+<pre><samp><span class="ͼ13">case</span> 0:
+<span class="ͼ13">case</span> 2:</samp></pre>
+<p>y todo lo demás:<span class="ͼ13">default</span>: Por lo tanto:</p>
+<pre><samp>value
+ │
+ ├── 0 ──┐
+ │       │
+ ├── 2 ──┤── show-banners = true
+ │       │
+ └── otro ─── show-banners = false</samp></pre>
+<h4>Casos <code data-start="1069" data-end="1072">0</code> y <code data-start="1075" data-end="1078">2</code></h4>
+<p>Aquí ocurre algo muy importante.</p>
+<pre><code><span class="ͼv">new</span> <span class="ͼ11">Gio</span><span class="ͼv">.</span>Settings({
+    schema_id: <span class="ͼz">"org.gnome.desktop.notifications.application"</span>,
+    path: <span class="ͼ11">caninicalizedNameWithPath</span>
+})<span class="ͼv">.</span>set_boolean(<span class="ͼz">"show-banners"</span>, <span class="ͼy">true</span>);</code></pre>
+<p>La extensión está creando un objeto <code data-start="1324" data-end="1338">Gio.Settings</code> utilizando:</p>
+<pre><samp>schema_id:
+org.gnome.desktop.notifications.application</samp></pre>
+<p>Ese <strong data-start="1424" data-end="1464">no es el schema de nuestra extensión</strong>. Es un schema de GNOME
+    relacionado con las preferencias de notificaciones por aplicación.</p>
+<p>La ruta se recibe externamente:<span class="ͼ13">path</span>: <span class="ͼ11">caninicalizedNameWithPath</span></p>
+<p>Por ejemplo, conceptualmente: <kbd class="inline-code">/org/gnome/desktop/notifications/application/firefox/</kbd>
+</p>
+<p>Y finalmente: .<span class="ͼ11">set_boolean</span>(<span class="ͼz">"show-banners"</span>, <span
+        class="ͼy">true</span>); activa los banners para esa aplicación.</p>
+<h4>default</h4>
+<pre><code><span class="ͼ13">default</span>:
+    <span class="ͼ13">new</span> <span class="ͼ12">Gio</span><span class="ͼv">.</span>Settings({
+        schema_id: <span class="ͼz">"org.gnome.desktop.notifications.application"</span>,
+        path: <span class="ͼ11">caninicalizedNameWithPath</span>
+    })<span class="ͼv">.</span>set_boolean(<span class="ͼz">"show-banners"</span>, <span class="ͼy">false</span>);</code></pre>
+<p>Para cualquier otro valor:<kbd class="inline-code">show-banners</kbd> = <var class="inline-code">false</var>.
+    Es decir:</p>
+<pre><samp><span style="font-size: 12px;">value 0 → banners activados
+value 2 → banners activados
+otros  → banners desactivados</span></samp></pre>
+<h4>¿De dónde viene ese <code data-start="2273" data-end="2280">value</code>?</h4>
+<p>Aquí podemos conectar esta función con la que vimos anteriormente:</p>
+<pre><code><span class="ͼ13">prefCombo</span>: <span class="ͼv">function</span>(<span class="ͼ11">KEY</span>, <span class="ͼ11">pos</span>, <span class="ͼ11">options</span>, <span class="ͼ11">items</span>, <span class="ͼ11">box</span>)</code></pre>
+<p>Recordemos que allí teníamos:</p>
+<pre><code><span class="ͼ11">SettingCombo</span><span class="ͼv">.</span>connect(<span class="ͼz">'changed'</span>, <span class="ͼ11">Lang</span><span class="ͼv">.</span>bind(<span class="ͼy">this</span>, <span class="ͼv">function</span>(<span class="ͼ11">widget</span>) { ... }</code></pre>
+<p>y después:</p>
+<pre><samp><span class="ͼ11">settings</span><span class="ͼv">.</span>get_strv(<span class="ͼz">'application-list'</span>)<span class="ͼv">.</span>forEach(<span class="ͼv">function</span>(<span class="ͼ11">application</span>) {
+    <span class="ͼy">this</span><span class="ͼv">.</span>setNotificationBannerPolicy(
+        <span class="ͼz">"/org/gnome/desktop/notifications/application/"</span> <span class="ͼv">+</span>
+        <span class="ͼ11">application</span>
+            <span class="ͼv">.</span>toLowerCase()
+            <span class="ͼv">.</span>replace(<span class="ͼz">/[^a-z0-9-]/g</span>, <span class="ͼz">'-'</span>)
+            <span class="ͼv">.</span>replace(<span class="ͼz">/--+/g</span>, <span class="ͼz">'-'</span>)
+            <span class="ͼv">.</span>substring(<span class="ͼy">0</span>, <span class="ͼ11">application</span><span class="ͼv">.</span>length<span class="ͼv">-</span><span class="ͼy">8</span>) <span class="ͼv">+</span>
+        <span class="ͼz">"/"</span>,
+        <span class="ͼ11">widget</span><span class="ͼv">.</span>get_active()
+    );
+}, <span class="ͼy">this</span>);</samp></pre>
+<h5>¡Aquí se completa el rompecabezas!</h5>
+<p><code data-start="3004" data-end="3025">widget.get_active()</code> devuelve el <strong data-start="3038"
+        data-end="3074">índice de la opción seleccionada</strong> en el <code data-start="3081"
+        data-end="3091">ComboBox</code>. Por tanto:</p>
+<pre><samp>for-list
+   │
+   ▼
+ComboBox
+   │
+   ├── opción 0
+   ├── opción 1
+   ├── opción 2
+   └── opción 3
+   │
+   ▼
+widget.get_active()
+   │
+   ▼
+setNotificationBannerPolicy(..., value)</samp></pre>
+<p>Y esta función convierte ese índice en:</p>
+<pre><samp>0 → show-banners = true
+1 → show-banners = false
+2 → show-banners = true
+3 → show-banners = false</samp></pre>
+<h4>¿Qué significa eso en la práctica?</h4>
+<div class="row">
+    <div class="col">
+        <p>Recordemos las opciones que vimos:</p>
+        <pre><code>[<span class="ͼz">'none'</span>,<span class="ͼz">'count'</span>,<span class="ͼz">'banner'</span>,<span class="ͼz">'both'</span>]</code></pre>
+    </div>
+    <div class="col">
+        <p>Con sus textos:</p>
+        <pre><samp>0 → Show them
+1 → Show counts only
+2 → Show banner only
+3 → Ignore them</samp></pre>
+    </div>
+</div>
+<p>Por lo tanto:</p>
+<table>
+    <thead>
+        <tr>
+            <th>Opción</th>
+            <th align="right">índice</th>
+            <th><code>show-banners</code></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Show them</td>
+            <td align="right">0</td>
+            <td><code>true</code></td>
+        </tr>
+        <tr>
+            <td>Show counts only</td>
+            <td align="right">1</td>
+            <td><code>false</code></td>
+        </tr>
+        <tr>
+            <td>Show banner only</td>
+            <td align="right">2</td>
+            <td><code>true</code></td>
+        </tr>
+        <tr>
+            <td>Ignore them</td>
+            <td align="right">3</td>
+            <td><code>false</code></td>
+        </tr>
+    </tbody>
+</table>
+<p>Esto tiene bastante sentido. La función no está implementando toda la política de <code data-start="3961"
+        data-end="3971">for-list</code>; <strong data-start="3973" data-end="4040">solamente está modificando la
+        propiedad <code data-start="4015" data-end="4029">show-banners</code> de GNOME</strong>. La parte de "counts"
+    probablemente sea manejada por la propia extensión en otro lugar.</p>
+<h3 id="section15" class="class-prefs">Observaciones</h3>
+<hr>
+<p>Ahora tenemos una imagen bastante clara de esta clase.</p>
+<p>Hay <strong data-start="1762" data-end="1794">dos niveles de configuración</strong>:</p>
+<pre><samp>                    APP LIST
+                       │
+          ┌────────────┴────────────┐
+          │                         │
+    configuración               configuración
+      general                    individual
+          │                         │
+     ┌────┴────┐             ┌──────┴──────┐
+     │         │             │             │
+  for-list  run-script    name-list    script-list
+                             │             │
+                             └──────┬──────┘
+                                    │
+                            selectedIndex</samp></pre>
+<div class="row">
+    <div class="col">
+        <p>Y además <code>for-list</code> tiene un efecto externo:</p>
+        <pre><samp>for-list
+   ↓
+setNotificationBannerPolicy()
+   ↓
+GSettings de GNOME
+   ↓
+show-banners</samp></pre>
+    </div>
+    <div class="col">
+        <p>Mientras que <code>script-list</code> todavía queda con una pregunta fundamental:</p>
+        <pre><samp>script-list[i]
+     ↓
+ruta .sh
+     ↓
+¿quién ejecuta realmente ese script?</samp></pre>
+    </div>
+</div>
+<p><strong data-start="2689" data-end="2718">Eso todavía no lo sabemos</strong>, y precisamente por eso no debemos
+    adelantarnos.</p>
+<p>También quedan registrados nuestros pequeños candidatos a investigación:</p>
+<ul>
+    <li>substring(0, application.length - 8)</li>
+    <li>la canonicalización del nombre <code>.desktop</code></li>
+    <li>fileManagementDialogWindow(0)</li>
+    <li><code>setButton</code> y <code>clearButton</code> ocupando la misma celda <code>(1,12)</code></li>
+    <li>y, sobre todo, el consumidor real de <code>script-list</code> y <code>run-script</code>.</li>
+</ul>
