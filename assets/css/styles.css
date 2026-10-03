@@ -135,7 +135,7 @@ body {
 	bottom: -0.005rem;
 	font-size: smaller;
 	font-style: oblique;
-	color: var(--cmed);
+	color: var(--cdark);
 }
 
 .borderless {
