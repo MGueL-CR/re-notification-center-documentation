@@ -228,9 +228,8 @@
         ├── mínimo
         ├── máximo
         └── paso</samp></pre>
-        <p>Su responsabilidad quedó bastante clara: es una <strong data-start="205" data-end="264">clase base de
-                construcción de controles de preferencias</strong> sobre un <code data-start="274"
-                data-end="284">Gtk.Grid</code>.</p>
+        <p>Su responsabilidad quedó bastante clara: es una <strong>clase base de construcción de controles de
+                preferencias</strong> sobre un <code>Gtk.Grid</code>.</p>
         <pre><samp>PrefsWindow
 │
 ├── _init()
@@ -335,5 +334,74 @@
                 └── modifica:
                     org.gnome.desktop.notifications.application
                         └── show-banners</samp></pre>
+    </div>
+
+    <input type="radio" name="tabs-maps" id="tb6">
+    <label for="tb6">PrefsWindowForCalendar</label>
+    <div class="tab">
+        <h4>Mapa completo del nodo: PrefsWindowForCalendar</h4>
+        <pre><samp>PrefsWindowForCalendar_NotificationCenterExtension
+            │
+            ├── Name
+            │   └── "PrefsWindowForCalendar_NotificationCenterExtension"
+            │
+            ├── Extends
+            │   └── PrefsWindow_NotificationCenterExtension
+            │       └── Gtk.Grid
+            │
+            ├── _init()
+            │   └── this.parent()
+            │       └── inicializa el Gtk.Grid heredado
+            │
+            ├── displayPrefs()
+            │   │
+            │   ├── events-position
+            │   │   └── prefCombo()
+            │   │       ├── dontshow
+            │   │       ├── below
+            │   │       └── beside
+            │   │
+            │   ├── autohide-space-beside-calendar
+            │   │   └── prefSwitch()
+            │   │
+            │   ├── calendar-on-left
+            │   │   └── prefSwitch()
+            │   │
+            │   ├── show-events-section-if-empty
+            │   │   └── prefSwitchInverted()
+            │   │
+            │   ├── hide-clock-section
+            │   │   └── prefSwitch()
+            │   │
+            │   ├── hide-weather-section
+            │   │   └── prefSwitch()
+            │   │
+            │   └── hide-date-section
+            │       └── prefSwitch()
+            │
+            └── prefSwitchInverted()
+                ├── muestra !valor de GSettings
+                ├── guarda !estado del Switch
+                └── reloadExtension()</samp></pre>
+    </div>
+    <input type="radio" name="tabs-maps" id="tb7">
+    <label for="tb7">Pending</label>
+    <div class="tab">
+        <h4>Mapa completo del nodo: </h4>
+
+    </div>
+
+    <input type="radio" name="tabs-maps" id="tb8">
+    <label for="tb8">Pending</label>
+    <div class="tab">
+        <h4>Mapa completo del nodo: </h4>
+
+    </div>
+
+    <input type="radio" name="tabs-maps" id="tb9">
+    <label for="tb9">Pending</label>
+    <div class="tab">
+        <h4>Mapa completo del nodo: </h4>
+
     </div>
 </div>

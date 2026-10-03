@@ -1,1 +1,365 @@
-PrefsWindowForCalendar
+<aside class="list-blocks">
+    <div class="symbol-tab">
+        <div class="symbol">
+            <div class="icon-bar"></div>
+        </div>
+    </div>
+    <div class="card">
+        <p>Secciones:</p>
+        <div class="list-links">
+            <a href="#section1">PrefsWindowForCalendar</a>
+            <a href="#section2">_init ( ) { ... }</a>
+            <hr>
+            <a href="#section3">displayPrefs: function()</a>
+            <a href="#section4">prefSwitchInverted: function()</a>
+            <hr>
+            <a href="#section5">Observaciones</a>
+        </div>
+    </div>
+</aside>
+<h2 id="section1" class="class-prefs">PrefsWindowForCalendar</h2>
+<hr>
+<p>Aquí aparece una clase bastante más sencilla que las anteriores, y hay un detalle importante: <strong
+        data-start="104" data-end="156">esta clase hereda de otra clase que ya conocemos</strong>.</p>
+<pre><code><span class="ͼv">const</span> <span class="ͼ11">PrefsWindowForCalendar_NotificationCenterExtension</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">GObject</span><span class="ͼv">.</span>Class({
+
+  Name: <span class="ͼz">"PrefsWindowForCalendar_NotificationCenterExtension"</span>,
+  Extends: <span class="ͼ11">PrefsWindow_NotificationCenterExtension</span>,
+
+  _init: <span class="ͼv">function</span>(){
+
+    <span class="ͼy">this</span><span class="ͼv">.</span>parent();
+
+  }</code></pre>
+<h4>La variable</h4>
+<p><span class="ͼv">const</span> <span class="ͼ11">PrefsWindowForCalendar_NotificationCenterExtension</span> contiene
+    una clase <code data-start="592" data-end="607">GObject.Class</code>. Su función será representar la página/sección
+    de
+    preferencias relacionada con <strong data-start="688" data-end="700">Calendar</strong>.</p>
+<h4>Name</h4>
+<p>Es el nombre interno de la clase GObject.</p>
+<pre><code><span class="ͼ13">Name</span>: <span class="ͼz">"PrefsWindowForCalendar_NotificationCenterExtension"</span>,</code></pre>
+<p>Por ahora seguimos respetando el nombre original, aunque ya tenemos anotada nuestra idea futura de simplificar los
+    nombres.</p>
+<h4>Extends</h4>
+<p>Aquí está lo interesante:</p>
+<pre><code><span class="ͼ13">Extends</span>: <span class="ͼ11">PrefsWindow_NotificationCenterExtension</span>,</code></pre>
+<p>Esta clase <strong data-start="1100" data-end="1113">hereda de</strong>: PrefsWindow que fue la clase que acabamos de
+    estudiar. Esa clase a su vez: <span class="ͼ13">Extends</span>: <span class="ͼ11">Gtk</span><span
+        class="ͼv">.</span>Grid.</p>
+<p>Por lo tanto tenemos:</p>
+<pre><samp>PrefsWindowForCalendar_NotificationCenterExtension
+                │
+                │ hereda de
+                ▼
+PrefsWindow_NotificationCenterExtension
+                │
+                │ hereda de
+                ▼
+Gtk.Grid</samp></pre>
+<p>Eso significa que Calendar recibe automáticamente todos los métodos que definimos en <code data-start="1620"
+        data-end="1661">PrefsWindow_NotificationCenterExtension</code>, como:</p>
+<pre><samp>attachLabel()
+prefCombo()
+prefStr()
+prefSwitch()
+prefTime()</samp></pre>
+<p>Y cualquier otro método que encontremos en ella. Esto explica por qué la clase base se diseñó como una especie de
+    <strong data-start="1858" data-end="1921">caja de herramientas para construir páginas de preferencias</strong>.
+</p>
+<h3 id="section2" class="class-prefs">_init function( ) { ... }</h3>
+<hr>
+<pre><code><span class="ͼ13">_init</span>: <span class="ͼv">function</span>(){
+
+    <span class="ͼy">this</span><span class="ͼv">.</span>parent();
+
+},</code></pre>
+<p>Aquí: <span class="ͼy">this</span><span class="ͼv">.</span>parent(); invoca el <code data-start="2060"
+        data-end="2069">_init()</code> de la clase padre:</p>
+<pre><samp>PrefsWindowForCalendar
+        │
+        └── this.parent()
+                ↓
+PrefsWindow_NotificationCenterExtension._init()</samp></pre>
+<p>Y el <code data-start="2233" data-end="2242">_init()</code> de la clase padre era:</p>
+<pre><samp><span class="ͼ13">_init</span>: <span class="ͼv">function</span>(<span class="ͼ11">page</span>) {
+    <span class="ͼy">this</span><span class="ͼv">.</span>parent({
+        column_spacing: <span class="ͼy">80</span>,
+        halign: <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Align<span class="ͼv">.</span>CENTER,
+        margin_top: <span class="ͼy">20</span>,
+        margin_end: <span class="ͼy">20</span>,
+        margin_bottom: <span class="ͼy">20</span>,
+        margin_start: <span class="ͼy">20</span>,
+        row_spacing: <span class="ͼy">20</span>
+    });
+},</samp></pre>
+<p>Por tanto, <strong data-start="2537" data-end="2595">Calendar no necesita volver a configurar el <code
+            data-start="2583" data-end="2593">Gtk.Grid</code></strong>. Lo hereda. Y además encontramos algo
+    interesante: <strong data-start="88" data-end="175">esta clase está reutilizando los métodos de la clase padre para
+        construir su página</strong>.</p>
+<h3 id="section3" class="class-prefs">displayPrefs: function()</h3>
+<hr>
+<pre><code><span class="ͼ13">displayPrefs</span>: <span class="ͼv">function</span>() {
+
+  <span class="ͼv">let</span> <span class="ͼ11">pos</span> <span class="ͼv">=</span> <span class="ͼy">0</span>;</code></pre>
+<p><code data-start="261" data-end="266">pos</code> simplemente funciona como contador de filas del <code
+        data-start="315" data-end="325">Gtk.Grid</code>. La idea es:</p>
+<pre><samp>pos = 0 → primera preferencia
+pos = 1 → segunda
+pos = 2 → tercera
+...</samp></pre>
+<p>El <code data-start="427" data-end="431">++</code> hace que después de utilizar el valor actual, se incremente para
+    la siguiente preferencia.</p>
+<h4>events-position</h4>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>prefCombo(
+    <span class="ͼz">"events-position"</span>,
+    <span class="ͼ11">pos</span><span class="ͼv">++</span>,
+    [<span class="ͼz">"dontshow"</span>, <span class="ͼz">"below"</span>, <span class="ͼz">"beside"</span>],
+    [
+        <span class="ͼ11">_</span>(<span class="ͼz">"Only In Notification Center"</span>)<span class="ͼv">+</span><span class="ͼz">"  "</span>,
+        <span class="ͼ11">_</span>(<span class="ͼz">"Below Calendar"</span>),
+        <span class="ͼ11">_</span>(<span class="ͼz">"Beside Calendar"</span>)
+    ]
+);</code></pre>
+<p>Aquí reutiliza: </p>
+<pre><samp>PrefsWindow_NotificationCenterExtension
+        │
+        └── prefCombo()</samp></pre>
+<p>La key: <kbd class="inline-code">events-position</kbd> es de tipo <code data-start="934"
+        data-end="942">string</code>.</p>
+<div class="row">
+    <div class="col"><span>Los valores internos son:</span>
+        <pre><samp>dontshow
+below
+beside</samp></pre>
+    </div>
+    <div class="col"><span>Mientras que el usuario ve:</span>
+        <pre><samp>Only In Notification Center
+Below Calendar
+Beside Calendar</samp></pre>
+    </div>
+</div>
+<p>Tenemos entonces:</p>
+<pre><samp>events-position
+│
+├── dontshow → Only In Notification Center
+├── below    → Below Calendar
+└── beside   → Beside Calendar</samp></pre>
+<p>Y <code data-start="1264" data-end="1277">prefCombo()</code> se encarga de leer/escribir ese valor mediante
+    GSettings.</p>
+<h4>autohide-space-beside-calendar</h4>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>prefSwitch(
+    <span class="ͼz">"autohide-space-beside-calendar"</span>,
+    <span class="ͼ11">pos</span><span class="ͼv">++</span>
+);</code></pre>
+<p>Es un booleano manejado por: <kbd class="inline-code">prefSwitch()</kbd>. Así que:</p>
+<pre><samp>autohide-space-beside-calendar
+        │
+        └── true / false</samp></pre>
+<p>Por el nombre, podemos sospechar qué hace, pero todavía no necesitamos asumir su comportamiento exacto. Eso lo
+    veremos cuando encontremos dónde se consume en <code data-start="1773" data-end="1787">extension.js</code>.</p>
+<h4>calendar-on-left</h4>
+<p>Otra key booleana.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>prefSwitch(
+    <span class="ͼz">"calendar-on-left"</span>,
+    <span class="ͼ11">pos</span><span class="ͼv">++</span>
+);</code></pre>
+<p>Probablemente controla la posición del calendario, pero nuevamente:</p>
+<blockquote>El nombre nos da una pista; <code data-start="2014" data-end="2028">extension.js</code> nos dará la
+    confirmación.</blockquote>
+<h4>show-events-section-if-empty</h4>
+<p>Aquí aparece algo nuevo:</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>prefSwitchInverted(
+    <span class="ͼz">"show-events-section-if-empty"</span>,
+    <span class="ͼ11">pos</span><span class="ͼv">++</span>
+);</code></pre>
+<p>Ya conocíamos:</p>
+<pre><samp>prefCombo()
+prefSwitch()
+prefStr()
+prefTime()</samp></pre>
+<p>Pero <strong data-start="2299" data-end="2384"><code data-start="2301" data-end="2323">prefSwitchInverted()</code>
+        todavía no lo hemos visto en la clase padre que analizamos</strong>.</p>
+<p>El nombre de la key es particularmente interesante: <kbd class="inline-code">show-events-section-if-empty</kbd>. pero
+    se utiliza con: prefSwitchInverted()</p>
+<p>Eso significa que la relación entre el estado visual del switch y el valor almacenado probablemente está invertida.
+    No debemos asumir todavía exactamente cómo hasta encontrar la implementación de <code data-start="2947"
+        data-end="2969">prefSwitchInverted()</code>.</p>
+<h4>hide-clock-section</h4>
+<p>Booleano:</p>
+<div class="row">
+    <div class="col">
+        <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>prefSwitch(
+    <span class="ͼz">"hide-clock-section"</span>,
+    <span class="ͼ11">pos</span><span class="ͼv">++</span>
+);</code></pre>
+    </div>
+    <div class="col">
+        <pre><samp>hide-clock-section
+        ↓
+   true / false</samp></pre>
+    </div>
+</div>
+<h4>hide-weather-section</h4>
+<p>Otro booleano.</p>
+<div class="row">
+    <div class="col">
+        <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>prefSwitch(
+    <span class="ͼz">"hide-weather-section"</span>,
+    <span class="ͼ11">pos</span><span class="ͼv">++</span>
+);</code></pre>
+    </div>
+    <div class="col">
+        <pre><samp>hide-weather-section
+        ↓
+   true / false</samp></pre>
+    </div>
+</div>
+<h4>hide-date-section</h4>
+<p>Otro booleano.</p>
+<div class="row">
+    <div class="col">
+        <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>prefSwitch(
+    <span class="ͼz">"hide-date-section"</span>,
+    <span class="ͼ11">pos</span><span class="ͼv">++</span>
+);</code></pre>
+    </div>
+    <div class="col">
+        <pre><samp>hide-date-section
+        ↓
+true / false</samp></pre>
+    </div>
+</div>
+<p>Y hay una observación importante: <strong data-start="3896" data-end="3935">todos estos métodos reciben <code
+            data-start="3926" data-end="3933">pos++</code></strong>, así que las preferencias se van colocando
+    consecutivamente en las filas del <code data-start="4013" data-end="4023">Gtk.Grid</code> heredado.</p>
+<h3 id="section4" class="class-prefs">prefSwitchInverted: function(KEY, pos) </h3>
+<hr>
+<p>Aquí encontramos la implementación que faltaba y ahora podemos entender perfectamente qué significa <code
+        data-start="108" data-end="130">prefSwitchInverted()</code>.</p>
+<blockquote>La diferencia fundamental respecto a <code data-start="632" data-end="646">prefSwitch()</code> es el <code
+        data-start="653" data-end="656">!</code>.</blockquote>
+<pre><code><span class="ͼ13">prefSwitchInverted</span>: <span class="ͼv">function</span>(<span class="ͼ11">KEY</span>, <span class="ͼ11">pos</span>) {
+
+  <span class="ͼv">let</span> <span class="ͼ11">SettingSwitch</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Switch({
+      hexpand: <span class="ͼy">false</span>,
+      active: <span class="ͼv">!</span><span class="ͼ11">settings</span><span class="ͼv">.</span>get_boolean(<span class="ͼ11">KEY</span>),
+      halign: <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Align<span class="ͼv">.</span>END
+  });
+
+  <span class="ͼ11">SettingSwitch</span><span class="ͼv">.</span>connect(<span class="ͼz">"notify::active"</span>, <span class="ͼ11">Lang</span><span class="ͼv">.</span>bind(<span class="ͼy">this</span>, <span class="ͼv">function</span>(<span class="ͼ11">button</span>) {
+      <span class="ͼ11">settings</span><span class="ͼv">.</span>set_boolean(<span class="ͼ11">KEY</span>, <span class="ͼv">!</span><span class="ͼ11">button</span><span class="ͼv">.</span>active);
+      <span class="ͼ11">reloadExtension</span>();
+  }));
+
+  <span class="ͼy">this</span><span class="ͼv">.</span>attachLabel(<span class="ͼ11">KEY</span>,<span class="ͼ11">pos</span>);
+  <span class="ͼy">this</span><span class="ͼv">.</span>attach(<span class="ͼ11">SettingSwitch</span>, <span class="ͼy">1</span>, <span class="ͼ11">pos</span>, <span class="ͼy">1</span>, <span class="ͼy">1</span>);
+
+},</code></pre>
+<h4>Al crear el Switch</h4>
+<div class="row">
+    <div class="col"><span>El normal hacía:</span>
+        <pre><samp><span class="ͼ13">active</span>: <span class="ͼ11">settings</span><span class="ͼv">.</span>get_boolean(<span class="ͼ11">KEY</span>)</samp></pre>
+    </div>
+    <div class="col"><span>Mientras que este hace:</span>
+        <pre><samp><span class="ͼ13">active</span>: <span class="ͼv">!</span><span class="ͼ11">settings</span><span class="ͼv">.</span>get_boolean(<span class="ͼ11">KEY</span>)</samp></pre>
+    </div>
+</div>
+<p>Es decir, <strong data-start="851" data-end="872">invierte el valor</strong>. </p>
+<p>Si GSettings contiene: <kbd class="inline-code">KEY</kbd> = <var class="inline-code">true</var> el switch aparece:
+    <kbd class="inline-code">active</kbd> = <var class="inline-code">false</var>
+</p>
+<p>Y si contiene: <kbd class="inline-code">KEY</kbd> = <var class="inline-code">false</var> aparece: <kbd
+        class="inline-code">active</kbd> = <var class="inline-code">true</var></p>
+<p>Podemos representarlo:</p>
+<pre><samp>GSettings              Switch
+
+true       ── ! ──→    OFF
+false      ── ! ──→    ON</samp></pre>
+<h4>Cuando el usuario mueve el Switch</h4>
+<p>Aquí vuelve a aparecer la inversión:</p>
+<pre><code><span class="ͼ11">settings</span><span class="ͼv">.</span>set_boolean(<span class="ͼ11">KEY</span>, <span class="ͼv">!</span><span class="ͼ11">button</span><span class="ͼv">.</span>active);</code></pre>
+<p>Por ejemplo, si el usuario activa el switch: <kbd class="inline-code">button</kbd>.<kbd
+        class="inline-code">active</kbd> = <var class="inline-code">true</var> se guarda:</p>
+<pre><samp>KEY = !true
+    = false</samp></pre>
+<p>Si lo desactiva: <kbd class="inline-code">button</kbd>.<kbd class="inline-code">active</kbd> = <var
+        class="inline-code">false</var> se guarda:</p>
+<pre><samp>KEY = !false
+    = true</samp></pre>
+<p>Por tanto:</p>
+<pre><samp>Switch               GSettings
+
+ON        ── ! ──→   false
+OFF       ── ! ──→   true</samp></pre>
+<h4>¿Por qué hacer esto?</h4>
+<p>Porque probablemente la key representa una condición negativa: </p>
+<pre><samp>show-events-section-if-empty</samp></pre>
+<p>En ese caso, tendría sentido invertir la representación.</p>
+<div class="row">
+    <div class="col">
+        <p>El nombre de la configuración dice:</p>
+        <blockquote>"Mostrar la sección de eventos si está vacía".</blockquote>
+    </div>
+    <div class="col">
+        <p>Pero quizás la interfaz que se quiere presentar al usuario sea conceptualmente:</p>
+        <blockquote>"Ocultar la sección de eventos cuando está vacía".</blockquote>
+    </div>
+</div>
+<p><strong data-start="2098" data-end="2111">Pero ojo:</strong> eso último es una hipótesis basada en el nombre. Lo que
+    podemos afirmar con certeza es únicamente que <strong data-start="2214" data-end="2284">la interfaz y el valor
+        almacenado están deliberadamente invertidos</strong>.</p>
+<h3 id="section5" class="class-prefs">Observaciones</h3>
+<hr>
+<p>Esta clase prácticamente funciona como una <strong data-start="1164" data-end="1227">declaración de qué opciones debe
+        mostrar la página Calendar</strong>. No contiene la lógica de cada preferencia. Esa responsabilidad está
+    repartida:</p>
+<pre><samp>PrefsWindowForCalendar
+        │
+        │ "quiero mostrar esta preferencia"
+        ▼
+PrefsWindow_NotificationCenter
+        │
+        │ "así se construye un Combo/Switch..."
+        ▼
+GSettings</samp></pre>
+<p>Y <code data-start="1521" data-end="1543">prefSwitchInverted()</code> es una herramienta adicional para los casos
+    donde la representación del Switch debe ser la inversa del valor almacenado.</p>
+<h4>¿Cómo funciona?</h4>
+<p><code data-start="2574" data-end="2596">prefSwitchInverted()</code> funciona así:</p>
+<pre><samp>                 prefSwitchInverted(KEY)
+                         │
+             ┌───────────┴───────────┐
+             ▼                       ▼
+      leer GSettings            crear Switch
+             │                       │
+             │                    !valor
+             │                       │
+             └───────────────────────┘
+                         │
+                    usuario cambia
+                         │
+                         ▼
+                  guardar !active
+                         │
+                         ▼
+                   reloadExtension()</samp></pre>
+<h4>La herencia</h4>
+<p>Ahora la herencia queda todavía más clara:</p>
+<pre><samp>PrefsWindow_NotificationCenterExtension
+│
+├── prefCombo()
+├── prefSwitch()
+├── prefSwitchInverted()
+├── prefStr()
+├── prefTime()
+└── attachLabel()
+       ▲
+       │ hereda
+       │
+PrefsWindowForCalendar_NotificationCenterExtension</samp></pre>
+<p>Así que esta clase Calendar básicamente <strong data-start="3550" data-end="3593">declara qué preferencias quiere
+        mostrar</strong>, mientras que la clase padre contiene las herramientas para construir los controles.</p>
+<p>Con esto, <strong data-start="1676" data-end="1787"><code data-start="1678"
+            data-end="1730">PrefsWindowForCalendar_NotificationCenterExtension</code> queda completamente documentada en
+        nuestro mapa mental</strong>.</p>

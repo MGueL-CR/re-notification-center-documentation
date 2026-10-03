@@ -56,16 +56,16 @@
     <span class="ͼz">"Profiles"</span>,
     <span class="ͼ11">_</span>(<span class="ͼz">"Profiles"</span>)
 );</samp></pre>
-<p>La relación queda: Prefs_NotificationCenterExtension
-<div>│</div>
-<div>└── appListPrefs</div>
-<div> │</div>
-<div> ▼</div>
-<div>PrefsWindowForAppList_NotificationCenterExtension</div>
-<div> │</div>
-<div> ▼</div>
-<div>pestaña "Profiles"</div>
-</p>
+<p>La relación queda:</p>
+<pre><samp>Prefs_NotificationCenterExtension
+│
+└── appListPrefs
+    │
+    ▼
+PrefsWindowForAppList_NotificationCenterExtension
+    │
+    ▼
+pestaña "Profiles"</samp></pre>
 <h4>Hereda de <code data-start="1249" data-end="1259">Gtk.Grid</code></h4>
 <pre><code><span class="ͼ13">Extends</span>: <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Grid,</code></pre>
 <p>Esto significa que esta clase puede utilizar directamente: <span class="ͼy">this</span><span
@@ -1749,8 +1749,8 @@ set_strv("script-list", scriptList)</samp></pre>
  1 = segunda
  2 = tercera
  ...</samp></pre>
-    </div class="col">
-    <div><span>Por eso:</span>
+    </div>
+    <div class="col"><span>Por eso:</span>
         <pre><samp><span class="ͼv">if</span>(<span class="ͼy">this</span><span class="ͼv">.</span>selectedIndex <span class="ͼv">&gt;</span> <span class="ͼv">-</span><span class="ͼy">1</span>)</samp></pre>
     </div>
 </div>
