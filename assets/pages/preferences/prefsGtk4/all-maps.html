@@ -1,199 +1,199 @@
 <h2>Mapas de cada clase</h2>
-<hr>
+<hr />
 <div class="tabs">
-    <input type="radio" name="tabs-maps" id="tb1" checked="checked">
+    <input type="radio" name="tabs-maps" id="tb1" checked="checked" />
     <label for="tb1">ExtensionPreferencesWindow</label>
     <div class="tab">
         <h4>Mapa completo del nodo: ExtensionPreferencesWindow</h4>
         <pre><samp>ExtensionPreferencesWindow_NotificationCenterExtension
-        │
-        ├── Tipo
-        │   └── GObject.Class
-        │
-        ├── Name
-        │   └── ExtensionPreferencesWindow_NotificationCenterExtension
-        │
-        ├── Propósito
-        │   └── Personalizar la ventana de preferencias GTK4
-        │
-        ├── _init(widget)
-        │   │
-        │   ├── this.toplevel
-        │   │   └── widget.get_native()
-        │   │
-        │   ├── this.headerBar
-        │   │   └── this.toplevel.get_titlebar()
-        │   │
-        │   ├── Gtk.StackSwitcher
-        │   │   ├── halign: CENTER
-        │   │   └── stack: widget
-        │   │
-        │   ├── createAppMenu()
-        │   └── createRefreshButton()
-        │
-        ├── createAppMenu()
-        │   │
-        │   ├── preferencesDialogAction
-        │   │   └── Gio.SimpleAction("preferences")
-        │   │       └── abre diálogo Preferences
-        │   │           └── ExtensionResetButton_NotificationCenterExtension
-        │   │
-        │   ├── helpDialogAction
-        │   │   └── Gio.SimpleAction("help")
-        │   │       └── abre diálogo Help
-        │   │           └── Metadata.description
-        │   │
-        │   ├── aboutDialogAction
-        │   │   └── Gio.SimpleAction("about")
-        │   │       └── Gtk.AboutDialog
-        │   │           ├── eicon.png
-        │   │           ├── Metadata.name
-        │   │           ├── Metadata.version
-        │   │           ├── Metadata.status
-        │   │           ├── Metadata.comment
-        │   │           └── license_type: 3
-        │   │
-        │   ├── actionGroup
-        │   │   ├── preferences
-        │   │   ├── help
-        │   │   └── about
-        │   │
-        │   ├── Gio.Menu
-        │   │   ├── Preferences → prefswindow.preferences
-        │   │   ├── Help → prefswindow.help
-        │   │   └── About → prefswindow.about
-        │   │
-        │   ├── Gtk.PopoverMenu
-        │   │   └── basado en Gio.Menu
-        │   │
-        │   └── Gtk.MenuButton
-        │       └── open-menu-symbolic
-        │
-        └── createRefreshButton()
-            │
-            ├── refreshButton
-            │   └── Gtk.Button
-            │       └── view-refresh-symbolic
-            │
-            ├── clicked
-            │   └── reloadExtension()
-            │       └── modifica "reload-signal"
-            │
-            └── headerBar.pack_start()</samp></pre>
+│
+├── Tipo
+│   └── GObject.Class
+│
+├── Name
+│   └── ExtensionPreferencesWindow_NotificationCenterExtension
+│
+├── Propósito
+│   └── Personalizar la ventana de preferencias GTK4
+│
+├── _init(widget)
+│   │
+│   ├── this.toplevel
+│   │   └── widget.get_native()
+│   │
+│   ├── this.headerBar
+│   │   └── this.toplevel.get_titlebar()
+│   │
+│   ├── Gtk.StackSwitcher
+│   │   ├── halign: CENTER
+│   │   └── stack: widget
+│   │
+│   ├── createAppMenu()
+│   └── createRefreshButton()
+│
+├── createAppMenu()
+│   │
+│   ├── preferencesDialogAction
+│   │   └── Gio.SimpleAction("preferences")
+│   │       └── abre diálogo Preferences
+│   │           └── ExtensionResetButton_NotificationCenterExtension
+│   │
+│   ├── helpDialogAction
+│   │   └── Gio.SimpleAction("help")
+│   │       └── abre diálogo Help
+│   │           └── Metadata.description
+│   │
+│   ├── aboutDialogAction
+│   │   └── Gio.SimpleAction("about")
+│   │       └── Gtk.AboutDialog
+│   │           ├── eicon.png
+│   │           ├── Metadata.name
+│   │           ├── Metadata.version
+│   │           ├── Metadata.status
+│   │           ├── Metadata.comment
+│   │           └── license_type: 3
+│   │
+│   ├── actionGroup
+│   │   ├── preferences
+│   │   ├── help
+│   │   └── about
+│   │
+│   ├── Gio.Menu
+│   │   ├── Preferences → prefswindow.preferences
+│   │   ├── Help → prefswindow.help
+│   │   └── About → prefswindow.about
+│   │
+│   ├── Gtk.PopoverMenu
+│   │   └── basado en Gio.Menu
+│   │
+│   └── Gtk.MenuButton
+│       └── open-menu-symbolic
+│
+└── createRefreshButton()
+    │
+    ├── refreshButton
+    │   └── Gtk.Button
+    │       └── view-refresh-symbolic
+    │
+    ├── clicked
+    │   └── reloadExtension()
+    │       └── modifica "reload-signal"
+    │
+    └── headerBar.pack_start()</samp></pre>
     </div>
 
-    <input type="radio" name="tabs-maps" id="tb2">
+    <input type="radio" name="tabs-maps" id="tb2" />
     <label for="tb2">ExtensionResetButton</label>
     <div class="tab">
         <h4>Mapa completo del nodo: ExtensionResetButton</h4>
         <pre><samp>ExtensionResetButton_NotificationCenterExtension
-            │
-            ├── Tipo
-            │   └── GObject.Class
-            │
-            ├── Name
-            │   └── ExtensionResetButton_NotificationCenterExtension
-            │
-            ├── Creada por
-            │   └── ExtensionPreferencesWindow_NotificationCenterExtension
-            │
-            ├── _init(object)
-            │   │
-            │   ├── crea Gtk.Button
-            │   │   ├── label
-            │   │   │   └── "Reset Notification Center Extension"
-            │   │   └── halign
-            │   │       └── CENTER
-            │   │
-            │   ├── conecta "clicked"
-            │   │   └── resetExtension(object, "updateDone", null)
-            │   │
-            │   └── retorna el botón
-            │
-            └── resetExtension(object, functionToBeCalledAtTheEnd, parameter)
-                │
-                ├── crea Gtk.MessageDialog
-                │
-                ├── solicita confirmación: "Reset Notification Center to defaults?"
-                │   ├── OK
-                │   └── Cancel
-                │
-                ├── Cancel
-                │   └── cierra el diálogo
-                │
-                └── OK
-                    │
-                    ├── settings.reset(...)
-                    │   │
-                    │   ├── Calendario / eventos
-                    │   ├── Indicador
-                    │   └── Aplicaciones / scripts
-                    │
-                    ├── current-version
-                    │   └── código histórico comentado
-                    │
-                    ├── ejecuta callback
-                    │   └── object["updateDone"](null)
-                    │
-                    ├── destruye diálogo
-                    │
-                    └── reloadExtension()
-                        └── cambia reload-signal</samp></pre>
+│
+├── Tipo
+│   └── GObject.Class
+│
+├── Name
+│   └── ExtensionResetButton_NotificationCenterExtension
+│
+├── Creada por
+│   └── ExtensionPreferencesWindow_NotificationCenterExtension
+│
+├── _init(object)
+│   │
+│   ├── crea Gtk.Button
+│   │   ├── label
+│   │   │   └── "Reset Notification Center Extension"
+│   │   └── halign
+│   │       └── CENTER
+│   │
+│   ├── conecta "clicked"
+│   │   └── resetExtension(object, "updateDone", null)
+│   │
+│   └── retorna el botón
+│
+└── resetExtension(object, functionToBeCalledAtTheEnd, parameter)
+    │
+    ├── crea Gtk.MessageDialog
+    │
+    ├── solicita confirmación: "Reset Notification Center to defaults?"
+    │   ├── OK
+    │   └── Cancel
+    │
+    ├── Cancel
+    │   └── cierra el diálogo
+    │
+    └── OK
+        │
+        ├── settings.reset(...)
+        │   │
+        │   ├── Calendario / eventos
+        │   ├── Indicador
+        │   └── Aplicaciones / scripts
+        │
+        ├── current-version
+        │   └── código histórico comentado
+        │
+        ├── ejecuta callback
+        │   └── object["updateDone"](null)
+        │
+        ├── destruye diálogo
+        │
+        └── reloadExtension()
+            └── cambia reload-signal</samp></pre>
     </div>
 
-    <input type="radio" name="tabs-maps" id="tb3">
+    <input type="radio" name="tabs-maps" id="tb3" />
     <label for="tb3">Prefs</label>
     <div class="tab">
         <h4>Mapa completo del nodo: Prefs</h4>
         <pre><samp>Prefs_NotificationCenterExtension
-            │
-            ├── Tipo
-            │   └── GObject.Class
-            │
-            ├── Name
-            │   └── Prefs_NotificationCenterExtension
-            │
-            ├── Extends
-            │   └── Gtk.Stack
-            │
-            └── _init()
-                │
-                ├── notificationPrefs
-                │   └── PrefsWindowForNotifications
-                │
-                ├── calendarPrefs
-                │   └── PrefsWindowForCalendar
-                │
-                ├── indicatorPrefs
-                │   └── PrefsWindowForIndicator
-                │
-                ├── appListPrefs
-                │   └── PrefsWindowForAppList
-                │
-                ├── inicializa Gtk.Stack
-                │   └── this.parent(...)
-                │
-                ├── mecanismo histórico de actualización
-                │   │
-                │   ├── settings.get_double("current-version")
-                │   ├── compara con 23.03
-                │   └── si es menor
-                │       └── UpdatePage
-                │
-                ├── agrega páginas al Stack
-                │   ├── Notifications
-                │   ├── Calendar
-                │   ├── Indicator
-                │   └── Profiles
-                │
-                └── displayPrefs()
-                    ├── Notifications
-                    ├── Calendar
-                    ├── Indicator
-                    └── Profiles</samp></pre>
+│
+├── Tipo
+│   └── GObject.Class
+│
+├── Name
+│   └── Prefs_NotificationCenterExtension
+│
+├── Extends
+│   └── Gtk.Stack
+│
+└── _init()
+    │
+    ├── notificationPrefs
+    │   └── PrefsWindowForNotifications
+    │
+    ├── calendarPrefs
+    │   └── PrefsWindowForCalendar
+    │
+    ├── indicatorPrefs
+    │   └── PrefsWindowForIndicator
+    │
+    ├── appListPrefs
+    │   └── PrefsWindowForAppList
+    │
+    ├── inicializa Gtk.Stack
+    │   └── this.parent(...)
+    │
+    ├── mecanismo histórico de actualización
+    │   │
+    │   ├── settings.get_double("current-version")
+    │   ├── compara con 23.03
+    │   └── si es menor
+    │       └── UpdatePage
+    │
+    ├── agrega páginas al Stack
+    │   ├── Notifications
+    │   ├── Calendar
+    │   ├── Indicator
+    │   └── Profiles
+    │
+    └── displayPrefs()
+        ├── Notifications
+        ├── Calendar
+        ├── Indicator
+        └── Profiles</samp></pre>
     </div>
 
-    <input type="radio" name="tabs-maps" id="tb4">
+    <input type="radio" name="tabs-maps" id="tb4" />
     <label for="tb4">PrefsWindow</label>
     <div class="tab">
         <h4>Mapa completo del nodo: PrefsWindow</h4>
@@ -228,8 +228,10 @@
         ├── mínimo
         ├── máximo
         └── paso</samp></pre>
-        <p>Su responsabilidad quedó bastante clara: es una <strong>clase base de construcción de controles de
-                preferencias</strong> sobre un <code>Gtk.Grid</code>.</p>
+        <p>
+            Su responsabilidad quedó bastante clara: es una
+            <strong>clase base de construcción de controles de preferencias</strong> sobre un <code>Gtk.Grid</code>.
+        </p>
         <pre><samp>PrefsWindow
 │
 ├── _init()
@@ -252,7 +254,7 @@
 └── prefTime()
     └── GSettings integer → SpinButton</samp></pre>
     </div>
-    <input type="radio" name="tabs-maps" id="tb5">
+    <input type="radio" name="tabs-maps" id="tb5" />
     <label for="tb5">PrefsWindowForAppList</label>
     <div class="tab">
         <h4>Mapa completo del nodo: PrefsWindowForAppList</h4>
@@ -336,72 +338,211 @@
                         └── show-banners</samp></pre>
     </div>
 
-    <input type="radio" name="tabs-maps" id="tb6">
+    <input type="radio" name="tabs-maps" id="tb6" />
     <label for="tb6">PrefsWindowForCalendar</label>
     <div class="tab">
         <h4>Mapa completo del nodo: PrefsWindowForCalendar</h4>
         <pre><samp>PrefsWindowForCalendar_NotificationCenterExtension
-            │
-            ├── Name
-            │   └── "PrefsWindowForCalendar_NotificationCenterExtension"
-            │
-            ├── Extends
-            │   └── PrefsWindow_NotificationCenterExtension
-            │       └── Gtk.Grid
-            │
-            ├── _init()
-            │   └── this.parent()
-            │       └── inicializa el Gtk.Grid heredado
-            │
-            ├── displayPrefs()
-            │   │
-            │   ├── events-position
-            │   │   └── prefCombo()
-            │   │       ├── dontshow
-            │   │       ├── below
-            │   │       └── beside
-            │   │
-            │   ├── autohide-space-beside-calendar
-            │   │   └── prefSwitch()
-            │   │
-            │   ├── calendar-on-left
-            │   │   └── prefSwitch()
-            │   │
-            │   ├── show-events-section-if-empty
-            │   │   └── prefSwitchInverted()
-            │   │
-            │   ├── hide-clock-section
-            │   │   └── prefSwitch()
-            │   │
-            │   ├── hide-weather-section
-            │   │   └── prefSwitch()
-            │   │
-            │   └── hide-date-section
-            │       └── prefSwitch()
-            │
-            └── prefSwitchInverted()
-                ├── muestra !valor de GSettings
-                ├── guarda !estado del Switch
-                └── reloadExtension()</samp></pre>
+│
+├── Name
+│   └── "PrefsWindowForCalendar_NotificationCenterExtension"
+│
+├── Extends
+│   └── PrefsWindow_NotificationCenterExtension
+│       └── Gtk.Grid
+│
+├── _init()
+│   └── this.parent()
+│       └── inicializa el Gtk.Grid heredado
+│
+├── displayPrefs()
+│   │
+│   ├── events-position
+│   │   └── prefCombo()
+│   │       ├── dontshow
+│   │       ├── below
+│   │       └── beside
+│   │
+│   ├── autohide-space-beside-calendar
+│   │   └── prefSwitch()
+│   │
+│   ├── calendar-on-left
+│   │   └── prefSwitch()
+│   │
+│   ├── show-events-section-if-empty
+│   │   └── prefSwitchInverted()
+│   │
+│   ├── hide-clock-section
+│   │   └── prefSwitch()
+│   │
+│   ├── hide-weather-section
+│   │   └── prefSwitch()
+│   │
+│   └── hide-date-section
+│       └── prefSwitch()
+│
+└── prefSwitchInverted()
+    ├── muestra !valor de GSettings
+    ├── guarda !estado del Switch
+    └── reloadExtension()</samp></pre>
     </div>
-    <input type="radio" name="tabs-maps" id="tb7">
-    <label for="tb7">Pending</label>
+    <input type="radio" name="tabs-maps" id="tb7" />
+    <label for="tb7">PrefsWindowForIndicator</label>
     <div class="tab">
-        <h4>Mapa completo del nodo: </h4>
-
+        <h4>Mapa completo del nodo: PrefsWindowForIndicator</h4>
+        <pre><samp>PrefsWindowForIndicator_NotificationCenterExtension
+│
+├── Name
+│   └── "PrefsWindowForIndicator_NotificationCenterExtension"
+│
+├── Extends
+│   └── PrefsWindow_NotificationCenterExtension
+│       └── Gtk.Grid
+│
+├── _init()
+│   └── this.parent()
+│
+└── displayPrefs()
+│
+├── indicator-pos
+│   └── prefCombo()
+│       ├── left   → Left
+│       ├── center → Center
+│       └── right  → Right
+│
+├── indicator-index
+│   └── prefInt()
+│       └── entero 0–20
+│
+├── individual-icons
+│   └── prefSwitch()
+│
+├── change-icons
+│   └── prefSwitch()
+│
+├── autohide
+│   └── prefComboInt()
+│       ├── 0 → No
+│       ├── 1 → Yes
+│       └── 2 → If Do Not Disturb is Off
+│
+├── new-notification
+│   └── prefCombo()
+│       ├── none
+│       ├── dot
+│       └── count
+│
+├── include-events-count
+│   └── prefSwitch()
+│
+├── blink-icon
+│   └── prefTime(0, 10000, 1)
+│
+├── blink-time
+│   └── prefTime(100, 10000, 10)
+│
+├── animate-icon
+│   └── prefSwitch()
+│
+├── show-label
+│   └── prefSwitch()
+│
+└── middle-click-dnd
+    └── prefSwitch()</samp></pre>
     </div>
 
-    <input type="radio" name="tabs-maps" id="tb8">
-    <label for="tb8">Pending</label>
+    <input type="radio" name="tabs-maps" id="tb8" />
+    <label for="tb8">PrefsWindowForNotifications</label>
     <div class="tab">
-        <h4>Mapa completo del nodo: </h4>
-
+        <h4>Mapa completo del nodo: PrefsWindowForNotifications</h4>
+        <pre><samp>PrefsWindowForNotifications_NotificationCenterExtension
+│
+├── Name
+│   └── "PrefsWindowForNotifications_NotificationCenterExtension"
+│
+├── Extends
+│   └── PrefsWindow_NotificationCenterExtension
+│       └── Gtk.Grid
+│
+├── _init()
+│   ├── this.parent()
+│   └── this.orderSectionsReOrderRunning = false
+│
+├── adjustOtherSectionsKeepingThisKeyValueSame(KEY)
+│   │
+│   ├── obtiene valor de KEY
+│   ├── obtiene nombre de sección
+│   │   └── "show-" → elimina prefijo
+│   │
+│   ├── obtiene:
+│   │   ├── show-media
+│   │   ├── show-notification
+│   │   └── show-events
+│   │
+│   ├── busca posición disponible
+│   └── evita posiciones duplicadas
+│
+├── displayPrefs()
+│   │
+│   ├── show-media
+│   │   └── prefSectionPosition()
+│   │
+│   ├── show-notification
+│   │   └── prefSectionPosition()
+│   │
+│   ├── show-events
+│   │   └── prefSectionPosition()
+│   │
+│   ├── dnd-position
+│   │   └── prefCombo()
+│   │
+│   ├── clear-button-alignment
+│   │   └── prefCombo()
+│   │
+│   ├── autoclose-menu
+│   │   └── prefSwitch()
+│   │
+│   ├── indicator-shortcut
+│   │   └── prefStr()
+│   │
+│   ├── max-height
+│   │   └── prefTime()
+│   │
+│   └── banner-pos
+│       └── prefCombo()
+│           └── valores 11–33
+│               └── posiciones del banner
+│
+├── prefSectionPosition(KEY, pos, options, items)
+│   │
+│   ├── crea ComboBox
+│   ├── lee posición mediante get_int()
+│   ├── al cambiar:
+│   │   ├── guarda posición
+│   │   ├── ajusta posiciones duplicadas
+│   │   ├── reconstruye sections-order
+│   │   └── reloadExtension()
+│   │
+│   └── escucha cambios externos de GSettings
+│
+└── reorderOrderOfSections()
+    │
+    ├── lee show-media
+    ├── lee show-notification
+    ├── lee show-events
+    │
+    ├── convierte posiciones numéricas
+    │   └── en nombres de sección
+    │
+    ├── elimina "noValue"
+    │
+    └── guarda:
+        └── sections-order</samp></pre>
     </div>
 
-    <input type="radio" name="tabs-maps" id="tb9">
+    <input type="radio" name="tabs-maps" id="tb9" />
     <label for="tb9">Pending</label>
     <div class="tab">
-        <h4>Mapa completo del nodo: </h4>
-
+        <h4>Mapa completo del nodo:</h4>
     </div>
 </div>

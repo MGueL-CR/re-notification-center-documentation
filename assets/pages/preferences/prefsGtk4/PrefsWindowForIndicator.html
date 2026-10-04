@@ -1,0 +1,467 @@
+<h2>PrefsWindowForIndicator</h2>
+<hr>
+<p>Esta nueva clase sigue exactamente el mismo patrón que acabamos de ver con Calendar.</p>
+<pre><code><span class="ͼv">const</span> <span class="ͼ11">PrefsWindowForIndicator_NotificationCenterExtension</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">GObject</span><span class="ͼv">.</span>Class({ ... }</code></pre>
+<p>Tenemos otra variable constante que contiene una <code data-start="302" data-end="317">GObject.Class</code>. Su
+    responsabilidad será representar la página de preferencias de <strong data-start="385"
+        data-end="398">Indicator</strong>.</p>
+<h4>Name</h4>
+<p>Es el nombre interno de esta clase.</p>
+<pre><code><span class="ͼ13">Name</span>: <span class="ͼz">"PrefsWindowForIndicator_NotificationCenterExtension"</span>,</code></pre>
+<h4>Extends</h4>
+<pre><code><span class="ͼ13">Extends</span>: <span class="ͼ11">PrefsWindow_NotificationCenterExtension</span>,</code></pre>
+<p>Aquí vuelve a aparecer la misma herencia:</p>
+<pre><samp>PrefsWindowForIndicator_NotificationCenterExtension
+                 │
+                 │ hereda de
+                 ▼
+PrefsWindow_NotificationCenterExtension
+                 │
+                 │ hereda de
+                 ▼
+Gtk.Grid</samp></pre>
+<p>Por lo tanto, Indicator dispone automáticamente de ellos, sin tener que volver a implementarlos:</p>
+<pre><samp>attachLabel()
+prefCombo()
+prefStr()
+prefSwitch()
+prefSwitchInverted()
+prefTime()</samp></pre>
+<h3>_init: function( ) { ... }</h3>
+<hr>
+<p>Exactamente igual que Calendar.</p>
+<pre><code><span class="ͼ13">_init</span>: <span class="ͼv">function</span>(){
+
+    <span class="ͼy">this</span><span class="ͼv">.</span>parent();
+
+}</code></pre>
+<p><code data-start="1241" data-end="1256">this.parent()</code> termina llamando al <code data-start="1277"
+        data-end="1286">_init()</code> de:</p>
+<pre><samp>PrefsWindow_NotificationCenterExtension</samp></pre>
+<p>Que inicializa el <code data-start="1375" data-end="1385">Gtk.Grid</code> con:</p>
+<pre><samp>column_spacing: 80
+row_spacing: 20
+margins: 20
+halign: CENTER</samp></pre>
+<h3>displayPrefs: function( )</h3>
+<hr>
+<p>Aquí <code data-start="15" data-end="31">displayPrefs()</code> nos muestra claramente qué configuraciones pertenecen
+    a <strong data-start="88" data-end="101">Indicator</strong>.</p>
+<pre><code><span class="ͼ13">displayPrefs</span>: <span class="ͼv">function</span>(){
+
+    <span class="ͼv">let</span> <span class="ͼ11">pos</span> <span class="ͼv">=</span> <span class="ͼy">0</span>;</code></pre>
+<p>Igual que en Calendar, <code data-start="241" data-end="246">pos</code> es simplemente el contador de filas del <code
+        data-start="287" data-end="297">Gtk.Grid</code>.</p>
+<p>La clase está reutilizando los métodos heredados de <code data-start="352"
+        data-end="393">PrefsWindow_NotificationCenterExtension</code>, pero aquí aparecen <strong data-start="414"
+        data-end="457">tres métodos que todavía no hemos visto</strong>:</p>
+<pre><samp>prefInt()
+prefComboInt()
+prefComboInt() </samp></pre>
+<blockquote>Los dejamos como pendientes hasta encontrar sus implementaciones.</blockquote>
+<h4>indicator-pos</h4>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>prefCombo(
+    <span class="ͼz">"indicator-pos"</span>,
+    <span class="ͼ11">pos</span><span class="ͼv">++</span>,
+    [<span class="ͼz">'left'</span>,<span class="ͼz">'center'</span>,<span class="ͼz">'right'</span>],
+    [<span class="ͼ11">_</span>(<span class="ͼz">'Left'</span>), <span class="ͼ11">_</span>(<span class="ͼz">'Center'</span>), <span class="ͼ11">_</span>(<span class="ͼz">'Right'</span>)]
+);</code></pre>
+<p>Es una configuración de tipo <code data-start="781" data-end="789">string</code>.</p>
+<pre><samp>indicator-pos
+│
+├── left   → Left
+├── center → Center
+└── right  → Right</samp></pre>
+<h4>indicator-index</h4>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>prefInt(
+    <span class="ͼz">"indicator-index"</span>,
+    <span class="ͼ11">pos</span><span class="ͼv">++</span>,
+    <span class="ͼy">0</span>,
+    <span class="ͼy">20</span>,
+    <span class="ͼy">1</span>
+);</code></pre>
+<p>Aquí aparece: <var class="inline-code">prefInt()</var>. Todavía no lo hemos estudiado. Por los parámetros podemos
+    inferir que probablemente recibe:</p>
+<pre><samp>KEY
+pos
+mínimo = 0
+máximo = 20
+incremento = 1</samp></pre>
+<p>Pero <strong data-start="1268" data-end="1301">no lo damos por hecho todavía</strong>. Cuando encontremos <code
+        data-start="1322" data-end="1333">prefInt()</code>, veremos exactamente qué widget utiliza y qué tipo de
+    GSettings espera.</p>
+<h4>individual-icons</h4>
+<p>Un booleano:</p>
+<div class="row">
+    <div class="col">
+        <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>prefSwitch(<span class="ͼz">"individual-icons"</span>, <span class="ͼ11">pos</span><span class="ͼv">++</span>);</code></pre>
+    </div>
+    <div class="col">
+        <pre><samp>individual-icons
+└── true / false</samp></pre>
+    </div>
+</div>
+<h4>change-icons</h4>
+<p>Otro booleano:</p>
+<div class="row">
+    <div class="col">
+        <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>prefSwitch(<span class="ͼz">"change-icons"</span>, <span class="ͼ11">pos</span><span class="ͼv">++</span>);</code></pre>
+    </div>
+    <div class="col">
+        <pre><samp>change-icons
+└── true / false</samp></pre>
+    </div>
+</div>
+<h4>autohide</h4>
+<p>Aquí aparece el segundo método nuevo:</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>prefComboInt(
+    <span class="ͼz">"autohide"</span>,
+    <span class="ͼ11">pos</span><span class="ͼv">++</span>,
+    [<span class="ͼz">'0'</span>,<span class="ͼz">'1'</span>,<span class="ͼz">'2'</span>],
+    [
+        <span class="ͼ11">_</span>(<span class="ͼz">"No"</span>),
+        <span class="ͼ11">_</span>(<span class="ͼz">"Yes"</span>),
+        <span class="ͼ11">_</span>(<span class="ͼz">"If Do Not Disturb is Off"</span>)
+    ]
+);</code></pre>
+<p>Tenemos: <var class="inline-code">prefComboInt()</var>. Los valores internos son:</p>
+<pre><samp>0 → No
+1 → Yes
+2 → If Do Not Disturb is Off</samp></pre>
+<p>A diferencia de <code data-start="2082" data-end="2095">prefCombo()</code>, los valores se proporcionan como strings:
+    [<span class="ͼz">'0'</span>,<span class="ͼz">'1'</span>,<span class="ͼz">'2'</span>] pero el nombre <code
+        data-start="2188" data-end="2202">prefComboInt</code> sugiere que probablemente esos valores terminan tratándose
+    como <strong data-start="2267" data-end="2278">enteros</strong> en GSettings.</p>
+<blockquote><b>De nuevo:</b> lo confirmaremos cuando encontremos el método.</blockquote>
+<h4>new-notification</h4>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>prefCombo(
+    <span class="ͼz">"new-notification"</span>,
+    <span class="ͼ11">pos</span><span class="ͼv">++</span>,
+    [<span class="ͼz">'none'</span>, <span class="ͼz">'dot'</span>, <span class="ͼz">'count'</span>],
+    [
+        <span class="ͼ11">_</span>(<span class="ͼz">'Show Nothing'</span>),
+        <span class="ͼ11">_</span>(<span class="ͼz">'Show Dot'</span>),
+        <span class="ͼ11">_</span>(<span class="ͼz">'Show Count'</span>)
+    ]
+);</code></pre>
+<p>Esta sí conocemos perfectamente porque utiliza <code data-start="2620" data-end="2633">prefCombo()</code>.</p>
+<pre><samp>new-notification
+│
+├── none  → Show Nothing
+├── dot   → Show Dot
+└── count → Show Count</samp></pre>
+<p>Esto probablemente controla qué indicador visual aparece cuando llega una nueva notificación.</p>
+<h4>include-events-count</h4>
+<p>Booleano:</p>
+<div class="row">
+    <div class="col">
+        <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>prefSwitch(<span class="ͼz">"include-events-count"</span>, <span class="ͼ11">pos</span><span class="ͼv">++</span>);</code></pre>
+    </div>
+    <div class="col">
+        <pre><samp>include-events-count
+└── true / false</samp></pre>
+    </div>
+</div>
+<h4>blink-icon</h4>
+<p>Ya conocemos <code data-start="3126" data-end="3138">prefTime()</code>.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>prefTime(
+    <span class="ͼz">"blink-icon"</span>,
+    <span class="ͼ11">pos</span><span class="ͼv">++</span>,
+    <span class="ͼy">0</span>,
+    <span class="ͼy">10000</span>,
+    <span class="ͼy">1</span>
+);</code></pre>
+<div class="row">
+    <div class="col">
+        <p>En la clase padre vimos:</p>
+        <pre><samp><span class="ͼ11">Gtk</span><span class="ͼv">.</span>SpinButton<span class="ͼv">.</span>new_with_range(<span class="ͼ11">mn</span>, <span class="ͼ11">mx</span>, <span class="ͼ11">st</span>)</samp></pre>
+    </div>
+    <div class="col">
+        <p>Y:</p>
+        <pre><samp><span class="ͼ11">settings</span><span class="ͼv">.</span>set_int(<span class="ͼ11">KEY</span>, <span class="ͼ11">spin</span><span class="ͼv">.</span>get_value_as_int());</samp></pre>
+    </div>
+</div>
+<p>Por tanto:</p>
+<pre><samp>blink-icon
+│
+├── mínimo: 0
+├── máximo: 10000
+└── paso: 1</samp></pre>
+<p>Es una configuración entera.</p>
+<h4>blink-time</h4>
+<p>También es un <code data-start="3544" data-end="3556">SpinButton</code>:</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>prefTime(
+    <span class="ͼz">"blink-time"</span>,
+    <span class="ͼ11">pos</span><span class="ͼv">++</span>,
+    <span class="ͼy">100</span>,
+    <span class="ͼy">10000</span>,
+    <span class="ͼy">10</span>
+);</code></pre>
+<p>La diferencia con <code data-start="3650" data-end="3662">blink-icon</code> es solamente el rango y el incremento.
+</p>
+<pre><samp>blink-time
+│
+├── mínimo: 100
+├── máximo: 10000
+└── paso: 10</samp></pre>
+<h4>animate-icon</h4>
+<p>Booleano:</p>
+<div class="row">
+    <div class="col">
+        <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>prefSwitch(<span class="ͼz">"animate-icon"</span>, <span class="ͼ11">pos</span><span class="ͼv">++</span>);</code></pre>
+    </div>
+    <div class="col">
+        <pre><samp>animate-icon
+└── true / false</samp></pre>
+    </div>
+</div>
+<h4>show-label</h4>
+<p>Booleano:</p>
+<div class="row">
+    <div class="col">
+        <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>prefSwitch(<span class="ͼz">"show-label"</span>, <span class="ͼ11">pos</span><span class="ͼv">++</span>);</code></pre>
+    </div>
+    <div class="col">
+        <pre><samp>show-label
+└── true / false</samp></pre>
+    </div>
+</div>
+<h4><code data-start="3994" data-end="4012">middle-click-dnd</code></h4>
+<p>Otro booleano:</p>
+<div class="row">
+    <div class="col">
+        <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>prefSwitch(<span class="ͼz">"middle-click-dnd"</span>, <span class="ͼ11">pos</span><span class="ͼv">++</span>);</code></pre>
+    </div>
+    <div class="col">
+        <pre><samp>middle-click-dnd
+└── true / false</samp></pre>
+    </div>
+</div>
+<h3>prefComboInt: function(KEY, pos, options, items)</h3>
+<hr>
+<p>Pasamos a la siguiente función, que además confirma nuestra sospecha sobre <code data-start="113"
+        data-end="123">autohide</code>.</p>
+<p>Crea un <code data-start="285" data-end="303">Gtk.ComboBoxText</code>, igual que <code data-start="315"
+        data-end="328">prefCombo()</code>.</p>
+<pre><code><span class="ͼ13">prefComboInt</span>: <span class="ͼv">function</span>(<span class="ͼ11">KEY</span>, <span class="ͼ11">pos</span>, <span class="ͼ11">options</span>, <span class="ͼ11">items</span>) {
+
+    <span class="ͼv">let</span> <span class="ͼ11">SettingCombo</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>ComboBoxText();</code></pre>
+<p>La diferencia fundamental estará en <strong data-start="367" data-end="403">cómo se lee y se guarda el
+        valor</strong>.</p>
+<h4>Construcción de las opciones</h4>
+<pre><code><span class="ͼv">for</span> (<span class="ͼv">let</span> <span class="ͼ11">i</span> <span class="ͼv">=</span> <span class="ͼy">0</span>; <span class="ͼ11">i</span> <span class="ͼv">&lt;</span> <span class="ͼ11">options</span><span class="ͼv">.</span>length; <span class="ͼ11">i</span><span class="ͼv">++</span>) {
+    <span class="ͼ11">SettingCombo</span><span class="ͼv">.</span>append(<span class="ͼ11">options</span>[<span class="ͼ11">i</span>], <span class="ͼ11">items</span>[<span class="ͼ11">i</span>]);
+}</code></pre>
+<p>Exactamente el mismo patrón:</p>
+<pre><samp>options[i] → identificador/valor
+items[i]   → texto visible</samp></pre>
+<p>Por ejemplo, para <code data-start="704" data-end="714">autohide</code>:</p>
+<pre><samp>options                    items
+
+"0"  ───────────────────→  "No"
+"1"  ───────────────────→  "Yes"
+"2"  ───────────────────→  "If Do Not Disturb is Off"</samp></pre>
+<h4>Aquí está la diferencia importante</h4>
+<pre><code><span class="ͼ11">SettingCombo</span><span class="ͼv">.</span>set_active(<span class="ͼ11">settings</span><span class="ͼv">.</span>get_int(<span class="ͼ11">KEY</span>));</code></pre>
+<p><code data-start="1022" data-end="1035">prefCombo()</code> utilizaba: <span class="ͼ11">settings</span><span
+        class="ͼv">.</span>get_string(<span class="ͼ11">KEY</span>). Pero <code data-start="1109"
+        data-end="1125">prefComboInt()</code> utiliza: <span class="ͼ11">settings</span><span
+        class="ͼv">.</span>get_int(<span class="ͼ11">KEY</span>)</p>
+<p>Por tanto podemos confirmar:</p>
+<blockquote><code data-start="1223" data-end="1239">prefComboInt()</code> está destinado a GSettings keys de tipo entero
+    (<code data-start="1288" data-end="1293">int</code>).</blockquote>
+<p>Y además <code data-start="1308" data-end="1322">set_active()</code> espera justamente un <strong data-start="1344"
+        data-end="1364">índice de opción</strong>, por lo que aquí el valor entero almacenado funciona directamente como
+    índice.</p>
+<p>Ejemplo:</p>
+<pre><samp>GSettings:
+autohide = 2
+
+       ↓
+
+set_active(2)
+
+       ↓
+
+Combo selecciona:
+"If Do Not Disturb is Off"</samp></pre>
+<h4>Cuando el usuario cambia la opción</h4>
+<pre><code><span class="ͼ11">SettingCombo</span><span class="ͼv">.</span>connect(<span class="ͼz">'changed'</span>, <span class="ͼ11">Lang</span><span class="ͼv">.</span>bind(<span class="ͼy">this</span>, <span class="ͼv">function</span>(<span class="ͼ11">widget</span>) {
+    <span class="ͼ11">settings</span><span class="ͼv">.</span>set_int(<span class="ͼ11">KEY</span>, <span class="ͼ11">widget</span><span class="ͼv">.</span>get_active());
+    <span class="ͼ11">reloadExtension</span>();
+}));</code></pre>
+<p><code data-start="1807" data-end="1828">widget.get_active()</code> devuelve el índice:</p>
+<pre><samp>No                         → 0
+Yes                        → 1
+If Do Not Disturb is Off   → 2</samp></pre>
+<p>Y ese índice se guarda directamente:</p>
+<pre><samp>widget.get_active()
+        ↓
+settings.set_int(KEY, ...)</samp></pre>
+<p>Después: <span class="ͼ11">reloadExtension</span>(); Así que cualquier cambio provoca una recarga de la
+    extensión.</p>
+<h4>Finalmente, crea la etiqueta y coloca el ComboBox</h4>
+<p>Esto es exactamente igual que en <code data-start="2406" data-end="2419">prefCombo()</code>.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>attachLabel(<span class="ͼ11">KEY</span>,<span class="ͼ11">pos</span>);
+<span class="ͼy">this</span><span class="ͼv">.</span>attach(<span class="ͼ11">SettingCombo</span>, <span class="ͼy">1</span>, <span class="ͼ11">pos</span>, <span class="ͼy">1</span>, <span class="ͼy">1</span>);</code></pre>
+<h3>prefInt: function(KEY,pos)</h3>
+<hr>
+<p>Con <code data-start="14" data-end="25">prefInt()</code> ya completamos los tres métodos auxiliares que aparecieron
+    en <code data-start="88" data-end="104">displayPrefs()</code> de Indicator.</p>
+<pre><code><span class="ͼ13">prefInt</span>: <span class="ͼv">function</span>(<span class="ͼ11">KEY</span>,<span class="ͼ11">pos</span>) {
+
+    <span class="ͼv">let</span> <span class="ͼ11">timeSetting</span> <span class="ͼv">=</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>SpinButton<span class="ͼv">.</span>new_with_range(<span class="ͼy">0</span>, <span class="ͼy">20</span>, <span class="ͼy">1</span>);</code></pre>
+<p>Crea un <code data-start="268" data-end="284">Gtk.SpinButton</code> con:</p>
+<pre><samp>mínimo    = 0
+máximo    = 20
+incremento = 1</samp></pre>
+<p>El nombre <code data-start="370" data-end="383">timeSetting</code> es un poco engañoso porque <strong
+        data-start="411" data-end="450">no necesariamente representa tiempo</strong>. Aquí se utiliza para <code
+        data-start="473" data-end="490">indicator-index</code>, que es un índice.</p>
+<p>Esto es un buen ejemplo de algo que conviene conservar en nuestro mapa: <strong data-start="583" data-end="679">el
+        nombre de la variable local no necesariamente describe correctamente su propósito general</strong>.</p>
+<h4>Obtiene el valor actual</h4>
+<p>Aquí confirma que la key debe ser de tipo entero.</p>
+<pre><code><span class="ͼ11">timeSetting</span><span class="ͼv">.</span>set_value(<span class="ͼ11">settings</span><span class="ͼv">.</span>get_int(<span class="ͼ11">KEY</span>));</code></pre>
+<p>Para nuestro caso:</p>
+<pre><samp>indicator-index
+       │
+       ▼
+settings.get_int()
+       │
+       ▼
+SpinButton</samp></pre>
+<h4>Cuando cambia el valor</h4>
+<pre><code><span class="ͼ11">timeSetting</span><span class="ͼv">.</span>connect(<span class="ͼz">'notify::value'</span>, <span class="ͼv">function</span>(<span class="ͼ11">spin</span>) {
+    <span class="ͼ11">settings</span><span class="ͼv">.</span>set_int(<span class="ͼ11">KEY</span>, <span class="ͼ11">spin</span><span class="ͼv">.</span>get_value_as_int());
+    <span class="ͼ11">reloadExtension</span>();
+});</code></pre>
+<p>Cuando cambia el valor del <code data-start="1201" data-end="1213">SpinButton</code>:</p>
+<pre><samp>SpinButton
+    │
+    ▼
+get_value_as_int()
+    │
+    ▼
+settings.set_int(KEY, ...)
+    │
+    ▼
+reloadExtension()</samp></pre>
+<p>Por tanto <code data-start="1362" data-end="1373">prefInt()</code> no solamente muestra el valor: <strong
+        data-start="1405" data-end="1466">actualiza inmediatamente GSettings y recarga la extensión</strong>.</p>
+<h4>Coloca el control</h4>
+<p>Mismo patrón que los demás métodos auxiliares.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>attachLabel(<span class="ͼ11">KEY</span>,<span class="ͼ11">pos</span>);
+<span class="ͼy">this</span><span class="ͼv">.</span>attach(<span class="ͼ11">timeSetting</span>, <span class="ͼy">1</span>, <span class="ͼ11">pos</span>, <span class="ͼy">1</span>, <span class="ͼy">1</span>);</code></pre>
+<h3>Observaciones</h3>
+<h4><code data-start="2432" data-end="2445">prefCombo()</code> vs <code data-start="2449"
+        data-end="2465">prefComboInt()</code></h4>
+<hr>
+<p>Ahora tenemos una distinción muy clara:</p>
+<div>
+    <div>
+        <pre><samp>prefCombo()
+│
+├── Gtk.ComboBoxText
+├── settings.get_string(KEY)
+├── settings.set_string(KEY, ...)
+└── valores almacenados → STRING</samp></pre>
+    </div>
+    <div>
+        <pre><samp>prefComboInt()
+│
+├── Gtk.ComboBoxText
+├── settings.get_int(KEY)
+├── settings.set_int(KEY, ...)
+└── valores almacenados → INTEGER</samp></pre>
+    </div>
+</div>
+<p>Y esto explica perfectamente el uso anterior:</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>prefComboInt(
+    <span class="ͼz">"autohide"</span>,
+    <span class="ͼ11">pos</span><span class="ͼv">++</span>,
+    [<span class="ͼz">'0'</span>,<span class="ͼz">'1'</span>,<span class="ͼz">'2'</span>],
+    [...]
+);</code></pre>
+<p>Aunque <code data-start="2958" data-end="2967">options</code> contiene strings, <strong data-start="2986"
+        data-end="3051">lo que realmente se almacena en GSettings es el índice entero</strong>:</p>
+<pre><samp>autohide = 0
+autohide = 1
+autohide = 2</samp></pre>
+<h4>Comparación de los tres métodos que acabamos de descubrir</h4>
+<table>
+    <thead>
+        <tr>
+            <th></th>
+            <th>CONTROL</th>
+            <th>GSettings</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>prefSwitch()</td>
+            <td>Gtk.Switch</td>
+            <td>boolean</td>
+        </tr>
+        <tr>
+            <td>prefCombo()</td>
+            <td>Gtk.ComboBoxText </td>
+            <td>string</td>
+        </tr>
+        <tr>
+            <td>prefComboInt()</td>
+            <td>Gtk.ComboBoxText </td>
+            <td>integer</td>
+        </tr>
+        <tr>
+            <td>prefInt()</td>
+            <td>Gtk.SpinButton</td>
+            <td>integer</td>
+        </tr>
+        <tr>
+            <td>prefTime()</td>
+            <td>Gtk.SpinButton</td>
+            <td>integer</td>
+        </tr>
+    </tbody>
+</table>
+<p>Y ahora podemos volver a <code data-start="2431" data-end="2447">displayPrefs()</code> de Indicator y completar los
+    dos elementos que antes estaban pendientes:</p>
+<pre><samp>indicator-index
+    └── prefInt()
+        └── entero 0–20
+
+autohide
+    └── prefComboInt()
+        └── entero 0–2</samp></pre>
+<p>Una pequeña observación para <code data-start="2699" data-end="2711">prefTime()</code> y <code data-start="2714"
+        data-end="2725">prefInt()</code> son técnicamente muy parecidos —ambos terminan almacenando un entero mediante
+    un <code data-start="2807" data-end="2819">SpinButton</code>—, pero tienen <strong data-start="2834"
+        data-end="2874">rangos diferentes según el propósito</strong>. Con esto ya tenemos identificados los métodos
+    auxiliares necesarios para entender esta clase.</p>
+<h4>La Herencia de <code class="inline-code">PrefsWindow</code></h4>
+<p>Tenemos tres páginas que reutilizan la misma clase base:</p>
+<pre><samp>                    PrefsWindow_NotificationCenterExtension
+                                  │
+                     ┌────────────┼────────────┐
+                     │            │            │
+                     ▼            ▼            ▼
+                 Calendar     Indicator    AppList</samp></pre>
+<p>Todas heredan los métodos auxiliares:</p>
+<pre><samp>attachLabel()
+prefCombo()
+prefStr()
+prefSwitch()
+prefSwitchInverted()
+prefTime()
+prefComboInt()
+prefInt()</samp></pre>
+<p>Esto nos permite ver mejor la intención del diseño original: <strong data-start="1992" data-end="2132">la clase <code
+            data-start="2003" data-end="2044">PrefsWindow_NotificationCenterExtension</code> es principalmente una clase
+        base para construir las distintas páginas de preferencias</strong>, mientras que Calendar, Indicator y AppList
+    se encargan de decidir qué preferencias mostrar.</p>
+<p>Y algo que ya empieza a ser importante para nuestro futuro trabajo de modernización: tenemos identificados claramente
+    <strong data-start="2345" data-end="2442">qué nombres pertenecen al diseño original y cuáles son simplemente
+        herramientas reutilizables</strong>, así que cuando llegue el momento de renombrar <code data-start="2490"
+        data-end="2519">NotificationCenterExtension</code>, podremos hacerlo de forma mucho más controlada.
+</p>

@@ -225,6 +225,12 @@ pre:has(> samp) {
 	color: var(--cfg);
 }
 
+pre > code {
+	border-top: 1px solid var(--cemphbg);
+	border-right: 1px solid var(--cemphbg);
+	border-bottom: 1px solid var(--cemphbg);
+}
+
 pre > samp {
 	display: block;
 }

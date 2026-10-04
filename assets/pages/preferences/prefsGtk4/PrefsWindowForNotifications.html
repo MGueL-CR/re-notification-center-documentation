@@ -1,0 +1,808 @@
+<aside class="list-blocks">
+    <div class="symbol-tab">
+        <div class="symbol">
+            <div class="icon-bar"></div>
+        </div>
+    </div>
+    <div class="card">
+        <p>Secciones:</p>
+        <div class="list-links">
+            <a href="#section1">PrefsWindowForNotifications</a>
+            <a href="#section2">_init ( ) { ... }</a>
+            <hr>
+            <a href="#section3">adjustOtherSectionsKeepingThisKeyValueSame()</a>
+            <a href="#section4">displayPrefs()</a>
+            <a href="#section5">prefSectionPosition()</a>
+            <a href="#section6">reorderOrderOfSections()</a>
+            <hr>
+            <a href="#section7">Observaciones</a>
+        </div>
+    </div>
+</aside>
+<h2 id="section1" class="class-prefs">PrefsWindowForNotifications</h2>
+<hr>
+<p>La constante contiene una nueva <code data-start="444" data-end="459">GObject.Class</code>.</p>
+<pre><code><span class="ͼv">const</span> <span class="ͼ11">PrefsWindowForNotifications_NotificationCenterExtension</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">GObject</span><span class="ͼv">.</span>Class({ ... }</code></pre>
+<p>Su propósito, por el nombre, será la página de preferencias relacionada con <strong data-start="538"
+        data-end="555">Notifications</strong>.</p>
+<h4>Name</h4>
+<p>Nombre interno de la clase.</p>
+<pre><code><span class="ͼ13">Name</span>: <span class="ͼz">"PrefsWindowForNotifications_NotificationCenterExtension"</span>,</code></pre>
+<h4>Extends</h4>
+<pre><code><span class="ͼ13">Extends</span>: <span class="ͼ11">PrefsWindow_NotificationCenterExtension</span>,</code></pre>
+<p>Vuelve a utilizar la misma clase base:</p>
+<pre><samp>PrefsWindowForNotifications_NotificationCenterExtension
+                │
+                │ hereda de
+                ▼
+PrefsWindow_NotificationCenterExtension
+                │
+                │ hereda de
+                ▼
+             Gtk.Grid</samp></pre>
+<p>Por tanto dispone de todos los métodos auxiliares que ya hemos identificado:</p>
+<pre><samp>attachLabel()
+prefCombo()
+prefStr()
+prefSwitch()
+prefSwitchInverted()
+prefTime()
+prefComboInt()
+prefInt()</samp></pre>
+<h3 id="section2" class="class-prefs">_init: function( ) { ... }</h3>
+<hr>
+<pre><code><span class="ͼ13">_init</span>: <span class="ͼv">function</span>(){
+
+    <span class="ͼy">this</span><span class="ͼv">.</span>parent();
+    <span class="ͼy">this</span><span class="ͼv">.</span>orderSectionsReOrderRunning <span class="ͼv">=</span> <span class="ͼy">false</span>;
+
+},</code></pre>
+<p>Primero: <span class="ͼy">this</span><span class="ͼv">.</span>parent(); hace lo mismo que en las clases
+    anteriores: ejecuta el <code data-start="1476" data-end="1485">_init()</code> de <code data-start="1489"
+        data-end="1530">PrefsWindow_NotificationCenterExtension</code> para inicializar el <code data-start="1551"
+        data-end="1561">Gtk.Grid</code>.</p>
+<p>Pero aquí aparece algo nuevo: <span class="ͼy">this</span><span class="ͼv">.</span>orderSectionsReOrderRunning
+    <span class="ͼv">=</span> <span class="ͼy">false</span>;
+</p>
+<h4>Nueva propiedad de instancia</h4>
+<p>Se crea una propiedad llamada: <kbd class="inline-code">orderSectionsReOrderRunning</kbd> y su valor inicial es:
+    <var class="inline-code">false</var>. Por el nombre parece estar relacionada con algún proceso de <strong
+        data-start="1869" data-end="1900">reordenamiento de secciones</strong>, pero todavía no sabemos qué representa
+    exactamente.
+</p>
+<blockquote>No vamos a interpretar más de la cuenta hasta encontrar dónde se utiliza.</blockquote>
+<p>Lo que sí debemos registrar:</p>
+<pre><samp>orderSectionsReOrderRunning
+└── valor inicial: false
+└── propósito exacto: pendiente de localizar</samp></pre>
+<p>Este nombre además es bastante revelador de que probablemente aparecerá asociado a algún método que permita <strong
+        data-start="2279" data-end="2329">reordenar las secciones de Notification Center</strong>.</p>
+<h3 id="section3" class="class-prefs">adjustOtherSectionsKeepingThisKeyValueSame: function(KEY)</h3>
+<hr>
+<p>Esta función efectivamente nos empieza a revelar <strong data-start="56" data-end="137">la lógica que hay detrás de
+        <code data-start="86" data-end="98">show-media</code>, <code data-start="100"
+            data-end="119">show-notification</code> y <code data-start="122" data-end="135">show-events</code></strong>,
+    y además explica por qué esos valores son enteros.</p>
+<pre><code><span class="ͼ13">adjustOtherSectionsKeepingThisKeyValueSame</span>: <span class="ͼv">function</span>(<span class="ͼ11">KEY</span>) {
+
+    <span class="ͼv">let</span> <span class="ͼ11">currentKeyValue</span> <span class="ͼv">=</span> <span class="ͼ11">settings</span><span class="ͼv">.</span>get_int(<span class="ͼ11">KEY</span>);
+    <span class="ͼv">let</span> <span class="ͼ11">currentSection</span> <span class="ͼv">=</span> <span class="ͼ11">KEY</span><span class="ͼv">.</span>substring(<span class="ͼy">5</span>,<span class="ͼ11">KEY</span><span class="ͼv">.</span>length); </code></pre>
+<p>Aquí tenemos dos variables locales: <code>currentKeyValue</code> y <code>currentSection</code>.</p>
+<h4>currentKeyValue</h4>
+<p>Obtiene el entero almacenado en la key recibida.</p>
+<pre><code><span class="ͼv">let</span> <span class="ͼ11">currentKeyValue</span> <span class="ͼv">=</span> <span class="ͼ11">settings</span><span class="ͼv">.</span>get_int(<span class="ͼ11">KEY</span>);</code></pre>
+<p>Por ejemplo, si: <span class="ͼ11">KEY</span> <span class="ͼv">=</span> <span class="ͼz">"show-media"</span> y
+    GSettings contiene: <var class="inline-code">show-media</var> = <kbd class="inline-code">2</kbd> entonces: <var
+        class="inline-code">currentKeyValue</var> = <kbd class="inline-code">2</kbd></p>
+<h4>currentSection</h4>
+<p>Y aquí tenemos justo lo que sospechábamos.</p>
+<pre><code><span class="ͼv">let</span> <span class="ͼ11">currentSection</span> <span class="ͼv">=</span> <span class="ͼ11">KEY</span><span class="ͼv">.</span>substring(<span class="ͼy">5</span>,<span class="ͼ11">KEY</span><span class="ͼv">.</span>length);</code></pre>
+<p>La cadena: "<var class="inline-code">show-media</var>" tiene:</p>
+<pre><samp>s h o w -
+0 1 2 3 4</samp></pre>
+<p><code data-start="1058" data-end="1077">substring(5, ...)</code> empieza en el índice <code data-start="1099"
+        data-end="1102">5</code>, por lo que elimina: "<var class="inline-code">show-</var>" y queda: "<var
+        class="inline-code">media</var>" Así:</p>
+<pre><samp>show-media         → media
+show-notification  → notification
+show-events        → events</samp></pre>
+<p>Esto es un pequeño detalle, pero muy útil para entender el diseño: <strong data-start="1376" data-end="1477">la
+        función recibe el nombre completo de la key y obtiene automáticamente el nombre de la sección.</strong></p>
+<h4>Si el valor es <code data-start="1505" data-end="1508">0</code>, termina</h4>
+<p>Esto nos dice algo importante.</p>
+<pre><code><span class="ͼv">if</span>(<span class="ͼ11">currentKeyValue</span> <span class="ͼv">==</span> <span class="ͼy">0</span>) {
+    <span class="ͼv">return</span>;
+}</code></pre>
+<p>El <code data-start="1626" data-end="1629">0</code> probablemente representa: <kbd class="inline-code">0</kbd> =
+    <var class="inline-code">sección no mostrada</var>, mientras que los valores <code data-start="1719"
+        data-end="1722">1</code>, <code data-start="1724" data-end="1727">2</code> y <code data-start="1730"
+        data-end="1733">3</code> representan posiciones. Todavía lo marcamos como interpretación, pero el código
+    posterior prácticamente lo confirma.
+</p>
+<h4>Construye el orden actual</h4>
+<pre><code><span class="ͼv">let</span> <span class="ͼ11">mediaNotificationEventsSectionOrder</span> <span class="ͼv">=</span> [
+    <span class="ͼ11">settings</span><span class="ͼv">.</span>get_int(<span class="ͼz">"show-media"</span>),
+    <span class="ͼ11">settings</span><span class="ͼv">.</span>get_int(<span class="ͼz">"show-notification"</span>),
+    <span class="ͼ11">settings</span><span class="ͼv">.</span>get_int(<span class="ͼz">"show-events"</span>)
+];</code></pre>
+<p>Aquí se crea un arreglo con los valores actuales de las tres secciones:</p>
+<pre><samp>mediaNotificationEventsSectionOrder
+│
+├── [0] → show-media
+├── [1] → show-notification
+└── [2] → show-events</samp></pre>
+<p>Por ejemplo, podríamos tener: </p>
+<pre><samp>show-media        = 2
+show-notification = 1
+show-events       = 3</samp></pre>
+<p>Entonces: [<kbd class="inline-code">2</kbd>, <kbd class="inline-code">1</kbd>, <kbd class="inline-code">3</kbd>]. Eso
+    representa:</p>
+<pre><samp>posición 1 → notification
+posición 2 → media
+posición 3 → events</samp></pre>
+<p>Así que <strong data-start="2549" data-end="2611">los valores 1, 2 y 3 representan el orden de las
+        secciones</strong>.</p>
+<h4>Busca el valor que falta</h4>
+<pre><code><span class="ͼv">let</span> <span class="ͼ11">missingValue</span><span class="ͼv">=</span><span class="ͼy">1</span>;
+
+<span class="ͼv">for</span>(<span class="ͼ11">missingValue</span><span class="ͼv">=</span><span class="ͼy">1</span>;<span class="ͼ11">missingValue</span><span class="ͼv">&lt;=</span><span class="ͼy">3</span>;<span class="ͼ11">missingValue</span><span class="ͼv">++</span>){
+    <span class="ͼv">if</span>(<span class="ͼ11">mediaNotificationEventsSectionOrder</span><span class="ͼv">.</span>indexOf(<span class="ͼ11">missingValue</span>)<span class="ͼv">==-</span><span class="ͼy">1</span>){
+        <span class="ͼv">break</span>;
+    }
+}</code></pre>
+<p>Esta parte está buscando cuál de los números: <kbd class="inline-code">1</kbd>, <kbd class="inline-code">2</kbd>,
+    <var class="inline-code">3</var> no está siendo utilizado.
+</p>
+<p><b>Por ejemplo</b>: [<kbd class="inline-code">2</kbd>, <kbd class="inline-code">1</kbd>, <kbd
+        class="inline-code">3</kbd>], contiene los tres:</p>
+<pre><samp>1 ✓
+2 ✓
+3 ✓</samp></pre>
+<p>En ese caso el <code data-start="3040" data-end="3045">for</code> termina después de <code data-start="3065"
+        data-end="3068">3</code>, dejando: <var class="inline-code">missingValue</var> = <kbd
+        class="inline-code">4</kbd></p>
+<p>Aunque ese caso sería interesante de revisar con el resto del código, porque normalmente la función debería
+    utilizarse cuando se produce un cambio que genera un duplicado.</p>
+<p><b>Por ejemplo</b>, imaginemos:</p>
+<pre><samp>show-media        = 2
+show-notification = 2
+show-events       = 3</samp></pre>
+<p>Tenemos: [<kbd class="inline-code">2</kbd>, <kbd class="inline-code">2</kbd>, <kbd class="inline-code">3</kbd>],
+    pero el <code data-start="3424" data-end="3427">1</code> no aparece: <kbd class="inline-code">1</kbd> → <var
+        class="inline-code">falta</var> entonces: <var class="inline-code">missingValue</var> = <kbd
+        class="inline-code">1</kbd>. </p>
+<p>Ese será el nuevo valor que se asignará a la sección desplazada.</p>
+<h4>La parte más interesante</h4>
+<pre><code><span class="ͼv">if</span>(<span class="ͼ11">currentKeyValue</span> <span class="ͼv">==</span> <span class="ͼ11">mediaNotificationEventsSectionOrder</span>[<span class="ͼy">0</span>] <span class="ͼv">&amp;&amp;</span>
+   <span class="ͼ11">currentSection</span><span class="ͼv">!=</span><span class="ͼz">"media"</span>){
+    <span class="ͼ11">settings</span><span class="ͼv">.</span>set_int(<span class="ͼz">"show-media"</span>,<span class="ͼ11">missingValue</span>);
+}</code></pre>
+<p>Traducido conceptualmente:</p>
+<blockquote>Si otra sección tiene el mismo valor que la sección que estamos modificando, mueve esa otra sección al valor
+    que quedó libre.</blockquote>
+<p>Y tenemos lo mismo para Notification:</p>
+<pre><code><span class="ͼv">if</span>(<span class="ͼ11">currentKeyValue</span> <span class="ͼv">==</span> <span class="ͼ11">mediaNotificationEventsSectionOrder</span>[<span class="ͼy">1</span>] <span class="ͼv">&amp;&amp;</span>
+   <span class="ͼ11">currentSection</span><span class="ͼv">!=</span><span class="ͼz">"notification"</span>){
+    <span class="ͼ11">settings</span><span class="ͼv">.</span>set_int(<span class="ͼz">"show-notification"</span>,<span class="ͼ11">missingValue</span>);
+}</code></pre>
+<p>y Events:</p>
+<pre><code><span class="ͼv">if</span>(<span class="ͼ11">currentKeyValue</span> <span class="ͼv">==</span> <span class="ͼ11">mediaNotificationEventsSectionOrder</span>[<span class="ͼy">2</span>] <span class="ͼv">&amp;&amp;</span>
+   <span class="ͼ11">currentSection</span><span class="ͼv">!=</span><span class="ͼz">"events"</span>){
+    <span class="ͼ11">settings</span><span class="ͼv">.</span>set_int(<span class="ͼz">"show-events"</span>,<span class="ͼ11">missingValue</span>);
+}</code></pre>
+<h4>Ejemplo completo</h4>
+<div class="row">
+    <div class="col"><span>Supongamos que actualmente tenemos:</span>
+        <pre><samp>show-media        = 1
+show-notification = 2
+show-events       = 3</samp></pre>
+    </div>
+    <div class="col"><span>El orden es:</span>
+        <pre><samp>1 → media
+2 → notification
+3 → events</samp></pre>
+    </div>
+</div>
+<p>Ahora el usuario cambia: <var class="inline-code">show-media</var> = <kbd class="inline-code">2</kbd>. Temporalmente
+    tendríamos:</p>
+<pre><samp>media        = 2
+notification = 2
+events       = 3</samp></pre>
+<p>Hay un conflicto: <strong data-start="4739" data-end="4777">dos secciones ocupan la posición 2</strong>.</p>
+<p>La función recibe: <kbd class="inline-code">KEY</kbd> = "<var class="inline-code">show-media</var>". Entonces:</p>
+<pre><samp>currentKeyValue = 2
+currentSection  = "media"</samp></pre>
+<p>El arreglo queda: [<kbd class="inline-code">2</kbd>, <kbd class="inline-code">2</kbd>, <kbd
+        class="inline-code">3</kbd>]. El valor que falta es: <kbd class="inline-code">1</kbd>.</p>
+<p>Luego: <kbd class="inline-code">currentKeyValue</kbd> == <var class="inline-code">show-notification</var> porque
+    ambos son <code data-start="5058" data-end="5061">2</code>, y como: <var class="inline-code">currentSection</var> !=
+    "<var class="inline-code">notification</var>" se ejecuta: <span class="ͼ11">settings</span><span
+        class="ͼv">.</span>set_int(<span class="ͼz">"show-notification"</span>, <span class="ͼy">1</span>);</p>
+
+<div class="row">
+    <div class="col">
+        <p>Resultado:</p>
+        <pre><samp>show-media        = 2
+show-notification = 1
+show-events       = 3</samp></pre>
+    </div>
+    <div class="col">
+        <p>¡Y automáticamente queda un orden válido!</p>
+        <pre><samp>1 → notification
+2 → media
+3 → events</samp></pre>
+    </div>
+</div>
+<h4>Ahora podemos entender </h4>
+<p>El nombre de la función <kbd class="inline-code">adjustOtherSectionsKeepingThisKeyValueSame</kbd>(<var
+        class="inline-code">KEY</var>) es largo, pero describe bastante bien lo que hace:</p>
+<blockquote>Ajustar las otras secciones manteniendo este valor de la key actual.</blockquote>
+<p>En otras palabras:</p>
+<pre><samp>Usuario cambia una sección
+        ↓
+¿Otra sección tiene ahora el mismo número?
+        ↓
+Sí
+        ↓
+Encuentra el número disponible
+        ↓
+Mueve la otra sección a ese número</samp></pre>
+<p>Y aquí se confirma algo muy importante para nuestro mapa: </p>
+<blockquote><code data-start="5933" data-end="5945">show-media</code>, <code data-start="5947"
+        data-end="5966">show-notification</code> y <code data-start="5969" data-end="5982">show-events</code> <strong
+        data-start="5983" data-end="6021">no son simplemente flags booleanos</strong>.</blockquote>
+<p>Son <strong data-start="6028" data-end="6081">enteros que representan el orden de las secciones</strong>:</p>
+<pre><samp>show-media
+show-notification
+show-events
+
+        ↓
+
+0 = no mostrar
+1 = primera posición
+2 = segunda posición
+3 = tercera posición</samp></pre>
+<p>Eso es muchísimo más útil que simplemente memorizar los nombres y ahora empieza a tener sentido que en <code
+        data-start="6345" data-end="6354">_init()</code> de esta clase apareciera: <span class="ͼy">this</span><span
+        class="ͼv">.</span>orderSectionsReOrderRunning <span class="ͼv">=</span> <span class="ͼy">false</span>; porque
+    <strong data-start="6450" data-end="6534">esta página de preferencias tiene una
+        lógica específica para reordenar secciones</strong>, no solamente para activar/desactivar opciones.
+</p>
+<p>Ese <code data-start="6588" data-end="6617">orderSectionsReOrderRunning</code> todavía necesita que encontremos dónde
+    se utiliza, pero ahora ya tenemos una buena pista de cuál es su propósito.</p>
+<h3 id="section4" class="class-prefs">displayPrefs: function()</h3>
+<hr>
+<p>Aquí aparece otra pieza importante: <code data-start="44" data-end="60">displayPrefs()</code> confirma que <code
+        data-start="74" data-end="86">show-media</code>, <code data-start="88" data-end="107">show-notification</code> y
+    <code data-start="110" data-end="123">show-events</code> <strong data-start="124" data-end="144">no son
+        booleanos</strong>, sino preferencias de posición de sección.
+</p>
+<pre><code><span class="ͼ13">displayPrefs</span>: <span class="ͼv">function</span>() {
+
+    <span class="ͼv">let</span> <span class="ͼ11">pos</span> <span class="ͼv">=</span> <span class="ͼy">0</span>;</code></pre>
+<p><code data-start="342" data-end="347">pos</code> vuelve a ser el contador de filas del <code data-start="386"
+        data-end="396">Gtk.Grid</code>.</p>
+<h4>show-media</h4>
+<p>Aquí aparece otro método nuevo: <kbd class="inline-code">prefSectionPosition()</kbd>.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>prefSectionPosition(
+    <span class="ͼz">"show-media"</span>,
+    <span class="ͼ11">pos</span><span class="ͼv">++</span>,
+    [<span class="ͼz">"none"</span>,<span class="ͼz">"top"</span>,<span class="ͼz">"middle"</span>,<span class="ͼz">"bottom"</span>],
+    [<span class="ͼ11">_</span>(<span class="ͼz">"Don't Show"</span>), <span class="ͼ11">_</span>(<span class="ͼz">'At The Top'</span>), <span class="ͼ11">_</span>(<span class="ͼz">'In The Middle'</span>), <span class="ͼ11">_</span>(<span class="ͼz">'At The Bottom'</span>)]
+);</code></pre>
+<p>Todavía no sabemos cómo está implementado, así que lo dejamos pendiente. Pero ahora podemos entender perfectamente
+    los valores visibles:</p>
+<pre><samp>show-media
+│
+├── none   → Don't Show
+├── top    → At The Top
+├── middle → In The Middle
+└── bottom → At The Bottom</samp></pre>
+<p>Esto encaja con lo que acabamos de descubrir en <code data-start="1041"
+        data-end="1087">adjustOtherSectionsKeepingThisKeyValueSame()</code>.</p>
+<p>Internamente probablemente esos cuatro estados se relacionan con:</p>
+<pre><samp>none   → 0
+top    → 1
+middle → 2
+bottom → 3</samp></pre>
+<blockquote>La conversión exacta la confirmaremos cuando veamos <code data-start="1278"
+        data-end="1301">prefSectionPosition()</code>.</blockquote>
+<h4>show-notification</h4>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>prefSectionPosition(
+    <span class="ͼz">"show-notification"</span>,
+    <span class="ͼ11">pos</span><span class="ͼv">++</span>,
+    [<span class="ͼz">"none"</span>,<span class="ͼz">"top"</span>,<span class="ͼz">"middle"</span>,<span class="ͼz">"bottom"</span>],
+    [<span class="ͼ11">_</span>(<span class="ͼz">"Don't Show"</span>), <span class="ͼ11">_</span>(<span class="ͼz">'At The Top'</span>), <span class="ͼ11">_</span>(<span class="ͼz">'In The Middle'</span>), <span class="ͼ11">_</span>(<span class="ͼz">'At The Bottom'</span>)]
+);</code></pre>
+<p>Misma estructura:</p>
+<pre><samp>show-notification
+│
+├── none
+├── top
+├── middle
+└── bottom</samp></pre>
+<p>Y, por tanto, comparte el mismo sistema de posiciones que <code data-start="1711" data-end="1723">show-media</code>.
+</p>
+<h4>show-events</h4>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>prefSectionPosition(
+    <span class="ͼz">"show-events"</span>,
+    <span class="ͼ11">pos</span><span class="ͼv">++</span>,
+    [<span class="ͼz">"none"</span>,<span class="ͼz">"top"</span>,<span class="ͼz">"middle"</span>,<span class="ͼz">"bottom"</span>],
+    [<span class="ͼ11">_</span>(<span class="ͼz">"Don't Show"</span>), <span class="ͼ11">_</span>(<span class="ͼz">'At The Top'</span>), <span class="ͼ11">_</span>(<span class="ͼz">'In The Middle'</span>), <span class="ͼ11">_</span>(<span class="ͼz">'At The Bottom'</span>)]
+);</code></pre>
+<p>Tercera sección:</p>
+<pre><samp>show-events
+│
+├── none
+├── top
+├── middle
+└── bottom</samp></pre>
+<p>Así ya tenemos el conjunto:</p>
+<pre><samp>show-media
+show-notification
+show-events
+       │
+       ▼
+posición relativa de las tres secciones</samp></pre>
+<h4>dnd-position</h4>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>prefCombo(
+    <span class="ͼz">"dnd-position"</span>,
+    <span class="ͼ11">pos</span><span class="ͼv">++</span>,
+    [<span class="ͼz">"none"</span>,<span class="ͼz">"top"</span>,<span class="ͼz">"bottom"</span>],
+    [<span class="ͼ11">_</span>(<span class="ͼz">"Don't Show"</span>), <span class="ͼ11">_</span>(<span class="ͼz">'On Top'</span>), <span class="ͼ11">_</span>(<span class="ͼz">'At Bottom'</span>)]
+);</code></pre>
+<p>Este sí utiliza un método que ya conocemos: <code data-start="2442" data-end="2455">prefCombo()</code>. Por ser <code
+        data-start="2573" data-end="2586">prefCombo()</code>, sabemos que el valor almacenado es un <strong
+        data-start="2626" data-end="2636">string</strong>.</p>
+<pre><samp>dnd-position
+│
+├── none   → Don't Show
+├── top    → On Top
+└── bottom → At Bottom</samp></pre>
+<h4>clear-button-alignment</h4>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>prefCombo(
+    <span class="ͼz">"clear-button-alignment"</span>,
+    <span class="ͼ11">pos</span><span class="ͼv">++</span>,
+    [<span class="ͼz">'left'</span>,<span class="ͼz">'center'</span>,<span class="ͼz">'right'</span>,<span class="ͼz">'hide'</span>],
+    [<span class="ͼ11">_</span>(<span class="ͼz">'Left'</span>), <span class="ͼ11">_</span>(<span class="ͼz">'Center'</span>), <span class="ͼ11">_</span>(<span class="ͼz">'Right'</span>), <span class="ͼ11">_</span>(<span class="ͼz">"Don't Show"</span>)]
+);</code></pre>
+<p>Controla la posición o visibilidad del botón de limpiar. Nuevamente, es un <code data-start="3071"
+        data-end="3079">string</code>.</p>
+<pre><samp>clear-button-alignment
+│
+├── left   → Left
+├── center → Center
+├── right  → Right
+└── hide   → Don't Show</samp></pre>
+<h4>autoclose-menu</h4>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>prefSwitch(<span class="ͼz">"autoclose-menu"</span>, <span class="ͼ11">pos</span><span class="ͼv">++</span>);</code></pre>
+<p>Un booleano y sabemos que <code data-start="3267" data-end="3281">prefSwitch()</code> guarda mediante: <kbd
+        class="inline-code">settings.set_boolean</kbd>()</p>
+<pre><samp>autoclose-menu
+└── true / false</samp></pre>
+<h4>indicator-shortcut</h4>
+<p>Aquí utilizamos <code data-start="3596" data-end="3607">prefStr()</code>, que ya analizamos anteriormente.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>prefStr(
+    <span class="ͼz">"indicator-shortcut"</span>,
+    <span class="ͼ11">pos</span><span class="ͼv">++</span>,
+    [<span class="ͼz">'&lt;Alt&gt;'</span>, <span class="ͼz">'&lt;Ctrl&gt;'</span>, <span class="ͼz">'&lt;Shift&gt;'</span>, <span class="ͼz">'&lt;Super&gt;'</span>],
+    [<span class="ͼ11">_</span>(<span class="ͼz">'Alt Key'</span>), <span class="ͼ11">_</span>(<span class="ͼz">'Ctrl Key'</span>), <span class="ͼ11">_</span>(<span class="ͼz">'Shift Key'</span>), <span class="ͼ11">_</span>(<span class="ͼz">'Super Key'</span>)]
+);</code></pre>
+<p>Los valores tienen un pequeño detalle interesante:</p>
+<pre><samp>&lt;Alt&gt;   → Alt Key
+&lt;Ctrl&gt;  → Ctrl Key
+&lt;Shift&gt; → Shift Key
+&lt;Super&gt; → Super Key</samp></pre>
+<p><code data-start="3797" data-end="3808">prefStr()</code> utiliza esos valores para construir una configuración
+    compuesta, no simplemente para guardar uno de ellos como un string aislado. </p>
+<p>Recordemos que internamente hace algo de esta forma: <kbd class="inline-code">&lt;opción&gt;</kbd> + <kbd
+        class="inline-code">texto introducido</kbd></p>
+<p>Por eso esta preferencia probablemente representa una combinación de tecla modificadora + algún carácter/tecla.</p>
+<h4>max-height</h4>
+<p>Aunque utiliza <code data-start="4303" data-end="4315">prefTime()</code>, aquí <strong data-start="4322"
+        data-end="4370">no estamos hablando necesariamente de tiempo</strong>.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>prefTime(
+    <span class="ͼz">"max-height"</span>,
+    <span class="ͼ11">pos</span><span class="ͼv">++</span>,
+    <span class="ͼy">20</span>,
+    <span class="ͼy">100</span>,
+    <span class="ͼy">1</span>
+);</code></pre>
+<p>Esto refuerza lo que ya habíamos observado: el método realmente es un constructor genérico de <code data-start="4467"
+        data-end="4483">Gtk.SpinButton</code> para valores enteros.</p>
+<pre><samp>max-height
+│
+├── mínimo = 20
+├── máximo = 100
+└── paso = 1</samp></pre>
+<p>El nombre <code data-start="4601" data-end="4613">prefTime()</code> es, por tanto, una peculiaridad heredada del
+    código original.</p>
+<h4>banner-pos</h4>
+<p>Esta es especialmente interesante.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>prefCombo(
+    <span class="ͼz">"banner-pos"</span>,
+    <span class="ͼ11">pos</span><span class="ͼv">++</span>,
+    [<span class="ͼz">"11"</span>,<span class="ͼz">"12"</span>,<span class="ͼz">"13"</span>,<span class="ͼz">"21"</span>,<span class="ͼz">"22"</span>,<span class="ͼz">"23"</span>,<span class="ͼz">"31"</span>,<span class="ͼz">"32"</span>,<span class="ͼz">"33"</span>],
+    [
+        <span class="ͼ11">_</span>(<span class="ͼz">'Top Left'</span>),
+        <span class="ͼ11">_</span>(<span class="ͼz">'Top Center'</span>),
+        <span class="ͼ11">_</span>(<span class="ͼz">'Top Right'</span>),
+        <span class="ͼ11">_</span>(<span class="ͼz">'Middle Left'</span>),
+        <span class="ͼ11">_</span>(<span class="ͼz">'Middle Center'</span>),
+        <span class="ͼ11">_</span>(<span class="ͼz">'Middle Right'</span>),
+        <span class="ͼ11">_</span>(<span class="ͼz">'Bottom Left'</span>),
+        <span class="ͼ11">_</span>(<span class="ͼz">'Bottom Center'</span>),
+        <span class="ͼ11">_</span>(<span class="ͼz">'Bottom Right'</span>)
+    ]
+);</code></pre>
+<div class="row">
+    <div class="col"><span>Tenemos nueve valores:</span>
+        <pre><samp>11 → Top Left
+12 → Top Center
+13 → Top Right
+
+21 → Middle Left
+22 → Middle Center
+23 → Middle Right
+
+31 → Bottom Left
+32 → Bottom Center
+33 → Bottom Right</samp></pre>
+    </div>
+    <div class="col"><span>Y se puede visualizar como una matriz:</span>
+        <pre><samp>             LEFT       CENTER       RIGHT
+          ┌─────────┬───────────┬─────────┐
+TOP       │   11    │    12     │   13    │
+          ├─────────┼───────────┼─────────┤
+MIDDLE    │   21    │    22     │   23    │
+          ├─────────┼───────────┼─────────┤
+BOTTOM    │   31    │    32     │   33    │
+          └─────────┴───────────┴─────────┘</samp></pre>
+    </div>
+</div>
+<p>El valor parece codificar:</p>
+<pre><samp>primer dígito → fila vertical
+segundo dígito → columna horizontal</samp></pre>
+<p>Y eso coincide directamente con cómo <code data-start="597" data-end="611">extension.js</code> interpreta <code
+        data-start="623" data-end="635">banner-pos</code> para colocar el banner en pantalla.</p>
+<h3 id="section5" class="class-prefs">prefSectionPosition: function(KEY, pos, options, items)</h3>
+<hr>
+<p>Aquí está la pieza que faltaba, y ahora podemos conectar <code data-start="57" data-end="73">displayPrefs()</code>,
+    <code data-start="124" data-end="150">reorderOrderOfSections()</code> y <code
+        class="inline-code">adjustOtherSectionsKeepingThisKeyValueSame()</code>.
+</p>
+<pre><code><span class="ͼ13">prefSectionPosition</span>: <span class="ͼv">function</span>(<span class="ͼ11">KEY</span>, <span class="ͼ11">pos</span>, <span class="ͼ11">options</span>, <span class="ͼ11">items</span>) {
+
+    <span class="ͼv">let</span> <span class="ͼ11">SettingCombo</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>ComboBoxText();</code></pre>
+<p>Crea un <code data-start="314" data-end="332">Gtk.ComboBoxText</code>, igual que <code data-start="344"
+        data-end="357">prefCombo()</code> y <code data-start="360" data-end="376">prefComboInt()</code>. La diferencia
+    está en que aquí <strong data-start="410" data-end="443">siempre trabaja con un entero</strong>.</p>
+<h4>Construye las opciones</h4>
+<pre><code><span class="ͼv">for</span> (<span class="ͼv">let</span> <span class="ͼ11">i</span> <span class="ͼv">=</span> <span class="ͼy">0</span>; <span class="ͼ11">i</span> <span class="ͼv">&lt;</span> <span class="ͼ11">options</span><span class="ͼv">.</span>length; <span class="ͼ11">i</span><span class="ͼv">++</span>) {
+    <span class="ͼ11">SettingCombo</span><span class="ͼv">.</span>append(<span class="ͼ11">options</span>[<span class="ͼ11">i</span>], <span class="ͼ11">items</span>[<span class="ͼ11">i</span>]);
+}</code></pre>
+<p>Para las tres secciones tenemos:</p>
+<pre><samp>options       items
+
+none   → Don't Show
+top    → At The Top
+middle → In The Middle
+bottom → At The Bottom</samp></pre>
+<p>Pero <code data-start="764" data-end="773">options</code> aquí son principalmente los identificadores asociados a
+    cada posición del ComboBox. El valor que realmente terminará almacenándose será el <strong data-start="913"
+        data-end="923">índice</strong>.</p>
+<h4>Selecciona la posición actual</h4>
+<p>Esto es muy importante.</p>
+<pre><code><span class="ͼ11">SettingCombo</span><span class="ͼv">.</span>set_active(<span class="ͼ11">settings</span><span class="ͼv">.</span>get_int(<span class="ͼ11">KEY</span>));</code></pre>
+<p>Si tenemos: <var class="inline-code">show-media</var> = <kbd class="inline-code">2</kbd> entonces: <span
+        class="ͼ11">set_active</span>(<span class="ͼy">2</span>) selecciona: <q class="inline-code">In The Middle</q>.
+</p>
+<p>Por tanto se confirma la relación:</p>
+<pre><samp>GSettings       ComboBox index
+
+0          →    Don't Show
+1          →    At The Top
+2          →    In The Middle
+3          →    At The Bottom</samp></pre>
+<p>Esto encaja exactamente con lo que descubrimos en <code data-start="1479"
+        data-end="1525">adjustOtherSectionsKeepingThisKeyValueSame()</code>.</p>
+<h4>Cuando el usuario cambia la posición</h4>
+<p>Aquí está la parte realmente interesante.</p>
+<pre><code><span class="ͼ11">SettingCombo</span><span class="ͼv">.</span>connect(<span class="ͼz">'changed'</span>, <span class="ͼ11">Lang</span><span class="ͼv">.</span>bind(<span class="ͼy">this</span>, <span class="ͼv">function</span>(<span class="ͼ11">widget</span>) {
+
+    <span class="ͼ11">settings</span><span class="ͼv">.</span>set_int(<span class="ͼ11">KEY</span>,<span class="ͼ11">widget</span><span class="ͼv">.</span>get_active());
+    <span class="ͼy">this</span><span class="ͼv">.</span>adjustOtherSectionsKeepingThisKeyValueSame(<span class="ͼ11">KEY</span>);
+    <span class="ͼy">this</span><span class="ͼv">.</span>reorderOrderOfSections();
+    <span class="ͼ11">reloadExtension</span>();
+
+}));</code></pre>
+<p>Cuando el usuario cambia una sección:</p>
+<details>
+    <summary>Paso 1</summary>
+    <div>
+        <p>Guarda la nueva posición.</p>
+        <pre><code><span class="ͼ11">settings</span><span class="ͼv">.</span>set_int(<span class="ͼ11">KEY</span>, <span class="ͼ11">widget</span><span class="ͼv">.</span>get_active());</code></pre>
+        <p>Por ejemplo: <var class="inline-code">show-media</var> = <kbd class="inline-code">2</kbd>.</p>
+    </div>
+</details>
+<details>
+    <summary>Paso 2</summary>
+    <div>
+        <p>Corrige posibles conflictos de posiciones.</p>
+        <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>adjustOtherSectionsKeepingThisKeyValueSame(<span class="ͼ11">KEY</span>);</code></pre>
+        <div class="row">
+            <div class="col"><span>Es decir:</span>
+                <pre><samp>media = 2
+notification = 2
+events = 3</samp></pre>
+            </div>
+            <div class="col"><span>Se convierte en algo como:</span>
+                <pre><samp>media = 2
+notification = 1
+events = 3</samp></pre>
+            </div>
+        </div>
+    </div>
+</details>
+<details>
+    <summary>Paso 3</summary>
+    <div>
+        <p>Aquí viene la siguiente pieza que tendremos que analizar.</p>
+        <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>reorderOrderOfSections();</code></pre>
+        <p>Por el nombre, podemos decir con bastante seguridad que <strong data-start="2553"
+                data-end="2639">aplica/reconstruye
+                el orden de las secciones después de haber ajustado los valores</strong>.</p>
+        <p>Pero esperemos a ver su implementación antes de describir exactamente cómo lo hace.</p>
+    </div>
+</details>
+<details>
+    <summary>Paso 4</summary>
+    <div>
+        <p>Finalmente se recarga la extensión para aplicar los cambios.</p>
+        <pre><code><span class="ͼ11">reloadExtension</span>();</code></pre>
+    </div>
+</details>
+<h4>Aquí aparece algo nuevo</h4>
+<p>Esto es diferente a <code data-start="3061" data-end="3074">prefCombo()</code>. Escucha cambios externos.</p>
+<pre><code><span class="ͼ11">settings</span><span class="ͼv">.</span>connect(<span class="ͼz">"changed::"</span><span class="ͼv">+</span><span class="ͼ11">KEY</span>, ()=&gt;{
+    <span class="ͼ11">SettingCombo</span><span class="ͼv">.</span>set_active(<span class="ͼ11">settings</span><span class="ͼv">.</span>get_int(<span class="ͼ11">KEY</span>));
+})</code></pre>
+<p>Aquí la clase no solamente responde a cambios realizados <strong data-start="3134" data-end="3155">desde el
+        ComboBox</strong>, sino que también observa directamente el cambio de la key en GSettings. Por ejemplo:</p>
+<pre><samp>Otro código
+   │
+   ▼
+settings.set_int("show-media", 3)
+   │
+   ▼
+changed::show-media
+   │
+   ▼
+SettingCombo.set_active(3)</samp></pre>
+<p>Así el ComboBox se mantiene sincronizado con el valor real de GSettings. Esto es especialmente importante en esta
+    clase porque <code data-start="3520" data-end="3566">adjustOtherSectionsKeepingThisKeyValueSame()</code> puede
+    modificar <strong data-start="3583" data-end="3642">otra key distinta de la que el usuario estaba
+        cambiando</strong>.</p>
+<p>Por ejemplo: El ComboBox de <code data-start="3798" data-end="3817">show-notification</code> necesita enterarse de
+    ese cambio.</p>
+<pre><samp>Usuario cambia:
+show-media → 2
+
+        ↓
+
+adjustOtherSections...
+        ↓
+
+show-notification → 1</samp></pre>
+<p>Y precisamente para eso existe: <span class="ͼ11">settings</span><span class="ͼv">.</span>connect(<span
+        class="ͼz">"changed::"</span><span class="ͼv">+</span><span class="ͼ11">KEY</span>, ...)</p>
+<p>Es una muy buena pista de que el autor tuvo que contemplar la sincronización entre los tres ComboBox.</p>
+<h4>Finalmente, coloca el control</h4>
+<p>Mismo patrón que los otros constructores de preferencias.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>attachLabel(<span class="ͼ11">KEY</span>,<span class="ͼ11">pos</span>);
+<span class="ͼy">this</span><span class="ͼv">.</span>attach(<span class="ͼ11">SettingCombo</span>, <span class="ͼy">1</span>, <span class="ͼ11">pos</span>, <span class="ͼy">1</span>, <span class="ͼy">1</span>);</code></pre>
+<h4>El mapa de las tres funciones</h4>
+<p>Ahora el mapa de las tres funciones empieza a quedar muy claro.</p>
+<pre><samp>prefSectionPosition()
+        │
+        │ usuario cambia posición
+        ▼
+adjustOtherSectionsKeepingThisKeyValueSame()
+        │
+        │ corrige valores duplicados
+        ▼
+reorderOrderOfSections()
+        │
+        │ reconstruye/aplica orden
+        ▼
+reloadExtension()</samp></pre>
+<h3 id="section6" class="class-prefs">reorderOrderOfSections: function()</h3>
+<hr>
+<p>Esta función completa la lógica que veníamos siguiendo. Y aquí aparece claramente <strong data-start="86"
+        data-end="122">para qué existe <code data-start="104" data-end="120">sections-order</code></strong>.</p>
+<pre><code><span class="ͼ13">reorderOrderOfSections</span>: <span class="ͼv">function</span>() { <span class="ͼ13">...</span> }</code></pre>
+<p>Su función es tomar los valores numéricos de:</p>
+<pre><samp>show-media
+show-notification
+show-events</samp></pre>
+<p>Y convertirlos en un arreglo ordenado de nombres que se guarda en: <var class="inline-code">sections-order</var>.</p>
+<h4>sections-order</h4>
+<p>Crea una estructura temporal</p>
+<pre><code><span class="ͼv">let</span> <span class="ͼ11">orderStr</span> <span class="ͼv">=</span> [<span class="ͼz">"noValue"</span>,<span class="ͼz">"noValue"</span>,<span class="ͼz">"noValue"</span>];</code></pre>
+<p>Tenemos tres posiciones posibles:</p>
+<pre><samp>orderStr
+│
+├── [0] → primera posición
+├── [1] → segunda posición
+└── [2] → tercera posición</samp></pre>
+<p>Inicialmente ninguna está ocupada: ["<var class="inline-code">noValue</var>", "<var
+        class="inline-code">noValue</var>", "<var class="inline-code">noValue</var>"]. <code data-start="741"
+        data-end="750">noValue</code> funciona como marcador temporal de posición vacía.</p>
+<h4>Obtiene las posiciones actuales</h4>
+<pre><code><span class="ͼv">let</span> <span class="ͼ11">mediaNotificationEventsSectionOrder</span> <span class="ͼv">=</span> [
+  <span class="ͼ11">settings</span><span class="ͼv">.</span>get_int(<span class="ͼz">"show-media"</span>),
+  <span class="ͼ11">settings</span><span class="ͼv">.</span>get_int(<span class="ͼz">"show-notification"</span>),
+  <span class="ͼ11">settings</span><span class="ͼv">.</span>get_int(<span class="ͼz">"show-events"</span>)
+];</code></pre>
+<p>Por ejemplo:</p>
+<pre><samp>show-media        = 2
+show-notification = 1
+show-events       = 3</samp></pre>
+<p>Produce: [<kbd class="inline-code">2</kbd>, <kbd class="inline-code">1</kbd>, <kbd class="inline-code">3</kbd>].
+    Recordemos nuestra interpretación:</p>
+<pre><samp>0 → no mostrar
+1 → primera
+2 → segunda
+3 → tercera</samp></pre>
+<h4>Coloca <code data-start="1268" data-end="1275">media</code> en su posición</h4>
+<pre><code><span class="ͼv">if</span>(<span class="ͼ11">mediaNotificationEventsSectionOrder</span>[<span class="ͼy">0</span>]<span class="ͼv">!=</span><span class="ͼy">0</span>){
+  <span class="ͼ11">orderStr</span>[<span class="ͼ11">mediaNotificationEventsSectionOrder</span>[<span class="ͼy">0</span>]<span class="ͼv">-</span><span class="ͼy">1</span>] <span class="ͼv">=</span> <span class="ͼz">"media"</span>;
+}</code></pre>
+<p>Supongamos: <var class="inline-code">show-media</var> = <kbd class="inline-code">2</kbd>. Entonces: <kbd
+        class="inline-code">2</kbd> - <kbd class="inline-code">1</kbd> = <kbd class="inline-code">1</kbd> y: <kbd
+        class="inline-code">orderStr</kbd>[<kbd class="inline-code">1</kbd>] = "<var class="inline-code">media</var>";
+</p>
+<p>Resultado: ["<kbd class="inline-code">noValue</kbd>", "<var class="inline-code">media</var>", "<kbd
+        class="inline-code">noValue</kbd>"].</p>
+<h4>Hace lo mismo con <code data-start="1626" data-end="1640">notification</code></h4>
+<pre><code><span class="ͼv">if</span>(<span class="ͼ11">mediaNotificationEventsSectionOrder</span>[<span class="ͼy">1</span>]<span class="ͼv">!=</span><span class="ͼy">0</span>){
+  <span class="ͼ11">orderStr</span>[<span class="ͼ11">mediaNotificationEventsSectionOrder</span>[<span class="ͼy">1</span>]<span class="ͼv">-</span><span class="ͼy">1</span>] <span class="ͼv">=</span> <span class="ͼz">"notification"</span>;
+}</code></pre>
+<p>Si: <var class="inline-code">show-notification</var> = <kbd class="inline-code">1</kbd> queda: ["<var
+        class="inline-code">notification</var>", "<var class="inline-code">media</var>", "<kbd
+        class="inline-code">noValue</kbd>"].</p>
+<h4>Y finalmente <code data-start="1904" data-end="1912">events</code></h4>
+<pre><code><span class="ͼv">if</span>(<span class="ͼ11">mediaNotificationEventsSectionOrder</span>[<span class="ͼy">2</span>]<span class="ͼv">!=</span><span class="ͼy">0</span>){
+  <span class="ͼ11">orderStr</span>[<span class="ͼ11">mediaNotificationEventsSectionOrder</span>[<span class="ͼy">2</span>]<span class="ͼv">-</span><span class="ͼy">1</span>] <span class="ͼv">=</span> <span class="ͼz">"events"</span>;
+}</code></pre>
+<p>Si: <var class="inline-code">show-events</var> = <kbd class="inline-code">3</kbd> obtenemos: ["<var
+        class="inline-code">notification</var>", "<var class="inline-code">media</var>", "<var
+        class="inline-code">events</var>"]</p>
+<h4>Elimina las posiciones vacías</h4>
+<p>Ahora aparece: <span class="ͼv">let</span> <span class="ͼ11">tempOrderStr</span><span class="ͼv">=</span>[]; y:
+</p>
+<pre><code><span class="ͼv">for</span>(<span class="ͼv">let</span> <span class="ͼ11">i</span><span class="ͼv">=</span><span class="ͼy">0</span>;<span class="ͼ11">i</span><span class="ͼv">&lt;</span><span class="ͼy">3</span>;<span class="ͼ11">i</span><span class="ͼv">++</span>) {
+  <span class="ͼv">if</span>(<span class="ͼ11">orderStr</span>[<span class="ͼ11">i</span>]<span class="ͼv">!=</span><span class="ͼz">"noValue"</span>){
+    <span class="ͼ11">tempOrderStr</span><span class="ͼv">.</span>push(<span class="ͼ11">orderStr</span>[<span class="ͼ11">i</span>]);
+  }
+}</code></pre>
+<p>Esto elimina los <code data-start="2374" data-end="2385">"noValue"</code>.</p>
+<div class="row">
+    <div class="col">
+        <p>Por ejemplo:</p>
+        <pre><samp>orderStr =
+["notification", "noValue", "events"]</samp></pre>
+    </div>
+    <div class="col">
+        <p>Se transforma en:</p>
+        <pre><samp>tempOrderStr =
+["notification", "events"]</samp></pre>
+    </div>
+</div>
+<p>Esto es importante porque significa que las secciones con: <var class="inline-code">show-xxx</var> = <kbd
+        class="inline-code">0</kbd>, <strong data-start="2624" data-end="2659">no aparecen en <code data-start="2641"
+            data-end="2657">sections-order</code></strong>.</p>
+<h4>Guarda el resultado</h4>
+<pre><code><span class="ͼ11">settings</span><span class="ͼv">.</span>set_strv(<span class="ͼz">"sections-order"</span>,<span class="ͼ11">tempOrderStr</span>);</code></pre>
+<p>Aquí tenemos la finalidad de todo el proceso:</p>
+<pre><samp>show-media
+show-notification
+show-events
+       │
+       ▼
+reorderOrderOfSections()
+       │
+       ▼
+sections-order</samp></pre>
+<div class="row">
+    <div class="col"><span>Por ejemplo:</span>
+        <pre><samp>show-media        = 2
+show-notification = 1
+show-events       = 0</samp></pre>
+    </div>
+    <div class="col"><span>Produce:</span>
+        <pre><samp>sections-order = [
+    "notification",
+    "media"
+]</samp></pre>
+    </div>
+</div>
+<h4>El proceso completo ya queda muy claro</h4>
+<p>Tenemos tres niveles:</p>
+<pre><samp>              CONFIGURACIÓN INDIVIDUAL
+                       │
+        ┌──────────────┼──────────────┐
+        ▼              ▼              ▼
+   show-media    show-notification  show-events
+        │              │              │
+        └──────────────┼──────────────┘
+                       ▼
+       adjustOtherSectionsKeepingThisKeyValueSame()
+                       │
+                       ▼
+              evita posiciones repetidas
+                       │
+                       ▼
+              reorderOrderOfSections()
+                       │
+                       ▼
+                sections-order
+                       │
+                       ▼
+          ["notification", "media", ...]</samp></pre>
+<p>Y esto nos permite hacer una distinción importante:</p>
+<div class="row">
+    <div class="col">
+        <h5><code>show-*</code></h5>
+        <p>Son los <strong>valores de configuración de posición individual</strong>:</p>
+        <pre><samp>show-media        = 1/2/3/0
+show-notification = 1/2/3/0
+show-events       = 1/2/3/0</samp></pre>
+    </div>
+    <div class="col">
+        <h5><code>sections-order</code></h5>
+        <p>Es la <strong>representación ya ordenada</strong>:</p>
+        <pre><samp>["media", "notification", "events"]</samp></pre>
+    </div>
+</div>
+<p>Es decir, <code data-start="4241" data-end="4257">sections-order</code> no parece ser el origen de la configuración;
+    más bien es un <strong data-start="4318" data-end="4340">resultado derivado</strong> de <code data-start="4344"
+        data-end="4356">show-media</code>, <code data-start="4358" data-end="4377">show-notification</code> y <code
+        data-start="4380" data-end="4393">show-events</code>.</p>
+<h3 id="section7" class="class-prefs">Observaciones</h3>
+<hr>
+<p>Con esta clase ya llevamos identificadas las principales páginas de preferencias:</p>
+<pre><samp>Prefs_NotificationCenterExtension
+│
+├── PrefsWindowForNotifications
+├── PrefsWindowForCalendar
+├── PrefsWindowForIndicator
+└── PrefsWindowForAppList</samp></pre>
+<p>Y todas descansan sobre:</p>
+<pre><samp>PrefsWindow_NotificationCenterExtension
+└── Gtk.Grid</samp></pre>
+<h4>La relación central que descubrimos</h4>
+<pre><samp>show-media
+show-notification
+show-events
+       │
+       │ posiciones numéricas
+       ▼
+adjustOtherSectionsKeepingThisKeyValueSame()
+       │
+       │ evita duplicados
+       ▼
+reorderOrderOfSections()
+       │
+       │ genera orden textual
+       ▼
+sections-order</samp></pre>
+<p>Y también dejamos correctamente marcado el único punto que <strong data-start="2371" data-end="2410">no debemos dar
+        por resuelto todavía</strong>:</p>
+<pre><samp>orderSectionsReOrderRunning
+└── inicializado en false
+└── propósito exacto: aún no localizado</samp></pre>
+<p>No lo vamos a inventar ni relacionar con <code data-start="2561" data-end="2587">reorderOrderOfSections()</code>
+    solamente por el nombre. <strong data-start="2613" data-end="2654">Queda como pendiente de investigación</strong>,
+    siguiendo nuestra regla de <em data-start="2683" data-end="2727">primero entender el código tal como existe</em>.
+</p>
