@@ -1,0 +1,337 @@
+<aside class="list-blocks">
+    <div class="symbol-tab">
+        <div class="symbol">
+            <div class="icon-bar"></div>
+        </div>
+    </div>
+    <div class="card">
+        <p>Secciones:</p>
+        <div class="list-links">
+            <a href="#section1">UpdatePage</a>
+            <a href="#section2">_init ( ) { ... }</a>
+            <hr>
+            <a href="#section3">displayPrefs ()</a>
+            <a href="#section4">updateDone ()</a>
+        </div>
+    </div>
+</aside>
+
+<h2 id="section1" class="class-prefs">UpdatePage</h2>
+<hr>
+<p>Esta clase es diferente a las anteriores porque <strong data-start="118" data-end="169">no hereda de nuestra clase
+        base de preferencias</strong>, sino directamente de <code data-start="192"
+        data-end="212">Gtk.ScrolledWindow</code>.</p>
+<p>Se crea una nueva clase GObject.</p>
+<pre><code><span class="ͼv">const</span> <span class="ͼ11">UpdatePage_NotificationCenterExtension</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">GObject</span><span class="ͼv">.</span>Class({ ... })</code></pre>
+<h4>Name</h4>
+<p>El nombre interno de la clase.</p>
+<pre><code><span class="ͼ13">Name</span>: <span class="ͼz">'UpdatePage_NotificationCenterExtension'</span>,</code></pre>
+<h4>Extends</h4>
+<p>Aquí tenemos una diferencia importante respecto a las páginas anteriores.</p>
+<pre><code><span class="ͼ13">Extends</span>: <span class="ͼ11">Gtk</span><span class="ͼv">.</span>ScrolledWindow,</code></pre>
+<p>La jerarquía es:</p>
+<pre><samp>UpdatePage_NotificationCenterExtension
+            │
+            ▼
+     Gtk.ScrolledWindow</samp></pre>
+<p>No pasa por: <var class="inline-code">PrefsWindow_NotificationCenterExtension</var></p>
+<p>Tiene sentido porque una página de actualización no necesariamente necesita los métodos auxiliares de configuración
+    que tiene nuestra clase base.</p>
+<h3 id="section2" class="class-prefs">_init(profilesObject)</h3>
+<hr>
+<pre><code><span class="ͼ13">_init</span>: <span class="ͼv">function</span>(<span class="ͼ11">profilesObject</span>) {
+  
+    <span class="ͼy">this</span><span class="ͼv">.</span>parent();
+    <span class="ͼy">this</span><span class="ͼv">.</span>profilesObject <span class="ͼv">=</span> <span class="ͼ11">profilesObject</span>;
+    
+}</code></pre>
+<p><b>Primero</b>: <span class="ͼy">this</span><span class="ͼv">.</span>parent();</p>
+<p>Inicializa el <code data-start="1264" data-end="1284">Gtk.ScrolledWindow</code> heredado.</p>
+<p><b>Después</b>: <span class="ͼy">this</span><span class="ͼv">.</span>profilesObject <span class="ͼv">=</span>
+    <span class="ͼ11">profilesObject</span>;
+</p>
+<p>Aquí aparece una nueva propiedad de instancia: <kbd class="inline-code">profilesObject</kbd> y recibe
+    directamente el parámetro que llega al constructor.</p>
+<p>Por ahora sabemos solamente:</p>
+<pre><samp>profilesObject
+└── objeto recibido desde quien crea UpdatePage</samp></pre>
+<p>No vamos a asumir todavía qué contiene, pero hay una pista interesante:</p>
+<p>Recordemos que anteriormente encontramos en <code data-start="1772"
+        data-end="1807">Prefs_NotificationCenterExtension</code>:</p>
+<pre><samp><span class="ͼv">let</span> <span class="ͼ11">updatePage</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">UpdatePage_NotificationCenterExtension</span>(<span class="ͼy">this</span><span class="ͼv">.</span>profilePrefs);</samp></pre>
+<p>Así que, siguiendo el código que ya vimos:</p>
+<pre><samp>Prefs_NotificationCenterExtension
+        │
+        │ crea
+        ▼
+UpdatePage_NotificationCenterExtension
+        │
+        │ recibe
+        ▼
+this.profilePrefs
+        │
+        ▼
+profilesObject</samp></pre>
+<p>Esto nos deja una pregunta muy concreta para cuando aparezcan las siguientes funciones:</p>
+<blockquote>¿Qué hace <code data-start="2279" data-end="2291">UpdatePage</code> con <code data-start="2296"
+        data-end="2312">profilesObject</code>?</blockquote>
+<p>Eso sí lo podremos responder directamente viendo su uso.</p>
+<h3 id="section3" class="class-prefs">displayPrefs: function()</h3>
+<hr>
+<p>Aquí ya vemos claramente qué papel cumple <code data-start="42" data-end="82">UpdatePage</code>: <strong
+        data-start="84" data-end="221">es una página informativa que aparece después de una actualización y ofrece al
+        usuario la posibilidad de restablecer las preferencias</strong>.</p>
+<h4>Contenedor principal</h4>
+<p>Crea el contenedor principal de la página.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>vbox <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Box({
+    orientation: <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Orientation<span class="ͼv">.</span>VERTICAL,
+    margin_top: <span class="ͼy">30</span>,
+    margin_end: <span class="ͼy">30</span>,
+    margin_bottom: <span class="ͼy">30</span>,
+    margin_start: <span class="ͼy">30</span>
+});</code></pre>
+<p>Es un <code data-start="500" data-end="509">Gtk.Box</code> vertical, por lo que los elementos se van colocando uno
+    debajo de otro:</p>
+<pre><samp>┌─────────────────────────────┐
+│          imagen             │
+│                             │
+│        versión              │
+│                             │
+│       información           │
+│                             │
+│     botón de reset          │
+└─────────────────────────────┘</samp></pre>
+<p>Y los cuatro márgenes son de <code data-start="910" data-end="914">30</code>.</p>
+<h4>Contenedor e imagen</h4>
+<pre><code><span class="ͼv">let</span> <span class="ͼ11">imageBox</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Box({
+    halign: <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Align<span class="ͼv">.</span>CENTER
+});
+
+<span class="ͼv">let</span> <span class="ͼ11">image</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Image({
+    file: <span class="ͼ11">Extension</span><span class="ͼv">.</span>dir<span class="ͼv">.</span>get_child(<span class="ͼz">'eicon.png'</span>)<span class="ͼv">.</span>get_path(),
+    pixel_size: <span class="ͼy">96</span>
+});</code></pre>
+<p>Busca: <kbd class="inline-code">eicon.png</kbd> dentro del directorio de la extensión y crea una imagen de <code
+        data-start="1232" data-end="1241">96 × 96</code> aproximadamente.</p>
+<p>Luego: <span class="ͼ11">imageBox</span><span class="ͼv">.</span>append(<span class="ͼ11">image</span>); La
+    imagen queda centrada mediante <code data-start="1345" data-end="1355">imageBox</code>.</p>
+<h4>Etiqueta de versión</h4>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>versionLabel <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Label({
+    halign: <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Align<span class="ͼv">.</span>CENTER,
+    wrap: <span class="ͼy">true</span>,
+    justify: <span class="ͼy">2</span>,
+    use_markup: <span class="ͼy">true</span>,
+    label: <span class="ͼz">""</span> <span class="ͼv">+</span> <span class="ͼ11">_</span>(<span class="ͼz">"Extension is upgraded to Version  "</span>) <span class="ͼv">+</span> <span class="ͼ11">Metadata</span><span class="ͼv">.</span>version
+});</code></pre>
+<p>Aquí se guarda como propiedad de instancia: <kbd class="inline-code">versionLabel</kbd>.</p>
+<p>El texto informa:</p>
+<blockquote>Extension is upgraded to Version X</blockquote>
+<p>Donde <code data-start="1743" data-end="1746">X</code> viene de: <span class="ͼ11">Metadata</span><span
+        class="ͼv">.</span>version.</p>
+<p>Por ejemplo, si la versión fuera <code data-start="1827" data-end="1834">23.03</code>:</p>
+<pre><samp>Extension is upgraded to Version 23.03</samp></pre>
+<h4>Información sobre el reset</h4>
+<p>Esta es la explicación que recibe el usuario.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>firstInfo <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Label({
+    halign: <span class="ͼ11">Gtk</span><span class="ͼv">.</span>Align<span class="ͼv">.</span>CENTER,
+    wrap: <span class="ͼy">true</span>,
+    justify: <span class="ͼy">3</span>,
+    use_markup: <span class="ͼy">true</span>,
+    label: <span class="ͼz">"</span><span class="ͼ15">\n\n</span><span class="ͼz">"</span> <span class="ͼv">+</span>
+        <span class="ͼ11">_</span>(<span class="ͼz">"A Reset to default preferences is needed for upgrading to this version. Please Reset the extension by clicking the button below."</span>) <span class="ͼv">+</span>
+        <span class="ͼz">"</span><span class="ͼ15">\n\n</span><span class="ͼz">"</span>
+});</code></pre>
+<p>La idea es:</p>
+<pre><samp>Actualización
+     ↓
+las preferencias necesitan ser reiniciadas
+     ↓
+usuario pulsa Reset</samp></pre>
+<p>Y esto conecta directamente con la clase que ya analizamos: ExtensionResetButton</p>
+<h4>Crea el botón de reset</h4>
+<p>Aquí tenemos una conexión interesante.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>resetExtensionButton <span class="ͼv">=</span>
+    <span class="ͼv">new</span> <span class="ͼ11">ExtensionResetButton_NotificationCenterExtension</span>(<span class="ͼy">this</span>);</code></pre>
+<p>Le pasa: <span class="ͼy">this</span><span class="ͼv"></span> es decir, la propia instancia de: <kbd
+        class="inline-code">UpdatePage.</kbd> Esto explica parcialmente el <code data-start="2872"
+        data-end="2888">profilesObject</code> que vimos en <code data-start="2902" data-end="2911">_init()</code>.</p>
+<p>Recordemos:</p>
+<pre><samp><span class="ͼ13">_init</span>: <span class="ͼv">function</span>(<span class="ͼ11">profilesObject</span>) {
+
+    <span class="ͼy">this</span><span class="ͼv">.</span>parent();
+    <span class="ͼy">this</span><span class="ͼv">.</span>profilesObject <span class="ͼv">=</span> <span class="ͼ11">profilesObject</span>;
+
+},</samp></pre>
+<p>En este caso el objeto que se pasa al constructor de <code data-start="3099" data-end="3111">UpdatePage</code> era:
+</p>
+<pre><samp><span class="ͼv">new</span> <span class="ͼ11">UpdatePage_NotificationCenterExtension</span>(<span class="ͼy">this</span><span class="ͼv">.</span>profilePrefs);</samp></pre>
+<p>Pero <strong data-start="3205" data-end="3225">este otro <code data-start="3217" data-end="3223">this</code></strong>
+    que se pasa al botón es la página <code data-start="3260" data-end="3272">UpdatePage</code> misma.</p>
+<p>Esto nos da dos relaciones distintas que tendremos que seguir:</p>
+<div class="row">
+    <div class="col">
+        <pre><samp>Prefs_NotificationCenterExtension
+        │
+        └── crea UpdatePage
+              │
+              └── profilesObject = this.profilePrefs</samp></pre>
+    </div>
+    <div class="col">
+        <pre><samp>UpdatePage
+    │
+    └── crea ExtensionResetButton
+          │
+          └── recibe this = UpdatePage</samp></pre>
+    </div>
+</div>
+<h4>Construye la jerarquía visual</h4>
+<pre><code><span class="ͼ11">imageBox</span><span class="ͼv">.</span>append(<span class="ͼ11">image</span>);
+<span class="ͼy">this</span><span class="ͼv">.</span>vbox<span class="ͼv">.</span>append(<span class="ͼ11">imageBox</span>);
+<span class="ͼy">this</span><span class="ͼv">.</span>vbox<span class="ͼv">.</span>append(<span class="ͼy">this</span><span class="ͼv">.</span>versionLabel);
+<span class="ͼy">this</span><span class="ͼv">.</span>vbox<span class="ͼv">.</span>append(<span class="ͼy">this</span><span class="ͼv">.</span>firstInfo);
+<span class="ͼy">this</span><span class="ͼv">.</span>vbox<span class="ͼv">.</span>append(<span class="ͼy">this</span><span class="ͼv">.</span>resetExtensionButton);</code></pre>
+<p>El orden final es:</p>
+<pre><samp>vbox
+│
+├── imageBox
+│   └── eicon.png
+│
+├── versionLabel
+│
+├── firstInfo
+│
+└── resetExtensionButton</samp></pre>
+<h4>Finalmente</h4>
+<p>Introduce el <code data-start="4003" data-end="4009">vbox</code> en el ScrolledWindow</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>set_child(<span class="ͼy">this</span><span class="ͼv">.</span>vbox);</code></pre>
+<p>Como la clase extiende: Gtk.ScrolledWindow el <code data-start="4138" data-end="4144">vbox</code> se convierte en su
+    contenido.</p>
+<h4>Algo importante </h4>
+<p>Ya podemos afirmar que esta clase <strong data-start="4782" data-end="4819">no realiza la actualización en
+        sí</strong>. Su función, por lo que hemos visto hasta ahora, es presentar una página de aviso:</p>
+<blockquote>"La extensión fue actualizada; debes restablecer las preferencias para adaptarlas a esta versión."
+</blockquote>
+<p>Y reutiliza el mecanismo de reset que ya estudiamos.</p>
+<p>El misterio de <code data-start="5075" data-end="5091">profilesObject</code> todavía permanece, porque <strong
+        data-start="5118" data-end="5151">en esta función no se utiliza</strong>. Lo dejamos pendiente hasta encontrar
+    dónde aparece <code data-start="5204" data-end="5225">this.profilesObject</code>.</p>
+<h3 id="section4" class="class-prefs">updateDone: function(mode)</h3>
+<hr>
+<p>Recibe un parámetro llamado <code data-start="221" data-end="227">mode</code>.</p>
+<pre><code><span class="ͼ13">updateDone</span>: <span class="ͼv">function</span>(<span class="ͼ11">mode</span>) { ... }</code></pre>
+<h4>Si <code data-start="240" data-end="246">mode</code> es <code data-start="250" data-end="257">false</code>, no hace
+    nada</h4>
+<pre><code><span class="ͼv">if</span>(<span class="ͼ11">mode</span> <span class="ͼv">==</span> <span class="ͼy">false</span>) {
+    <span class="ͼv">return</span>;
+}</code></pre>
+<p>Es decir:</p>
+<pre><samp>mode == false
+    ↓
+return
+    ↓
+no continúa</samp></pre>
+<p>Por tanto, para que la actualización se marque como completada, <code data-start="471" data-end="477">mode</code>
+    debe ser un valor distinto de <code data-start="508" data-end="515">false</code>.</p>
+<h4>Oculta el botón de Reset</h4>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>resetExtensionButton<span class="ͼv">.</span>hide();</code></pre>
+<p>Recordemos que ese botón fue creado en <code data-start="647" data-end="663">displayPrefs()</code>:</p>
+<pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>resetExtensionButton <span class="ͼv">=</span>
+    <span class="ͼv">new</span> <span class="ͼ11">ExtensionResetButton_NotificationCenterExtension</span>(<span class="ͼy">this</span>);</samp></pre>
+<p>Después de que el proceso termina correctamente:</p>
+<pre><samp>Reset
+  ↓
+actualización completada
+  ↓
+ocultar botón</samp></pre>
+<p>El usuario ya no necesita volver a ejecutar el reset desde esta página.</p>
+<h4>Cambia el mensaje informativo</h4>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>firstInfo<span class="ͼv">.</span>label <span class="ͼv">=</span>
+    <span class="ͼz">"</span><span class="ͼ15">\n\n</span><span class="ͼz"> &lt;big&gt;&lt;b&gt; "</span> <span class="ͼv">+</span>
+    <span class="ͼ11">_</span>(<span class="ͼz">"Upgraded Successfully"</span>) <span class="ͼv">+</span>
+    <span class="ͼz">"&lt;/b&gt;&lt;/big&gt;"</span>;</code></pre>
+<div class="row">
+    <div class="col"><span>El mensaje anterior decía, en esencia:</span>
+        <blockquote>Es necesario restablecer las preferencias para actualizar a esta versión.</blockquote>
+    </div>
+    <div class="col"><span>Después pasa a:</span>
+        <blockquote>Upgraded Successfully</blockquote>
+    </div>
+</div>
+<p>Así la misma página cambia de estado:</p>
+<div class="row">
+    <div class="col">
+        <pre><samp>ANTES
+
+Extension is upgraded to Version X
+
+A Reset to default preferences is needed...
+        [ Reset ]</samp></pre>
+    </div>
+    <div class="col">
+        <pre><samp>DESPUÉS
+
+Version X
+
+Upgraded Successfully</samp></pre>
+    </div>
+</div>
+<h4>Actualiza la versión mostrada</h4>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>versionLabel<span class="ͼv">.</span>label <span class="ͼv">=</span> <span class="ͼ11">_</span>(<span class="ͼz">"Version"</span>)<span class="ͼv">+</span><span class="ͼz">" "</span><span class="ͼv">+</span><span class="ͼ11">Metadata</span><span class="ͼv">.</span>version;</code></pre>
+<p>La etiqueta deja de decir: </p>
+<blockquote>Extension is upgraded to Version X</blockquote>
+<p>Y pasa a: <kbd class="inline-code">Version X</kbd></p>
+<h4>Y aquí aparece <code data-start="1807" data-end="1824">current-version</code></h4>
+<p>Este es un hallazgo importante para nuestro análisis anterior.</p>
+<pre><code><span class="ͼ11">settings</span><span class="ͼv">.</span>set_double(<span class="ͼz">'current-version'</span>, <span class="ͼ11">Metadata</span><span class="ͼv">.</span>version);</code></pre>
+<p>Recordemos que en <code data-start="1997" data-end="2040">Prefs._init()</code> encontramos:</p>
+<pre><samp><span class="ͼv">if</span>(<span class="ͼ11">settings</span><span class="ͼv">.</span>get_double(<span class="ͼz">"current-version"</span>) <span class="ͼv">&lt;</span> <span class="ͼy">23.03</span>) {
+    <span class="ͼv">let</span> <span class="ͼ11">updatePage</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">UpdatePage_NotificationCenterExtension</span>(...);
+    ...
+}</samp></pre>
+<p>Ahora podemos conectar ambos extremos:</p>
+<pre><samp>                current-version
+                     │
+          ┌──────────┴──────────┐
+          │                     │
+          ▼                     ▼
+   Prefs_Notification       UpdatePage
+   Center._init()           updateDone()
+          │                     │
+          │ lee                 │ escribe
+          ▼                     ▼
+    get_double()            set_double()</samp></pre>
+<p>El flujo histórico es:</p>
+<pre><samp>Se abre preferencias
+        │
+        ▼
+current-version &lt; 23.03 ?
+        │
+       Sí
+        ▼
+se muestra UpdatePage
+        │
+        ▼
+usuario hace Reset
+        │
+        ▼
+updateDone(true)
+        │
+        ▼
+current-version = Metadata.version</samp></pre>
+<p>En la siguiente apertura:</p>
+<pre><samp>current-version &gt;= 23.03
+        │
+        ▼
+no se muestra UpdatePage</samp></pre>
+<h4>Esto confirma algo </h4>
+<p>Anteriormente habíamos encontrado este código comentado en <code data-start="3219"
+        data-end="3241">ExtensionResetButton</code>:</p>
+<pre><samp>//settings.set_int("current-version", Metadata.version);</samp></pre>
+<p>Ahora vemos que <strong data-start="3348" data-end="3436">el lugar donde realmente se actualiza <code
+            data-start="3388" data-end="3405">current-version</code> es <code data-start="3409"
+            data-end="3434">UpdatePage.updateDone()</code></strong>, y además utiliza: <span
+        class="ͼ11">settings</span><span class="ͼv">.</span>set_double() no <code data-start="3501"
+        data-end="3512">set_int()</code>.</p>
+<p>Eso es importante porque demuestra que <code data-start="3554" data-end="3571">current-version</code> <strong
+        data-start="3572" data-end="3634">sí tenía un propósito funcional dentro del diseño original</strong>. No era
+    simplemente un valor decorativo.</p>

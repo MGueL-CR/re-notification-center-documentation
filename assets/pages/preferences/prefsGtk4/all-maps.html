@@ -1,5 +1,28 @@
-<h2>Mapas de cada clase</h2>
+<h2>La estructura de prefsGtk4</h2>
 <hr />
+<p>Con el análisis de <code data-start="487" data-end="501">prefsGtk4.js</code> terminado, recorrimos prácticamente toda
+    la estructura de preferencias que contiene ese archivo:</p>
+<pre><samp>prefsGtk4.js
+│
+├── ExtensionResetButton_NotificationCenterExtension
+│
+├── Prefs_NotificationCenterExtension
+│
+├── PrefsWindow_NotificationCenterExtension
+│
+├── PrefsWindowForAppList_NotificationCenterExtension
+│
+├── PrefsWindowForCalendar_NotificationCenterExtension
+│
+├── PrefsWindowForIndicator_NotificationCenterExtension
+│
+├── PrefsWindowForNotifications_NotificationCenterExtension
+│
+└── UpdatePage_NotificationCenterExtension</samp></pre>
+
+<h3>Mapas de cada clase</h3>
+<hr>
+<p>Ahora podemos construir sus mapas correspondientes de cada clase.</p>
 <div class="tabs">
     <input type="radio" name="tabs-maps" id="tb1" checked="checked" />
     <label for="tb1">ExtensionPreferencesWindow</label>
@@ -541,8 +564,36 @@
     </div>
 
     <input type="radio" name="tabs-maps" id="tb9" />
-    <label for="tb9">Pending</label>
+    <label for="tb9">UpdatePage</label>
     <div class="tab">
-        <h4>Mapa completo del nodo:</h4>
+        <h4>Mapa completo del nodo: UpdatePage</h4>
+        <pre><samp>UpdatePage_NotificationCenterExtension
+│
+├── Extends
+│   └── Gtk.ScrolledWindow
+│
+├── _init(profilesObject)
+│   └── this.profilesObject
+│
+├── displayPrefs()
+│   ├── icono
+│   ├── versión
+│   ├── mensaje de actualización
+│   └── ExtensionResetButton
+│
+└── updateDone(mode)
+    ├── oculta botón Reset
+    ├── muestra "Upgraded Successfully"
+    ├── actualiza versión mostrada
+    └── guarda current-version</samp></pre>
+        <p>Y la conexión que descubrimos es:</p>
+        <pre><samp>current-version
+        │
+        ├── Prefs_NotificationCenterExtension
+        │      └── decide si muestra UpdatePage
+        │
+        └── UpdatePage
+                └── updateDone()
+                        └── registra Metadata.version</samp></pre>
     </div>
 </div>
