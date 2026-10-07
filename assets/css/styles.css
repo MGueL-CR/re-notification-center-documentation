@@ -405,27 +405,44 @@ table :is(th, td) {
 *
 */
 
+article:has(.error-404-page) {
+	height: 100%;
+	display: grid;
+}
+
 .error-404-page {
 	position: relative;
-	height: 60vh;
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-template-rows: auto auto 1fr;
+}
+
+.error-404-page h2::before {
+	display: none;
+}
+
+.error-404-page section {
+	padding: 0.75rem;
+}
+
+.error-404-page section::after {
+	display: none;
 }
 
 .error-404-code {
 	position: absolute;
-	bottom: 0;
+	left: 0.5rem;
+	bottom: 0.5rem;
 	width: fit-content;
 }
 
 .error-404-icon {
 	position: absolute;
-	top: 5rem;
-	right: 0;
-	background-image: url(/assets/images/404-icon.png);
-	background-repeat: no-repeat;
-	background-position: right center;
-	background-size: contain;
-	background-clip: border-box;
-	height: 50vh;
+	padding: 1rem;
+	inset: 0;
+	border-radius: 0.25rem;
+	background-color: var(--clight);
+	box-shadow: 0 0 12px 1px var(--clight) inset;
 	z-index: -1;
 }
 

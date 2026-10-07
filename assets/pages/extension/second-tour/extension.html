@@ -1,0 +1,166 @@
+<h2>Regreso a extension.js</h2>
+<hr>
+<p>Como ya hemos terminado el <code class="inline-code">gschema.xml</code>, <code
+        class="inline-code">el prefs.js</code>, el <code class="inline-code">prefsGtk4.js</code> habíamos acordado
+    en volver a repasar extension.js. De hecho, creo que es el momento adecuado porque ya tenemos bastante contexto de
+    los otros componentes:</p>
+<pre><samp>gschema
+   │
+   ├── sabemos qué preferencias existen
+   ├── qué tipo tienen
+   └── qué valores representan
+          │
+          ▼
+prefs.js / prefsGtk4.js
+   │
+   ├── sabemos cómo se modifican
+   ├── qué controles las representan
+   └── qué relaciones existen entre ellas
+          │
+          ▼
+extension.js   ← siguiente paso</samp></pre>
+<p>Y esto nos va a permitir hacer algo que antes habría sido mucho más difícil: <strong>ver cómo las preferencias que
+        acabamos de estudiar realmente afectan el comportamiento de la extensión</strong>.</p>
+<p>Además, el repaso de <code class="inline-code">extension.js</code> no sería empezar desde cero, ya habíamos
+    construido aquel mapa mental de la clase <code class="inline-code">NotificationCenter</code>, con cosas como:</p>
+<pre><samp>_init
+_onOpenStateChanged
+animateOnNewNotification
+blinkIcon
+blinkIconStopIfBlinking
+dndToggle
+loadDndStatus
+loadPreferences
+manageAutohide
+manageEvents
+manageLabel
+manageIconChange
+middleClickDndToggle
+newNotif
+remNotif
+removeSection
+resetIndicator
+setNotificationIconName
+iconThemeChanged
+shouldShowEventsSection
+startNotificationCenter
+undoChanges</samp></pre>
+<p>Ahora podemos volver sobre ese mapa <strong>con mucha más información</strong>.</p>
+<p>Por ejemplo, cuando encontremos: <span class="ͼ11">settings</span><span class="ͼv">.</span>get_int(<span
+        class="ͼz">"show-media"</span>) ya no tendremos que detenernos a descubrir qué significa. Sabemos que
+    representa la posición de la sección.</p>
+<p>Cuando encontremos: <span class="ͼ11">settings</span><span class="ͼv">.</span>get_strv(<span
+        class="ͼz">"application-list"</span>) sabemos que es un arreglo de strings y que tiene relación con <code
+        dir="ltr">name-list</code> y <code dir="ltr">script-list</code>. </p>
+<p>Y cuando aparezca: <span class="ͼ11">settings</span><span class="ͼv">.</span>get_strv(<span
+        class="ͼz">"sections-order"</span>) ya sabemos que es el resultado derivado del orden de las secciones.</p>
+<p>Propongo que en este segundo recorrido hagamos algo ligeramente diferente. </p>
+<div>
+    <div><span>La primera vez estábamos haciendo principalmente:</span>
+        <blockquote>¿Qué hace este código?</blockquote>
+    </div>
+    <div><span>Ahora podemos agregar una segunda capa:</span>
+        <blockquote>¿Qué relación tiene con lo que acabamos de descubrir?</blockquote>
+    </div>
+</div>
+<p>Por ejemplo:</p>
+<pre><samp>extension.js
+     │
+     ├── lee "show-media"
+     │       └── ¿cómo utiliza 0/1/2/3?
+     │
+     ├── lee "sections-order"
+     │       └── ¿por qué necesita este valor derivado?
+     │
+     ├── lee "script-list"
+     │       └── ¿cómo ejecuta ese script?
+     │
+     └── lee "current-version"
+             └── ¿qué otras comparaciones existen?</samp></pre>
+<p>Esto probablemente nos permitirá descubrir varias de las cosas que dejamos marcadas para
+    <strong>pruebas/debug</strong>. Y, especialmente, mantendría una regla durante este segundo recorrido:
+</p>
+<blockquote>No corregimos, no renombramos y no modernizamos nada todavía.</blockquote>
+<p>Solo entendemos, relacionamos y anotamos.</p>
+<h3>Que tiene de diferente al primer recorrido</h3>
+<hr>
+<p>Me gusta mucho este segundo recorrido porque cambia la perspectiva.</p>
+<h4>Primer recorrido por <code dir="ltr">extension.js</code></h4>
+<p>Fue:</p>
+<blockquote>"¿Qué hace esta parte?"</blockquote>
+<p>Construimos el mapa de la estructura y dejamos varias cosas anotadas para investigar.</p>
+<h4>Segundo recorrido</h4>
+<p>Ahora será:</p>
+<blockquote>"¿De dónde viene este dato, qué representa, quién lo modifica, quién lo consume y qué efecto produce?"
+</blockquote>
+<p>Y ahí <code dir="ltr">gschema</code> + <code dir="ltr">prefsGtk4.js</code> nos dan una ventaja enorme.</p>
+<p>Por ejemplo, si encontramos: <span class="ͼ11">settings</span><span class="ͼv">.</span>get_int(<span
+        class="ͼz">"show-media"</span>) ya podemos seguir la cadena completa:</p>
+<pre><samp>gschema
+  │
+  │ define:
+  │ tipo → int
+  │ default → ...
+  │
+  ▼
+prefsGtk4.js
+  │
+  │ presenta:
+  │ none / top / middle / bottom
+  │
+  │ almacena:
+  │ 0 / 1 / 2 / 3
+  │
+  ▼
+extension.js
+  │
+  │ consume ese valor
+  ▼
+comportamiento real de la sección Media</samp></pre>
+<p>Y ahí podemos preguntar cosas mucho más interesantes:</p>
+<ul>
+    <li>No modificamos todavía la arquitectura para acomodar nuestra interpretación; primero comprobamos la
+        interpretación.¿El <code>0</code> realmente significa "no mostrar" en todos los lugares?</li>
+    <li>¿El <code>1/2/3</code> se interpreta siempre igual?</li>
+    <li>¿<code>sections-order</code> es realmente necesario o es información redundante?</li>
+    <li>¿Qué sucede si modificamos una preferencia mientras la extensión está funcionando?</li>
+    <li>¿Qué señales de GSettings provocan que la extensión reaccione?</li>
+    <li>¿Qué valores vienen directamente del usuario y cuáles son valores derivados?</li>
+    <li>¿Qué datos son persistentes y cuáles solamente representan estado interno?</li>
+    <li>¿Qué mecanismos son propios de GNOME y cuáles fueron creados por Selenium-H?</li>
+</ul>
+<p>Y cuando encontremos algo que no podamos determinar únicamente leyendo el código, ahí sí podemos decir:</p>
+<blockquote>"Esto merece una prueba."</blockquote>
+<p>No modificamos todavía la arquitectura para acomodar nuestra interpretación; primero comprobamos la interpretación.
+</p>
+<h3>Podremos descubrir algo muy valioso</h3>
+<hr>
+<p>Podemos empezar a distinguir entre estas tres categorías:</p>
+
+<h5>Entrada externa</h5><span>Datos que vienen de:</span>
+<ul>
+    <li>GSettings</li>
+    <li>GNOME Shell</li>
+    <li>eventos</li>
+    <li>aplicaciones</li>
+    <li>archivos <code>.desktop</code></li>
+    <li>argumentos</li>
+    <li>señales</li>
+</ul>
+<h5>Transformación interna</h5>
+<p>Lo que hace <code dir="ltr">extension.js</code> con esos datos:</p>
+<pre><samp>leer → validar → transformar → almacenar estado → actuar</samp></pre>
+<h5>Efecto observable</h5><span>Lo que finalmente ocurre:</span>
+<ul>
+    <li>aparece/desaparece una sección;</li>
+    <li>cambia una posición;</li>
+    <li>cambia un icono;</li>
+    <li>se muestra un banner;</li>
+    <li>se ejecuta un script;</li>
+    <li>cambia DND;</li>
+    <li>se actualiza el contador;</li>
+    <li>etc.</li>
+</ul>
+<p>Eso nos va a permitir pasar de un mapa de <strong>funciones</strong> a un mapa de <strong>flujo de
+        datos</strong> y ese segundo mapa probablemente sea muchísimo más útil cuando llegue el momento de
+    modernizar.</p>

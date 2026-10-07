@@ -22,3 +22,39 @@
 <p>Y, dependiendo de la versión de GNOME, también una clase
     <code>Extension</code>.
 </p>
+<h3>Estructura general</h3>
+<hr>
+<p>El archivo parece seguir este orden:</p>
+<pre><samp>Imports
+    │
+    ▼
+Variable global
+    │
+    ▼
+Funciones auxiliares
+    │
+    ▼
+Clase principal</samp></pre>
+<p>Todavía no hemos visto el código, pero esa es la arquitectura típica de una extensión. Y ese orden me gusta. No es un
+    archivo escrito "como salió". Tiene una organización.</p>
+<div class="row">
+    <div class="col">
+        <span>¿Por qué declarar primero:</span>
+        <pre><code><span class="ͼg">let</span><span> </span><span class="ͼm">notificationCenter</span><span> </span><span class="ͼg">=</span><span> </span><span class="ͼj">null</span><span>;</span></code></pre>
+    </div>
+    <div class="col">
+        <span>en lugar de escribir simplemente:</span>
+        <pre><code><span class="ͼg">let</span><span> </span><span class="ͼm">notificationCenter</span><span> </span><span class="ͼg">=</span><span> </span><span class="ͼg">new</span><span> </span><span class="ͼm">NotificationCenter</span><span>();</span></code></pre>
+    </div>
+</div>
+<p>Porque la extensión <strong>no puede crear el objeto apenas se carga</strong>, esa respuesta la descubriremos cuando
+    veamos <code>enable()</code>.</p>
+<p>Debe esperar a que GNOME le diga:</p>
+<blockquote>"Ahora sí, habilítate."</blockquote>
+<p>Y en ese momento probablemente haga algo parecido a:</p>
+<pre><code><span class="ͼm">notificationCenter</span><span> </span><span class="ͼg">=</span><span> </span><span class="ͼg">new</span><span> </span><span class="ͼm">NotificationCenter</span><span>();</span></code></pre>
+<p>Y cuando GNOME diga:</p>
+<blockquote>"Desactívate."</blockquote>
+<p>Hará:</p>
+<pre><code><span class="ͼm">notificationCenter</span><span class="ͼg">.</span><span>destroy();
+</span><span class="ͼm">notificationCenter</span><span> </span><span class="ͼg">=</span><span> </span><span class="ͼj">null</span><span>;</span></code></pre>

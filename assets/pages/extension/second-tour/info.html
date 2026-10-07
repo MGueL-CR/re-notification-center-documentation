@@ -1,0 +1,156 @@
+<h2>Orden del recorrido de <q class="inline-code">extension.js</q></h2>
+<hr>
+<p>Yo mantendría <strong data-start="14" data-end="48">el orden de arriba hacia abajo</strong>, pero con una pequeña
+    adaptación: no vamos a detenernos con la misma profundidad en cada línea.</p>
+<p>La razón es que <code data-start="162" data-end="176">extension.js</code> no es solamente la clase <code
+        data-start="202" data-end="222">NotificationCenter</code>; antes de llegar a ella hay <strong data-start="251"
+        data-end="346">imports, constantes, variables globales, funciones auxiliares y posiblemente
+        inicialización</strong> que pueden explicar de dónde salen datos que después consume la clase.</p>
+<p>Nuestro recorrido sería:</p>
+<pre><samp>extension.js
+│
+├── 1. Imports / dependencias
+│
+├── 2. Constantes y variables globales
+│
+├── 3. Funciones auxiliares
+│
+├── 4. Definiciones de clases
+│      │
+│      └── NotificationCenter
+│
+├── 5. Métodos de NotificationCenter
+│
+└── 6. Código de inicialización / activación</samp></pre>
+<p>Pero esta vez con nuestro nuevo enfoque, para cada elemento preguntaremos:</p>
+<h4>¿De dónde viene?</h4>
+<pre><samp>GSettings
+GNOME Shell
+Gio
+Gtk
+evento
+otra función</samp></pre>
+<h4>¿Qué recibe?</h4>
+<p>Tipo, valores posibles, estructura, etc.</p>
+<h4>¿Qué hace con ello?</h4>
+<p>Transformación, almacenamiento, comparación...</p>
+<h4>¿Dónde termina ese resultado?</h4>
+<p>Otra función, una propiedad, GSettings, UI, GNOME Shell, etc.</p>
+<h4>¿Qué relación tiene con lo que ya conocemos?</h4>
+<p>Aquí es donde <code data-start="1201" data-end="1210">gschema</code> y <code data-start="1213"
+        data-end="1227">prefsGtk4.js</code> nos van a ayudar muchísimo.</p>
+<h3>¿Por qué no saltar directamente a <code data-start="1300" data-end="1320">NotificationCenter</code>?</h3>
+<hr>
+<p>Porque podríamos encontrarnos algo como:</p>
+<pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>something <span class="ͼv">=</span> <span class="ͼ11">algunaFuncion</span>();</samp></pre>
+<p>Y tener que preguntarnos:</p>
+<blockquote>"¿Y quién demonios es <code data-start="1469" data-end="1486">algunaFuncion()</code>?"</blockquote>
+<p>Si seguimos desde arriba, probablemente descubriremos primero quién la define y qué información proporciona. Además,
+    podemos ir construyendo un <strong data-start="1639" data-end="1663">mapa de dependencias</strong> mientras
+    avanzamos.</p>
+<p>Así que mi propuesta concreta:</p>
+<blockquote>Empezamos exactamente donde comienza <code data-start="1758" data-end="1772">extension.js</code> y avanzamos
+    hacia abajo.</blockquote>
+<p>Pero si encontramos una sección que ya conocemos perfectamente y no aporta información nueva, la marcamos y seguimos.
+    No vamos a perder tiempo repasando línea por línea solamente por respetar el orden.</p>
+<p>Y cuando finalmente lleguemos a: <span class="ͼv">const</span> <span class="ͼ11">NotificationCenter</span> <span
+        class="ͼv">=</span> ... ahí sí vamos a tener todo el contexto necesario para entrar a la clase con mucha más
+    profundidad.</p>
+<h3>El mapa de dependencias</h3>
+<hr>
+<p>Creo que ese <strong data-start="20" data-end="44">mapa de dependencias</strong> puede terminar siendo una de las
+    piezas más útiles de todo este análisis. Porque hasta ahora hemos construido principalmente un <strong
+        data-start="174" data-end="194">mapa estructural</strong>:</p>
+<pre><samp>archivo
+ └── clase
+      └── método
+           └── función</samp></pre>
+<p>Ahora podemos construir un segundo mapa:</p>
+<pre><samp>                ┌─────────────┐
+                │   gschema   │
+                └──────┬──────┘
+                       │
+                       ▼
+                ┌─────────────┐
+                │  GSettings  │
+                └──────┬──────┘
+                       │
+             ┌─────────┴─────────┐
+             ▼                   ▼
+       prefsGtk4.js        extension.js
+             │                   │
+             │                   ▼
+             │          comportamiento
+             │             real
+             ▼
+       modifica valores</samp></pre>
+<p>Y podemos ir agregando flechas conforme descubramos relaciones.</p>
+<h5>Por ejemplo</h5>
+<p>Ya sabemos bastante de:</p>
+<pre><samp>show-media
+show-notification
+show-events</samp></pre>
+<p>Así que eventualmente podremos tener algo parecido a:</p>
+<pre><samp>gschema
+  │
+  ├── show-media ───────────────┐
+  ├── show-notification ────────┤
+  └── show-events ──────────────┤
+                                ▼
+                     extension.js
+                                │
+                     ┌──────────┴─────────┐
+                     ▼                    ▼
+             orden/visibilidad       sections-order</samp></pre>
+
+<p>Mientras que:</p>
+<pre><samp>application-list
+name-list
+script-list</samp></pre>
+<p>Formarán probablemente otro pequeño sistema:</p>
+<pre><samp>application-list ──┐
+name-list ──────────┼──► perfiles de aplicaciones
+script-list ────────┘
+                         │
+                         ▼
+                   ejecución de scripts</samp></pre>
+
+<p>Y ahí es donde podremos encontrar cosas interesantes que no son obvias mirando una función aislada.</p>
+<h4>Además, podemos marcar el tipo de relación</h4>
+<p>Por ejemplo:</p>
+<ul>
+    <li><strong>→</strong> lee</li>
+    <li><strong>←</strong> escribe</li>
+    <li><strong>⇢</strong> transforma</li>
+    <li><strong>⚡</strong> reacciona a una señal/evento</li>
+    <li><strong>⊕</strong> genera un valor derivado</li>
+    <li><strong>?</strong> todavía desconocido</li>
+</ul>
+<p>Así podríamos terminar con algo como:</p>
+<pre><samp>show-media
+    │
+    │ → lee
+    ▼
+extension.js
+    │
+    │ ⇢ transforma
+    ▼
+sections-order
+    │
+    │ → lee
+    ▼
+otra función</samp></pre>
+<div class="row">
+    <div class="col"><span>Eso nos permitirá distinguir claramente entre:</span>
+        <blockquote>"esta variable existe"</blockquote>
+    </div>
+    <div class="col"><span>y</span>
+        <blockquote>"esta variable alimenta este comportamiento concreto".</blockquote>
+    </div>
+</div>
+<p>Y cuando llegue la fase de modernización, podremos mirar el mapa y preguntar:</p>
+<blockquote>"Si quitamos esto, ¿qué flechas se rompen?"</blockquote>
+<p>Ahí tendremos una base mucho más sólida para decidir qué conservar, qué reemplazar y qué eliminar.</p>
+<p>Así que sí: <strong data-start="2651" data-end="2720">mapa estructural + mapa de dependencias + puntos de
+        investigación</strong>. Creo que tenemos un muy buen método para este segundo abordaje de <code
+        data-start="2788" data-end="2802">extension.js</code>.</p>
