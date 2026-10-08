@@ -1,0 +1,731 @@
+<h2>Funciones de extension.js</h2>
+<hr>
+<h3>function enable()</h3>
+<hr>
+<p>Aquí ya entramos en una zona <strong data-start="39" data-end="57">muy importante</strong>, porque <code
+        data-start="66" data-end="76">enable()</code> es prácticamente el punto donde la extensión cobra vida.</p>
+<pre><code><span class="ͼv">function</span> <span class="ͼ11">enable</span>() {
+
+  <span class="ͼ11">notificationCenter</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">NotificationCenter</span>();
+  <span class="ͼ11">notificationCenter</span><span class="ͼv">.</span>startNotificationCenter();
+  <span class="ͼ11">reloadExtensionOnPrefsChange</span>();
+  <span class="ͼ11">reloadApplicationProfilesOnPrefsChange</span>();
+
+}</code></pre>
+<h4>Crear la instancia</h4>
+<pre><code><span class="ͼ11">notificationCenter</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">NotificationCenter</span>();</code></pre>
+<p>Aquí utilizamos la variable global que acabamos de encontrar:</p>
+<pre><code><span class="ͼv">let</span> <span class="ͼ11">notificationCenter</span> <span class="ͼv">=</span> <span class="ͼy">null</span>;</code></pre>
+<p><b>Antes</b>: notificationCenter → null</p>
+<p><b>Después</b>: notificationCenter → instancia de NotificationCenter</p>
+<p>Es decir:</p>
+<pre><samp>┌──────────────────────────────┐
+│ notificationCenter           │
+│                              │
+│   └── NotificationCenter     │
+│       ├── propiedades        │
+│       ├── métodos            │
+│       └── estado             │
+└──────────────────────────────┘</samp></pre>
+<p>Esto confirma una de nuestras sospechas anteriores: <strong data-start="1050" data-end="1153">esa variable global
+        existe para mantener una referencia a la instancia activa de la clase principal</strong>.</p>
+<h4>Mapa</h4>
+<pre><samp>enable()
+   │
+   ▼
+new NotificationCenter()
+   │
+   ▼
+notificationCenter</samp></pre>
+<p>Y algo importante: <code data-start="1274" data-end="1300">new NotificationCenter()</code> ejecutará el constructor
+    <code data-start="1326" data-end="1335">_init()</code> de la clase, cuando lleguemos a ella.
+</p>
+<h4>Arrancar el Notification Center</h4>
+<p>Aquí ocurre algo muy interesante.</p>
+<pre><code><span class="ͼ11">notificationCenter</span><span class="ͼv">.</span>startNotificationCenter();</code></pre>
+<p>No basta con crear:<span class="ͼv">new</span> <span class="ͼ11">NotificationCenter</span>().</p>
+<p>La extensión inmediatamente llama:<span class="ͼ11">startNotificationCenter</span>() que ya conocemos de
+    nuestro primer recorrido.</p>
+<p>Recordemos que esa función hacía bastantes cosas:</p>
+<ul>
+    <li>agregaba elementos al indicador;</li>
+    <li>modificaba <code>eventsSection</code>;</li>
+    <li>manipulaba <code>messageList</code>;</li>
+    <li>configuraba el <code>scrollView</code>;</li>
+    <li>posicionaba botones;</li>
+    <li>cargaba DND;</li>
+    <li>configuraba el indicador;</li>
+    <li>etc.</li>
+</ul>
+<p>Por tanto:</p>
+<pre><samp>enable()
+   │
+   ├── crea NotificationCenter
+   │
+   └── startNotificationCenter()
+            │
+            └── construye/prepara el Notification Center</samp></pre>
+<p>Esto también nos dice que <strong data-start="2165" data-end="2257"><code data-start="2167"
+            data-end="2187">NotificationCenter</code> puede existir antes de estar completamente integrado en GNOME
+        Shell</strong>.</p>
+<h4>Vigilar cambios de preferencias</h4>
+<p>Ahora viene una conexión muy importante con lo que acabamos de estudiar:</p>
+<pre><code><span class="ͼ11">reloadExtensionOnPrefsChange</span>();</code></pre>
+<p>El nombre prácticamente nos cuenta la intención:</p>
+<blockquote>Configurar algo para que, cuando cambien determinadas preferencias, la extensión se recargue.</blockquote>
+<p>Y aquí aparece directamente nuestro trabajo anterior con <code data-start="2632" data-end="2646">prefsGtk4.js</code>.
+</p>
+<p>Tenemos:</p>
+<pre><samp>prefsGtk4.js
+     │
+     │ settings.set_...(KEY,...)
+     ▼
+   GSettings
+     │
+     │ "changed"
+     ▼
+extension.js
+     │
+     ▼
+reloadExtensionOnPrefsChange()</samp></pre>
+<p>Pero <strong data-start="2839" data-end="2907">todavía no sabemos exactamente qué señales registra esta
+        función</strong>.</p>
+<p>Eso lo descubriremos cuando lleguemos a:<span class="ͼ11">reloadExtensionOnPrefsChange</span>(). Así que queda
+    como una función que debemos analizar.</p>
+<h4>Vigilar cambios en los perfiles de aplicaciones</h4>
+<p>Finalmente:</p>
+<pre><code><span class="ͼ11">reloadApplicationProfilesOnPrefsChange</span>();</code></pre>
+<p>Esta es todavía más interesante porque ya sabemos exactamente qué grupo de preferencias está relacionado con ella:
+</p>
+<pre><samp>application-list
+name-list
+script-list</samp></pre>
+<p>Que estudiamos en <code data-start="3375" data-end="3426">PrefsWindowForAppList_NotificationCenterExtension</code>.
+    Por tanto:</p>
+<pre><samp>PrefsWindowForAppList
+       │
+       ├── application-list
+       ├── name-list
+       └── script-list
+               │
+               ▼
+          GSettings
+               │
+               ▼
+reloadApplicationProfilesOnPrefsChange()
+               │
+               ▼
+       comportamiento de perfiles</samp></pre>
+<p>Y aquí aparece otra pista que relaciona esto con:<span class="ͼv">const</span> <span class="ͼ11">utilSpawn</span>
+    <span class="ͼv">=</span> <span class="ͼ11">imports</span><span class="ͼv">.</span>misc<span
+        class="ͼv">.</span>util<span class="ͼv">.</span>spawn;
+</p>
+<p>Aunque todavía <strong data-start="3882" data-end="3952">no podemos afirmar que esta función sea la que ejecuta los
+        scripts</strong>. Eso tendremos que comprobarlo.</p>
+<h3>El flujo completo de <code data-start="4017" data-end="4027">enable()</code></h3>
+<hr>
+<p>Ahora nuestro mapa empieza a ponerse interesante:</p>
+<pre><samp>                    enable()
+                       │
+          ┌────────────┴────────────┐
+          │                         │
+          ▼                         ▼
+new NotificationCenter()     configurar listeners
+          │                         │
+          ▼                  ┌──────┴──────────────┐
+notificationCenter           │                     │
+          │                  ▼                     ▼
+          ▼          reloadExtensionOn...   reloadApplication...
+startNotificationCenter()      │                     │
+          │                    │                     │
+          ▼                    ▼                     ▼
+   Notification Center      preferencias        perfiles de
+       activo                 generales          aplicaciones</samp></pre>
+<p>Y si lo conectamos con los archivos que ya conocemos:</p>
+<pre><samp>gschema
+   │
+   ▼
+GSettings
+   ▲
+   │
+   ├──────── prefsGtk4.js
+   │
+   └──────── extension.js
+                │
+                ▼
+             enable()</samp></pre>
+<h4>Algo que me parece especialmente importante</h4>
+<p><code data-start="5137" data-end="5147">enable()</code> nos revela que <strong data-start="5163" data-end="5222">la
+        extensión tiene dos mecanismos de reacción distintos</strong>:</p>
+<div class="row">
+    <div class="col">
+        <h5>Preferencias generales</h5>
+        <pre><samp><span class="ͼ11">reloadExtensionOnPrefsChange</span>();</samp></pre>
+    </div>
+    <div class="col">
+        <h5>Perfiles de aplicaciones</h5>
+        <pre><samp><span class="ͼ11">reloadApplicationProfilesOnPrefsChange</span>();</samp></pre>
+    </div>
+</div>
+<p>Eso probablemente significa que <strong data-start="5427" data-end="5510">no todos los cambios de preferencias
+        requieren exactamente el mismo tratamiento</strong>. Y eso encaja perfectamente con lo que vimos en <code
+        data-start="5560" data-end="5574">prefsGtk4.js</code>:</p>
+<p>Algunos controles hacían:<span class="ͼ11">reloadExtension</span>();</p>
+<p>Mientras que otros simplemente hacían:<span class="ͼ11">settings</span><span class="ͼv">.</span>set_<span
+        class="ͼv">...</span></p>
+<p>Por ejemplo, <code data-start="5730" data-end="5742">prefTime()</code>:<span class="ͼ11">settings</span><span
+        class="ͼv">.</span>set_int(<span class="ͼ11">KEY</span>, ...); mientras otros controles llamaban
+    explícitamente:<span class="ͼ11">reloadExtension</span>();</p>
+<p>Ahora tenemos una pieza que faltaba para entender esa diferencia.</p>
+<p><strong data-start="5951" data-end="6031">No significa necesariamente que unos cambios sean más importantes que
+        otros.</strong> Puede significar que <code data-start="6053" data-end="6063">enable()</code> registra listeners
+    para detectar los cambios y actuar de forma diferente.</p>
+<p>Eso es precisamente lo que vamos a comprobar cuando encontremos esas dos funciones.</p>
+<h3>function disable()</h3>
+<hr>
+<p>Y esta función es corta, pero <strong data-start="38" data-end="80">complementa perfectamente a <code data-start="68"
+            data-end="78">enable()</code></strong>. Aquí podemos ver claramente el concepto de <strong data-start="250"
+        data-end="267">ciclo de vida</strong> de la extensión.</p>
+<pre><code><span class="ͼv">function</span> <span class="ͼ11">disable</span>() {
+
+  <span class="ͼ11">notificationCenter</span><span class="ͼv">.</span>undoChanges();
+  <span class="ͼ11">notificationCenter</span><span class="ͼv">.</span>destroy();
+
+}</code></pre>
+<h4>notificationCenter.undoChanges()</h4>
+<p>Recordemos que ya habíamos visto este método en nuestro mapa de <code data-start="462"
+        data-end="482">NotificationCenter</code>.</p>
+<pre><code><span class="ͼ11">notificationCenter</span><span class="ͼv">.</span>undoChanges();</code></pre>
+<p>Su nombre indica que se encarga de <strong data-start="520" data-end="594">deshacer las modificaciones que la
+        extensión realizó sobre GNOME Shell</strong>.</p>
+<p>Esto es especialmente importante porque <code data-start="637" data-end="664">startNotificationCenter()</code> no
+    simplemente crea una ventana independiente: modifica elementos existentes de Shell.</p>
+<p>Por ejemplo, habíamos visto que hacía cosas relacionadas con:</p>
+<pre><samp>Main.panel
+messageList
+eventsSection
+scrollView
+botones
+indicadores</samp></pre>
+<p>Por tanto tenemos:</p>
+<div class="row">
+    <div class="col">
+        <pre><samp>enable()
+   │
+   ▼
+startNotificationCenter()
+   │
+   └── modifica GNOME Shell
+            │
+            ▼
+       [extensión activa]
+            │
+            ▼<br></samp></pre>
+    </div>
+    <div class="col">
+        <pre><samp>disable()
+   │
+   ▼
+undoChanges()
+   │
+   └── deshace modificaciones</samp></pre>
+    </div>
+</div>
+<p>Esto es <strong data-start="1191" data-end="1209">muy importante</strong> en una extensión de GNOME: no basta con
+    destruir nuestros objetos; también hay que devolver el entorno a un estado razonable.</p>
+<h4>notificationCenter.destroy()</h4>
+<p>Aquí se destruye la instancia.</p>
+<pre><code><span class="ͼ11">notificationCenter</span><span class="ͼv">.</span>destroy();</code></pre>
+<p>Recordemos que fue creada en <code data-start="1511" data-end="1521">enable()</code>:<span
+        class="ͼ11">notificationCenter</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span
+        class="ͼ11">NotificationCenter</span>();</p>
+<p>Por lo tanto tenemos una pareja muy clara:</p>
+<div class="row">
+    <div class="col">
+        <pre><samp>enable()
+   │
+   └── new NotificationCenter()
+                  │
+                  ▼
+            instancia viva
+                  │
+                  ▼</samp></pre>
+    </div>
+    <div class="col">
+        <pre><samp>disable()
+   │
+   └── destroy()</samp></pre>
+    </div>
+</div>
+<p>Pero aquí aparece un pequeño detalle que debemos investigar.</p>
+<p>Después de:<span class="ͼ11">notificationCenter</span><span class="ͼv">.</span>destroy(); no vemos:<span
+        class="ͼ11">notificationCenter</span> <span class="ͼv">=</span> <span class="ͼy">null</span>;</p>
+<p>Eso significa que la variable global probablemente continúa conteniendo una referencia al objeto destruido.</p>
+<p>Algo así:</p>
+<pre><samp>notificationCenter
+       │
+       ▼
+objeto NotificationCenter
+       │
+       └── destroy()</samp></pre>
+<p>El objeto deja de estar operativo, pero la variable sigue apuntándolo hasta que:</p>
+<ul>
+    <li><code>enable()</code> vuelva a asignarle una nueva instancia, o</li>
+    <li>alguna otra parte del código lo sobrescriba.</li>
+</ul>
+<p>No necesariamente es un problema. De hecho, puede ser perfectamente intencional en este código antiguo.</p>
+<h3>Y ahora tenemos el ciclo completo</h3>
+<hr>
+<p>Esto nos da una primera visión bastante buena de la arquitectura.</p>
+<pre><samp>             ENABLE
+                │
+                ▼
+    new NotificationCenter()
+                │
+                ▼
+  startNotificationCenter()
+                │
+                ▼
+       modificaciones a Shell
+                │
+                ▼
+       extensión funcionando
+                │
+                ▼
+             DISABLE
+                │
+        ┌───────┴────────┐
+        ▼                ▼
+  undoChanges()       destroy()
+        │                │
+        ▼                ▼
+ restaura Shell      destruye instancia</samp></pre>
+<h4>Y aparece otra cosa interesante</h4>
+<p>En <code data-start="3363" data-end="3373">enable()</code> teníamos:</p>
+<pre><samp><span class="ͼ11">reloadExtensionOnPrefsChange</span>();
+<span class="ͼ11">reloadApplicationProfilesOnPrefsChange</span>();</samp></pre>
+<p>Pero en <code data-start="3498" data-end="3509">disable()</code> <strong data-start="3510" data-end="3578">no vemos
+        todavía ninguna desconexión explícita de esos listeners</strong>.</p>
+<p>Eso nos deja una pregunta interesante:</p>
+<blockquote>¿Esas funciones guardan las conexiones de señales y <code data-start="3675" data-end="3686">destroy()</code>
+    las elimina indirectamente, o estamos ante conexiones que podrían sobrevivir al <code data-start="3767"
+        data-end="3778">disable()</code>?</blockquote>
+<p>Cuando lleguemos a:<span class="ͼ11">reloadExtensionOnPrefsChange</span>() y<span
+        class="ͼ11">reloadApplicationProfilesOnPrefsChange</span>() lo comprobaremos.</p>
+<h4>Mapa actualizado</h4>
+<pre><samp>enable()
+│
+├── new NotificationCenter()
+│
+├── startNotificationCenter()
+│
+├── reloadExtensionOnPrefsChange()        🔎
+│
+└── reloadApplicationProfilesOnPrefsChange() 🔎
+│
+│
+▼
+EXTENSIÓN ACTIVA
+│
+│
+▼
+disable()
+│
+├── undoChanges()
+│
+└── destroy()</samp></pre>
+<p>Y agregaría una pequeña nota de investigación:</p>
+<blockquote><code data-start="4340" data-end="4360">notificationCenter</code> no se establece explícitamente en <code
+        data-start="4395" data-end="4401">null</code> después de <code data-start="4413"
+        data-end="4424">destroy()</code>. Verificar posteriormente si esto tiene alguna consecuencia o si simplemente se
+    sobrescribe en el siguiente <code data-start="4533" data-end="4543">enable()</code>.</blockquote>
+<p>Eso es exactamente el tipo de detalle que <strong data-start="4590" data-end="4673">ahora podemos detectar porque
+        estamos leyendo el código con mentalidad de flujo</strong>, no solamente intentando entender cada línea
+    individual.</p>
+<h3>function reloadApplicationProfilesOnPrefsChange()</h3>
+<hr>
+<p>Aquí aparece justamente una de las conexiones que queríamos encontrar. Esta función es pequeña, pero tiene bastante
+    información.</p>
+<pre><code><span class="ͼv">function</span> <span class="ͼ11">reloadApplicationProfilesOnPrefsChange</span>() {
+
+  <span class="ͼt">// Reloads Application Profiles when preferences are changed.</span>
+  <span class="ͼ11">notificationCenter</span><span class="ͼv">.</span>reloadProfilesSignal <span class="ͼv">=</span>
+    <span class="ͼ11">notificationCenter</span><span class="ͼv">.</span>prefs<span class="ͼv">.</span>connect(
+      <span class="ͼz">"changed::reload-profiles-signal"</span>,
+      () =&gt; <span class="ͼ11">notificationCenter</span><span class="ͼv">.</span>loadPreferences()
+    );
+
+}</code></pre>
+<h4>¿Qué está haciendo realmente?</h4>
+<p>Está registrando una <strong data-start="506" data-end="528">señal de GSettings</strong>. La pieza clave es:</p>
+<pre><code><span class="ͼ11">notificationCenter</span><span class="ͼv">.</span>prefs<span class="ͼv">.</span>connect(
+    <span class="ͼz">"changed::reload-profiles-signal"</span>,
+    ...
+);</code></pre>
+<p>En GSettings, una señal con esta forma:<var class="inline-code">changed::NOMBRE_DE_LA_KEY</var> significa:</p>
+<blockquote>"Ejecuta esta función cuando cambie específicamente esta key."</blockquote>
+<p>Por tanto:</p>
+<pre><samp>GSettings
+   │
+   │ cambia "reload-profiles-signal"
+   ▼
+changed::reload-profiles-signal
+   │
+   ▼
+notificationCenter.loadPreferences()</samp></pre>
+<h4>Y aquí aparece algo que debemos buscar en <code data-start="1037" data-end="1046">gschema</code></h4>
+<p>Tenemos una key:<kbd class="inline-code">reload-profiles-signal</kbd></p>
+<p>Esto significa que <strong data-start="1121" data-end="1177">el gschema que acabamos de estudiar contiene esa
+        key</strong>. Y ahora podemos conectar los dos archivos:</p>
+<pre><samp>gschema
+   │
+   └── reload-profiles-signal
+             │
+             ▼
+       extension.js
+             │
+             └── escucha:
+                 changed::reload-profiles-signal</samp></pre>
+<p>Esto es un ejemplo perfecto de nuestro nuevo mapa de dependencias.</p>
+<h4>Pero hay algo todavía más interesante</h4>
+<p>Observa lo que ocurre cuando cambia esa key:</p>
+<pre><code>() =&gt; <span class="ͼ11">notificationCenter</span><span class="ͼv">.</span>loadPreferences()</code></pre>
+<p>No llama:<span class="ͼ11">reloadExtension</span>(); No destruye la extensión. No crea otra instancia.</p>
+<p>Simplemente:<kbd class="inline-code">loadPreferences()</kbd>. Así que el diseño parece ser:</p>
+<pre><samp>cambio de configuración
+        │
+        ▼
+"reload-profiles-signal"
+        │
+        ▼
+loadPreferences()
+        │
+        ▼
+actualizar datos internos</samp></pre>
+<p>Esto es probablemente <strong data-start="2046" data-end="2097">mucho más barato que recargar toda la
+        extensión</strong>.</p>
+<h4>¿Por qué se llama <code data-start="2128" data-end="2152">reload-profiles-signal</code>?</h4>
+<p>Aquí tenemos una curiosidad. Por el nombre parece una key que <strong data-start="2218" data-end="2273">no representa
+        realmente una preferencia del usuario</strong>, sino que funciona como una especie de <strong data-start="2313"
+        data-end="2333">señal artificial</strong>.</p>
+<p>Es decir, probablemente alguien hace algo como:<span class="ͼ11">settings</span><span
+        class="ͼv">.</span>set_int(<span class="ͼz">"reload-profiles-signal"</span>, ...); o modifica esa key para
+    provocar el evento:<q class="inline-code">changed::reload-profiles-signal</q> y así obligar a la extensión a
+    ejecutar:<span class="ͼ11">loadPreferences</span>().</p>
+<p>Esto sería un patrón interesante:</p>
+<pre><samp>No necesariamente:
+
+"el valor significa X"
+
+sino:
+
+"el cambio del valor provoca Y"</samp></pre>
+<h4>Esto merece investigación.</h4>
+<p>Porque justamente en <code data-start="2821" data-end="2872">PrefsWindowForAppList_NotificationCenterExtension</code>
+    vimos:<span class="ͼ11">reloadApplicationProfiles</span>();</p>
+<p>Así que tenemos que averiguar si existe alguna relación:</p>
+<pre><samp>PrefsWindowForAppList
+       │
+       │ reloadApplicationProfiles()
+       ▼
+¿modifica reload-profiles-signal?
+       │
+       ▼
+GSettings changed signal
+       │
+       ▼
+loadPreferences()</samp></pre>
+<p>Si la respuesta es sí, acabamos de descubrir un pequeño <strong data-start="3246" data-end="3328">sistema de
+        comunicación entre la ventana de preferencias y la extensión activa</strong>.</p>
+<h4>notificationCenter.reloadProfilesSignal</h4>
+<p>Esta parte:<span class="ͼ11">notificationCenter</span><span class="ͼv">.</span>reloadProfilesSignal <span
+        class="ͼv">=</span>también es importante.</p>
+<p>El resultado de:<span class="ͼ11">notificationCenter</span><span class="ͼv">.</span>prefs<span
+        class="ͼv">.</span>connect(...) es una <strong data-start="3564" data-end="3585">conexión de señal</strong>.</p>
+<p>La extensión guarda esa conexión en:<var class="inline-code">notificationCenter</var>.<var
+        class="inline-code">reloadProfilesSignal</var></p>
+<p><b>¿Por qué?</b>Probablemente para poder desconectarla posteriormente. Y aquí se conecta con nuestra pregunta
+    anterior sobre <code data-start="3812" data-end="3823">disable()</code>.</p>
+<p>Recordemos:</p>
+<pre><samp><span class="ͼv">function</span> <span class="ͼ11">disable</span>() {
+    <span class="ͼ11">notificationCenter</span><span class="ͼv">.</span>undoChanges();
+    <span class="ͼ11">notificationCenter</span><span class="ͼv">.</span>destroy();
+}</samp></pre>
+<p>No vimos:</p>
+<pre><samp><span class="ͼ11">notificationCenter</span><span class="ͼv">.</span>prefs<span class="ͼv">.</span>disconnect(
+    <span class="ͼ11">notificationCenter</span><span class="ͼv">.</span>reloadProfilesSignal
+);</samp></pre>
+<p>Por lo tanto ahora tenemos una pregunta mucho más concreta:</p>
+<blockquote>¿<code data-start="4131" data-end="4142">destroy()</code> de <code data-start="4146"
+        data-end="4166">NotificationCenter</code> desconecta automáticamente <code data-start="4194"
+        data-end="4216">reloadProfilesSignal</code>?</blockquote>
+<p>Eso lo podremos comprobar cuando lleguemos al <code data-start="4265" data-end="4277">_destroy()</code> / <code
+        data-start="4280" data-end="4291">destroy()</code> correspondiente, o cuando busquemos <code data-start="4328"
+        data-end="4350">reloadProfilesSignal</code>.</p>
+<h3>Mapa actualizado</h3>
+<hr>
+<p>Ahora tenemos una conexión bastante bonita:</p>
+<pre><samp>              gschema
+                 │
+                 │ define key
+                 ▼
+     reload-profiles-signal
+                 │
+                 │ cambia
+                 ▼
+        GSettings "changed"
+                 │
+                 ▼
+reloadApplicationProfilesOnPrefsChange()
+                 │
+                 ▼
+       loadPreferences()
+                 │
+                 ▼
+      NotificationCenter</samp></pre>
+<p>Y paralelamente:</p>
+<pre><samp>PrefsWindowForAppList
+        │
+        │ reloadApplicationProfiles()
+        │
+        ▼
+       ¿?
+        │
+        ▼
+reload-profiles-signal</samp></pre>
+<p>Ese <code data-start="5056" data-end="5060">¿?</code> es <strong data-start="5064" data-end="5108">exactamente lo que
+        tenemos que localizar</strong>.</p>
+<h4>Punto de investigación nuevo</h4>
+<p><kbd class="inline-code">reload-profiles-signal</kbd>: Queremos averiguar:</p>
+<ol>
+    <li>Qué tipo tiene en <code>gschema</code>.</li>
+    <li>Cuál es su valor inicial.</li>
+    <li>Quién lo modifica.</li>
+    <li>Cómo lo modifica.</li>
+    <li>Si el valor en sí importa o solamente importa el evento <code>changed</code>.</li>
+    <li>Qué hace exactamente <code>loadPreferences()</code> cuando se dispara.</li>
+    <li>Cómo se desconecta <code>reloadProfilesSignal</code>.</li>
+</ol>
+<p>Este es un ejemplo perfecto de por qué este segundo recorrido va a ser mucho más interesante. Ya no estamos
+    simplemente diciendo <em data-start="5617" data-end="5651">"esta función conecta una señal"</em>; ahora podemos
+    seguir <strong data-start="5674" data-end="5718">la señal desde su origen hasta su efecto</strong>.</p>
+<h3>function reloadExtensionOnPrefsChange()</h3>
+<hr>
+<p>Aquí tenemos la hermana mayor de la función anterior, y ahora se entiende mucho mejor por qué <code data-start="94"
+        data-end="104">enable()</code> llamaba a ambas.</p>
+<pre><code><span class="ͼv">function</span> <span class="ͼ11">reloadExtensionOnPrefsChange</span>() {
+
+  <span class="ͼt">// Reloads the Extension when preferences are changed.</span>
+  <span class="ͼ11">notificationCenter</span><span class="ͼv">.</span>reloadSignal <span class="ͼv">=</span>
+    <span class="ͼ11">notificationCenter</span><span class="ͼv">.</span>prefs<span class="ͼv">.</span>connect(
+      <span class="ͼz">"changed::reload-signal"</span>,
+      () =&gt; {
+        <span class="ͼ11">disable</span>();
+        <span class="ͼ11">enable</span>();
+      }
+    );
+
+}</code></pre>
+<h4>Misma idea: una señal de GSettings</h4>
+<p>La estructura es prácticamente idéntica:</p>
+<pre><code><span class="ͼ11">notificationCenter</span><span class="ͼv">.</span>prefs<span class="ͼv">.</span>connect(
+    <span class="ͼz">"changed::reload-signal"</span>,
+    ...
+);</code></pre>
+<p>Tenemos otra key especial:<kbd class="inline-code">reload-signal</kbd></p>
+<p>Por tanto:</p>
+<pre><samp>GSettings
+   │
+   │ cambia "reload-signal"
+   ▼
+changed::reload-signal
+   │
+   ▼
+callback</samp></pre>
+<p>Pero aquí el efecto es mucho más fuerte.</p>
+<h4>¿Qué hace cuando cambia?</h4>
+<p>Ejecuta:</p>
+<pre><code><span class="ͼ11">disable</span>();
+<span class="ͼ11">enable</span>();</code></pre>
+<p>Es decir, <strong data-start="904" data-end="943">reinicia completamente la extensión</strong>.</p>
+<p>El flujo es:</p>
+<pre><samp>"reload-signal" cambia
+        │
+        ▼
+     disable()
+        │
+        ├── undoChanges()
+        └── destroy()
+        │
+        ▼
+      enable()
+        │
+        ├── new NotificationCenter()
+        ├── startNotificationCenter()
+        ├── reloadExtensionOnPrefsChange()
+        └── reloadApplicationProfilesOnPrefsChange()</samp></pre>
+<p>Esto es muy importante. No es simplemente: "<i>actualiza una preferencia</i>"</p>
+<p>sino:</p>
+<blockquote>"desmonta la extensión y vuelve a montarla".</blockquote>
+<h4>Y ahora podemos entender una diferencia importante</h4>
+<p>Tenemos dos señales especiales:</p>
+<pre><samp>reload-profiles-signal
+reload-signal</samp></pre>
+<p>Y cada una tiene una intensidad diferente.</p>
+<div class="row">
+    <div class="col">
+        <h5>reload-profiles-signal</h5>
+        <p>Solo actualiza las preferencias/perfiles.</p>
+        <pre><samp>cambio
+  │
+  ▼
+loadPreferences()</samp></pre>
+    </div>
+    <div class="col">
+        <h5>reload-signal</h5>
+        <p>Reinicia toda la extensión.</p>
+        <pre><samp>cambio
+  │
+  ▼
+disable()
+  │
+  ▼
+enable()</samp></pre>
+    </div>
+</div>
+<p>Podemos representarlo así:</p>
+<pre><samp>                     GSettings
+                         │
+             ┌───────────┴───────────┐
+             │                       │
+             ▼                       ▼
+   reload-profiles-signal      reload-signal
+             │                       │
+             ▼                       ▼
+     loadPreferences()       disable() + enable()</samp></pre>
+<p>Esto ya es una pieza bastante importante de la arquitectura.</p>
+<h4>Y aparece una conexión interesante con <code data-start="2363" data-end="2377">prefsGtk4.js</code></h4>
+<p>Recordemos que muchos controles de <code data-start="2414" data-end="2428">prefsGtk4.js</code> hacían:</p>
+<pre><samp><span class="ͼ11">settings</span><span class="ͼv">.</span>set_<span class="ͼv">...</span>(<span class="ͼ11">KEY</span>, <span class="ͼ11">value</span>);
+<span class="ͼ11">reloadExtension</span>();</samp></pre>
+<p>Mientras otros solamente:<span class="ͼ11">settings</span><span class="ͼv">.</span>set_<span
+        class="ͼv">...</span>(<span class="ͼ11">KEY</span>, <span class="ͼ11">value</span>);</p>
+<p>Ahora sabemos que probablemente hay <strong data-start="2618" data-end="2647">otro mecanismo intermedio</strong>.</p>
+<div class="row">
+    <div class="col">
+        <p>Puede haber funciones como:</p>
+        <pre><samp>reloadExtension()
+reloadApplicationProfiles()</samp></pre>
+    </div>
+    <div class="col">
+        <p>Que modifican estas keys especiales:</p>
+        <pre><samp>reload-signal
+reload-profiles-signal</samp></pre>
+        <p>Para avisarle a la extensión que algo cambió.</p>
+    </div>
+</div>
+<p>Es decir, podríamos tener:</p>
+<pre><samp>Usuario
+   │
+   ▼
+PrefsGtk4
+   │
+   ▼
+cambia una preferencia
+   │
+   ▼
+¿necesita recarga?
+   │
+   ├── sí ──► reload-signal
+   │              │
+   │              ▼
+   │         disable + enable
+   │
+   └── perfil ─► reload-profiles-signal
+                    │
+                    ▼
+              loadPreferences()</samp></pre>
+<p><strong data-start="3228" data-end="3256">Todavía es una hipótesis</strong>, pero ahora tenemos suficientes piezas
+    para comprobarla.</p>
+<h4>reloadSignal</h4>
+<p>Al igual que antes:<span class="ͼ11">notificationCenter</span><span class="ͼv">.</span>reloadProfilesSignal
+    <span class="ͼv">=</span> ... aquí tenemos:<span class="ͼ11">notificationCenter</span><span
+        class="ͼv">.</span>reloadSignal <span class="ͼv">=</span> ... Se guarda el identificador de la conexión.
+</p>
+<p>Eso nos da dos propiedades internas:</p>
+<pre><samp>NotificationCenter
+│
+├── reloadSignal
+└── reloadProfilesSignal</samp></pre>
+<p>Y ambas fueron creadas <strong data-start="3680" data-end="3701">fuera de la clase</strong>, mediante estas funciones
+    auxiliares. Eso es un detalle arquitectónico interesante.</p>
+<h4>Hay una pregunta que ahora se vuelve obligatoria</h4>
+<p>Tenemos:</p>
+<pre><code><span class="ͼ11">notificationCenter</span><span class="ͼv">.</span>reloadSignal <span class="ͼv">=</span>
+    <span class="ͼ11">notificationCenter</span><span class="ͼv">.</span>prefs<span class="ͼv">.</span>connect(...)</code></pre>
+<p>Pero después hacemos:<span class="ͼ11">disable</span>(); y <code data-start="4008" data-end="4019">disable()</code>
+    hace:<span class="ͼ11">notificationCenter</span><span class="ͼv">.</span>destroy();</p>
+<p>Luego:<span class="ͼ11">enable</span>(); crea:<span class="ͼ11">notificationCenter</span> <span class="ͼv">=</span>
+    <span class="ͼv">new</span> <span class="ͼ11">NotificationCenter</span>();
+</p>
+<p>Por lo tanto la secuencia es:</p>
+<pre><samp>Objeto A
+│
+├── reloadSignal ─────── conexión
+└── reloadProfilesSignal ─ conexión
+        │
+        ▼
+     disable()
+        │
+        ▼
+     destroy()
+        │
+        ▼
+     Objeto A destruido
+        │
+        ▼
+     enable()
+        │
+        ▼
+     Objeto B
+        │
+        ├── reloadSignal ─────── nueva conexión
+        └── reloadProfilesSignal ─ nueva conexión</samp></pre>
+<p>Eso parece tener bastante sentido. Pero nuevamente necesitamos comprobar <strong data-start="4675"
+        data-end="4699">qué hace <code data-start="4686" data-end="4697">destroy()</code></strong> con esas conexiones.
+</p>
+<h3>Nuestro mapa ya empieza a tomar forma</h3>
+<hr>
+<p>Y aquí ya tenemos <strong data-start="5425" data-end="5477">dos rutas de actualización claramente
+        diferentes</strong>.</p>
+<pre><samp>                    ┌──────────────┐
+                    │   gschema    │
+                    └──────┬───────┘
+                           │
+                    ┌──────┴──────┐
+                    │             │
+                    ▼             ▼
+             reload-signal   reload-profiles-signal
+                    │             │
+                    ▼             ▼
+          reloadExtension...  reloadApplication...
+                    │             │
+                    ▼             ▼
+             disable()+enable()  loadPreferences()
+                    │
+                    ▼
+             NotificationCenter</samp></pre>
+<h4>Nuevos puntos confirmados</h4>
+<ul>
+    <li><code>reload-signal</code> es una key de GSettings usada como <strong>señal de recarga completa</strong>.</li>
+    <li><code>reload-profiles-signal</code> es una key usada para <strong>recargar preferencias/perfiles sin reconstruir
+            todo</strong>.</li>
+    <li>Ambas conexiones se almacenan en propiedades del objeto <code>NotificationCenter</code>.</li>
+    <li>Ambas se registran durante <code>enable()</code>.</li>
+    <li>Debemos localizar quién modifica ambas keys.</li>
+    <li>Debemos revisar cómo <code>destroy()</code> maneja estas conexiones.</li>
+</ul>
+<p>Y ahora sí tengo mucha curiosidad por ver <strong data-start="5975" data-end="6011">qué viene inmediatamente
+        después</strong>, porque estas dos funciones nos acaban de abrir una puerta bastante grande hacia la relación
+    entre <code data-start="6111" data-end="6125">prefsGtk4.js</code> y <code data-start="6128"
+        data-end="6142">extension.js</code>.</p>

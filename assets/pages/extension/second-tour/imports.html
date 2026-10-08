@@ -1,0 +1,270 @@
+<h2>Imports, Constantes y variables globales</h2>
+<hr>
+<h4>Encabezado de versión</h4>
+<p>Es simplemente un comentario.</p>
+<pre><samp>/*
+Version 24.02
+=============
+
+*/</samp></pre>
+<p>Pero tenemos que hacer una distinción importante respecto a <code data-start="415"
+        data-end="432">current-version</code>.</p>
+<p>Aquí:<q class="inline-code">Version 24.02</q> es <strong data-start="484" data-end="541">información escrita
+        por el desarrollador en el código</strong>. No significa que JavaScript esté obteniendo la versión desde ahí.
+</p>
+<p>Más adelante vimos que existe:<span class="ͼ11">Metadata</span><span class="ͼv">.</span>version que es otra
+    cosa. Por ahora:</p>
+<pre><samp>Comentario
+└── Version 24.02
+    └── informativo</samp></pre>
+<p>Lo dejamos anotado porque durante la modernización probablemente tendremos que revisar si este comentario coincide
+    con la versión real de la extensión.</p>
+<h4>ExtensionUtils</h4>
+<p>Importamos el módulo de utilidades de extensiones de GNOME.</p>
+<pre><code><span class="ͼv">const</span> <span class="ͼ11">ExtensionUtils</span> <span class="ͼv">=</span> <span class="ͼ11">imports</span><span class="ͼv">.</span>misc<span class="ͼv">.</span>extensionUtils;</code></pre>
+<p>Este será importante porque normalmente mediante <code data-start="1149" data-end="1165">ExtensionUtils</code> se
+    obtiene información de la extensión, preferencias, settings, etc.</p>
+<p>Ya vimos anteriormente que el código utiliza conceptos relacionados con:<span class="ͼ11">ExtensionUtils</span><span
+        class="ͼv">.</span>getSettings(...) por lo que esta dependencia
+    probablemente estará conectada directamente con nuestro <code data-start="1445" data-end="1454">gschema</code>.</p>
+<h4>Gtk</h4>
+<p>Aquí se importa GTK.</p>
+<pre><code><span class="ͼv">const</span> <span class="ͼ11">Gtk</span> <span class="ͼv">=</span> <span class="ͼ11">imports</span><span class="ͼv">.</span>gi<span class="ͼv">.</span>Gtk;</code></pre>
+<p>Pero atención: estamos en:<kbd class="inline-code">extension.js</kbd> no en <code data-start="1802"
+        data-end="1816">prefsGtk4.js</code>. Eso significa que GTK está siendo utilizado <strong data-start="1863"
+        data-end="1907">desde la parte principal de la extensión</strong>, algo que tendremos que observar.</p>
+<blockquote>No asumimos todavía para qué.</blockquote>
+<h4>LangClass</h4>
+<p>Esto pertenece al sistema antiguo de clases de GNOME/GJS.</p>
+<pre><code><span class="ͼv">const</span> <span class="ͼ11">LangClass</span> <span class="ͼv">=</span> <span class="ͼ11">imports</span><span class="ͼv">.</span>lang<span class="ͼv">.</span>Class;</code></pre>
+<p>Y aquí encontramos algo que ya conocemos perfectamente porque lo vimos en <code data-start="2187"
+        data-end="2201">prefsGtk4.js</code>:<span class="ͼv">new</span> <span class="ͼ11">GObject</span><span
+        class="ͼv">.</span>Class(...).</p>
+<p>Pero aquí es:<span class="ͼ11">LangClass</span>así que probablemente encontraremos código del estilo
+    antiguo:</p>
+<pre><samp>const NotificationCenter = new LangClass({
+    ...
+});</samp></pre>
+<p>O algo equivalente.</p>
+<p>Esto será especialmente interesante durante la modernización porque las clases antiguas basadas en <code
+        data-start="2551" data-end="2565">imports.lang</code> son precisamente una de las cosas que tendremos que
+    evaluar.</p>
+<p>Por ahora:</p>
+<pre><samp>LangClass
+└── sistema de clases antiguo de GJS</samp></pre>
+<h4>Main</h4>
+<p>Esta es una dependencia <strong data-start="2803" data-end="2821">muy importante</strong>.</p>
+<pre><code><span class="ͼv">const</span> <span class="ͼ11">Main</span> <span class="ͼv">=</span> <span class="ͼ11">imports</span><span class="ͼv">.</span>ui<span class="ͼv">.</span>main;</code></pre>
+<p><code data-start="2824" data-end="2830">Main</code> representa una parte central del entorno de GNOME Shell. Y ya
+    vimos en nuestro primer recorrido que la extensión hace cosas como:</p>
+<pre><samp><span class="ͼ11">Main</span><span class="ͼv">.</span>panel
+<span class="ͼ11">Main</span><span class="ͼv">.</span>notify(...)</samp></pre>
+<p>Así que tenemos:</p>
+<pre><samp>extension.js
+   │
+   └── Main
+       ├── Main.panel
+       ├── Main.notify()
+       └── ...</samp></pre>
+<p>Aquí seguramente vamos a tener muchas conexiones en el mapa de dependencias.</p>
+<h4>MetaKeyBindingFlags</h4>
+<p>Esto importa las banderas relacionadas con <strong data-start="3379" data-end="3440">atajos/teclas y bindings de
+        teclado de Mutter/GNOME Shell</strong>.</p>
+<pre><code><span class="ͼv">const</span> <span class="ͼ11">MetaKeyBindingFlags</span> <span class="ͼv">=</span> <span class="ͼ11">imports</span><span class="ͼv">.</span>gi<span class="ͼv">.</span>Meta<span class="ͼv">.</span>KeyBindingFlags;</code></pre>
+<p>Por el nombre, podemos sospechar que tendrá relación con:<var class="inline-code">indicator-shortcut</var> que
+    vimos en <code data-start="3547" data-end="3556">gschema</code> y <code data-start="3559"
+        data-end="3573">prefsGtk4.js</code>. ¡Pero todavía no afirmamos que sea así!</p>
+<p>La conexión hipotética sería:</p>
+<pre><samp>gschema
+   │
+   └── indicator-shortcut
+             ?
+             ▼
+      MetaKeyBindingFlags
+             │
+             ▼
+       extension.js</samp></pre>
+<p>Cuando encontremos dónde se utiliza <code data-start="3854" data-end="3875">MetaKeyBindingFlags</code>, comprobaremos
+    si efectivamente existe esa relación.</p>
+<h4>PanelMenuButton</h4>
+<p>Esto ya nos da una pista enorme sobre la clase principal.</p>
+<pre><code><span class="ͼv">const</span> <span class="ͼ11">PanelMenuButton</span> <span class="ͼv">=</span> <span class="ͼ11">imports</span><span class="ͼv">.</span>ui<span class="ͼv">.</span>panelMenu<span class="ͼv">.</span>Button;</code></pre>
+<p>Recordemos que anteriormente vimos:<kbd class="inline-code">NotificationCenter</kbd> y sabíamos que era un
+    elemento integrado en el panel de GNOME. Aquí encontramos la dependencia que probablemente permite construirlo:</p>
+<pre><samp>PanelMenuButton
+       │
+       ▼
+NotificationCenter
+       │
+       ▼
+GNOME Shell panel</samp></pre>
+<p>Más adelante seguramente veremos algo parecido a:<span class="ͼ13">Extends</span>: <span
+        class="ͼ11">PanelMenuButton</span>y entonces podremos confirmar la relación.</p>
+<h4>PopupMenu</h4>
+<p>Esto nos indica que la extensión trabaja con <strong data-start="4675" data-end="4710">menús emergentes de GNOME
+        Shell</strong>.</p>
+<pre><code><span class="ͼv">const</span> <span class="ͼ11">PopupMenu</span> <span class="ͼv">=</span> <span class="ͼ11">imports</span><span class="ͼv">.</span>ui<span class="ͼv">.</span>popupMenu;</code></pre>
+<p>Y esto encaja perfectamente con lo que ya sabemos:</p>
+<pre><samp>Notification Center
+        │
+        ▼
+menú desplegable
+        │
+        ├── calendario
+        ├── notificaciones
+        ├── eventos
+        └── controles</samp></pre>
+<p>Por tanto:</p>
+<pre><samp>PopupMenu
+└── infraestructura de menús de GNOME Shell</samp></pre>
+<p>Todavía veremos exactamente qué clases o funciones utiliza.</p>
+<h4>ShellActionMode</h4>
+<p>Esto tiene relación con <strong data-start="5214" data-end="5252">los modos de acción de GNOME Shell</strong>,
+    especialmente para determinar en qué contexto pueden ejecutarse determinadas acciones o bindings.</p>
+<pre><code><span class="ͼv">const</span> <span class="ͼ11">ShellActionMode</span> <span class="ͼv">=</span> <span class="ͼ11">imports</span><span class="ͼv">.</span>gi<span class="ͼv">.</span>Shell<span class="ͼv">.</span>ActionMode;</code></pre>
+<p>De nuevo, probablemente esté relacionado con el acceso mediante teclado. Pero no lo damos por hecho hasta encontrar
+    su uso.</p>
+<h4>St</h4>
+<p><code data-start="5541" data-end="5545">St</code> es <strong data-start="5549" data-end="5566">Shell
+        Toolkit</strong>, el toolkit visual utilizado históricamente por GNOME Shell.</p>
+<pre><code><span class="ͼv">const</span> <span class="ͼ11">St</span> <span class="ͼv">=</span> <span class="ͼ11">imports</span><span class="ͼv">.</span>gi<span class="ͼv">.</span>St;</code></pre>
+<p>Esto es importantísimo porque significa que <code data-start="5673" data-end="5687">extension.js</code>
+    construye/modifica elementos visuales directamente usando <code data-start="5746" data-end="5750">St</code>.</p>
+<p>Por ejemplo, posteriormente podríamos encontrar:</p>
+<pre><samp><span class="ͼv">new</span> <span class="ͼ11">St</span><span class="ͼv">.</span>BoxLayout(...)
+<span class="ͼv">new</span> <span class="ͼ11">St</span><span class="ͼv">.</span>Label(...)
+<span class="ͼv">new</span> <span class="ͼ11">St</span><span class="ͼv">.</span>Icon(...)</samp></pre>
+<p>Así que tenemos otra rama del mapa:</p>
+<pre><samp>GNOME Shell UI
+     │
+     ├── St
+     ├── PopupMenu
+     └── PanelMenuButton</samp></pre>
+<h4>utilSpawn</h4>
+<p>Este es uno que debemos marcar.</p>
+<pre><code><span class="ͼv">const</span> <span class="ͼ11">utilSpawn</span> <span class="ͼv">=</span> <span class="ͼ11">imports</span><span class="ͼv">.</span>misc<span class="ͼv">.</span>util<span class="ͼv">.</span>spawn;</code></pre>
+<p>Ya habíamos dejado como pendiente la cuestión de:</p>
+<blockquote><code data-start="6200" data-end="6213">script-list</code> / ejecución de scripts.</blockquote>
+<p>Y ahora aparece:<span class="ͼ11">utilSpawn</span>Esto es una pista <strong data-start="6304" data-end="6318">muy
+        fuerte</strong>. Recordemos que <code data-start="6336" data-end="6350">prefsGtk4.js</code>
+    permite configurar:</p>
+<pre><samp>application-list
+name-list
+script-list
+run-script</samp></pre>
+<p>y que <code data-start="6441" data-end="6454">script-list</code> contiene rutas a scripts. Ahora aparece:</p>
+<pre><samp>prefsGtk4.js
+    │
+    └── script-list
+            │
+            ▼
+      extension.js
+            │
+            ▼
+        utilSpawn</samp></pre>
+<p>Este es exactamente el tipo de conexión que buscábamos en este segundo recorrido. Todavía no sabemos exactamente cómo
+    se ejecuta ni bajo qué condiciones. Pero ya tenemos una dependencia concreta que debemos seguir.</p>
+<h4>Traducciones</h4>
+<pre><code><span class="ͼv">const</span> <span class="ͼ11">_</span> <span class="ͼv">=</span> <span class="ͼ11">imports</span><span class="ͼv">.</span>gettext
+    <span class="ͼv">.</span>domain(<span class="ͼz">"notification-center"</span>)
+    <span class="ͼv">.</span>gettext;</code></pre>
+<p>Esto conecta directamente con algo que ya vimos al estudiar la estructura del proyecto:</p>
+<pre><samp>locale/
+├── de
+├── it
+├── ko
+├── nl
+└── notification-center.pot</samp></pre>
+<p>La función <code data-start="7176" data-end="7181">_()</code> es la encargada de obtener la traducción
+    correspondiente.</p>
+<p>Por eso encontramos cosas como estas en todo el código.</p>
+<pre><samp><span class="ͼ11">_</span>(<span class="ͼz">"Notifications"</span>)
+<span class="ͼ11">_</span>(<span class="ͼz">"Calendar"</span>)
+<span class="ͼ11">_</span>(<span class="ͼz">"Reset Notification Center to defaults?"</span>)</samp></pre>
+<p>Mapa:</p>
+<pre><samp>locale/
+   │
+   ▼
+gettext domain
+   │
+   ▼
+notification-center
+   │
+   ▼
+_()
+   │
+   ▼
+texto traducido</samp></pre>
+<p>Esto confirma algo que ya habíamos entendido en <code data-start="7573" data-end="7587">prefsGtk4.js</code>.</p>
+<h4>Variable global</h4>
+<p>Aquí tenemos algo diferente.</p>
+<pre><code><span class="ͼv">let</span> <span class="ͼ11">notificationCenter</span> <span class="ͼv">=</span> <span class="ͼy">null</span>;</code></pre>
+<p>No es una dependencia sino <strong data-start="7738" data-end="7766">estado global del módulo</strong>.</p>
+<p>Inicialmente: <kbd class="inline-code">notificationCenter</kbd> = <var class="inline-code">null</var></p>
+<p>Probablemente más adelante ocurra algo como:<span class="ͼ11">notificationCenter</span> <span class="ͼv">=</span>
+    <span class="ͼv">new</span> <span class="ͼ11">NotificationCenter</span>(...); y entonces
+    este objeto represente la instancia activa de la extensión.</p>
+<p>Esto es importante porque debemos investigar:</p>
+<ul>
+    <li>quién lo asigna;</li>
+    <li>quién lo consulta;</li>
+    <li>quién lo destruye;</li>
+    <li>si puede haber más de una instancia;</li>
+    <li>qué ocurre durante <code>enable()</code> / <code>disable()</code>.</li>
+</ul>
+<h3>Primer mapa de dependencias de <code data-start="8258" data-end="8272">extension.js</code></h3>
+<hr>
+<p>Ya podemos empezar nuestro mapa real:</p>
+<pre><samp>                       extension.js
+                            │
+          ┌─────────────────┼──────────────────┐
+          │                 │                  │
+          ▼                 ▼                  ▼
+   ExtensionUtils         Gtk              LangClass
+          │
+          │
+          ▼
+       GSettings
+          │
+          ▼
+      ┌── gschema
+      │
+      └── prefsGtk4.js</samp></pre>
+<p>Y la parte de GNOME Shell:</p>
+<pre><samp>extension.js
+     │
+     ├── Main
+     │
+     ├── PanelMenuButton
+     │
+     ├── PopupMenu
+     │
+     ├── ShellActionMode
+     │
+     ├── MetaKeyBindingFlags
+     │
+     └── St</samp></pre>
+<p>Y nuestra primera conexión de comportamiento:</p>
+<pre><samp>prefsGtk4.js
+     │
+     ├── application-list
+     ├── name-list
+     ├── script-list
+     └── run-script
+              │
+              ▼
+        extension.js
+              │
+              ▼
+         utilSpawn</samp></pre>
+<p>Y finalmente:</p>
+<pre><samp>locale/
+   │
+   ▼
+gettext("notification-center")
+   │
+   ▼
+      _()
+   │
+   ▼
+extension.js</samp></pre>
