@@ -95,7 +95,8 @@ body {
 #enum6,
 #enum7,
 #enum8,
-.class-prefs {
+.class-prefs,
+.class-exts {
 	scroll-margin-top: 6rem;
 }
 
