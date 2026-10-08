@@ -19,7 +19,7 @@
 </aside>
 <h2>Contenido de INSTALL.sh</h2>
 <hr>
-<pre id="bloque01"><code><span class="hljs-meta">#!/bin/bash </span>
+<pre id="bloque01" class="class-install"><code><span class="hljs-meta">#!/bin/bash </span>
 
 <span class="hljs-comment">#Version 4 </span>
 <span class="hljs-comment">#========= </span>
@@ -170,7 +170,7 @@ notification-center@Selenium-H</samp></pre>
               │
               └── notification-center@Selenium-H/</samp></pre>
 <hr>
-<pre id="bloque02"><code><span class="hljs-built_in">echo</span> <span class="hljs-string">""</span>
+<pre id="bloque02" class="class-install"><code><span class="hljs-built_in">echo</span> <span class="hljs-string">""</span>
 <span class="hljs-keyword">if</span> [ ! -z <span class="hljs-variable">$1</span> ]
 <span class="hljs-keyword">then</span>
     installDir=<span class="hljs-variable">$1</span>
@@ -415,7 +415,7 @@ Exiting ... !
         exit</samp></pre>
 <p>El instalador abandona la instalación.</p>
 <hr>
-<pre id="bloque03"><samp><span class="hljs-built_in">echo</span> <span class="hljs-string">"Installing Extension "</span><span class="hljs-variable">$extensionDir</span> 
+<pre id="bloque03" class="class-install"><samp><span class="hljs-built_in">echo</span> <span class="hljs-string">"Installing Extension "</span><span class="hljs-variable">$extensionDir</span> 
 <span class="hljs-built_in">echo</span> <span class="hljs-string">"Installation Path "</span><span class="hljs-variable">$installDir</span> 
 <span class="hljs-built_in">echo</span> <span class="hljs-string">""</span> 
 <span class="hljs-built_in">echo</span> -ne <span class="hljs-string">"Removing any Older Version ... "</span> 
@@ -578,7 +578,7 @@ Removing any Older Version ...   Done</samp></pre>
 <p>Ahí podremos ver exactamente <strong data-start="5230" data-end="5286">en qué orden el autor construye la instalación
         final</strong>.</p>
 <hr>
-<pre id="bloque04"><code><span class="hljs-built_in">echo</span> -ne <span class="hljs-string">"Copying New Version ... "</span> 
+<pre id="bloque04" class="class-install"><code><span class="hljs-built_in">echo</span> -ne <span class="hljs-string">"Copying New Version ... "</span> 
 <span class="hljs-built_in">cp</span> -rf <span class="hljs-variable">$extensionDir</span> <span class="hljs-variable">$installDir</span> 
 <span class="hljs-built_in">cp</span> -rf schemas <span class="hljs-variable">$installDir</span><span class="hljs-string">"/"</span><span class="hljs-variable">$extensionDir</span> 
 <span class="hljs-built_in">cp</span> -rf locale <span class="hljs-variable">$installDir</span><span class="hljs-string">"/"</span><span class="hljs-variable">$extensionDir</span> 
@@ -726,7 +726,7 @@ Removing any Older Version ...   Done</samp></pre>
                     extensión instalada</samp></pre>
 <p>Esto es mucho más interesante que simplemente decir "el script copia locale".</p>
 <hr>
-<pre id="bloque05"><code><span class="hljs-built_in">cd</span> <span class="hljs-variable">$installDir</span><span class="hljs-string">"/"</span><span class="hljs-variable">$extensionDir</span> 
+<pre id="bloque05" class="class-install"><code><span class="hljs-built_in">cd</span> <span class="hljs-variable">$installDir</span><span class="hljs-string">"/"</span><span class="hljs-variable">$extensionDir</span> 
 <span class="hljs-built_in">echo</span> -ne <span class="hljs-string">"Compiling Schemas ... "</span> 
 glib-compile-schemas schemas 
 <span class="hljs-built_in">echo</span> <span class="hljs-string">"Done"</span></code></pre>
@@ -816,7 +816,7 @@ glib-compile-schemas schemas
         instalada</strong>, no sobre el <code data-start="4054" data-end="4064">schemas/</code> original del
     repositorio.</p>
 <hr>
-<pre id="bloque06"><code><span class="hljs-built_in">echo</span> -ne <span class="hljs-string">"Creating Translations ... "</span> 
+<pre id="bloque06" class="class-install"><code><span class="hljs-built_in">echo</span> -ne <span class="hljs-string">"Creating Translations ... "</span> 
 <span class="hljs-built_in">cd</span> locale 
 
 status=<span class="hljs-string">"Done"</span> 
@@ -1047,7 +1047,7 @@ LC_MESSAGES/</samp></pre>
             data-end="8025">locale</code> que tiene el script como directorio de trabajo</strong>. El siguiente bloque
     nos permitirá cerrar exactamente esa parte del flujo.</p>
 <hr>
-<pre id="bloque07"><code><span class="hljs-keyword">if</span> [ <span class="hljs-string">"<span class="hljs-variable">$status</span>"</span> == <span class="hljs-string">"Done"</span> ]; <span class="hljs-keyword">then</span> 
+<pre id="bloque07" class="class-install"><code><span class="hljs-keyword">if</span> [ <span class="hljs-string">"<span class="hljs-variable">$status</span>"</span> == <span class="hljs-string">"Done"</span> ]; <span class="hljs-keyword">then</span> 
 	<span class="hljs-built_in">echo</span> -e <span class="hljs-variable">$status</span>
 	<span class="hljs-built_in">echo</span> <span class="hljs-string">""</span>
 	<span class="hljs-built_in">echo</span> <span class="hljs-string">"All Done !"</span>

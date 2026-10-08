@@ -77,24 +77,8 @@ body {
 	position: relative;
 }
 
-#bloque01,
-#bloque02,
-#bloque03,
-#bloque04,
-#bloque05,
-#bloque06,
-#bloque07 {
-	scroll-margin-top: 6rem;
-}
-
-#enum1,
-#enum2,
-#enum3,
-#enum4,
-#enum5,
-#enum6,
-#enum7,
-#enum8,
+.class-install,
+.class-enums,
 .class-prefs,
 .class-exts {
 	scroll-margin-top: 6rem;
