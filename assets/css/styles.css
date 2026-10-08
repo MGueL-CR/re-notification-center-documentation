@@ -93,6 +93,23 @@ body {
 	display: grid;
 	grid-template-columns: 1fr;
 	grid-template-rows: 1fr;
+	max-height: calc(100vh - 8rem);
+}
+
+.overflow {
+	overflow: hidden;
+}
+
+.overlay-menu {
+	height: 100%;
+	overflow: overlay visible;
+	scrollbar-width: none;
+}
+
+.overlay-col {
+	height: 100%;
+	overflow: overlay;
+	scrollbar-width: none;
 }
 
 .logo-web {
