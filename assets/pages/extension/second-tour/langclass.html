@@ -1,0 +1,1249 @@
+<h2>LangClass()</h2>
+<hr>
+<p>Y aquí llegamos al <strong data-start="19" data-end="42">personaje principal</strong>. </p>
+<pre><code><span class="ͼv">const</span> <span class="ͼ11">NotificationCenter</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">LangClass</span>({
+
+  Name: <span class="ͼz">"NotificationCenter"</span>,
+  Extends: <span class="ͼ11">PanelMenuButton</span>,
+
+  <span class="ͼv">...</span>
+
+})</code></pre>
+<h4><code data-start="244" data-end="264">NotificationCenter</code> es una clase</h4>
+<pre><code><span class="ͼv">const</span> <span class="ͼ11">NotificationCenter</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">LangClass</span>({ ... })</code></pre>
+<p>Está utilizando el sistema antiguo de clases de GJS, que encontramos al principio, mediante:</p>
+<pre><samp><span class="ͼv">const</span> <span class="ͼ11">LangClass</span> <span class="ͼv">=</span> <span class="ͼ11">imports</span><span class="ͼv">.</span>lang<span class="ͼv">.</span>Class;</samp></pre>
+<p>Por tanto:</p>
+<pre><samp>LangClass
+   │
+   ▼
+NotificationCenter</samp></pre>
+<p>Y cuando <code data-start="565" data-end="575">enable()</code> hace: <span class="ͼ11">notificationCenter</span>
+    <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">NotificationCenter</span>(); está creando
+    una instancia de esta clase.
+</p>
+<h4>Hereda de <code data-start="714" data-end="731">PanelMenuButton</code></h4>
+<pre><code><span class="ͼ13">Extends</span>: <span class="ͼ11">PanelMenuButton</span>,</code></pre>
+<p>Aquí tenemos una relación que ya sospechábamos:</p>
+<pre><samp>PanelMenuButton
+       ▲
+       │ hereda
+       │
+NotificationCenter</samp></pre>
+<p>Eso significa que <code data-start="927" data-end="947">NotificationCenter</code> <strong data-start="948"
+        data-end="971">no parte desde cero</strong>. Hereda comportamiento de <code data-start="998"
+        data-end="1015">PanelMenuButton</code>. Y esto explica por qué la extensión puede integrarse en el panel de
+    GNOME Shell.</p>
+<p>Podemos imaginar la cadena:</p>
+<pre><samp>GNOME Shell
+    │
+    ▼
+PanelMenuButton
+    │
+    │ proporciona comportamiento de botón del panel
+    ▼
+NotificationCenter
+    │
+    ├── añade sus propios métodos
+    ├── añade sus propios elementos
+    └── modifica/complementa el comportamiento heredado</samp></pre>
+<p>Esto también hace que ahora tenga más sentido lo que vimos en <code data-start="1459"
+        data-end="1486">startNotificationCenter()</code>: <span class="ͼ11">Main</span><span
+        class="ͼv">.</span>panel<span class="ͼv">.</span>addToStatusArea(...) y todas las operaciones relacionadas con
+    el indicador.</p>
+<h4>Una diferencia importante</h4>
+<p>En comparación con <code data-start="1682" data-end="1696">prefsGtk4.js</code> teníamos, por ejemplo:</p>
+<pre><code><span class="ͼv">new</span> <span class="ͼ11">GObject</span><span class="ͼv">.</span>Class({
+    Name: <span class="ͼz">"PrefsWindowForCalendar_NotificationCenterExtension"</span>,
+    Extends: <span class="ͼ11">PrefsWindow_NotificationCenterExtension</span>,</code></pre>
+<p>Aquí tenemos:</p>
+<pre><code><span class="ͼv">new</span> <span class="ͼ11">LangClass</span>({
+    Name: <span class="ͼz">"NotificationCenter"</span>,
+    Extends: <span class="ͼ11">PanelMenuButton</span>,</code></pre>
+<p>Por lo tanto estamos viendo <strong data-start="2018" data-end="2059">dos generaciones/mecanismos de clases</strong>
+    dentro del mismo proyecto:</p>
+<div class="row">
+    <div class="col">
+        <pre><samp>prefsGtk4.js
+    │
+    └── GObject.Class
+          │
+          └── Gtk.Grid</samp></pre>
+    </div>
+    <div class="col">
+        <pre><samp>extension.js
+    │
+    └── LangClass
+          │
+          └── PanelMenuButton</samp></pre>
+    </div>
+</div>
+<blockquote>Esto será interesante cuando llegue nuestra futura modernización, pero <strong data-start="2328"
+        data-end="2351">no lo tocamos ahora</strong>.</blockquote>
+<div class="card">
+    <h4>Observaciones de este bloque</h4>
+    <hr>
+    <details>
+        <summary>Actualizamos el mapa</summary>
+        <p>Ya podemos dibujar con bastante seguridad:</p>
+        <pre><samp>                 GNOME Shell
+                      │
+                      ▼
+               PanelMenuButton
+                      │
+                   Extends
+                      │
+                      ▼
+              NotificationCenter
+                      │
+          ┌───────────┼───────────┐
+          │           │           │
+          ▼           ▼           ▼
+     preferencias   indicador    eventos
+          │
+          ▼
+      GSettings</samp></pre>
+        <p>Y arriba tenemos:</p>
+        <pre><samp>enable()
+   │
+   ▼
+new NotificationCenter()
+   │
+   ▼
+startNotificationCenter()</samp></pre>
+        <p>Así que ahora <strong data-start="3023" data-end="3072">sí estamos entrando al núcleo de la
+                extensión</strong>.
+        </p>
+    </details>
+</div>
+<h3>_init: function ()</h3>
+<hr>
+<p>Este <code data-start="34" data-end="43">_init()</code> nos muestra <strong data-start="56" data-end="148">cómo <code
+            data-start="63" data-end="83">NotificationCenter</code> se engancha directamente a estructuras internas de
+        GNOME Shell</strong>.</p>
+<h4>Inicializa las traducciones</h4>
+<pre><code><span class="ͼ11">ExtensionUtils</span><span class="ͼv">.</span>initTranslations(<span class="ͼz">"notification-center"</span>);</code></pre>
+<p>Esto corresponde directamente con lo que vimos al principio:</p>
+<pre><code><span class="ͼv">const</span> <span class="ͼ11">_</span> <span class="ͼv">=</span> <span class="ͼ11">imports</span><span class="ͼv">.</span>gettext<span class="ͼv">.</span>domain(<span class="ͼz">"notification-center"</span>)<span class="ͼv">.</span>gettext;</code></pre>
+<p>Y también con la carpeta: <kbd class="inline-code">locale/</kbd>. Así que tenemos:</p>
+<pre><samp>locale/
+   │
+   ▼
+"notification-center"
+   │
+   ├── initTranslations()
+   │
+   └── gettext domain</samp></pre>
+<p>Aquí no hay mucha duda: prepara el dominio de traducciones de la extensión.</p>
+<h4>Obtiene GSettings</h4>
+<p>Esta línea conecta directamente <strong data-start="889" data-end="915">extension.js → gschema</strong>.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>prefs <span class="ͼv">=</span>
+    <span class="ͼ11">ExtensionUtils</span><span class="ͼv">.</span>getSettings(
+        <span class="ͼz">"org.gnome.shell.extensions.notification-center"</span>
+    );</code></pre>
+<p>Recordemos nuestro <code data-start="937" data-end="946">gschema</code>, donde teníamos:</p>
+<pre><code><span class="ͼ13">&lt;schema</span> <span class="ͼ12">id</span><span class="ͼv">=</span><span class="ͼz">"org.gnome.shell.extensions.notification-center"</span>
+        <span class="ͼ12">path</span><span class="ͼv">=</span><span class="ͼz">"/org/gnome/shell/extensions/notification-center/"</span><span class="ͼ13">&gt;</span></code></pre>
+<p>Ahora vemos cómo se utiliza:</p>
+<pre><samp>gschema
+   │
+   │ schema id
+   ▼
+org.gnome.shell.extensions.notification-center
+   │
+   ▼
+ExtensionUtils.getSettings()
+   │
+   ▼
+this.prefs</samp></pre>
+<p>A partir de aquí: <span class="ͼy">this</span><span class="ͼv">.</span>prefs es el objeto que permite acceder a
+    las preferencias.</p>
+<p>Por ejemplo, anteriormente vimos: <span class="ͼy">this</span><span class="ͼv">.</span>prefs<span
+        class="ͼv">.</span>get_enum(<span class="ͼz">'indicator-pos'</span>). Y las funciones de recarga
+    hacen: <span class="ͼ11">notificationCenter</span><span class="ͼv">.</span>prefs<span
+        class="ͼv">.</span>connect(...).</p>
+<p>¡Ahora sabemos exactamente de dónde sale <code data-start="1660" data-end="1667">prefs</code>!</p>
+<h4>El <code data-start="1683" data-end="1693">parent()</code> del constructor</h4>
+<p>Esta línea tiene <strong data-start="1852" data-end="1877">dos cosas importantes</strong>.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>parent(
+    <span class="ͼy">1</span> <span class="ͼv">-</span> <span class="ͼy">0.5</span> <span class="ͼv">*</span> <span class="ͼy">this</span><span class="ͼv">.</span>prefs<span class="ͼv">.</span>get_enum(<span class="ͼz">'indicator-pos'</span>),
+    <span class="ͼz">"NotificationCenter"</span>
+);</code></pre>
+<p><b>Primero</b>: <span class="ͼy">this</span><span class="ͼv">.</span>parent(...) Como <code data-start="1943"
+        data-end="1963">NotificationCenter</code> hereda de: <span class="ͼ11">PanelMenuButton </span><code
+        data-start="2023" data-end="2038">this.parent()</code> está llamando al constructor de la clase padre.</p>
+<p>Es decir: </p>
+<pre><samp>NotificationCenter._init()
+        │
+        ▼
+PanelMenuButton constructor</samp></pre>
+<h4>¿Y de dónde sale ese primer valor?</h4>
+<p>Aquí podemos utilizar lo que aprendimos en <code data-start="2364" data-end="2378">prefsGtk4.js</code>.</p>
+<pre><code><span class="ͼy">1</span> <span class="ͼv">-</span> <span class="ͼy">0.5</span> <span class="ͼv">*</span> <span class="ͼy">this</span><span class="ͼv">.</span>prefs<span class="ͼv">.</span>get_enum(<span class="ͼz">'indicator-pos'</span>)</code></pre>
+<p>Recordemos:</p>
+<pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>prefCombo(
+    <span class="ͼz">"indicator-pos"</span>,
+    ...,
+    [<span class="ͼz">'left'</span>, <span class="ͼz">'center'</span>, <span class="ͼz">'right'</span>],
+    ...
+);</samp></pre>
+<p>Y el <code data-start="2520" data-end="2529">gschema</code> define esa preferencia como un enum. Por tanto <code
+        data-start="2578" data-end="2590">get_enum()</code> devuelve el <strong data-start="2603" data-end="2630">valor
+        numérico del enum</strong>, no el texto:</p>
+<pre><samp>indicator-pos
+
+left   → 0
+center → 1
+right  → 2</samp></pre>
+<p>Entonces la expresión: <span class="ͼy">1</span> <span class="ͼv">-</span> <span class="ͼy">0.5</span> <span
+        class="ͼv">*</span> <span class="ͼ11">valor</span> produce:</p>
+<table style="width: 100%;">
+    <thead>
+        <tr>
+            <th><code>indicator-pos</code></th>
+            <th align="right">cálculo</th>
+            <th align="right">resultado</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>left</code> (0)</td>
+            <td align="right"><code>1 - 0.5×0</code></td>
+            <td align="right"><code>1</code></td>
+        </tr>
+        <tr>
+            <td><code>center</code> (1)</td>
+            <td align="right"><code>1 - 0.5×1</code></td>
+            <td align="right"><code>0.5</code></td>
+        </tr>
+        <tr>
+            <td><code>right</code> (2)</td>
+            <td align="right"><code>1 - 0.5×2</code></td>
+            <td align="right"><code>0</code></td>
+        </tr>
+    </tbody>
+</table>
+<p>Esto es muy interesante porque el valor que espera <code data-start="3020" data-end="3037">PanelMenuButton</code>
+    <strong data-start="3038" data-end="3073">no es nuestro enum directamente</strong>, sino una posición numérica entre
+    <code data-start="3108" data-end="3111">0</code> y <code data-start="3114" data-end="3117">1</code>.
+</p>
+<p>Por eso tenemos esa conversión y aquí vemos perfectamente el beneficio del segundo recorrido:</p>
+<pre><samp>gschema
+  │
+  │ indicator-pos
+  │ enum 0/1/2
+  ▼
+prefsGtk4.js
+  │
+  │ Left / Center / Right
+  ▼
+extension.js
+  │
+  │ 1 - 0.5 × enum
+  ▼
+PanelMenuButton
+  │
+  ▼
+posición del indicador</samp></pre>
+<blockquote>Este es exactamente el tipo de flujo de datos que queríamos encontrar.</blockquote>
+<h4>¿Y <code data-start="3511" data-end="3533">"NotificationCenter"</code>?</h4>
+<pre><code><span class="ͼz">"NotificationCenter"</span>,</code></pre>
+<p>Es el nombre que recibe el <code data-start="3615" data-end="3632">PanelMenuButton</code>. Es decir, esta instancia
+    se está creando como un botón del panel cuyo nombre es <code data-start="3715"
+        data-end="3735">NotificationCenter</code>.</p>
+<h4>Acceso a la lista de mensajes de GNOME Shell</h4>
+<p>Ahora comienza una parte <strong data-start="3819" data-end="3837">muy importante</strong>:</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>_messageList <span class="ͼv">=</span> <span class="ͼ11">Main</span><span class="ͼv">.</span>panel<span class="ͼv">.</span>statusArea<span class="ͼv">.</span>dateMenu<span class="ͼv">.</span>_messageList;</code></pre>
+<p>La extensión está entrando en una estructura <strong data-start="3981" data-end="4007">interna de GNOME
+        Shell</strong>.</p>
+<p>El camino es:</p>
+<pre><samp>Main
+ │
+ └── panel
+      │
+      └── statusArea
+           │
+           └── dateMenu
+                │
+                └── _messageList</samp></pre>
+<p>Y la extensión guarda esa referencia en: <span class="ͼy">this</span><span class="ͼv">.</span>_messageList</p>
+<p>Esto es muy importante para nuestro futuro análisis porque <code data-start="4336"
+        data-end="4350">_messageList</code> comienza con <code data-start="4364" data-end="4367">_</code>, lo que
+    normalmente indica que es una <strong data-start="4406" data-end="4435">propiedad interna/privada</strong> de otro
+    objeto.</p>
+<blockquote>La extensión está dependiendo directamente de ella. <strong data-start="4509" data-end="4546">Punto de
+        modernización importante</strong>, pero todavía no hacemos nada.</blockquote>
+<h4>Guarda el padre original de <code data-start="4617" data-end="4631">_messageList</code></h4>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>_messageListParent <span class="ͼv">=</span> <span class="ͼy">this</span><span class="ͼv">.</span>_messageList<span class="ͼv">.</span>get_parent();</code></pre>
+<p>Aquí no está obteniendo otro elemento arbitrario. Está preguntando:</p>
+<blockquote>"¿Quién es actualmente el padre de <code data-start="4829" data-end="4843">_messageList</code>?"
+</blockquote>
+<p>Entonces:</p>
+<pre><samp>_messageList
+     │
+     │ get_parent()
+     ▼
+_messageListParent</samp></pre>
+<h5>¿Por qué guardarlo?</h5>
+<p>Todavía no lo sabemos completamente, pero el nombre: <var class="inline-code">_messageListParent</var> y lo que vimos
+    anteriormente en <code data-start="5088" data-end="5115">startNotificationCenter()</code> nos da una pista bastante
+    fuerte:</p>
+<blockquote>Probablemente la extensión mueve <code data-start="5186" data-end="5200">_messageList</code> de un lugar a
+    otro y necesita recordar dónde estaba originalmente para poder devolverlo.</blockquote>
+<p>Esto además encaja perfectamente con: <span class="ͼ11">undoChanges</span>() que veremos después.</p>
+<h4>Guarda la sección multimedia</h4>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>mediaSection <span class="ͼv">=</span> <span class="ͼy">this</span><span class="ͼv">.</span>_messageList<span class="ͼv">.</span>_mediaSection;</code></pre>
+<p>Aquí nuevamente accede a una propiedad interna:</p>
+<pre><samp>_messageList
+   │
+   └── _mediaSection
+          │
+          ▼
+     mediaSection</samp></pre>
+<p>Y esto conecta directamente con nuestro <code data-start="5718" data-end="5727">gschema</code>: <var
+        class="inline-code">show-media</var> que vimos en <code data-start="5779" data-end="5793">prefsGtk4.js</code>.
+</p>
+<p>Por primera vez podemos establecer una relación clara:</p>
+<pre><samp>gschema
+   │
+   └── show-media
+          │
+          ▼
+   prefsGtk4.js
+          │
+          ▼
+   extension.js
+          │
+          ▼
+      mediaSection</samp></pre>
+<p>La preferencia determina probablemente <strong data-start="6070" data-end="6093">si/dónde se muestra</strong> esta
+    sección.</p>
+<h4>Sección de notificaciones</h4>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>notificationSection <span class="ͼv">=</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>_messageList<span class="ͼv">.</span>_notificationSection;</code></pre>
+<div class="row">
+    <div class="col">
+        <p>Mismo patrón:</p>
+        <pre><samp>_messageList
+   │
+   └── _notificationSection
+          │
+          ▼
+notificationSection</samp></pre>
+    </div>
+    <div class="col">
+        <p>Y ahora tenemos:</p>
+        <pre><samp>show-notification
+       │
+       ▼
+notificationSection</samp></pre>
+    </div>
+</div>
+<p>Así que ya podemos empezar a relacionar el grupo que estudiamos anteriormente, con <strong data-start="6615"
+        data-end="6651">objetos concretos de GNOME Shell</strong>.</p>
+<pre><samp>show-media
+show-notification
+show-events</samp></pre>
+<h4>Sección de eventos</h4>
+<p>Aquí cambia ligeramente la ruta.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>eventsSection <span class="ͼv">=</span>
+    <span class="ͼ11">Main</span><span class="ͼv">.</span>panel<span class="ͼv">.</span>statusArea<span class="ͼv">.</span>dateMenu<span class="ͼv">.</span>_eventsItem;</code></pre>
+<p>No sale de <code data-start="6829" data-end="6843">_messageList</code>. Sale directamente de:</p>
+<pre><samp>Main
+ └── panel
+      └── statusArea
+           └── dateMenu
+                └── _eventsItem</samp></pre>
+<p>Y esto corresponde a: <kbd class="inline-code">show-events</kbd>. Por tanto:</p>
+<pre><samp>show-events
+    │
+    ▼
+eventsSection
+    │
+    ▼
+Main.panel.statusArea.dateMenu._eventsItem</samp></pre>
+<h4>Guarda el padre de <code data-start="7206" data-end="7221">eventsSection</code></h4>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>newEventsSectionParent <span class="ͼv">=</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>eventsSection<span class="ͼv">.</span>get_parent();</code></pre>
+<div class="row">
+    <div class="col">
+        <p>Mismo concepto que antes:</p>
+        <pre><samp>eventsSection
+     │
+     ▼
+get_parent()
+     │
+     ▼
+newEventsSectionParent</samp></pre>
+    </div>
+    <div class="col">
+        <p>Y luego:</p>
+        <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>originalEventsSectionParent <span class="ͼv">=</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>newEventsSectionParent;</code></pre>
+    </div>
+</div>
+<p>Aquí tenemos algo especialmente revelador. Está guardando <strong data-start="7619" data-end="7655">explícitamente el
+        padre original</strong>. Eso prácticamente confirma nuestra hipótesis anterior:</p>
+<blockquote>La extensión va a mover <code data-start="7740" data-end="7755">eventsSection</code> de su ubicación
+    original.</blockquote>
+<p>Y necesita recordar dónde estaba.</p>
+<pre><samp>eventsSection
+     │
+     ├── newEventsSectionParent
+     │
+     └── originalEventsSectionParent</samp></pre>
+<p>Los nombres pueden parecer redundantes, pero tienen una razón: uno representa el padre que se está utilizando
+    actualmente y el otro conserva la referencia original.</p>
+<h4>dateMenuVbox</h4>
+<p>Finalmente:</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>dateMenuVbox <span class="ͼv">=</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>_messageListParent<span class="ͼv">.</span>get_children()[<span class="ͼy">1</span>];</code></pre>
+<p>Aquí tenemos otra operación interesante.</p>
+<p>Primero: <span class="ͼy">this</span><span class="ͼv">.</span>_messageListParent<span
+        class="ͼv">.</span>get_children() obtiene los hijos del contenedor padre.</p>
+<p>Después: [<span class="ͼy">1</span>] selecciona <strong data-start="8463" data-end="8486">el segundo
+        elemento</strong>. Y esa referencia se guarda como: <span class="ͼy">this</span><span
+        class="ͼv">.</span>dateMenuVbox. Por tanto:</p>
+<pre><samp>_messageListParent
+      │
+      ▼
+get_children()
+      │
+      ▼
+[0] [1] [2] ...
+          │
+          ▼
+     dateMenuVbox</samp></pre>
+<p>Aquí tenemos que tener mucho cuidado: <strong data-start="8771" data-end="8831">todavía no sabemos qué objeto
+        concreto es ese hijo <code data-start="8824" data-end="8829">[1]</code></strong>. El nombre <code
+        data-start="8844" data-end="8858">dateMenuVbox</code> nos da una pista, pero no debemos asumir que el índice
+    <code data-start="8914" data-end="8919">[1]</code> será siempre ese elemento en versiones futuras de GNOME Shell.
+</p>
+<blockquote>Este es otro punto importante para modernización: <strong data-start="9037" data-end="9128">dependencia de
+        una estructura interna y de una posición fija dentro de <code data-start="9110"
+            data-end="9126">get_children()</code></strong>.</blockquote>
+<div class="card">
+    <h4>Observaciones de este bloque</h4>
+    <hr>
+    <details>
+        <summary>Mapa de dependencias</summary>
+        <p>Esta parte es enorme para nuestro mapa:</p>
+        <pre><samp>                    GSettings
+                       │
+              indicator-pos
+                       │
+                       ▼
+                NotificationCenter
+                       │
+                       ▼
+              PanelMenuButton
+                       │
+                       ▼
+                 posición panel</samp></pre>
+        <p>Y por otro lado:</p>
+        <pre><samp>                   GNOME Shell
+                       │
+                       ▼
+                 Main.panel
+                       │
+                  statusArea
+                       │
+                    dateMenu
+                       │
+          ┌────────────┼─────────────┐
+          ▼            ▼             ▼
+    _messageList   _eventsItem   estructura UI
+          │
+     ┌────┴─────┐
+     ▼          ▼
+_mediaSection  _notificationSection
+     │              │
+     ▼              ▼
+mediaSection   notificationSection</samp></pre>
+        <p>Y las preferencias que ya conocemos:</p>
+        <pre><samp>show-media ───────────────► mediaSection
+show-notification ────────► notificationSection
+show-events ──────────────► eventsSection
+indicator-pos ────────────► posición de PanelMenuButton</samp></pre>
+    </details>
+    <details>
+        <summary>Una característica arquitectónica importante</summary>
+        <p><code data-start="10479" data-end="10499">NotificationCenter</code> <strong data-start="10500"
+                data-end="10558">no está creando desde cero un centro de notificaciones</strong>. Está haciendo algo
+            mucho más invasivo:</p>
+        <blockquote>Toma componentes que GNOME Shell ya creó y los reorganiza.</blockquote>
+        <p>Es decir:</p>
+        <pre><samp>GNOME Shell crea su UI
+        │
+        ▼
+NotificationCenter encuentra
+componentes internos
+        │
+        ▼
+guarda referencias
+        │
+        ▼
+los mueve / reorganiza
+        │
+        ▼
+crea su propia disposición</samp></pre>
+        <p>Esto explica muchísimo mejor por qué existe: <span class="ͼ11">undoChanges</span>() y por qué en <code
+                data-start="11029" data-end="11038">_init()</code> se guardan tantos <strong data-start="11057"
+                data-end="11078">padres originales</strong>.</p>
+        <p>También nos da una alerta para la modernización:</p>
+        <blockquote>La compatibilidad futura dependerá bastante de qué tan estables sean estas propiedades internas de
+            GNOME
+            Shell.</blockquote>
+        <p>Y ahí entran nombres como:</p>
+        <pre><samp>_messageList
+_mediaSection
+_notificationSection
+_eventsItem
+dateMenuVbox</samp></pre>
+        <p>Todos son candidatos para que las versiones nuevas de GNOME Shell hayan cambiado su estructura. Pero, como
+            acordamos:
+            <strong data-start="11483" data-end="11512">por ahora no tocamos nada</strong>. Solo estamos entendiendo el
+            barco
+            antes de reparar el motor.
+        </p>
+    </details>
+</div>
+<hr>
+<p>Aquí <code data-start="5" data-end="14">_init()</code> empieza a construir el <strong data-start="38"
+        data-end="56">estado interno</strong> de <code data-start="60" data-end="80">NotificationCenter</code>. Y ahora
+    que conocemos <code data-start="104" data-end="113">gschema</code> y <code data-start="116"
+        data-end="130">prefsGtk4.js</code>, varias de estas variables ya tienen bastante sentido.</p>
+<h4>Carga las preferencias</h4>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>loadPreferences();</code></pre>
+<p>Esto ocurre <strong data-start="305" data-end="314">antes</strong> de inicializar explícitamente:</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>reloadSignal
+<span class="ͼy">this</span><span class="ͼv">.</span>reloadProfilesSignal</code></pre>
+<p>Y eso es importante. <code data-start="432" data-end="451">loadPreferences()</code> necesita leer las
+    preferencias y preparar el estado inicial del objeto. Además, ya sabemos que <code data-start="548"
+        data-end="567">loadPreferences()</code> volverá a aparecer cuando ocurra:</p>
+<pre><samp>reload-profiles-signal
+        │
+        ▼
+loadPreferences()</samp></pre>
+<p>Así que tenemos dos momentos en los que se ejecuta:</p>
+<div class="row">
+    <div class="col">
+        <pre><samp>                    _init()
+                      │
+                      ▼
+              loadPreferences()
+                      │
+                 estado inicial
+                      
+                      ...</samp></pre>
+    </div>
+    <div class="col">
+        <pre><samp>reload-profiles-signal
+          │
+          ▼
+   loadPreferences()
+          │
+          ▼
+     nuevo estado</samp></pre>
+    </div>
+</div>
+<h4>connectedSignals</h4>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>connectedSignals <span class="ͼv">=</span> [];</code></pre>
+<p>Esta es bastante clara:</p>
+<blockquote>Un arreglo para guardar conexiones de señales.</blockquote>
+<p>Y ahora adquiere mucho sentido porque hemos encontrado varias señales. Por ejemplo:</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>reloadSignal
+<span class="ͼy">this</span><span class="ͼv">.</span>reloadProfilesSignal
+<span class="ͼy">this</span><span class="ͼv">.</span>iconThemeChangeSig
+<span class="ͼy">this</span><span class="ͼv">.</span>dmsig
+<span class="ͼy">this</span><span class="ͼv">.</span>cmsig
+<span class="ͼy">this</span><span class="ͼv">.</span>dndSig</code></pre>
+<p>Probablemente algunas se almacenarán aquí y otras individualmente.</p>
+<p>La intención seguramente es poder hacer algo parecido a:</p>
+<pre><samp>connectedSignals
+   │
+   ├── señal 1
+   ├── señal 2
+   ├── señal 3
+   └── ...</samp></pre>
+<p>Y posteriormente desconectarlas durante <code data-start="1683" data-end="1698">undoChanges()</code> o <code
+        data-start="1701" data-end="1712">destroy()</code>.</p>
+<blockquote>Esto confirma que la pregunta que teníamos sobre las señales <strong data-start="1779" data-end="1801">sí
+        merece seguirse</strong>.</blockquote>
+<h4>Las conexiones/señales</h4>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>dmsig                <span class="ͼv">=</span> <span class="ͼy">null</span>;
+<span class="ͼy">this</span><span class="ͼv">.</span>cmsig                <span class="ͼv">=</span> <span class="ͼy">null</span>;
+<span class="ͼy">this</span><span class="ͼv">.</span>dndSig               <span class="ͼv">=</span> <span class="ͼy">null</span>;
+<span class="ͼy">this</span><span class="ͼv">.</span>reloadSignal         <span class="ͼv">=</span> <span class="ͼy">null</span>;
+<span class="ͼy">this</span><span class="ͼv">.</span>reloadProfilesSignal <span class="ͼv">=</span> <span class="ͼy">null</span>;</code></pre>
+<p>El patrón es muy reconocible: <kbd class="inline-code">sig</kbd> = <var class="inline-code">null</var> significa:</p>
+<blockquote>"Todavía no existe la conexión."</blockquote>
+<p>Después alguna función hará: <span class="ͼy">this</span><span class="ͼv">.</span>dmsig <span class="ͼv">=</span>
+    <span class="ͼ11">objeto</span><span class="ͼv">.</span>connect(...); y <code data-start="2237"
+        data-end="2244">dmsig</code> dejará de ser <code data-start="2259" data-end="2265">null</code>.
+</p>
+<div class="row">
+    <div class="col">
+        <p>Ya conocemos dos de ellas: </p>
+        <pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>reloadSignal
+<span class="ͼy">this</span><span class="ͼv">.</span>reloadProfilesSignal</samp></pre>
+    </div>
+    <div class="col">
+        <p>Porque las asignamos en:</p>
+        <pre><samp><span class="ͼ11">reloadExtensionOnPrefsChange</span>()
+<span class="ͼ11">reloadApplicationProfilesOnPrefsChange</span>()</samp></pre>
+    </div>
+</div>
+<p>Entonces el flujo es:</p>
+<pre><samp>_init()
+ │
+ ├── reloadSignal = null
+ └── reloadProfilesSignal = null
+             │
+             ▼
+         enable()
+             │
+             ├── reloadExtensionOnPrefsChange()
+             │       └── reloadSignal = connect(...)
+             │
+             └── reloadApplicationProfilesOnPrefsChange()
+                     └── reloadProfilesSignal = connect(...)</samp></pre>
+<p>Esto nos permite entender por qué se inicializan a <code data-start="2930" data-end="2936">null</code>: <strong
+        data-start="2938" data-end="3029">se preparan las propiedades antes de que las funciones de conexión les asignen
+        sus IDs.</strong></p>
+<h4>textureCache</h4>
+<p>Aquí obtenemos un objeto global de caché de texturas de <code data-start="3183" data-end="3187">St</code>.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>textureCache <span class="ͼv">=</span> <span class="ͼ11">St</span><span class="ͼv">.</span>TextureCache<span class="ͼv">.</span>get_default();</code></pre>
+<p><code data-start="3190" data-end="3194">St</code> viene de: </p>
+<pre><samp><span class="ͼv">const</span> <span class="ͼ11">St</span> <span class="ͼv">=</span> <span class="ͼ11">imports</span><span class="ͼv">.</span>gi<span class="ͼv">.</span>St;</samp></pre>
+<p>Una textura es, simplificando, información gráfica que GNOME Shell utiliza para representar elementos visuales.</p>
+<p>La extensión guarda el caché como: <span class="ͼy">this</span><span class="ͼv">.</span>textureCache para
+    reutilizarlo posteriormente. No debemos asumir todavía exactamente para qué lo utiliza.</p>
+<h4>Cambio de tema de iconos</h4>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>iconThemeChangeSig <span class="ͼv">=</span> <span class="ͼy">null</span>;</code></pre>
+<p>Aquí el nombre es bastante descriptivo:</p>
+<pre><samp>iconThemeChangeSig
+       │
+       └── signal de cambio del tema de iconos</samp></pre>
+<p>Probablemente más adelante veremos algo como:</p>
+<pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>iconThemeChangeSig <span class="ͼv">=</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>textureCache<span class="ͼv">.</span>connect(...);</samp></pre>
+<p>O una señal relacionada con el tema de iconos.</p>
+<p>Esto encaja además con un método que ya habíamos identificado en nuestro mapa: <kbd
+        class="inline-code">iconThemeChanged</kbd>(). Por tanto tenemos:</p>
+<pre><samp>iconThemeChangeSig
+       │
+       ▼
+iconThemeChanged()</samp></pre>
+<p>Otra conexión que podremos confirmar cuando aparezca.</p>
+<h4>notificationIconName</h4>
+<p>Esta no es una señal.</p>
+<p><span class="ͼy">this</span><span class="ͼv">.</span>notificationIconName <span class="ͼv">=</span> <span
+        class="ͼy">null</span>;</p>
+<p>Es simplemente un estado:</p>
+<blockquote>El nombre del icono que la extensión está utilizando actualmente para representar las notificaciones.
+</blockquote>
+<p>Y sabemos por nuestro mapa anterior que existe:</p>
+<pre><samp>setNotificationIconName()
+manageIconChange()</samp></pre>
+<p>Por lo tanto probablemente veremos:</p>
+<pre><samp>notificationIconName
+       │
+       ▼
+setNotificationIconName()
+       │
+       ▼
+icono mostrado en el panel</samp></pre>
+<h4>Los tres contadores</h4>
+<p>Aquí el significado es bastante directo.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>notificationCount <span class="ͼv">=</span> <span class="ͼy">0</span>;
+<span class="ͼy">this</span><span class="ͼv">.</span>eventsCount       <span class="ͼv">=</span> <span class="ͼy">0</span>;
+<span class="ͼy">this</span><span class="ͼv">.</span>mediaCount        <span class="ͼv">=</span> <span class="ͼy">0</span>;</code></pre>
+<p>Tenemos tres tipos de información:</p>
+<pre><samp>notificationCount
+eventsCount
+mediaCount</samp></pre>
+<p>Y esto conecta perfectamente con las secciones que encontramos anteriormente:</p>
+<pre><samp>NotificationCenter
+│
+├── mediaSection
+├── notificationSection
+└── eventsSection</samp></pre>
+<p>Por tanto probablemente:</p>
+<pre><samp>mediaSection        → mediaCount
+notificationSection → notificationCount
+eventsSection       → eventsCount</samp></pre>
+<p>Y estos valores seguramente participan en:</p>
+<ul>
+    <li>contador del indicador;</li>
+    <li>texto/label;</li>
+    <li>punto de notificación;</li>
+    <li>animaciones;</li>
+    <li>visibilidad de secciones.</li>
+</ul>
+<p>Todavía no sabemos exactamente dónde, pero el mapa ya empieza a cerrarse.</p>
+<h4>seenEvents</h4>
+<p>Esto es diferente a un contador.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>seenEvents <span class="ͼv">=</span> <span class="ͼy">false</span>;</code></pre>
+<p>Es un <strong data-start="5682" data-end="5701">estado booleano</strong>:</p>
+<pre><samp>seenEvents
+false → todavía no se han visto
+true  → ya fueron vistos</samp></pre>
+<p>Y aquí debemos tener cuidado: el nombre no necesariamente significa "el usuario abrió los eventos". Puede significar
+    exactamente lo que el código posterior determine.</p>
+<blockquote>Lo correcto será buscar dónde se modifica: <span class="ͼy">this</span><span class="ͼv">.</span>seenEvents
+    <span class="ͼv">=</span> ...
+</blockquote>
+<h4>isDndOff</h4>
+<p>DND = <strong data-start="6110" data-end="6128">Do Not Disturb</strong>.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>isDndOff <span class="ͼv">=</span> <span class="ͼy">true</span>;</code></pre>
+<p>Por tanto:</p>
+<pre><samp>isDndOff
+true  → DND está desactivado
+false → DND está activado</samp></pre>
+<p>El nombre puede resultar un poco confuso porque está expresado negativamente:</p>
+<p><code class="inline-code">isDndOff</code> en lugar de algo como: <kbd class="inline-code">isDndEnabled</kbd>. Pero el
+    valor inicial: <var class="inline-code">true</var> nos indica que inicialmente la extensión considera que <strong
+        data-start="6474" data-end="6505">Do Not Disturb está apagado</strong>.</p>
+<p>Y recordemos que ya vimos métodos:</p>
+<pre><samp>dndToggle()
+loadDndStatus()
+middleClickDndToggle()</samp></pre>
+<p>Así que seguramente estas variables forman parte de ese mecanismo.</p>
+<h4>Y finalmente aparece algo muy interesante</h4>
+<p>Otra vez estamos entrando en <strong data-start="6850" data-end="6889">estructuras internas de GNOME Shell</strong>.
+</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>dndpref <span class="ͼv">=</span>
+    <span class="ͼ11">Main</span><span class="ͼv">.</span>panel<span class="ͼv">.</span>statusArea<span class="ͼv">.</span>dateMenu<span class="ͼv">.</span>_indicator<span class="ͼv">.</span>_settings;</code></pre>
+<p>La ruta es:</p>
+<pre><samp>Main
+ │
+ └── panel
+      │
+      └── statusArea
+           │
+           └── dateMenu
+                │
+                └── _indicator
+                     │
+                     └── _settings</samp></pre>
+<p>Y guardamos esa configuración en: <span class="ͼy">this</span><span class="ͼv">.</span>dndpref.</p>
+<p>Probablemente <code data-start="7191" data-end="7200">dndpref</code> contiene las preferencias que GNOME Shell
+    utiliza para manejar el estado de <strong data-start="7277" data-end="7295">Do Not Disturb</strong>.</p>
+<p>Esto es interesante porque la extensión <strong data-start="7338" data-end="7387">no parece tener que reinventar el
+        sistema DND</strong>. En lugar de eso, encuentra la configuración que ya utiliza GNOME Shell:</p>
+<pre><samp>GNOME Shell
+     │
+     ▼
+dateMenu._indicator._settings
+     │
+     ▼
+NotificationCenter.dndpref
+     │
+     ├── loadDndStatus()
+     └── dndToggle()</samp></pre>
+
+<div class="card">
+    <h4>Observaciones de este bloque</h4>
+    <hr>
+    <details>
+        <summary>Nuestro mapa ya está creciendo</summary>
+        <p>Podemos resumir este fragmento así:</p>
+        <pre><samp>NotificationCenter
+│
+├── prefs ───────────────► GSettings / gschema
+│
+├── connectedSignals ────► conexiones de señales
+│
+├── dmsig
+├── cmsig
+├── dndSig
+├── reloadSignal ────────► "reload-signal"
+├── reloadProfilesSignal ► "reload-profiles-signal"
+│
+├── textureCache ────────► St.TextureCache
+├── iconThemeChangeSig ──► cambios de iconos
+├── notificationIconName ─► icono actual
+│
+├── notificationCount
+├── eventsCount
+├── mediaCount
+│
+├── seenEvents
+├── isDndOff
+│
+└── dndpref ──────────────► GNOME Shell DND settings</samp></pre>
+    </details>
+    <details>
+        <summary>Tipos de dependencias</summary>
+        <p>Y hay una cosa especialmente valiosa aquí: <b>Estamos viendo dos tipos de dependencias</b>.</p>
+        <h5>Dependencias propias de la extensión:</h5>
+        <pre><samp>prefs
+reloadSignal
+reloadProfilesSignal
+notificationCount
+eventsCount
+mediaCount
+seenEvents</samp></pre>
+        <h5>Dependencias directas de GNOME Shell:</strong></h5>
+        <pre><samp>Main.panel.statusArea.dateMenu._messageList
+Main.panel.statusArea.dateMenu._eventsItem
+Main.panel.statusArea.dateMenu._indicator._settings
+St.TextureCache
+PanelMenuButton</samp></pre>
+        <p>Esta distinción va a ser <strong data-start="8737" data-end="8799">fundamental cuando hagamos la
+                modernización para
+                GNOME 41+</strong>, porque las primeras podemos controlar nosotros mismos; las segundas dependen de
+            cómo GNOME
+            Shell haya cambiado internamente.</p>
+    </details>
+</div>
+<hr>
+<p>Aquí <code data-start="18" data-end="27">_init()</code> deja de preparar solamente variables y empieza a <strong
+        data-start="77" data-end="121">crear la interfaz propia de la extensión</strong>. Además, ahora podemos
+    relacionar varios de estos objetos con las preferencias y métodos que ya vimos.</p>
+<h4>Iconos de las tres secciones</h4>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>eventsIcon <span class="ͼv">=</span>
+    <span class="ͼv">new</span> <span class="ͼ11">St</span><span class="ͼv">.</span>Icon({
+        style_class: <span class="ͼz">'system-status-icon'</span>,
+        visible: <span class="ͼy">false</span>,
+        icon_name: <span class="ͼz">"x-office-calendar-symbolic"</span>
+    });
+
+<span class="ͼy">this</span><span class="ͼv">.</span>mediaIcon <span class="ͼv">=</span>
+    <span class="ͼv">new</span> <span class="ͼ11">St</span><span class="ͼv">.</span>Icon({
+        style_class: <span class="ͼz">'system-status-icon'</span>,
+        visible: <span class="ͼy">false</span>,
+        icon_name: <span class="ͼz">"audio-x-generic-symbolic"</span>
+    });
+
+<span class="ͼy">this</span><span class="ͼv">.</span>notificationIcon <span class="ͼv">=</span>
+    <span class="ͼv">new</span> <span class="ͼ11">St</span><span class="ͼv">.</span>Icon({
+        style_class: <span class="ͼz">'system-status-icon'</span>,
+        visible: <span class="ͼy">false</span>
+    });</code></pre>
+<div class="row">
+    <div class="col">
+        <p>Tenemos tres iconos:</p>
+        <pre><samp>eventsIcon
+mediaIcon
+notificationIcon</samp></pre>
+    </div>
+    <div class="col">
+        <p>Que corresponden conceptualmente a:</p>
+        <pre><samp>events        → calendario
+media         → audio
+notification  → notificaciones</samp></pre>
+    </div>
+</div>
+<p>Y todos empiezan: <span class="ͼ13">visible</span>: <span class="ͼy">false</span> O sea, <strong data-start="979"
+        data-end="1023">se crean pero inicialmente están ocultos</strong>. Esto tiene sentido porque
+    más adelante la extensión decidirá cuál mostrar dependiendo del estado y las preferencias.</p>
+<p>Además, ahora vemos para qué servía: <span class="ͼy">this</span><span class="ͼv">.</span>notificationIconName
+    que vimos antes: probablemente se utiliza para decidir/cambiar el <code data-start="1293"
+        data-end="1304">icon_name</code> de <code data-start="1308" data-end="1326">notificationIcon</code>.</p>
+<h4>Los indicadores de eventos y notificaciones</h4>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>eventsLabel <span class="ͼv">=</span>
+    <span class="ͼv">new</span> <span class="ͼ11">St</span><span class="ͼv">.</span>Label({
+        text: <span class="ͼz">"•"</span>,
+        visible: <span class="ͼy">false</span>,
+        style_class: <span class="ͼz">"notification-center-events-label"</span>
+    });
+
+<span class="ͼy">this</span><span class="ͼv">.</span>notificationLabel <span class="ͼv">=</span>
+    <span class="ͼv">new</span> <span class="ͼ11">St</span><span class="ͼv">.</span>Label({
+        text: <span class="ͼz">"•"</span>,
+        visible: <span class="ͼy">false</span>,
+        style_class: <span class="ͼz">"notification-center-notification-label"</span>
+    });</code></pre>
+<p>Estos no son iconos. Son etiquetas cuyo contenido inicial es: <kbd class="inline-code">•</kbd>. Ese punto
+    probablemente sirve como <strong data-start="1821" data-end="1879">indicador de que existen eventos/notificaciones
+        nuevas</strong>.</p>
+<p>Y aquí podemos conectar algo que vimos en <code data-start="1924" data-end="1938">prefsGtk4.js</code>: <span
+        class="ͼv">new-</span><span class="ͼ11">notification</span> con las opciones:</p>
+<pre><samp>none
+dot
+count</samp></pre>
+<p>Ahora tenemos una pista muy fuerte:</p>
+<pre><samp>new-notification
+      │
+      ├── none  → nada
+      ├── dot   → notificationLabel = "•"
+      └── count → probablemente muestra notificationCount</samp></pre>
+<p>Todavía no afirmamos que esa sea exactamente la implementación, pero <strong data-start="2291" data-end="2355">el
+        objeto que permite representar el <code data-start="2330" data-end="2335">dot</code> ya lo encontramos</strong>.
+</p>
+<p>También tenemos: <kbd class="inline-code">include-events-count</kbd> que probablemente interviene en cómo se
+    representa <code data-start="2461" data-end="2474">eventsCount</code>. Esto podremos comprobarlo cuando encontremos
+    dónde se modifican:</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>eventsLabel
+<span class="ͼy">this</span><span class="ͼv">.</span>notificationLabel</code></pre>
+<h4>El contenedor del indicador</h4>
+<p>Este es un contenedor.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>_indicator <span class="ͼv">=</span>
+    <span class="ͼv">new</span> <span class="ͼ11">St</span><span class="ͼv">.</span>BoxLayout({
+        style_class: <span class="ͼz">'panel-status-menu-box'</span>
+    });</code></pre>
+<p>Y su nombre: <kbd class="inline-code">_indicator </kbd>es importante porque después seguramente veremos: <span
+        class="ͼy">this</span><span class="ͼv">.</span>_indicator<span class="ͼv">.</span>add_child(...) para meter
+    dentro:</p>
+<pre><samp>eventsIcon
+mediaIcon
+notificationIcon
+eventsLabel
+notificationLabel</samp></pre>
+<p>Podemos imaginar:</p>
+<pre><samp>_indicator
+│
+├── eventsIcon
+├── eventsLabel
+├── mediaIcon
+├── notificationIcon
+└── notificationLabel</samp></pre>
+<p>No necesariamente en ese orden; eso lo determinará el código posterior.</p>
+<h4>El <code data-start="3239" data-end="3244">box</code> principal</h4>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>box <span class="ͼv">=</span>
+    <span class="ͼv">new</span> <span class="ͼ11">St</span><span class="ͼv">.</span>BoxLayout({
+        style_class: <span class="ͼz">"notification-center-message-list"</span>,
+        vertical: <span class="ͼy">true</span>
+    });</code></pre>
+<p>Aquí ya tenemos otro contenedor, pero este es vertical:</p>
+<pre><samp>box
+│
+├── elemento
+├── elemento
+├── elemento
+└── ...</samp></pre>
+<p>Y por el nombre: <kbd class="inline-code">notification-center-message-list</kbd> probablemente será el
+    contenedor donde la extensión reconstruye/reorganiza la lista de mensajes.</p>
+<p>Esto tiene una conexión directa con lo que vimos anteriormente:</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>_messageList <span class="ͼv">=</span>
+    <span class="ͼ11">Main</span><span class="ͼv">.</span>panel<span class="ͼv">.</span>statusArea<span class="ͼv">.</span>dateMenu<span class="ͼv">.</span>_messageList;</code></pre>
+<p>La extensión está tomando la lista de mensajes de GNOME Shell y creando su propio contenedor:</p>
+<pre><samp>GNOME Shell
+    │
+    ▼
+_messageList
+    │
+    │ componentes internos
+    ▼
+NotificationCenter
+    │
+    ▼
+this.box</samp></pre>
+<p>Aquí empieza a hacerse evidente que la extensión <strong data-start="4108" data-end="4152">no reemplaza
+        necesariamente el contenido</strong>, sino que reorganiza los elementos existentes dentro de una estructura
+    propia.</p>
+<h4>El botón Clear</h4>
+<p>Este es el botón que ya habíamos visto conceptualmente en <code data-start="4523"
+        data-end="4550">startNotificationCenter()</code>.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>clearButton <span class="ͼv">=</span>
+    <span class="ͼv">new</span> <span class="ͼ11">St</span><span class="ͼv">.</span>Button({
+        style_class: <span class="ͼz">"notification-center-clear-button button"</span>,
+        label: <span class="ͼ11">_</span>(<span class="ͼz">"Clear"</span>),
+        can_focus: <span class="ͼy">true</span>,
+        visible: <span class="ͼy">false</span>
+    });</code></pre>
+<p>Ahora sabemos cómo se crea. Características iniciales:</p>
+<pre><samp>label      → "Clear"
+can_focus  → true
+visible    → false</samp></pre>
+<p>Nuevamente aparece el patrón:</p>
+<blockquote>Crear primero, mostrar después cuando corresponda.</blockquote>
+<p>Y tenemos una preferencia que estudiamos en <code data-start="4814" data-end="4828">prefsGtk4.js</code>: <kbd
+        class="inline-code">clear-button-alignment</kbd> con:</p>
+<pre><samp>left
+center
+right
+hide</samp></pre>
+<p>Así que podemos establecer esta relación:</p>
+<pre><samp>gschema
+   │
+   └── clear-button-alignment
+           │
+           ▼
+      preferencias
+           │
+           ▼
+       clearButton
+           │
+           ├── posición
+           └── visibilidad</samp></pre>
+<p>Y fíjate en algo interesante:</p>
+<p>La opción <code data-start="5203" data-end="5211">"hide"</code> probablemente <strong data-start="5226"
+        data-end="5250">no destruye el botón</strong>. Simplemente puede mantener: <span class="ͼ13">visible</span>:
+    <span class="ͼy">false</span>
+</p>
+<p>Eso es una diferencia importante que podremos comprobar cuando lleguemos a <code data-start="5390"
+        data-end="5401">manage...</code> o <code data-start="5404" data-end="5431">startNotificationCenter()</code>.</p>
+<h4>El DND Item</h4>
+<p>Esta línea es especialmente interesante:</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>dndItem <span class="ͼv">=</span>
+    <span class="ͼv">new</span> <span class="ͼ11">PopupMenu</span><span class="ͼv">.</span>PopupSwitchMenuItem(
+        <span class="ͼy">this</span><span class="ͼv">.</span>_messageList<span class="ͼv">.</span>_dndButton<span class="ͼv">.</span>label_actor<span class="ͼv">.</span>text,
+        <span class="ͼy">true</span>,
+        {}
+    );</code></pre>
+<p>Aquí la extensión crea <strong data-start="5682" data-end="5732">su propio elemento de menú para Do Not
+        Disturb</strong>. Pero el texto no lo inventa. Lo obtiene de: <span class="ͼy">this</span><span
+        class="ͼv">.</span>_messageList<span class="ͼv">.</span>_dndButton<span class="ͼv">.</span>label_actor<span
+        class="ͼv">.</span>text. Es decir:</p>
+<pre><samp>GNOME Shell
+   │
+   ▼
+_messageList
+   │
+   ▼
+_dndButton
+   │
+   ▼
+label_actor.text
+   │
+   ▼
+texto del nuevo dndItem</samp></pre>
+<p>Esto es muy interesante porque muestra que la extensión está <strong data-start="6048" data-end="6112">copiando
+        información de un componente interno de GNOME Shell</strong> para construir su propio componente.</p>
+<p>Y recuerda que anteriormente vimos:</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>dndpref <span class="ͼv">=</span>
+    <span class="ͼ11">Main</span><span class="ͼv">.</span>panel<span class="ͼv">.</span>statusArea<span class="ͼv">.</span>dateMenu<span class="ͼv">.</span>_indicator<span class="ͼv">.</span>_settings;</code></pre>
+<p>Y también:</p>
+<pre><samp>dndToggle()
+loadDndStatus()
+middleClickDndToggle()</samp></pre>
+<p>Ahora tenemos prácticamente todo el escenario del DND, aunque todavía nos falta ver cómo interactúan estas piezas.
+</p>
+<h4>Finalmente</h4>
+<p>Un mensaje cuando no hay notificaciones. Este es simplemente el mensaje que se mostrará cuando no haya
+    notificaciones.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>noNotificationLabel <span class="ͼv">=</span>
+    <span class="ͼv">new</span> <span class="ͼ11">St</span><span class="ͼv">.</span>Label({
+        text: <span class="ͼ11">_</span>(<span class="ͼz">"No Notifications"</span>),
+        x_align: <span class="ͼy">2</span>,
+        y_align: <span class="ͼy">3</span>,
+        style: <span class="ͼz">"margin-top: 96px"</span>
+    });</code></pre>
+<p>Pero fíjate que aquí <strong data-start="6815" data-end="6835">no se especifica</strong>: <span
+        class="ͼ13">visible</span>: <span class="ͼy">false</span>. Así que, a diferencia de muchos objetos anteriores,
+    este comienza visible a menos que posteriormente el código cambie su visibilidad.</p>
+<div class="row">
+    <div class="col">
+        <p>El posicionamiento:</p>
+        <pre><code><span class="ͼ13">x_align</span>: <span class="ͼy">2</span>,
+<span class="ͼ11">y_align</span>: <span class="ͼy">3</span></code></pre>
+    </div>
+    <div class="col">
+        <p>Y:</p>
+        <pre><code><span class="ͼ13">margin-top</span>: 96<span class="ͼ10">px</span></code></pre>
+    </div>
+</div>
+<p>Nos indica que se está intentando colocarlo visualmente dentro del espacio disponible.</p>
+<div class="card">
+    <h4>Observaciones de este bloque</h4>
+    <hr>
+    <details>
+        <summary>Nuestro mapa ya puede incluir la UI propia</summary>
+        <p>Tenemos ahora algo parecido a esto:</p>
+        <pre><samp>NotificationCenter
+│
+├── _indicator
+│    ├── eventsIcon
+│    ├── mediaIcon
+│    ├── notificationIcon
+│    ├── eventsLabel
+│    └── notificationLabel
+│
+├── box
+│
+├── clearButton
+│
+├── dndItem
+│
+└── noNotificationLabel</samp></pre>
+        <p>Y las relaciones que ya conocemos:</p>
+        <pre><samp>                  GSettings
+                     │
+       ┌─────────────┼──────────────┐
+       ▼             ▼              ▼
+  indicator-pos  new-notification  clear-button-alignment
+       │             │              │
+       ▼             ▼              ▼
+  _indicator   notificationLabel  clearButton
+               notificationIcon</samp></pre>
+        <p>Mientras que desde GNOME Shell:</p>
+        <pre><samp>Main.panel.statusArea.dateMenu
+             │
+      ┌──────┼─────────────┐
+      ▼      ▼             ▼
+_messageList _eventsItem _indicator
+    │
+    ├── _mediaSection
+    ├── _notificationSection
+    └── _dndButton</samp></pre>
+        <p>Y <code>NotificationCenter</code> toma referencias de esos objetos para construir su propia interfaz.</p>
+    </details>
+    <details>
+        <summary>Dos cosas que dejaría marcadas para comprobar</summary>
+        <h5>1. <code data-start="8318" data-end="8331">eventsLabel</code> y <code data-start="8334"
+                data-end="8353">notificationLabel</code></h5>
+        <p>Queremos localizar dónde pasan de: <span class="ͼ13">visible</span>: <span class="ͼy">false</span> a
+            visibles y qué decide si muestran <code data-start="8463" data-end="8466">•</code> o un número.</p>
+        <p>Eso nos permitirá conectar definitivamente:</p>
+        <pre><samp>new-notification
+include-events-count
+notificationCount
+eventsCount</samp></pre>
+        <h5>2. <code class="inline-code">dndItem</code></h5>
+        <p>Queremos ver dónde se conecta su señal <code data-start="8664" data-end="8673">toggled</code>/equivalente
+            y
+            cómo
+            termina interactuando con:</p>
+        <pre><code><span class="ͼ11">dndpref</span>
+<span class="ͼ11">isDndOff</span>
+<span class="ͼ11">dndToggle</span>()</code></pre>
+        <p>Porque ahí probablemente encontraremos una de las partes más interesantes de cómo esta extensión se
+            integra
+            con el
+            DND de GNOME Shell.</p>
+        <p>Por ahora, este fragmento queda entendido como <strong data-start="8952" data-end="9027">la creación de
+                los
+                componentes visuales propios de <code data-start="9005"
+                    data-end="9025">NotificationCenter</code></strong>.</p>
+    </details>
+</div>
+<hr>
+<p>Aquí aparece una parte bastante importante: <strong data-start="44" data-end="170">cómo la extensión calcula el
+        tamaño de su área de notificaciones y cómo adapta ese tamaño a la escala de pantalla de GNOME</strong>.</p>
+<h4>Obtiene el factor de escala</h4>
+<pre><code><span class="ͼv">let</span> <span class="ͼ11">scaleFactor</span> <span class="ͼv">=</span>
+    <span class="ͼ11">St</span><span class="ͼv">.</span>ThemeContext<span class="ͼv">.</span>get_for_stage(<span class="ͼ11">global</span><span class="ͼv">.</span>stage)<span class="ͼv">.</span>scale_factor;</code></pre>
+<p><code data-start="308" data-end="322">scale_factor</code> representa la escala que GNOME está aplicando a la
+    interfaz.</p>
+<p>Por ejemplo, conceptualmente:</p>
+<pre><samp>escala normal → 1
+escala HiDPI  → 2</samp></pre>
+<p>No debemos asumir que solo existen esos dos valores, pero la idea es esa.</p>
+<p>La extensión necesita ese valor porque más adelante hace: <span class="ͼy">this</span><span
+        class="ͼv">.</span>_messageList<span class="ͼv">.</span>width <span class="ͼv">/</span> <span
+        class="ͼ11">scaleFactor</span></p>
+<p>Es decir, está convirtiendo el ancho de <code data-start="696" data-end="710">_messageList</code> al sistema de
+    coordenadas que necesita para definir el tamaño del <code data-start="777" data-end="789">ScrollView</code>.</p>
+<h4>Crea el <code data-start="811" data-end="823">ScrollView</code></h4>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>scrollView <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">St</span><span class="ͼv">.</span>ScrollView({
+    hscrollbar_policy: <span class="ͼy">2</span>,
+    style:
+        <span class="ͼz">"min-width:"</span> <span class="ͼv">+</span>
+        (<span class="ͼy">this</span><span class="ͼv">.</span>_messageList<span class="ͼv">.</span>width <span class="ͼv">/</span> <span class="ͼ11">scaleFactor</span>) <span class="ͼv">+</span>
+        <span class="ͼz">"px;"</span> <span class="ͼv">+</span>
+
+        <span class="ͼz">"max-height: "</span> <span class="ͼv">+</span>
+        <span class="ͼy">0.01</span> <span class="ͼv">*</span> <span class="ͼy">this</span><span class="ͼv">.</span>prefs<span class="ͼv">.</span>get_int(<span class="ͼz">"max-height"</span>) <span class="ͼv">*</span>
+        <span class="ͼ11">Main</span><span class="ͼv">.</span>layoutManager<span class="ͼv">.</span>monitors[<span class="ͼy">0</span>]<span class="ͼv">.</span>height <span class="ͼv">+</span>
+        <span class="ͼz">"px;"</span> <span class="ͼv">+</span>
+
+        <span class="ͼz">"max-width: "</span> <span class="ͼv">+</span>
+        (<span class="ͼy">this</span><span class="ͼv">.</span>_messageList<span class="ͼv">.</span>width <span class="ͼv">/</span> <span class="ͼ11">scaleFactor</span>) <span class="ͼv">+</span>
+        <span class="ͼz">"px;"</span> <span class="ͼv">+</span>
+
+        <span class="ͼz">"padding: 0px;"</span>
+})</code></pre>
+<p>Aunque la línea es larga, conceptualmente está haciendo esto:</p>
+<pre><samp>ScrollView
+│
+├── ancho mínimo = ancho de _messageList / escala
+├── ancho máximo = ancho de _messageList / escala
+├── alto máximo  = porcentaje de altura del monitor
+└── padding      = 0</samp></pre>
+<h5>El ancho</h5>
+<p>Es importante porque <strong data-start="1621" data-end="1661">el ancho no viene de una preferencia</strong>.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>_messageList<span class="ͼv">.</span>width <span class="ͼv">/</span> <span class="ͼ11">scaleFactor</span></code></pre>
+<p>Viene directamente del componente de GNOME Shell:</p>
+<pre><samp>_messageList.width
+       │
+       ▼
+   / scaleFactor
+       │
+       ▼
+   ScrollView</samp></pre>
+<p>Así que la extensión intenta mantener el ancho de su centro de notificaciones relacionado con el ancho de la lista
+    original de GNOME.</p>
+<h4><code data-start="1959" data-end="1971">max-height</code> es realmente un porcentaje</h4>
+<p>Aquí tenemos una conexión directa con <code data-start="2038" data-end="2052">prefsGtk4.js</code>. Recordemos:</p>
+<pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>prefTime(<span class="ͼz">"max-height"</span>, <span class="ͼ11">pos</span><span class="ͼv">++</span>, <span class="ͼy">20</span>, <span class="ͼy">100</span>, <span class="ͼy">1</span>);</samp></pre>
+<p>Por tanto el usuario puede seleccionar algo entre: <kbd class="inline-code">20</kbd> ... <kbd
+        class="inline-code">100</kbd>. Pero el código hace: <span class="ͼy">0.01</span> <span class="ͼv">*</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>prefs<span class="ͼv">.</span>get_int(<span
+        class="ͼz">"max-height"</span>). Así que convierte el número a una fracción.
+</p>
+<p>Por ejemplo:</p>
+<table style="width: 100%;">
+    <thead>
+        <tr>
+            <th align="right">Preferencia</th>
+            <th align="right">Cálculo</th>
+            <th align="right">Resultado</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td align="right">20</td>
+            <td align="right"><code>0.01 × 20</code></td>
+            <td align="right"><code>0.20</code></td>
+        </tr>
+        <tr>
+            <td align="right">50</td>
+            <td align="right"><code>0.01 × 50</code></td>
+            <td align="right"><code>0.50</code></td>
+        </tr>
+        <tr>
+            <td align="right">75</td>
+            <td align="right"><code>0.01 × 75</code></td>
+            <td align="right"><code>0.75</code></td>
+        </tr>
+        <tr>
+            <td align="right">100</td>
+            <td align="right"><code>0.01 × 100</code></td>
+            <td align="right"><code>1.00</code></td>
+        </tr>
+    </tbody>
+</table>
+<p>Después: <span class="ͼy">0.01</span> <span class="ͼv">*</span> <span class="ͼ11">max</span><span
+        class="ͼv">-</span><span class="ͼ11">height</span> <span class="ͼv">*</span> <span
+        class="ͼ11">monitorHeight</span></p>
+<p>Por ejemplo, si el monitor mide <var class="inline-code">1080px</var> y <code data-start="2634"
+        data-end="2651">max-height = 50</code>:</p>
+<pre><samp>0.01 × 50 × 1080
+= 540 px</samp></pre>
+<p>Por eso <code data-start="2701" data-end="2713">max-height</code> realmente significa:</p>
+<blockquote>Porcentaje de la altura del monitor que puede ocupar el área de notificaciones.</blockquote>
+<p>Y ahora tenemos una relación directa:</p>
+<pre><samp>gschema
+   │
+   └── max-height
+          │
+          ▼
+     prefsGtk4.js
+          │
+          │ SpinButton 20–100
+          ▼
+      extension.js
+          │
+          ▼
+   porcentaje × altura monitor
+          │
+          ▼
+      ScrollView</samp></pre>
+<h4>¿De qué monitor obtiene la altura?</h4>
+<p>Aquí hay otro detalle que debemos marcar:</p>
+<pre><code><span class="ͼ11">Main</span><span class="ͼv">.</span>layoutManager<span class="ͼv">.</span>monitors[<span class="ͼy">0</span>]<span class="ͼv">.</span>height</code></pre>
+<p>Está utilizando: <kbd class="inline-code">monitors[0]</kbd> es decir, <strong data-start="3316" data-end="3364">el
+        primer monitor de la lista de GNOME Shell</strong>. No está preguntando cuál monitor contiene actualmente la
+    ventana.</p>
+<p>Así que tenemos otra dependencia de estructura interna de GNOME Shell:</p>
+<pre><samp>Main.layoutManager
+       │
+       └── monitors[0]
+              │
+              └── height</samp></pre>
+<blockquote>Para nuestro futuro trabajo de compatibilidad esto es interesante, aunque no necesariamente problemático.
+</blockquote>
+<h4>Y modifica también el menú original de GNOME</h4>
