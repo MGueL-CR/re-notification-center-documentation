@@ -177,11 +177,11 @@ banner-pos
 <h3 id="section2" class="class-prefs">function <strong>init</strong>() { ... }</h3>
 <hr>
 <pre><code><span class="ͼg">function</span> <span class="ͼm">init</span>() {
-        
-          <span class="ͼm">ExtensionUtils</span><span class="ͼg">.</span>initTranslations(<span class="ͼk">"notification-center"</span>);
-          <span class="ͼm">settings</span> <span class="ͼg">=</span> <span class="ͼm">ExtensionUtils</span><span class="ͼg">.</span>getSettings(<span class="ͼk">"org.gnome.shell.extensions.notification-center"</span>);
-        
-        }</code></pre>
+
+    <span class="ͼm">ExtensionUtils</span><span class="ͼg">.</span>initTranslations(<span class="ͼk">"notification-center"</span>);
+    <span class="ͼm">settings</span> <span class="ͼg">=</span> <span class="ͼm">ExtensionUtils</span><span class="ͼg">.</span>getSettings(<span class="ͼk">"org.gnome.shell.extensions.notification-center"</span>);
+
+}</code></pre>
 <h4>Inicialización de traducciones</h4>
 <p>Aquí se inicializa el sistema de traducciones de la extensión.</p>
 <pre><code><span class="ͼm">ExtensionUtils</span><span class="ͼg">.</span>initTranslations(<span class="ͼk">"notification-center"</span>);</code></pre>
@@ -189,45 +189,45 @@ banner-pos
 <pre><samp><span class="ͼg">const</span> <span class="ͼm">_</span> <span class="ͼg">=</span> <span class="ͼm">imports</span><span class="ͼg">.</span>gettext<span class="ͼg">.</span>domain(<span class="ͼk">"notification-center"</span>)<span class="ͼg">.</span>gettext;</samp></pre>
 <p>Tenemos entonces:</p>
 <pre><samp>init()
-         │
-         └── initTranslations("notification-center")
-                     │
-                     ▼
-                locale/
-                     │
-                     ▼
-            traducciones de la extensión</samp></pre>
+│
+└── initTranslations("notification-center")
+            │
+            ▼
+    locale/
+            │
+            ▼
+    traducciones de la extensión</samp></pre>
 <p>Después, cuando el código utiliza: <kbd class="inline-code"> <span class="ͼm">_</span>(<span class="ͼk">"algún
             texto"</span>)</kbd> ese texto puede ser traducido.</p>
 <h4>settings</h4>
 <p>Ahora aparece nuestro <code data-start="1010" data-end="1020">settings</code></p>
 <pre><code><span class="ͼm">settings</span> <span class="ͼg">=</span> <span class="ͼm">ExtensionUtils</span><span class="ͼg">.</span>getSettings(
-            <span class="ͼk">"org.gnome.shell.extensions.notification-center"</span>
-        );</code></pre>
+    <span class="ͼk">"org.gnome.shell.extensions.notification-center"</span>
+);</code></pre>
 <p>Aquí tenemos la conexión que estábamos esperando.</p>
 <p>El identificador: <kbd class="inline-code">org.gnome.shell.extensions.notification-center</kbd> es exactamente
     el mismo que vimos en nuestro <code data-start="1335" data-end="1348">gschema.xml</code>:</p>
 <pre><samp><span class="ͼo">&lt;schema</span>
-            <span class="ͼn">id</span><span class="ͼg">=</span><span class="ͼk">"org.gnome.shell.extensions.notification-center"</span>
-            <span class="ͼn">path</span><span class="ͼg">=</span><span class="ͼk">"/org/gnome/shell/extensions/notification-center/"</span><span class="ͼo">&gt;</span></samp></pre>
+    <span class="ͼn">id</span><span class="ͼg">=</span><span class="ͼk">"org.gnome.shell.extensions.notification-center"</span>
+    <span class="ͼn">path</span><span class="ͼg">=</span><span class="ͼk">"/org/gnome/shell/extensions/notification-center/"</span><span class="ͼo">&gt;</span></samp></pre>
 <p>Por lo tanto, ahora sí tenemos la conexión completa.:</p>
 <pre><samp>prefsGtk4.js
-              │
-              │ getSettings(...)
-              ▼
-        org.gnome.shell.extensions.notification-center
-              │
-              ▼
-            gschema.xml
-              │
-              ├── show-media
-              ├── show-notification
-              ├── show-events
-              ├── banner-pos
-              ├── indicator-pos
-              ├── blink-icon
-              ├── ...
-              └── current-version</samp></pre>
+        │
+        │ getSettings(...)
+        ▼
+org.gnome.shell.extensions.notification-center
+        │
+        ▼
+    gschema.xml
+        │
+        ├── show-media
+        ├── show-notification
+        ├── show-events
+        ├── banner-pos
+        ├── indicator-pos
+        ├── blink-icon
+        ├── ...
+        └── current-version</samp></pre>
 <h5> ¿Qué es realmente <code data-start="1932" data-end="1942">settings</code>?</h5>
 <p>Podemos pensarlo como el <strong data-start="1970" data-end="2068">objeto que permite a <code data-start="1993"
             data-end="2007">prefsGtk4.js</code> trabajar con las configuraciones definidas en el <code data-start="2057"
@@ -238,14 +238,14 @@ banner-pos
             class="ͼk">"show-media"</span>, <span class="ͼj">true</span>)</kbd>.</p>
 <p>Y ahora sabemos exactamente qué significa: </p>
 <pre><samp>settings
-           ↓
-        schema
-           ↓
-        key: show-media
-           ↓
-        type: b
-           ↓
-        default: true/false según el schema</samp></pre>
+    ↓
+schema
+    ↓
+key: show-media
+    ↓
+type: b
+    ↓
+default: true/false según el schema</samp></pre>
 <p>Esto es justamente el contexto que queríamos obtener antes de volver a <code data-start="2508"
         data-end="2522">extension.js</code>.</p>
 <h5>Nota importante</h5>
@@ -257,20 +257,20 @@ banner-pos
     sobre las keys.</p>
 <p>Así que podemos visualizarlo como:</p>
 <pre><samp>gschema.xml
+    │
+    │ define
+    ▼
+GSettings schema
+    │
+    │ getSettings()
+    ▼
+settings
+    │
+    ├── get_*
+    └── set_*
             │
-            │ define
             ▼
-        GSettings schema
-            │
-            │ getSettings()
-            ▼
-        settings
-            │
-            ├── get_*
-            └── set_*
-                   │
-                   ▼
-             valores del usuario</samp></pre>
+        valores del usuario</samp></pre>
 <p>Y esto también confirma algo que habíamos hablado cuando terminamos <code data-start="3190"
         data-end="3199">gschema</code>: <strong data-start="3201" data-end="3300">el archivo XML define el contrato,
         pero los valores que el usuario modifica viven fuera del XML</strong>.</p>
@@ -281,56 +281,53 @@ banner-pos
     <code data-start="139" data-end="148">gschema</code>.
 </p>
 <pre><code><span class="ͼg">function</span> <span class="ͼm">reloadExtension</span> () {
-        
-          (<span class="ͼm">settings</span><span class="ͼg">.</span>get_boolean(<span class="ͼk">"reload-signal"</span>))
-            <span class="ͼg">?</span> <span class="ͼm">settings</span><span class="ͼg">.</span>set_boolean(<span class="ͼk">"reload-signal"</span>, <span class="ͼj">false</span>)
-            <span class="ͼg">:</span> <span class="ͼm">settings</span><span class="ͼg">.</span>set_boolean(<span class="ͼk">"reload-signal"</span>, <span class="ͼj">true</span>);
-        
-        }</code></pre>
+
+    (<span class="ͼm">settings</span><span class="ͼg">.</span>get_boolean(<span class="ͼk">"reload-signal"</span>))
+    <span class="ͼg">?</span> <span class="ͼm">settings</span><span class="ͼg">.</span>set_boolean(<span class="ͼk">"reload-signal"</span>, <span class="ͼj">false</span>)
+    <span class="ͼg">:</span> <span class="ͼm">settings</span><span class="ͼg">.</span>set_boolean(<span class="ͼk">"reload-signal"</span>, <span class="ͼj">true</span>);
+
+}</code></pre>
 <h4>¿Qué está haciendo?</h4>
 <p>Primero lee: <kbd class="inline-code"> <span class="ͼm">settings</span><span class="ͼg">.</span>get_boolean(<span
-            class="ͼk">"reload-signal"</span>)</kbd></p>
+            class="ͼk">"reload-signal"</span>)</kbd>.</p>
 <p>Recordemos del <code data-start="486" data-end="495">gschema</code>:</p>
 <pre><samp><span class="ͼo">&lt;key</span> <span class="ͼn">name</span><span class="ͼg">=</span><span class="ͼk">"reload-signal"</span> <span class="ͼn">type</span><span class="ͼg">=</span><span class="ͼk">"b"</span><span class="ͼo">&gt;</span>
-            <span class="ͼo">&lt;default&gt;</span>false<span class="ͼo">&lt;/default&gt;</span>
-            ...
-        <span class="ͼo">&lt;/key&gt;</span></samp></pre>
+    <span class="ͼo">&lt;default&gt;</span>false<span class="ͼo">&lt;/default&gt;</span>
+    ...
+<span class="ͼo">&lt;/key&gt;</span></samp></pre>
 <p>Por lo tanto, obtiene un <code data-start="615" data-end="621">true</code> o <code data-start="624"
         data-end="631">false</code>.</p>
-<p><span style="background-color: rgb(245, 245, 245);">Después hace lo contrario, es decir, </span><span
-        data-start="724" data-end="764" style="font-weight: bolder;">invierte el valor de <code data-start="747"
-            data-end="762">reload-signal</code></span><span style="background-color: rgb(245, 245, 245);">.</span></p>
+<p>Después hace lo contrario, es decir, invierte el valor de <code>reload-signal</code>.</p>
 <pre><samp>true  → false
-        false → true</samp></pre>
+false → true</samp></pre>
 <h4>¿Por qué se llama <code data-start="797" data-end="816">reloadExtension()</code>?</h4>
 <p>Aquí empieza lo interesante, el método no está recargando directamente la extensión.</p>
 <p>No encontramos algo como:</p>
 <pre><samp><span class="ͼm">Extension</span><span class="ͼg">.</span>disable();
-        <span class="ͼm">Extension</span><span class="ͼg">.</span>enable();</samp></pre>
+<span class="ͼm">Extension</span><span class="ͼg">.</span>enable();</samp></pre>
 <p>Ni un comando de GNOME para recargarla, en cambio hace esto:</p>
 <pre><samp>reloadExtension()
-               │
-               ▼
-        lee reload-signal
-               │
-               ▼
-        invierte el valor
-               │
-               ▼
-        GSettings cambia
-               │
-               ▼
-        otra parte de la extensión detecta el cambio
-               │
-               ▼
-        ¿recargar?</samp></pre>
+        │
+        ▼
+lee reload-signal
+        │
+        ▼
+invierte el valor
+        │
+        ▼
+GSettings cambia
+        │
+        ▼
+otra parte de la extensión detecta el cambio
+        │
+        ▼
+¿recargar?</samp></pre>
 <p>Por lo tanto, <code data-start="1312" data-end="1327">reload-signal</code> funciona como un <strong data-start="1345"
         data-end="1420">interruptor/señal de comunicación entre <code data-start="1387"
             data-end="1401">prefsGtk4.js</code> y <code data-start="1404" data-end="1418">extension.js</code></strong>.
 </p>
-<p><span style="background-color: rgb(245, 245, 245);">Y esto explica perfectamente por qué el key existe en la sección:
-        <cite class="inline-code">Extension Variables</cite> del </span><code data-start="1527" data-end="1536"
-        style="font-size: medium;">gschema</code><span style="background-color: rgb(245, 245, 245);">.</span></p>
+<p>Y esto explica perfectamente por qué el key existe en la sección: <cite class="inline-code">Extension
+        Variables</cite> del <code>gschema</code>.</p>
 <h4>¿Por qué no simplemente poner <code data-start="1581" data-end="1587">true</code>?</h4>
 <p>Imaginemos que inicialmente:</p>
 <pre><samp>reload-signal = false</samp></pre>
@@ -343,14 +340,14 @@ banner-pos
 <p>En cambio, haciendo esto, cada llamada genera un <strong data-start="2074" data-end="2101">cambio de
         configuración</strong>.</p>
 <pre><samp>false → true
-        true → false
-        false → true
-        true → false
-        ...</samp></pre>
+true → false
+false → true
+true → false
+...</samp></pre>
 <p>Eso permite que otra parte del programa pueda estar escuchando el cambio:</p>
 <pre><samp>false → true   → ¡cambió!
-        true → false   → ¡cambió!
-        false → true   → ¡cambió!</samp></pre>
+true → false   → ¡cambió!
+false → true   → ¡cambió!</samp></pre>
 <p>Por eso <code data-start="2278" data-end="2293">reload-signal</code> es mejor entendido como un <strong
         data-start="2321" data-end="2352">toggle utilizado como señal</strong>, no como una configuración cuyo estado
     tenga significado permanente.</p>
@@ -365,20 +362,20 @@ banner-pos
 <h4>Una pieza que antes nos faltaba</h4>
 <p>En el <code data-start="2843" data-end="2852">gschema</code> vimos:</p>
 <pre><samp>reload-signal
-            default: false</samp></pre>
+default: false</samp></pre>
 <p>No sabíamos quién lo modificaba. Ahora sabemos:</p>
 <pre><samp>prefsGtk4.js
-              │
-              │ reloadExtension()
-              ▼
-        reload-signal
-              │
-              │ cambio de false ↔ true
-              ▼
-        ¿algún listener en extension.js?
-              │
-              ▼
-        recargar extensión</samp></pre>
+        │
+        │ reloadExtension()
+        ▼
+reload-signal
+        │
+        │ cambio de false ↔ true
+        ▼
+¿algún listener en extension.js?
+        │
+        ▼
+recargar extensión</samp></pre>
 <p>Y aquí <strong data-start="3161" data-end="3191">sí vale la pena detenernos</strong>.</p>
 <p>No necesitamos buscar todavía otra cosa: cuando volvamos a <code data-start="3253"
         data-end="3267">extension.js</code>, una de las cosas que debemos localizar es <strong data-start="3311"
