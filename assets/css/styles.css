@@ -48,8 +48,10 @@ p > span {
 
 body {
 	display: grid;
-	min-height: 100vh;
+	height: 100vh;
+	grid-template-columns: 1fr;
 	grid-template-rows: auto 1fr auto;
+	overflow: hidden;
 }
 
 @keyframes fadeIn {
@@ -79,36 +81,37 @@ body {
 
 .class-install,
 .class-enums,
+.keys-schemas,
 .class-prefs,
 .class-exts {
-	scroll-margin-top: 6rem;
+	scroll-margin-top: 2rem;
 }
 
 .keys-schemas {
-	scroll-margin-top: 6rem;
 	text-transform: capitalize;
 }
 
 .main-content {
-	display: grid;
-	grid-template-columns: 1fr;
-	grid-template-rows: 1fr;
-	max-height: calc(100vh - 8rem);
-}
-
-.overflow {
-	overflow: hidden;
-}
-
-.overlay-menu {
-	height: 100%;
-	overflow: overlay visible;
+	overflow-y: auto;
 	scrollbar-width: none;
 }
 
-.overlay-col {
+.row-content {
 	height: 100%;
-	overflow: overlay;
+	overflow: hidden;
+	scrollbar-width: none;
+}
+
+.col-menu {
+	height: 100%;
+	overflow: scroll visible;
+	scrollbar-width: none;
+}
+
+.col-info {
+	height: 100%;
+	overflow: scroll visible;
+	scroll-behavior: smooth;
 	scrollbar-width: none;
 }
 
