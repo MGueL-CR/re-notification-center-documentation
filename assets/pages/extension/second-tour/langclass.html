@@ -1,4 +1,19 @@
-<h2>LangClass()</h2>
+<aside class="list-blocks">
+    <div class="card">
+        <p>Secciones:</p>
+        <div class="list-links">
+            <a href="#section1">LangClass ( )</a>
+            <a href="#section2">_init ( ) { ... }</a>
+            <hr>
+            <a href="#section3">... ( )</a>
+            <a href="#section4">... ( )</a>
+            <a href="#section5">... ( )</a>
+            <hr>
+            <a href="#section6">...</a>
+        </div>
+    </div>
+</aside>
+<h2 id="section1" class="class-exts">LangClass( )</h2>
 <hr>
 <p>Y aquí llegamos al <strong data-start="19" data-end="42">personaje principal</strong>. </p>
 <pre><code><span class="ͼv">const</span> <span class="ͼ11">NotificationCenter</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">LangClass</span>({
@@ -116,7 +131,7 @@ startNotificationCenter()</samp></pre>
         </p>
     </details>
 </div>
-<h3>_init: function ()</h3>
+<h3 id="section2" class="class-exts">_init: function ()</h3>
 <hr>
 <p>Este <code data-start="34" data-end="43">_init()</code> nos muestra <strong data-start="56" data-end="148">cómo <code
             data-start="63" data-end="83">NotificationCenter</code> se engancha directamente a estructuras internas de
@@ -1247,3 +1262,147 @@ escala HiDPI  → 2</samp></pre>
 <blockquote>Para nuestro futuro trabajo de compatibilidad esto es interesante, aunque no necesariamente problemático.
 </blockquote>
 <h4>Y modifica también el menú original de GNOME</h4>
+<p>Esta línea es especialmente reveladora:</p>
+<pre><code><span class="ͼ11">Main</span><span class="ͼv">.</span>panel<span class="ͼv">.</span>statusArea<span class="ͼv">.</span>dateMenu<span class="ͼv">.</span>menu<span class="ͼv">.</span>box<span class="ͼv">.</span>style <span class="ͼv">=</span>
+    <span class="ͼz">"max-height: "</span> <span class="ͼv">+</span>
+    (<span class="ͼy">0.01</span> <span class="ͼv">*</span> <span class="ͼy">this</span><span class="ͼv">.</span>prefs<span class="ͼv">.</span>get_int(<span class="ͼz">"max-height"</span>) <span class="ͼv">*</span>
+     <span class="ͼ11">Main</span><span class="ͼv">.</span>layoutManager<span class="ͼv">.</span>monitors[<span class="ͼy">0</span>]<span class="ͼv">.</span>height) <span class="ͼv">+</span>
+    <span class="ͼz">"px;"</span>;</code></pre>
+<p>No solamente establece el tamaño de: <span class="ͼy">this</span><span class="ͼv">.</span>scrollView</p>
+<p>También modifica directamente:</p>
+<pre><samp>dateMenu
+   │
+   └── menu
+        │
+        └── box
+             │
+             └── style</samp></pre>
+<p>Es decir, <code data-start="4228" data-end="4248">NotificationCenter</code> está modificando <strong
+        data-start="4266" data-end="4307">el menú del calendario de GNOME Shell</strong>.</p>
+<p>Esto confirma todavía más lo que vimos anteriormente:</p>
+<blockquote>La extensión no es un componente aislado. Está modificando/reutilizando componentes que GNOME Shell ya creó.
+</blockquote>
+<p>Y fíjate que el mismo cálculo aparece dos veces:</p>
+<pre><code><span class="ͼy">0.01</span> <span class="ͼv">*</span> <span class="ͼy">this</span><span class="ͼv">.</span>prefs<span class="ͼv">.</span>get_int(<span class="ͼz">"max-height"</span>) <span class="ͼv">*</span>
+<span class="ͼ11">Main</span><span class="ͼv">.</span>layoutManager<span class="ͼv">.</span>monitors[<span class="ͼy">0</span>]<span class="ͼv">.</span>height</code></pre>
+<p>Una para el <code data-start="4638" data-end="4650">ScrollView</code> y otra para <code data-start="4663"
+        data-end="4682">dateMenu.menu.box</code>.</p>
+<h4>Agrega su clase CSS al botón</h4>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>add_style_class_name(
+    <span class="ͼz">'notification-center-panel-button'</span>
+);</code></pre>
+<p>Recordemos que: <span class="ͼ11">NotificationCenter</span> hereda de: <span class="ͼ11">PanelMenuButton</span>. Así
+    que <code data-start="4923" data-end="4929">this</code> es el botón del
+    panel.</p>
+<p>Esta línea le agrega: <kbd class="inline-code">notification-center-panel-button</kbd> a su lista de clases
+    CSS. Esto conecta directamente con: <var class="inline-code">stylesheet.css</var> que estudiamos
+    cuando repasamos la estructura de archivos de la extensión.</p>
+<p>Por tanto:</p>
+<pre><samp>NotificationCenter
+       │
+       ▼
+add_style_class_name()
+       │
+       ▼
+notification-center-panel-button
+       │
+       ▼
+stylesheet.css</samp></pre>
+<p>Este es un buen ejemplo de por qué no debemos considerar <code data-start="5415"
+        data-end="5431">stylesheet.css</code> como algo separado del código: <strong data-start="5463"
+        data-end="5519">extension.js genera/usa las clases que CSS necesita.</strong></p>
+<h4>El pivote del icono</h4>
+<p>Aquí tenemos algo visual.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>notificationIcon<span class="ͼv">.</span>set_pivot_point(<span class="ͼy">0.5</span>, <span class="ͼy">0</span>);</code></pre>
+<p>El <code data-start="5648" data-end="5661">pivot_point</code> determina desde qué punto se considera el origen para
+    transformaciones como rotación o escala.</p>
+<div class="row">
+    <div class="col">
+        <p>Los valores:</p>
+        <pre><samp>x = 0.5
+y = 0</samp></pre>
+    </div>
+    <div class="col">
+        <p>Representan aproximadamente:</p>
+        <pre><samp>        0 ───────────── 1
+        ┌───────────────┐
+      0 │       ●       │
+        │      /        │
+        │     /         │
+      1 │               │
+        └───────────────┘</samp></pre>
+    </div>
+    <div class="col">
+        <p>O sea:</p>
+        <ul>
+            <li><code>0.5</code> → centro horizontal</li>
+            <li><code>0</code> → parte superior</li>
+        </ul>
+    </div>
+</div>
+<p>Esto probablemente tiene relación con alguna animación del icono. Y tenemos una pista muy buena porque en
+    nuestro mapa de métodos ya aparecían:</p>
+<pre><samp>animateOnNewNotification()
+blinkIcon()
+blinkIconStopIfBlinking()</samp></pre>
+<p>Así que este: <span class="ͼ11">set_pivot_point</span>(<span class="ͼy">0.5</span>, <span class="ͼy">0</span>)
+    probablemente está preparando <code data-start="6396" data-end="6414">notificationIcon</code> para alguna
+    transformación/animación posterior.</p>
+<blockquote>No podemos afirmar todavía cuál hasta encontrar dónde se usa.</blockquote>
+<div class="card">
+    <h4>Observaciones de este bloque</h4>
+    <hr>
+    <details>
+        <summary>Mapa actualizado</summary>
+        <p>Este fragmento nos permite añadir:</p>
+        <pre><samp>                max-height
+                    │
+                    ▼
+                20 ──── 100
+                    │
+                    ▼
+                × 1% × monitor[0].height
+                    │
+                ┌─────┴─────┐
+                ▼           ▼
+            ScrollView    dateMenu.menu.box</samp></pre>
+
+        <p>Y otra rama:</p>
+        <pre><samp>NotificationCenter
+        │
+        ▼
+PanelMenuButton
+        │
+        ▼
+notification-center-panel-button
+        │
+        ▼
+stylesheet.css</samp></pre>
+
+
+        <p>Y finalmente:</p>
+        <pre><samp>notificationIcon
+        │
+        ▼
+set_pivot_point(0.5, 0)
+        │
+        ▼
+preparación para transformaciones/animaciones</samp></pre>
+    </details>
+    <details>
+        <summary>Tres dependencias</summary>
+        <p>Tres dependencias que ya tenemos marcadas para GNOME moderno</p>
+        <ul>
+            <li><code>Main.panel.statusArea.dateMenu.menu.box</code></li>
+            <li><code>Main.layoutManager.monitors[0]</code></li>
+            <li><code>St.ThemeContext.get_for_stage(global.stage).scale_factor</code></li>
+        </ul>
+        <p>Las tres son perfectamente válidas como código histórico, pero cuando lleguemos a GNOME 41+ <strong>vale
+                la pena
+                verificar si siguen existiendo con la misma estructura</strong>.</p>
+        <p>Y especialmente la primera: <span class="ͼ11">Main</span><span class="ͼv">.</span>panel<span
+                class="ͼv">.</span>statusArea<span class="ͼv">.</span>dateMenu<span class="ͼv">.</span>menu<span
+                class="ͼv">.</span>box porque está accediendo directamente a la estructura interna del menú de
+            fecha/calendario de GNOME Shell.</p>
+    </details>
+</div>
