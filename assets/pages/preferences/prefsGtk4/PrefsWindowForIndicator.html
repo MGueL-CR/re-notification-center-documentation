@@ -1,4 +1,19 @@
-<h2>PrefsWindowForIndicator</h2>
+<aside class="list-blocks">
+    <div class="card">
+        <p>Secciones:</p>
+        <div class="list-links">
+            <a href="#section1">PrefsWindowForIndicator</a>
+            <a href="#section2">_init ( ) { ... }</a>
+            <hr>
+            <a href="#section3">displayPrefs ( )</a>
+            <a href="#section4">prefComboInt ( )</a>
+            <a href="#section5">prefInt ( )</a>
+            <hr>
+            <a href="#section6">Observaciones</a>
+        </div>
+    </div>
+</aside>
+<h2 id="section1" class="class-prefs">PrefsWindowForIndicator</h2>
 <hr>
 <p>Esta nueva clase sigue exactamente el mismo patrón que acabamos de ver con Calendar.</p>
 <pre><code><span class="ͼv">const</span> <span class="ͼ11">PrefsWindowForIndicator_NotificationCenterExtension</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">GObject</span><span class="ͼv">.</span>Class({ ... }</code></pre>
@@ -27,7 +42,7 @@ prefStr()
 prefSwitch()
 prefSwitchInverted()
 prefTime()</samp></pre>
-<h3>_init: function( ) { ... }</h3>
+<h3 id="section2" class="class-prefs">_init: function( ) { ... }</h3>
 <hr>
 <p>Exactamente igual que Calendar.</p>
 <pre><code><span class="ͼ13">_init</span>: <span class="ͼv">function</span>(){
@@ -43,7 +58,7 @@ prefTime()</samp></pre>
 row_spacing: 20
 margins: 20
 halign: CENTER</samp></pre>
-<h3>displayPrefs: function( )</h3>
+<h3 id="section3" class="class-prefs">displayPrefs: function( )</h3>
 <hr>
 <p>Aquí <code data-start="15" data-end="31">displayPrefs()</code> nos muestra claramente qué configuraciones pertenecen
     a <strong data-start="88" data-end="101">Indicator</strong>.</p>
@@ -237,7 +252,7 @@ incremento = 1</samp></pre>
 └── true / false</samp></pre>
     </div>
 </div>
-<h3>prefComboInt: function(KEY, pos, options, items)</h3>
+<h3 id="section4" class="class-prefs">prefComboInt: function(KEY, pos, options, items)</h3>
 <hr>
 <p>Pasamos a la siguiente función, que además confirma nuestra sospecha sobre <code data-start="113"
         data-end="123">autohide</code>.</p>
@@ -304,7 +319,7 @@ settings.set_int(KEY, ...)</samp></pre>
 <p>Esto es exactamente igual que en <code data-start="2406" data-end="2419">prefCombo()</code>.</p>
 <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>attachLabel(<span class="ͼ11">KEY</span>,<span class="ͼ11">pos</span>);
 <span class="ͼy">this</span><span class="ͼv">.</span>attach(<span class="ͼ11">SettingCombo</span>, <span class="ͼy">1</span>, <span class="ͼ11">pos</span>, <span class="ͼy">1</span>, <span class="ͼy">1</span>);</code></pre>
-<h3>prefInt: function(KEY,pos)</h3>
+<h3 id="section5" class="class-prefs">prefInt: function(KEY,pos)</h3>
 <hr>
 <p>Con <code data-start="14" data-end="25">prefInt()</code> ya completamos los tres métodos auxiliares que aparecieron
     en <code data-start="88" data-end="104">displayPrefs()</code> de Indicator.</p>
@@ -353,10 +368,10 @@ reloadExtension()</samp></pre>
 <p>Mismo patrón que los demás métodos auxiliares.</p>
 <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>attachLabel(<span class="ͼ11">KEY</span>,<span class="ͼ11">pos</span>);
 <span class="ͼy">this</span><span class="ͼv">.</span>attach(<span class="ͼ11">timeSetting</span>, <span class="ͼy">1</span>, <span class="ͼ11">pos</span>, <span class="ͼy">1</span>, <span class="ͼy">1</span>);</code></pre>
-<h3>Observaciones</h3>
+<h3 id="section6" class="class-prefs">Observaciones</h3>
+<hr>
 <h4><code data-start="2432" data-end="2445">prefCombo()</code> vs <code data-start="2449"
         data-end="2465">prefComboInt()</code></h4>
-<hr>
 <p>Ahora tenemos una distinción muy clara:</p>
 <div>
     <div>

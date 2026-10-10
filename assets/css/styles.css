@@ -211,7 +211,7 @@ table + hr {
 
 hr:has(+ pre),
 hr:has(+ p),
-hr:has(table) {
+hr:has(+ table) {
 	margin-bottom: 1.75rem;
 }
 
@@ -254,6 +254,11 @@ pre > .cm-line {
 	margin: 0;
 	position: relative;
 	padding: 0.2em;
+}
+
+table {
+	width: 100%;
+	padding: 1rem;
 }
 
 table th {
