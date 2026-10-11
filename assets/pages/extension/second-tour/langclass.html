@@ -5,11 +5,12 @@
             <a href="#section1">LangClass ( )</a>
             <a href="#section2">_init ( ) { ... }</a>
             <hr>
-            <a href="#section3">... ( )</a>
-            <a href="#section4">... ( )</a>
-            <a href="#section5">... ( )</a>
+            <a href="#section3">animateOnNewNotification ( )</a>
+            <a href="#section4">blinkIcon ( )</a>
+            <a href="#section5">blinkIconStopIfBlinking ( )</a>
+            <a href="#section6">dndToggle ()</a>
             <hr>
-            <a href="#section6">...</a>
+            <a href="#section7">...</a>
         </div>
     </div>
 </aside>
@@ -24,7 +25,7 @@
   <span class="ͼv">...</span>
 
 })</code></pre>
-<h4><code data-start="244" data-end="264">NotificationCenter</code> es una clase</h4>
+<h3><code data-start="244" data-end="264">NotificationCenter</code> es una clase</h3>
 <pre><code><span class="ͼv">const</span> <span class="ͼ11">NotificationCenter</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">LangClass</span>({ ... })</code></pre>
 <p>Está utilizando el sistema antiguo de clases de GJS, que encontramos al principio, mediante:</p>
 <pre><samp><span class="ͼv">const</span> <span class="ͼ11">LangClass</span> <span class="ͼv">=</span> <span class="ͼ11">imports</span><span class="ͼv">.</span>lang<span class="ͼv">.</span>Class;</samp></pre>
@@ -37,7 +38,7 @@ NotificationCenter</samp></pre>
     <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">NotificationCenter</span>(); está creando
     una instancia de esta clase.
 </p>
-<h4>Hereda de <code data-start="714" data-end="731">PanelMenuButton</code></h4>
+<h3>Hereda de <code data-start="714" data-end="731">PanelMenuButton</code></h3>
 <pre><code><span class="ͼ13">Extends</span>: <span class="ͼ11">PanelMenuButton</span>,</code></pre>
 <p>Aquí tenemos una relación que ya sospechábamos:</p>
 <pre><samp>PanelMenuButton
@@ -66,7 +67,7 @@ NotificationCenter
         data-end="1486">startNotificationCenter()</code>: <span class="ͼ11">Main</span><span
         class="ͼv">.</span>panel<span class="ͼv">.</span>addToStatusArea(...) y todas las operaciones relacionadas con
     el indicador.</p>
-<h4>Una diferencia importante</h4>
+<h3>Una diferencia importante</h3>
 <p>En comparación con <code data-start="1682" data-end="1696">prefsGtk4.js</code> teníamos, por ejemplo:</p>
 <pre><code><span class="ͼv">new</span> <span class="ͼ11">GObject</span><span class="ͼv">.</span>Class({
     Name: <span class="ͼz">"PrefsWindowForCalendar_NotificationCenterExtension"</span>,
@@ -131,12 +132,12 @@ startNotificationCenter()</samp></pre>
         </p>
     </details>
 </div>
-<h3 id="section2" class="class-exts">_init: function ()</h3>
+<h2 id="section2" class="class-exts">_init: function ()</h2>
 <hr>
 <p>Este <code data-start="34" data-end="43">_init()</code> nos muestra <strong data-start="56" data-end="148">cómo <code
             data-start="63" data-end="83">NotificationCenter</code> se engancha directamente a estructuras internas de
         GNOME Shell</strong>.</p>
-<h4>Inicializa las traducciones</h4>
+<h3>Inicializa las traducciones</h3>
 <pre><code><span class="ͼ11">ExtensionUtils</span><span class="ͼv">.</span>initTranslations(<span class="ͼz">"notification-center"</span>);</code></pre>
 <p>Esto corresponde directamente con lo que vimos al principio:</p>
 <pre><code><span class="ͼv">const</span> <span class="ͼ11">_</span> <span class="ͼv">=</span> <span class="ͼ11">imports</span><span class="ͼv">.</span>gettext<span class="ͼv">.</span>domain(<span class="ͼz">"notification-center"</span>)<span class="ͼv">.</span>gettext;</code></pre>
@@ -150,7 +151,7 @@ startNotificationCenter()</samp></pre>
    │
    └── gettext domain</samp></pre>
 <p>Aquí no hay mucha duda: prepara el dominio de traducciones de la extensión.</p>
-<h4>Obtiene GSettings</h4>
+<h3>Obtiene GSettings</h3>
 <p>Esta línea conecta directamente <strong data-start="889" data-end="915">extension.js → gschema</strong>.</p>
 <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>prefs <span class="ͼv">=</span>
     <span class="ͼ11">ExtensionUtils</span><span class="ͼv">.</span>getSettings(
@@ -178,7 +179,7 @@ this.prefs</samp></pre>
     hacen: <span class="ͼ11">notificationCenter</span><span class="ͼv">.</span>prefs<span
         class="ͼv">.</span>connect(...).</p>
 <p>¡Ahora sabemos exactamente de dónde sale <code data-start="1660" data-end="1667">prefs</code>!</p>
-<h4>El <code data-start="1683" data-end="1693">parent()</code> del constructor</h4>
+<h3>El <code data-start="1683" data-end="1693">parent()</code> del constructor</h3>
 <p>Esta línea tiene <strong data-start="1852" data-end="1877">dos cosas importantes</strong>.</p>
 <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>parent(
     <span class="ͼy">1</span> <span class="ͼv">-</span> <span class="ͼy">0.5</span> <span class="ͼv">*</span> <span class="ͼy">this</span><span class="ͼv">.</span>prefs<span class="ͼv">.</span>get_enum(<span class="ͼz">'indicator-pos'</span>),
@@ -192,7 +193,7 @@ this.prefs</samp></pre>
         │
         ▼
 PanelMenuButton constructor</samp></pre>
-<h4>¿Y de dónde sale ese primer valor?</h4>
+<h3>¿Y de dónde sale ese primer valor?</h3>
 <p>Aquí podemos utilizar lo que aprendimos en <code data-start="2364" data-end="2378">prefsGtk4.js</code>.</p>
 <pre><code><span class="ͼy">1</span> <span class="ͼv">-</span> <span class="ͼy">0.5</span> <span class="ͼv">*</span> <span class="ͼy">this</span><span class="ͼv">.</span>prefs<span class="ͼv">.</span>get_enum(<span class="ͼz">'indicator-pos'</span>)</code></pre>
 <p>Recordemos:</p>
@@ -261,12 +262,12 @@ PanelMenuButton
   ▼
 posición del indicador</samp></pre>
 <blockquote>Este es exactamente el tipo de flujo de datos que queríamos encontrar.</blockquote>
-<h4>¿Y <code data-start="3511" data-end="3533">"NotificationCenter"</code>?</h4>
+<h3>¿Y <code data-start="3511" data-end="3533">"NotificationCenter"</code>?</h3>
 <pre><code><span class="ͼz">"NotificationCenter"</span>,</code></pre>
 <p>Es el nombre que recibe el <code data-start="3615" data-end="3632">PanelMenuButton</code>. Es decir, esta instancia
     se está creando como un botón del panel cuyo nombre es <code data-start="3715"
         data-end="3735">NotificationCenter</code>.</p>
-<h4>Acceso a la lista de mensajes de GNOME Shell</h4>
+<h3>Acceso a la lista de mensajes de GNOME Shell</h3>
 <p>Ahora comienza una parte <strong data-start="3819" data-end="3837">muy importante</strong>:</p>
 <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>_messageList <span class="ͼv">=</span> <span class="ͼ11">Main</span><span class="ͼv">.</span>panel<span class="ͼv">.</span>statusArea<span class="ͼv">.</span>dateMenu<span class="ͼv">.</span>_messageList;</code></pre>
 <p>La extensión está entrando en una estructura <strong data-start="3981" data-end="4007">interna de GNOME
@@ -288,7 +289,7 @@ posición del indicador</samp></pre>
     objeto.</p>
 <blockquote>La extensión está dependiendo directamente de ella. <strong data-start="4509" data-end="4546">Punto de
         modernización importante</strong>, pero todavía no hacemos nada.</blockquote>
-<h4>Guarda el padre original de <code data-start="4617" data-end="4631">_messageList</code></h4>
+<h3>Guarda el padre original de <code data-start="4617" data-end="4631">_messageList</code></h3>
 <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>_messageListParent <span class="ͼv">=</span> <span class="ͼy">this</span><span class="ͼv">.</span>_messageList<span class="ͼv">.</span>get_parent();</code></pre>
 <p>Aquí no está obteniendo otro elemento arbitrario. Está preguntando:</p>
 <blockquote>"¿Quién es actualmente el padre de <code data-start="4829" data-end="4843">_messageList</code>?"
@@ -299,14 +300,14 @@ posición del indicador</samp></pre>
      │ get_parent()
      ▼
 _messageListParent</samp></pre>
-<h5>¿Por qué guardarlo?</h5>
+<h4>¿Por qué guardarlo?</h4>
 <p>Todavía no lo sabemos completamente, pero el nombre: <var class="inline-code">_messageListParent</var> y lo que vimos
     anteriormente en <code data-start="5088" data-end="5115">startNotificationCenter()</code> nos da una pista bastante
     fuerte:</p>
 <blockquote>Probablemente la extensión mueve <code data-start="5186" data-end="5200">_messageList</code> de un lugar a
     otro y necesita recordar dónde estaba originalmente para poder devolverlo.</blockquote>
 <p>Esto además encaja perfectamente con: <span class="ͼ11">undoChanges</span>() que veremos después.</p>
-<h4>Guarda la sección multimedia</h4>
+<h3>Guarda la sección multimedia</h3>
 <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>mediaSection <span class="ͼv">=</span> <span class="ͼy">this</span><span class="ͼv">.</span>_messageList<span class="ͼv">.</span>_mediaSection;</code></pre>
 <p>Aquí nuevamente accede a una propiedad interna:</p>
 <pre><samp>_messageList
@@ -333,7 +334,7 @@ _messageListParent</samp></pre>
       mediaSection</samp></pre>
 <p>La preferencia determina probablemente <strong data-start="6070" data-end="6093">si/dónde se muestra</strong> esta
     sección.</p>
-<h4>Sección de notificaciones</h4>
+<h3>Sección de notificaciones</h3>
 <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>notificationSection <span class="ͼv">=</span>
     <span class="ͼy">this</span><span class="ͼv">.</span>_messageList<span class="ͼv">.</span>_notificationSection;</code></pre>
 <div class="row">
@@ -359,7 +360,7 @@ notificationSection</samp></pre>
 <pre><samp>show-media
 show-notification
 show-events</samp></pre>
-<h4>Sección de eventos</h4>
+<h3>Sección de eventos</h3>
 <p>Aquí cambia ligeramente la ruta.</p>
 <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>eventsSection <span class="ͼv">=</span>
     <span class="ͼ11">Main</span><span class="ͼv">.</span>panel<span class="ͼv">.</span>statusArea<span class="ͼv">.</span>dateMenu<span class="ͼv">.</span>_eventsItem;</code></pre>
@@ -377,7 +378,7 @@ eventsSection
     │
     ▼
 Main.panel.statusArea.dateMenu._eventsItem</samp></pre>
-<h4>Guarda el padre de <code data-start="7206" data-end="7221">eventsSection</code></h4>
+<h3>Guarda el padre de <code data-start="7206" data-end="7221">eventsSection</code></h3>
 <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>newEventsSectionParent <span class="ͼv">=</span>
     <span class="ͼy">this</span><span class="ͼv">.</span>eventsSection<span class="ͼv">.</span>get_parent();</code></pre>
 <div class="row">
@@ -409,7 +410,7 @@ newEventsSectionParent</samp></pre>
      └── originalEventsSectionParent</samp></pre>
 <p>Los nombres pueden parecer redundantes, pero tienen una razón: uno representa el padre que se está utilizando
     actualmente y el otro conserva la referencia original.</p>
-<h4>dateMenuVbox</h4>
+<h3>dateMenuVbox</h3>
 <p>Finalmente:</p>
 <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>dateMenuVbox <span class="ͼv">=</span>
     <span class="ͼy">this</span><span class="ͼv">.</span>_messageListParent<span class="ͼv">.</span>get_children()[<span class="ͼy">1</span>];</code></pre>
@@ -528,7 +529,7 @@ dateMenuVbox</samp></pre>
         data-end="56">estado interno</strong> de <code data-start="60" data-end="80">NotificationCenter</code>. Y ahora
     que conocemos <code data-start="104" data-end="113">gschema</code> y <code data-start="116"
         data-end="130">prefsGtk4.js</code>, varias de estas variables ya tienen bastante sentido.</p>
-<h4>Carga las preferencias</h4>
+<h3>Carga las preferencias</h3>
 <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>loadPreferences();</code></pre>
 <p>Esto ocurre <strong data-start="305" data-end="314">antes</strong> de inicializar explícitamente:</p>
 <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>reloadSignal
@@ -562,7 +563,7 @@ loadPreferences()</samp></pre>
      nuevo estado</samp></pre>
     </div>
 </div>
-<h4>connectedSignals</h4>
+<h3>connectedSignals</h3>
 <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>connectedSignals <span class="ͼv">=</span> [];</code></pre>
 <p>Esta es bastante clara:</p>
 <blockquote>Un arreglo para guardar conexiones de señales.</blockquote>
@@ -585,7 +586,7 @@ loadPreferences()</samp></pre>
         data-start="1701" data-end="1712">destroy()</code>.</p>
 <blockquote>Esto confirma que la pregunta que teníamos sobre las señales <strong data-start="1779" data-end="1801">sí
         merece seguirse</strong>.</blockquote>
-<h4>Las conexiones/señales</h4>
+<h3>Las conexiones/señales</h3>
 <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>dmsig                <span class="ͼv">=</span> <span class="ͼy">null</span>;
 <span class="ͼy">this</span><span class="ͼv">.</span>cmsig                <span class="ͼv">=</span> <span class="ͼy">null</span>;
 <span class="ͼy">this</span><span class="ͼv">.</span>dndSig               <span class="ͼv">=</span> <span class="ͼy">null</span>;
@@ -626,7 +627,7 @@ loadPreferences()</samp></pre>
 <p>Esto nos permite entender por qué se inicializan a <code data-start="2930" data-end="2936">null</code>: <strong
         data-start="2938" data-end="3029">se preparan las propiedades antes de que las funciones de conexión les asignen
         sus IDs.</strong></p>
-<h4>textureCache</h4>
+<h3>textureCache</h3>
 <p>Aquí obtenemos un objeto global de caché de texturas de <code data-start="3183" data-end="3187">St</code>.</p>
 <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>textureCache <span class="ͼv">=</span> <span class="ͼ11">St</span><span class="ͼv">.</span>TextureCache<span class="ͼv">.</span>get_default();</code></pre>
 <p><code data-start="3190" data-end="3194">St</code> viene de: </p>
@@ -634,7 +635,7 @@ loadPreferences()</samp></pre>
 <p>Una textura es, simplificando, información gráfica que GNOME Shell utiliza para representar elementos visuales.</p>
 <p>La extensión guarda el caché como: <span class="ͼy">this</span><span class="ͼv">.</span>textureCache para
     reutilizarlo posteriormente. No debemos asumir todavía exactamente para qué lo utiliza.</p>
-<h4>Cambio de tema de iconos</h4>
+<h3>Cambio de tema de iconos</h3>
 <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>iconThemeChangeSig <span class="ͼv">=</span> <span class="ͼy">null</span>;</code></pre>
 <p>Aquí el nombre es bastante descriptivo:</p>
 <pre><samp>iconThemeChangeSig
@@ -651,7 +652,7 @@ loadPreferences()</samp></pre>
        ▼
 iconThemeChanged()</samp></pre>
 <p>Otra conexión que podremos confirmar cuando aparezca.</p>
-<h4>notificationIconName</h4>
+<h3>notificationIconName</h3>
 <p>Esta no es una señal.</p>
 <p><span class="ͼy">this</span><span class="ͼv">.</span>notificationIconName <span class="ͼv">=</span> <span
         class="ͼy">null</span>;</p>
@@ -669,7 +670,7 @@ setNotificationIconName()
        │
        ▼
 icono mostrado en el panel</samp></pre>
-<h4>Los tres contadores</h4>
+<h3>Los tres contadores</h3>
 <p>Aquí el significado es bastante directo.</p>
 <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>notificationCount <span class="ͼv">=</span> <span class="ͼy">0</span>;
 <span class="ͼy">this</span><span class="ͼv">.</span>eventsCount       <span class="ͼv">=</span> <span class="ͼy">0</span>;
@@ -697,7 +698,7 @@ eventsSection       → eventsCount</samp></pre>
     <li>visibilidad de secciones.</li>
 </ul>
 <p>Todavía no sabemos exactamente dónde, pero el mapa ya empieza a cerrarse.</p>
-<h4>seenEvents</h4>
+<h3>seenEvents</h3>
 <p>Esto es diferente a un contador.</p>
 <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>seenEvents <span class="ͼv">=</span> <span class="ͼy">false</span>;</code></pre>
 <p>Es un <strong data-start="5682" data-end="5701">estado booleano</strong>:</p>
@@ -709,7 +710,7 @@ true  → ya fueron vistos</samp></pre>
 <blockquote>Lo correcto será buscar dónde se modifica: <span class="ͼy">this</span><span class="ͼv">.</span>seenEvents
     <span class="ͼv">=</span> ...
 </blockquote>
-<h4>isDndOff</h4>
+<h3>isDndOff</h3>
 <p>DND = <strong data-start="6110" data-end="6128">Do Not Disturb</strong>.</p>
 <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>isDndOff <span class="ͼv">=</span> <span class="ͼy">true</span>;</code></pre>
 <p>Por tanto:</p>
@@ -725,7 +726,7 @@ false → DND está activado</samp></pre>
 loadDndStatus()
 middleClickDndToggle()</samp></pre>
 <p>Así que seguramente estas variables forman parte de ese mecanismo.</p>
-<h4>Y finalmente aparece algo muy interesante</h4>
+<h3>Y finalmente aparece algo muy interesante</h3>
 <p>Otra vez estamos entrando en <strong data-start="6850" data-end="6889">estructuras internas de GNOME Shell</strong>.
 </p>
 <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>dndpref <span class="ͼv">=</span>
@@ -792,7 +793,7 @@ NotificationCenter.dndpref
     <details>
         <summary>Tipos de dependencias</summary>
         <p>Y hay una cosa especialmente valiosa aquí: <b>Estamos viendo dos tipos de dependencias</b>.</p>
-        <h5>Dependencias propias de la extensión:</h5>
+        <h4>Dependencias propias de la extensión:</h4>
         <pre><samp>prefs
 reloadSignal
 reloadProfilesSignal
@@ -800,7 +801,7 @@ notificationCount
 eventsCount
 mediaCount
 seenEvents</samp></pre>
-        <h5>Dependencias directas de GNOME Shell:</strong></h5>
+        <h4>Dependencias directas de GNOME Shell:</strong></h4>
         <pre><samp>Main.panel.statusArea.dateMenu._messageList
 Main.panel.statusArea.dateMenu._eventsItem
 Main.panel.statusArea.dateMenu._indicator._settings
@@ -817,7 +818,7 @@ PanelMenuButton</samp></pre>
 <p>Aquí <code data-start="18" data-end="27">_init()</code> deja de preparar solamente variables y empieza a <strong
         data-start="77" data-end="121">crear la interfaz propia de la extensión</strong>. Además, ahora podemos
     relacionar varios de estos objetos con las preferencias y métodos que ya vimos.</p>
-<h4>Iconos de las tres secciones</h4>
+<h3>Iconos de las tres secciones</h3>
 <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>eventsIcon <span class="ͼv">=</span>
     <span class="ͼv">new</span> <span class="ͼ11">St</span><span class="ͼv">.</span>Icon({
         style_class: <span class="ͼz">'system-status-icon'</span>,
@@ -857,7 +858,7 @@ notification  → notificaciones</samp></pre>
 <p>Además, ahora vemos para qué servía: <span class="ͼy">this</span><span class="ͼv">.</span>notificationIconName
     que vimos antes: probablemente se utiliza para decidir/cambiar el <code data-start="1293"
         data-end="1304">icon_name</code> de <code data-start="1308" data-end="1326">notificationIcon</code>.</p>
-<h4>Los indicadores de eventos y notificaciones</h4>
+<h3>Los indicadores de eventos y notificaciones</h3>
 <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>eventsLabel <span class="ͼv">=</span>
     <span class="ͼv">new</span> <span class="ͼ11">St</span><span class="ͼv">.</span>Label({
         text: <span class="ͼz">"•"</span>,
@@ -893,7 +894,7 @@ count</samp></pre>
     dónde se modifican:</p>
 <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>eventsLabel
 <span class="ͼy">this</span><span class="ͼv">.</span>notificationLabel</code></pre>
-<h4>El contenedor del indicador</h4>
+<h3>El contenedor del indicador</h3>
 <p>Este es un contenedor.</p>
 <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>_indicator <span class="ͼv">=</span>
     <span class="ͼv">new</span> <span class="ͼ11">St</span><span class="ͼv">.</span>BoxLayout({
@@ -916,7 +917,7 @@ notificationLabel</samp></pre>
 ├── notificationIcon
 └── notificationLabel</samp></pre>
 <p>No necesariamente en ese orden; eso lo determinará el código posterior.</p>
-<h4>El <code data-start="3239" data-end="3244">box</code> principal</h4>
+<h3>El <code data-start="3239" data-end="3244">box</code> principal</h3>
 <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>box <span class="ͼv">=</span>
     <span class="ͼv">new</span> <span class="ͼ11">St</span><span class="ͼv">.</span>BoxLayout({
         style_class: <span class="ͼz">"notification-center-message-list"</span>,
@@ -949,7 +950,7 @@ this.box</samp></pre>
 <p>Aquí empieza a hacerse evidente que la extensión <strong data-start="4108" data-end="4152">no reemplaza
         necesariamente el contenido</strong>, sino que reorganiza los elementos existentes dentro de una estructura
     propia.</p>
-<h4>El botón Clear</h4>
+<h3>El botón Clear</h3>
 <p>Este es el botón que ya habíamos visto conceptualmente en <code data-start="4523"
         data-end="4550">startNotificationCenter()</code>.</p>
 <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>clearButton <span class="ͼv">=</span>
@@ -991,7 +992,7 @@ hide</samp></pre>
 </p>
 <p>Eso es una diferencia importante que podremos comprobar cuando lleguemos a <code data-start="5390"
         data-end="5401">manage...</code> o <code data-start="5404" data-end="5431">startNotificationCenter()</code>.</p>
-<h4>El DND Item</h4>
+<h3>El DND Item</h3>
 <p>Esta línea es especialmente interesante:</p>
 <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>dndItem <span class="ͼv">=</span>
     <span class="ͼv">new</span> <span class="ͼ11">PopupMenu</span><span class="ͼv">.</span>PopupSwitchMenuItem(
@@ -1027,7 +1028,7 @@ loadDndStatus()
 middleClickDndToggle()</samp></pre>
 <p>Ahora tenemos prácticamente todo el escenario del DND, aunque todavía nos falta ver cómo interactúan estas piezas.
 </p>
-<h4>Finalmente</h4>
+<h3>Finalmente</h3>
 <p>Un mensaje cuando no hay notificaciones. Este es simplemente el mensaje que se mostrará cuando no haya
     notificaciones.</p>
 <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>noNotificationLabel <span class="ͼv">=</span>
@@ -1098,8 +1099,8 @@ _messageList _eventsItem _indicator
     </details>
     <details>
         <summary>Dos cosas que dejaría marcadas para comprobar</summary>
-        <h5>1. <code data-start="8318" data-end="8331">eventsLabel</code> y <code data-start="8334"
-                data-end="8353">notificationLabel</code></h5>
+        <h4>1. <code data-start="8318" data-end="8331">eventsLabel</code> y <code data-start="8334"
+                data-end="8353">notificationLabel</code></h4>
         <p>Queremos localizar dónde pasan de: <span class="ͼ13">visible</span>: <span class="ͼy">false</span> a
             visibles y qué decide si muestran <code data-start="8463" data-end="8466">•</code> o un número.</p>
         <p>Eso nos permitirá conectar definitivamente:</p>
@@ -1107,7 +1108,7 @@ _messageList _eventsItem _indicator
 include-events-count
 notificationCount
 eventsCount</samp></pre>
-        <h5>2. <code class="inline-code">dndItem</code></h5>
+        <h4>2. <code class="inline-code">dndItem</code></h4>
         <p>Queremos ver dónde se conecta su señal <code data-start="8664" data-end="8673">toggled</code>/equivalente
             y
             cómo
@@ -1128,7 +1129,7 @@ eventsCount</samp></pre>
 <hr>
 <p>Aquí aparece una parte bastante importante: <strong data-start="44" data-end="170">cómo la extensión calcula el
         tamaño de su área de notificaciones y cómo adapta ese tamaño a la escala de pantalla de GNOME</strong>.</p>
-<h4>Obtiene el factor de escala</h4>
+<h3>Obtiene el factor de escala</h3>
 <pre><code><span class="ͼv">let</span> <span class="ͼ11">scaleFactor</span> <span class="ͼv">=</span>
     <span class="ͼ11">St</span><span class="ͼv">.</span>ThemeContext<span class="ͼv">.</span>get_for_stage(<span class="ͼ11">global</span><span class="ͼv">.</span>stage)<span class="ͼv">.</span>scale_factor;</code></pre>
 <p><code data-start="308" data-end="322">scale_factor</code> representa la escala que GNOME está aplicando a la
@@ -1142,7 +1143,7 @@ escala HiDPI  → 2</samp></pre>
         class="ͼ11">scaleFactor</span></p>
 <p>Es decir, está convirtiendo el ancho de <code data-start="696" data-end="710">_messageList</code> al sistema de
     coordenadas que necesita para definir el tamaño del <code data-start="777" data-end="789">ScrollView</code>.</p>
-<h4>Crea el <code data-start="811" data-end="823">ScrollView</code></h4>
+<h3>Crea el <code data-start="811" data-end="823">ScrollView</code></h3>
 <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>scrollView <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">St</span><span class="ͼv">.</span>ScrollView({
     hscrollbar_policy: <span class="ͼy">2</span>,
     style:
@@ -1168,7 +1169,7 @@ escala HiDPI  → 2</samp></pre>
 ├── ancho máximo = ancho de _messageList / escala
 ├── alto máximo  = porcentaje de altura del monitor
 └── padding      = 0</samp></pre>
-<h5>El ancho</h5>
+<h4>El ancho</h4>
 <p>Es importante porque <strong data-start="1621" data-end="1661">el ancho no viene de una preferencia</strong>.</p>
 <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>_messageList<span class="ͼv">.</span>width <span class="ͼv">/</span> <span class="ͼ11">scaleFactor</span></code></pre>
 <p>Viene directamente del componente de GNOME Shell:</p>
@@ -1181,7 +1182,7 @@ escala HiDPI  → 2</samp></pre>
    ScrollView</samp></pre>
 <p>Así que la extensión intenta mantener el ancho de su centro de notificaciones relacionado con el ancho de la lista
     original de GNOME.</p>
-<h4><code data-start="1959" data-end="1971">max-height</code> es realmente un porcentaje</h4>
+<h3><code data-start="1959" data-end="1971">max-height</code> es realmente un porcentaje</h3>
 <p>Aquí tenemos una conexión directa con <code data-start="2038" data-end="2052">prefsGtk4.js</code>. Recordemos:</p>
 <pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>prefTime(<span class="ͼz">"max-height"</span>, <span class="ͼ11">pos</span><span class="ͼv">++</span>, <span class="ͼy">20</span>, <span class="ͼy">100</span>, <span class="ͼy">1</span>);</samp></pre>
 <p>Por tanto el usuario puede seleccionar algo entre: <kbd class="inline-code">20</kbd> ... <kbd
@@ -1247,7 +1248,7 @@ escala HiDPI  → 2</samp></pre>
           │
           ▼
       ScrollView</samp></pre>
-<h4>¿De qué monitor obtiene la altura?</h4>
+<h3>¿De qué monitor obtiene la altura?</h3>
 <p>Aquí hay otro detalle que debemos marcar:</p>
 <pre><code><span class="ͼ11">Main</span><span class="ͼv">.</span>layoutManager<span class="ͼv">.</span>monitors[<span class="ͼy">0</span>]<span class="ͼv">.</span>height</code></pre>
 <p>Está utilizando: <kbd class="inline-code">monitors[0]</kbd> es decir, <strong data-start="3316" data-end="3364">el
@@ -1261,7 +1262,7 @@ escala HiDPI  → 2</samp></pre>
               └── height</samp></pre>
 <blockquote>Para nuestro futuro trabajo de compatibilidad esto es interesante, aunque no necesariamente problemático.
 </blockquote>
-<h4>Y modifica también el menú original de GNOME</h4>
+<h3>Y modifica también el menú original de GNOME</h3>
 <p>Esta línea es especialmente reveladora:</p>
 <pre><code><span class="ͼ11">Main</span><span class="ͼv">.</span>panel<span class="ͼv">.</span>statusArea<span class="ͼv">.</span>dateMenu<span class="ͼv">.</span>menu<span class="ͼv">.</span>box<span class="ͼv">.</span>style <span class="ͼv">=</span>
     <span class="ͼz">"max-height: "</span> <span class="ͼv">+</span>
@@ -1287,7 +1288,7 @@ escala HiDPI  → 2</samp></pre>
 <span class="ͼ11">Main</span><span class="ͼv">.</span>layoutManager<span class="ͼv">.</span>monitors[<span class="ͼy">0</span>]<span class="ͼv">.</span>height</code></pre>
 <p>Una para el <code data-start="4638" data-end="4650">ScrollView</code> y otra para <code data-start="4663"
         data-end="4682">dateMenu.menu.box</code>.</p>
-<h4>Agrega su clase CSS al botón</h4>
+<h3>Agrega su clase CSS al botón</h3>
 <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>add_style_class_name(
     <span class="ͼz">'notification-center-panel-button'</span>
 );</code></pre>
@@ -1311,7 +1312,7 @@ stylesheet.css</samp></pre>
 <p>Este es un buen ejemplo de por qué no debemos considerar <code data-start="5415"
         data-end="5431">stylesheet.css</code> como algo separado del código: <strong data-start="5463"
         data-end="5519">extension.js genera/usa las clases que CSS necesita.</strong></p>
-<h4>El pivote del icono</h4>
+<h3>El pivote del icono</h3>
 <p>Aquí tenemos algo visual.</p>
 <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>notificationIcon<span class="ͼv">.</span>set_pivot_point(<span class="ͼy">0.5</span>, <span class="ͼy">0</span>);</code></pre>
 <p>El <code data-start="5648" data-end="5661">pivot_point</code> determina desde qué punto se considera el origen para
@@ -1404,5 +1405,803 @@ preparación para transformaciones/animaciones</samp></pre>
                 class="ͼv">.</span>statusArea<span class="ͼv">.</span>dateMenu<span class="ͼv">.</span>menu<span
                 class="ͼv">.</span>box porque está accediendo directamente a la estructura interna del menú de
             fecha/calendario de GNOME Shell.</p>
+    </details>
+</div>
+
+<h2 id="section3" class="class-exts">animateOnNewNotification ( )</h2>
+<hr>
+<p>Aquí volvemos a una función que en el primer recorrido habíamos identificado por nombre, pero ahora podemos entender
+    <strong data-start="117" data-end="203">de dónde salen sus parámetros y qué papel juega dentro del flujo de
+        notificaciones</strong>.
+</p>
+<pre><code><span class="ͼ13">animateOnNewNotification</span>: <span class="ͼv">function</span>(<span class="ͼ11">times</span>, <span class="ͼ11">op</span><span class="ͼv">=</span><span class="ͼy">254</span>, <span class="ͼ11">angle</span><span class="ͼv">=</span><span class="ͼy">3</span>) { ... }</code></pre>
+<p>Su propósito general es bastante claro:</p>
+<blockquote>Hacer una pequeña animación del icono de notificación cuando llega una notificación nueva y, al terminar,
+    iniciar el parpadeo si corresponde.</blockquote>
+<h3>Primero hace visibles el botón y el icono</h3>
+<pre><code>[ <span class="ͼy">this</span><span class="ͼv">.</span>visible, <span class="ͼy">this</span><span class="ͼv">.</span>notificationIcon<span class="ͼv">.</span>visible ] <span class="ͼv">=</span> [ <span class="ͼy">true</span>, <span class="ͼy">true</span> ];</code></pre>
+<p>Aquí tenemos dos objetos diferentes:</p>
+<pre><samp>this
+  │
+  └── NotificationCenter / PanelMenuButton</samp></pre>
+<p>Y: <kbd class="inline-code">this.notificationIcon</kbd>. Por tanto:</p>
+<pre><samp>this.visible = true
+notificationIcon.visible = true</samp></pre>
+<p>La función se asegura de que el indicador pueda verse antes de comenzar la animación.</p>
+<p>Esto es importante porque <code data-start="947" data-end="965">notificationIcon</code> se creó originalmente
+    así: <span class="ͼ13">visible</span>: <span class="ͼy">false</span></p>
+<p>Por lo tanto aquí tenemos una transición:</p>
+<pre><samp>_init()
+   │
+   ▼
+notificationIcon.visible = false
+   │
+   │ llega nueva notificación
+   ▼
+animateOnNewNotification()
+   │
+   ▼
+notificationIcon.visible = true</samp></pre>
+<h3>La condición que decide si anima</h3>
+<pre><code><span class="ͼv">if</span>(<span class="ͼ11">times</span> <span class="ͼv">==</span> <span class="ͼy">0</span> <span class="ͼv">||</span> <span class="ͼy">this</span><span class="ͼv">.</span>notAnimateIcon) { ... }</code></pre>
+<p>Tenemos dos motivos para <strong data-start="1372" data-end="1400">no ejecutar la animación</strong>.</p>
+<div class="row">
+    <div class="col">
+        <h4>times == 0</h4>
+        <p>La función utiliza <code>times</code> como contador de repeticiones. Cuando llega a: <kbd>times = 0</kbd> la
+            animación termina.</p>
+    </div>
+    <div class="col">
+        <h4>this.notAnimateIcon</h4>
+        <p>Esta es otra variable de estado que todavía tenemos que localizar. Por el nombre: <kbd>notAnimateIcon</kbd>
+            significa algo como: <q>no animar el icono</q>.</p>
+    </div>
+</div>
+<p>Y aquí tenemos una conexión probable con alguna preferencia de <code data-start="1792"
+        data-end="1806">animate-icon</code>, que vimos en <code data-start="1821" data-end="1835">prefsGtk4.js</code>:
+</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>prefSwitch(<span class="ͼz">"animate-icon"</span>, <span class="ͼ11">pos</span><span class="ͼv">++</span>);</code></pre>
+<p>Así que podemos plantear:</p>
+<pre><samp>gschema
+   │
+   └── animate-icon
+          │
+          ▼
+    loadPreferences()
+          │
+          ▼
+    notAnimateIcon
+          │
+          ▼
+animateOnNewNotification()</samp></pre>
+<p>Esto todavía debemos confirmarlo mirando <code data-start="2153" data-end="2172">loadPreferences()</code>. Pero ahora
+    sabemos exactamente qué buscar.</p>
+<h3>¿Qué hace cuando no debe animar?</h3>
+<p>Aunque no haya animación propiamente dicha, utiliza <code data-start="2648" data-end="2656">ease()</code> para llevar
+    el icono a su <strong data-start="2683" data-end="2700">estado normal</strong>.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>notificationIcon<span class="ͼv">.</span>ease({
+    duration: <span class="ͼy">150</span>,
+    scale_x: <span class="ͼy">1.0</span>,
+    scale_y: <span class="ͼy">1.0</span>,
+    translation_y: <span class="ͼy">0</span>,
+    opacity: <span class="ͼy">255</span>,
+    rotation_angle_z: <span class="ͼy">0</span>,
+    onComplete: () =&gt;
+        <span class="ͼy">this</span><span class="ͼv">.</span>blinkIcon(
+            <span class="ͼv">!</span><span class="ͼy">this</span><span class="ͼv">.</span>menu<span class="ͼv">.</span>isOpen <span class="ͼv">*</span> <span class="ͼy">this</span><span class="ͼv">.</span>blinkCount,
+            <span class="ͼy">this</span><span class="ͼv">.</span>blinkTime,
+            <span class="ͼy">100</span>
+        )
+});</code></pre>
+<div class="row">
+    <div class="col">
+        <p>Los valores finales son:</p>
+        <pre><samp>scale_x          = 1.0
+scale_y          = 1.0
+translation_y    = 0
+opacity          = 255
+rotation_angle_z = 0</samp></pre>
+    </div>
+    <div class="col">
+        <p>Es decir:</p>
+        <pre><samp>escala       → normal
+posición     → normal
+opacidad     → completamente visible
+rotación     → 0°</samp></pre>
+    </div>
+</div>
+<h3>¿Y qué ocurre cuando termina?</h3>
+<p>Esta parte es muy interesante:</p>
+<pre><code><span class="ͼ13">onComplete</span>: () =&gt;
+    <span class="ͼy">this</span><span class="ͼv">.</span>blinkIcon(
+        <span class="ͼv">!</span><span class="ͼy">this</span><span class="ͼv">.</span>menu<span class="ͼv">.</span>isOpen <span class="ͼv">*</span> <span class="ͼy">this</span><span class="ͼv">.</span>blinkCount,
+        <span class="ͼy">this</span><span class="ͼv">.</span>blinkTime,
+        <span class="ͼy">100</span>
+    )</code></pre>
+<p>Cuando termina el <code data-start="3223" data-end="3231">ease()</code>, llama a: <span class="ͼy">this</span><span
+        class="ͼv">.</span>blinkIcon(...). Por tanto:</p>
+<pre><samp>animateOnNewNotification()
+          │
+          ▼
+      ease(...)
+          │
+          │ termina
+          ▼
+      blinkIcon(...)</samp></pre>
+<p>Esto confirma algo que ya sospechábamos de nuestro mapa de métodos:</p>
+<pre><samp>animateOnNewNotification()
+          │
+          ▼
+      blinkIcon()</samp></pre>
+<blockquote>Son dos fases distintas de la reacción visual.</blockquote>
+<h3>Este es interesante</h3>
+<p>Tenemos:</p>
+<pre><code><span class="ͼv">!</span><span class="ͼy">this</span><span class="ͼv">.</span>menu<span class="ͼv">.</span>isOpen <span class="ͼv">*</span> <span class="ͼy">this</span><span class="ͼv">.</span>blinkCount</code></pre>
+<p>A primera vista parece extraño porque <code data-start="3809" data-end="3812">!</code> produce booleano.</p>
+<div class="row">
+    <div class="col">
+        <p>En JavaScript:</p>
+        <pre><samp>!false → true
+!true  → false</samp></pre>
+    </div>
+    <div class="col">
+        <p>Y al multiplicar:</p>
+        <pre><samp>true  * número → número
+false * número → 0</samp></pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <p>Así que conceptualmente:</p>
+        <pre><samp>menú cerrado
+    ↓
+!isOpen = true
+    ↓
+true × blinkCount
+    ↓
+blinkCount</samp></pre>
+    </div>
+    <div class="col">
+        <p>Mientras que:</p>
+        <pre><samp>menú abierto
+    ↓
+!isOpen = false
+    ↓
+false × blinkCount
+    ↓
+0</samp></pre>
+    </div>
+</div>
+<p>Por tanto:</p>
+<blockquote>El parpadeo solo tendrá repeticiones cuando el menú esté cerrado.</blockquote>
+<p>Si el usuario ya tiene abierto el Notification Center, no tiene sentido hacer parpadear el indicador para llamar su
+    atención. Muy buen detalle de UX escondido en una expresión bastante compacta.</p>
+<h3>La animación real</h3>
+<div class="row">
+    <div class="col">
+        <p>Si:</p>
+        <pre><code><span class="ͼ11">times</span> <span class="ͼv">!=</span> <span class="ͼy">0</span></code></pre>
+    </div>
+    <div class="col">
+        <p>Y:</p>
+        <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>notAnimateIcon <span class="ͼv">==</span> <span class="ͼy">false</span></code></pre>
+    </div>
+</div>
+<p>Entra aquí:</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>notificationIcon<span class="ͼv">.</span>ease({
+    duration: <span class="ͼy">150</span>,
+    scale_x: <span class="ͼy">1.2</span>,
+    scale_y: <span class="ͼy">1.2</span>,
+    translation_y: <span class="ͼv">-</span><span class="ͼy">4</span>,
+    opacity: <span class="ͼ11">op</span>,
+    rotation_angle_z: <span class="ͼ11">angle</span>,
+    onComplete: () =&gt;
+        <span class="ͼy">this</span><span class="ͼv">.</span>animateOnNewNotification(<span class="ͼv">--</span><span class="ͼ11">times</span>, <span class="ͼ11">op</span><span class="ͼv">-</span><span class="ͼy">1</span>, <span class="ͼv">-</span><span class="ͼ11">angle</span>)
+});</code></pre>
+<p>Aquí sí tenemos una animación.</p>
+<div class="row">
+    <div class="col">
+        <p>Durante 150 ms el icono:</p>
+        <pre><samp>escala X → 1.2
+escala Y → 1.2
+sube      → -4
+opacidad  → op
+rota      → angle</samp></pre>
+    </div>
+    <div class="col">
+        <p>Visualmente sería algo parecido a:</p>
+        <pre><samp>        ↗
+      ↗   ↖
+    ↗       ↖
+       🔔
+       ↑
+ aumenta el tamaño</samp></pre>
+    </div>
+</div>
+<p>Y después vuelve a llamar a la misma función.</p>
+<h3>La recursividad</h3>
+<p>Esta línea es el corazón de la función:</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>animateOnNewNotification(<span class="ͼv">--</span><span class="ͼ11">times</span>, <span class="ͼ11">op</span><span class="ͼv">-</span><span class="ͼy">1</span>, <span class="ͼv">-</span><span class="ͼ11">angle</span>)</code></pre>
+<p>La función se llama a sí misma, pero reduce:</p>
+<pre><samp>times → times - 1
+op    → op - 1
+angle → -angle</samp></pre>
+
+<p>Por ejemplo, imaginemos: <span class="ͼ11">animateOnNewNotification</span>(<span class="ͼy">3</span>). El flujo sería
+    aproximadamente:</p>
+<pre><samp>times = 3
+angle =  3
+opacity = 254
+     │
+     ▼
+animación
+     │
+     ▼
+times = 2
+angle = -3
+opacity = 253
+     │
+     ▼
+animación
+     │
+     ▼
+times = 1
+angle =  3
+opacity = 252
+     │
+     ▼
+animación
+     │
+     ▼
+times = 0
+     │
+     ▼
+estado normal
+     │
+     ▼
+blinkIcon()</samp></pre>
+<p>Por eso <code data-start="5826" data-end="5833">angle</code> cambia: <kbd>3 → -3 → 3 → -3</kbd> ... El icono
+    probablemente se inclina alternativamente hacia ambos lados.</p>
+<h3>¿De dónde sale <code data-start="5972" data-end="5979">times</code>?</h3>
+<p>Aquí todavía tenemos una pregunta pendiente. La función no decide por sí misma cuántas veces animarse: <span
+        class="ͼ11">times</span> lo recibe desde quien la llama.</p>
+<div class="row">
+    <div class="col">
+        <p>Y ya tenemos una pista porque anteriormente vimos:</p>
+        <pre><samp>blinkCount
+blinkTime</samp></pre>
+    </div>
+    <div class="col">
+        <p>Y en la propia función aparece:</p>
+        <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>blinkCount
+<span class="ͼy">this</span><span class="ͼv">.</span>blinkTime</code></pre>
+    </div>
+</div>
+<p>Pero <code data-start="6319" data-end="6326">times</code> parece pertenecer a la <strong data-start="6350"
+        data-end="6363">animación</strong>, mientras <code data-start="6374" data-end="6386">blinkCount</code> pertenece
+    al <strong data-start="6400" data-end="6412">parpadeo</strong>.</p>
+<p>Así que probablemente hay algo parecido a:</p>
+<pre><samp>nueva notificación
+       │
+       ▼
+animateOnNewNotification(times)
+       │
+       ├── animación
+       │
+       ▼
+blinkIcon(blinkCount, blinkTime, ...)</samp></pre>
+<p>Eso lo confirmaremos cuando encontremos quién llama a <code data-start="6681"
+        data-end="6709">animateOnNewNotification()</code>.</p>
+
+<div class="card">
+    <h4>Observaciones de este bloque</h4>
+    <hr>
+    <details>
+        <summary>Una conexión con <code>prefsGtk4.js</code></summary>
+        <p>Ya podemos empezar a reconstruir:</p>
+        <pre><samp>                 GSettings
+                        │
+                        ▼
+                 animate-icon
+                        │
+                        ▼
+                 loadPreferences()
+                        │
+                        ▼
+                 notAnimateIcon
+                        │
+                        ▼
+            animateOnNewNotification()
+                        │
+                 ┌──────┴──────┐
+                 │             │
+              animar       no animar
+                 │             │
+                 ▼             ▼
+            ease(1.2...)    ease(normal)
+                 │             │
+                 └──────┬──────┘
+                        ▼
+                    blinkIcon()</samp></pre>
+        <p>Y también tenemos:</p>
+        <pre><samp>new-notification
+        │
+        ▼
+notificationIcon
+        │
+        ▼
+animateOnNewNotification()</samp></pre>
+        <p>Aunque todavía debemos localizar exactamente cómo se conectan.</p>
+    </details>
+    <details>
+        <summary>Dos cosas que dejaremos marcadas</summary>
+        <h4>Pendiente A — <code data-start="7721" data-end="7737">notAnimateIcon</code></h4>
+        <p>Buscar en <code data-start="7749" data-end="7768">loadPreferences()</code>: <span class="ͼy">this</span><span
+                class="ͼv">.</span>notAnimateIcon <span class="ͼv">=</span> ... y comprobar cómo se relaciona
+            exactamente
+            con: <kbd class="inline-code">animate-icon</kbd>.</p>
+        <h4>Pendiente B — quién llama a <code data-start="7922" data-end="7950">animateOnNewNotification()</code></h4>
+        <p>Esto nos permitirá descubrir:</p>
+        <ul>
+            <li>cuándo considera la extensión que llegó una nueva notificación;</li>
+            <li>qué valor recibe <code>times</code>;</li>
+            <li>cómo se relaciona con <code>new-notification</code>;</li>
+            <li>y qué valor utiliza para iniciar la animación.</li>
+        </ul>
+        <p>Y esto último será especialmente interesante porque <strong data-start="8223" data-end="8318">ya tenemos la
+                preferencia <code data-start="8251" data-end="8269">new-notification</code> fresca de nuestro recorrido
+                por
+                <code data-start="8302" data-end="8316">prefsGtk4.js</code></strong>.</p>
+        <p>Así que esta función queda bastante bien entendida: <strong data-start="8373" data-end="8470"
+                data-is-last-node="">es
+                el motor de la animación visual del icono, con una fase opcional de parpadeo al finalizar.</strong></p>
+    </details>
+</div>
+<h2 id="section4" class="class-exts">blinkIcon ( )</h2>
+<hr>
+<p>Esta es prácticamente la <strong data-start="29" data-end="46">segunda mitad</strong> de la función anterior. Ahora
+    se confirma qué hace exactamente <code data-start="110" data-end="123">blinkIcon()</code> y cómo se encadena con
+    <code data-start="147" data-end="175">animateOnNewNotification()</code>.
+</p>
+<pre><code><span class="ͼ13">blinkIcon</span>: <span class="ͼv">function</span>(<span class="ͼ11">blinkTimes</span>, <span class="ͼ11">interval</span>, <span class="ͼ11">opacity</span>) { ... }</code></pre>
+<p>Recibe tres valores:</p>
+<ul>
+    <li><code>blinkTimes</code> → cuántas veces debe cambiar la opacidad.</li>
+    <li><code>interval</code> → duración de cada cambio.</li>
+    <li><code>opacity</code> → opacidad que debe aplicar en este paso.</li>
+</ul>
+<h3>Primero llama a <code data-start="452" data-end="470">manageAutohide()</code></h3>
+<p>Esto es interesante porque el parpadeo <strong data-start="553" data-end="620">no es independiente del comportamiento
+        de ocultación automática</strong>.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>manageAutohide();</code></pre>
+<p>Cada vez que se inicia <code data-start="646" data-end="659">blinkIcon()</code>, se revisa el estado de <code
+        data-start="684" data-end="694">autohide</code>. Ya conocemos esa preferencia porque apareció en <code
+        data-start="745" data-end="770">PrefsWindowForIndicator</code>:</p>
+<pre><samp>autohide
+├── No
+├── Yes
+└── If Do Not Disturb is Off</samp></pre>
+<p>Así que la relación queda:</p>
+<pre><samp>autohide
+   ↓
+loadPreferences()
+   ↓
+manageAutohide()
+   ↓
+blinkIcon()</samp></pre>
+<p>Y más adelante podremos comprobar exactamente qué decide <code data-start="1008"
+        data-end="1026">manageAutohide()</code>.</p>
+<h3>¿Cuándo parpadea?</h3>
+<pre><code><span class="ͼv">if</span>(<span class="ͼ11">blinkTimes</span> <span class="ͼv">&gt;</span> <span class="ͼy">0</span>) { ... }</code></pre>
+<p>Muy sencillo:</p>
+<pre><samp>blinkTimes &gt; 0 → continúa
+blinkTimes &lt;= 0 → termina</samp></pre>
+<p>No hay recursión infinita porque cada ciclo hace: <span class="ͼv">--</span><span class="ͼ11">blinkTimes</span>.
+</p>
+<h3>El cambio de opacidad</h3>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>notificationIcon<span class="ͼv">.</span>ease({
+    duration: <span class="ͼ11">interval</span>,
+    opacity: <span class="ͼ11">opacity</span>,</code></pre>
+<p>Aquí está el parpadeo propiamente dicho. No está ocultando y mostrando el icono mediante:</p>
+<pre><samp>visible = false
+visible = true</samp></pre>
+<p>Sino que modifica: <span class="ͼ11">opacity</span>. Por eso el icono sigue existiendo y sigue ocupando su
+    espacio; simplemente se vuelve más o menos transparente.</p>
+<h3>La alternancia está aquí</h3>
+<pre><code><span class="ͼ13">onComplete</span>: () =&gt;
+    <span class="ͼy">this</span><span class="ͼv">.</span>blinkIcon(
+        <span class="ͼv">--</span><span class="ͼ11">blinkTimes</span>,
+        <span class="ͼ11">interval</span>,
+        (<span class="ͼ11">opacity</span> <span class="ͼv">==</span> <span class="ͼy">255</span>) <span class="ͼv">?</span> <span class="ͼy">100</span> <span class="ͼv">:</span> <span class="ͼy">255</span>
+    )</code></pre>
+<p>Este operador ternario: (<span class="ͼ11">opacity</span> <span class="ͼv">==</span> <span class="ͼy">255</span>)
+    <span class="ͼv">?</span> <span class="ͼy">100</span> <span class="ͼv">:</span> <span class="ͼy">255</span>
+    significa:
+</p>
+<pre><samp>si opacity == 255
+    → siguiente opacity = 100
+si no
+    → siguiente opacity = 255</samp></pre>
+<p>Así que tenemos: <kbd class="inline-code">255 → 100 → 255 → 100 → 255 → ...</kbd>. Eso produce el parpadeo.</p>
+<h3>Ahora podemos unir las dos funciones</h3>
+<hr>
+<p>La función anterior terminaba con:</p>
+<pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>blinkIcon(
+    <span class="ͼv">!</span><span class="ͼy">this</span><span class="ͼv">.</span>menu<span class="ͼv">.</span>isOpen <span class="ͼv">*</span> <span class="ͼy">this</span><span class="ͼv">.</span>blinkCount,
+    <span class="ͼy">this</span><span class="ͼv">.</span>blinkTime,
+    <span class="ͼy">100</span>
+);</samp></pre>
+<p>Por tanto, cuando la animación termina:</p>
+<pre><samp>animateOnNewNotification()
+        │
+        ▼
+    blinkIcon()
+        │
+        ├── blinkTimes
+        ├── blinkTime
+        └── opacity = 100</samp></pre>
+<p>Y <code data-start="2536" data-end="2549">blinkIcon()</code> empieza con <code data-start="2562"
+        data-end="2567">100</code>, por lo que inmediatamente hace: <var class="inline-code">100</var> → <var
+        class="inline-code">255</var> → <var class="inline-code">100</var> → <var class="inline-code">255</var> → <var
+        class="inline-code">...</var> hasta que: <kbd class="inline-code">blinkTimes</kbd> = <var
+        class="inline-code">0</var>.</p>
+<h4>Un ejemplo</h4>
+<p>Supongamos: <span class="ͼ11">blinkIcon</span>(<span class="ͼy">3</span>, <span class="ͼy">500</span>, <span
+        class="ͼy">100</span>);</p>
+<p>La secuencia sería:</p>
+<pre><samp>Inicio
+opacity = 100
+    │
+    │ 500 ms
+    ▼
+opacity = 255
+blinkTimes = 2
+    │
+    │ 500 ms
+    ▼
+opacity = 100
+blinkTimes = 1
+    │
+    │ 500 ms
+    ▼
+opacity = 255
+blinkTimes = 0
+    │
+    ▼
+FIN</samp></pre>
+<p>Por tanto <code data-start="3005" data-end="3017">blinkTimes</code> representa mejor <strong data-start="3035"
+        data-end="3073">número de transiciones de opacidad</strong> que "número de parpadeos completos".</p>
+<div class="card">
+    <h4>Observaciones de este bloque</h4>
+    <hr>
+    <details>
+        <summary>Una pieza muy buena del mapa</summary>
+        <p>Y ahora tenemos:</p>
+        <pre><samp>                 Nueva notificación
+                        │
+                        ▼
+            animateOnNewNotification()
+                        │
+                 animación del icono
+                        │
+                        ▼
+                  blinkIcon()
+                        │
+                        ├── manageAutohide()
+                        │
+                        ▼
+              ┌─────────────────┐
+              │ cambiar opacity │
+              └─────────────────┘
+                        │
+                255 ↔ 100
+                        │
+                        ▼
+                 blinkTimes--
+                        │
+                ┌───────┴───────┐
+                │               │
+             &gt; 0              == 0
+                │               │
+                ▼               ▼
+          vuelve a blinkIcon   FIN</samp></pre>
+        <p>Y aquí aparece una conexión que me gusta especialmente: <code data-start="4105"
+                data-end="4116">blinkTime</code>
+            y <code data-start="4119" data-end="4131">blinkCount</code>.</p>
+        <p>Ya sabemos de dónde vienen:</p>
+        <pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>prefTime(<span class="ͼz">"blink-icon"</span>, ...)
+<span class="ͼy">this</span><span class="ͼv">.</span>prefTime(<span class="ͼz">"blink-time"</span>, ...)</samp></pre>
+        <p>Aunque sus nombres pueden resultar un poco engañosos. Por el código:</p>
+        <ul>
+            <li><code>blinkTime</code> → <strong>duración de cada transición de opacidad</strong>.</li>
+            <li><code>blinkCount</code> → <strong>cantidad de transiciones</strong>.</li>
+        </ul>
+        <p>Y <code data-start="4429" data-end="4443">animate-icon</code> controla si ocurre la primera animación antes
+            del
+            parpadeo.</p>
+    </details>
+    <details>
+        <summary>Una observación para nuestro expediente</summary>
+        <p>Hay algo que <strong data-start="4571" data-end="4608">no necesitamos investigar todavía</strong>, pero sí
+            dejar
+            anotado: <span class="ͼy">this</span><span class="ͼv">.</span>manageAutohide(); aparece al comienzo de <code
+                data-start="4699" data-end="4712">blinkIcon()</code>.</p>
+        <p>Eso significa que <code data-start="4733" data-end="4751">manageAutohide()</code> probablemente no solamente
+            controla
+            un simple "ocultar automáticamente", sino que puede tener efectos sobre la visibilidad del indicador o del
+            menú
+            que
+            son relevantes durante la llegada de notificaciones.</p>
+        <p>Así que cuando lleguemos a <code data-start="4985" data-end="5003">manageAutohide()</code>, tendremos que
+            conectarla
+            con:</p>
+        <pre><samp>autohide
+isDndOff
+dndpref
+notificationIcon
+this.visible</samp></pre>
+        <p>Ese será probablemente otro pequeño nudo de dependencias. Por ahora: <strong data-start="5175"
+                data-end="5207"><code data-start="5177" data-end="5190">blinkIcon()</code> queda cerrado.</strong> Y ya
+            tenemos perfectamente
+            encadenadas las dos funciones:</p>
+        <pre><samp>animateOnNewNotification()
+            ↓
+       blinkIcon()</samp></pre>
+    </details>
+</div>
+<h2 id="section5" class="class-exts">blinkIconStopIfBlinking ( )</h2>
+<hr>
+<p>Esta función es pequeña pero <strong data-start="42" data-end="116">muy útil para entender cómo se detiene una
+        animación que está en curso</strong>:</p>
+<pre><code><span class="ͼ13">blinkIconStopIfBlinking</span>: <span class="ͼv">function</span>() {
+
+  <span class="ͼy">this</span><span class="ͼv">.</span>notificationIcon<span class="ͼv">.</span>remove_all_transitions();
+  <span class="ͼy">this</span><span class="ͼv">.</span>notificationIcon<span class="ͼv">.</span>set_opacity(<span class="ͼy">255</span>);
+
+}</code></pre>
+<h3><code class="inline-code">remove_all_transitions()</code></h3>
+<p>Esto cancela las transiciones/animaciones que tenga actualmente <code data-start="438"
+        data-end="456">notificationIcon</code>.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>notificationIcon<span class="ͼv">.</span>remove_all_transitions();</code></pre>
+<p>Y aquí conecta directamente con las dos funciones anteriores:</p>
+<pre><samp>animateOnNewNotification()
+        │
+        └── ease(...)
+               │
+               ▼
+          blinkIcon()
+               │
+               └── ease(...)</samp></pre>
+<p>Ambas utilizan: <span class="ͼ11">notificationIcon</span><span class="ͼv">.</span>ease(...). Por lo tanto, si el
+    icono está en medio de alguna de esas transiciones, <code data-start="831"
+        data-end="857">remove_all_transitions()</code> las corta.</p>
+<p>No espera a que termine el ciclo de: <var class="inline-code">100</var> → <var class="inline-code">255</var> → <var
+        class="inline-code">100</var> → <var class="inline-code">255...</var> sino que lo <strong data-start="958"
+        data-end="987">interrumpe inmediatamente</strong>.</p>
+<h3>Después fuerza opacidad completa</h3>
+<p>Esto es importante.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>notificationIcon<span class="ͼv">.</span>set_opacity(<span class="ͼy">255</span>);</code></pre>
+<p>Si cancelamos una animación cuando el icono estaba, por ejemplo, en: <kbd class="inline-code">opacity</kbd> = <var
+        class="inline-code">100</var>, no queremos dejarlo medio transparente.</p>
+<p>Así que inmediatamente establecemos: <kbd class="inline-code">opacity</kbd> = <var class="inline-code">255</var>, es
+    decir: </p>
+<blockquote>100 % visible.</blockquote>
+<p>El resultado es:</p>
+<pre><samp>transición en curso
+       │
+       ▼
+remove_all_transitions()
+       │
+       ▼
+animación detenida
+       │
+       ▼
+set_opacity(255)
+       │
+       ▼
+icono completamente visible</samp></pre>
+<div class="card">
+    <h4>Observaciones de este bloque</h4>
+    <hr>
+    <details>
+        <summary>Ahora tenemos las tres funciones juntas</summary>
+        <div>
+            <p>Ya podemos cerrar este pequeño subsistema:</p>
+            <pre><samp>                  nueva notificación
+                         │
+                         ▼
+             animateOnNewNotification()
+                         │
+                  animación inicial
+                         │
+                         ▼
+                    blinkIcon()
+                         │
+                   100 ↔ 255
+                         │
+                         │
+             ┌───────────┘
+             │
+             │ alguien necesita
+             │ detener el parpadeo
+             ▼
+       blinkIconStopIfBlinking()
+             │
+             ├── remove_all_transitions()
+             │
+             └── set_opacity(255)</samp></pre>
+            <h4>Y una diferencia importante</h4>
+            <p><code>blinkIcon()</code> <strong>inicia/continúa</strong> la
+                secuencia. <code>blinkIconStopIfBlinking()</code> <strong>no intenta revertirla paso a paso</strong>.
+                Simplemente dice:</p>
+            <blockquote>"Se acabó. Cancela cualquier transición y deja el icono en su estado normal."</blockquote>
+            <p>Eso es precisamente lo que esperaríamos de una función con ese nombre.</p>
+        </div>
+    </details>
+    <details>
+        <summary>Algo que sí quiero dejar marcado</summary>
+        <div>
+            <p>Todavía nos falta descubrir <strong>quién llama a <code>blinkIconStopIfBlinking()</code></strong>.</p>
+            <p>Eso será interesante porque probablemente nos revele <strong>qué evento hace que el indicador deje de
+                    parpadear</strong>. Podría ser al abrir el menú, al leer las notificaciones, al cambiar DND, etc.
+                Pero
+                no necesitamos adelantarnos.</p>
+            <p><strong><code>blinkIconStopIfBlinking()</code> queda cerrada.</strong> Ya tenemos entendido todo el
+                pequeño
+                sistema de animación/parpadeo del icono.</p>
+        </div>
+    </details>
+</div>
+<h2 id="section6" class="class-exts">dndToggle ( ) </h2>
+<hr>
+<p>Aquí tenemos otra función pequeña, pero ahora que ya vimos <code data-start="59" data-end="68">dndpref</code> en
+    <code data-start="72" data-end="81">_init()</code>, podemos entenderla casi inmediatamente.
+</p>
+<pre><code><span class="ͼ13">dndToggle</span>: <span class="ͼv">function</span>() {
+
+  <span class="ͼy">this</span><span class="ͼv">.</span>dndpref<span class="ͼv">.</span>set_boolean(
+    <span class="ͼz">'show-banners'</span>,
+    <span class="ͼv">!</span><span class="ͼy">this</span><span class="ͼv">.</span>dndpref<span class="ͼv">.</span>get_boolean(<span class="ͼz">'show-banners'</span>)
+  );
+
+}</code></pre>
+<h3>¿Qué es <code data-start="285" data-end="294">dndpref</code>?</h3>
+<p>Lo establecimos en <code data-start="316" data-end="325">_init()</code>:</p>
+<pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>dndpref <span class="ͼv">=</span>
+    <span class="ͼ11">Main</span><span class="ͼv">.</span>panel<span class="ͼv">.</span>statusArea<span class="ͼv">.</span>dateMenu<span class="ͼv">.</span>_indicator<span class="ͼv">.</span>_settings;</samp></pre>
+<p>Así que <code data-start="427" data-end="436">dndpref</code> es un objeto <code data-start="450"
+        data-end="464">Gio.Settings</code> que apunta a las preferencias que GNOME Shell utiliza para las
+    notificaciones.</p>
+<p>Y aquí aparece la clave: <span class="ͼz">'show-banners'</span>, es decir, esta función <strong data-start="628"
+        data-end="681">no utiliza una preferencia propia de la extensión</strong>. Está modificando
+    directamente la configuración de GNOME Shell.</p>
+<h3>Lo que hace realmente</h3>
+<p>La parte: <span class="ͼy">this</span><span class="ͼv">.</span>dndpref<span class="ͼv">.</span>get_boolean(<span
+        class="ͼz">'show-banners'</span>) lee el estado actual.</p>
+<p>Supongamos: <kbd class="inline-code">show-banners</kbd> = <var class="inline-code">true</var>. Entonces: <span
+        class="ͼv">!</span><span class="ͼy">true</span> produce: <var class="inline-code">false</var> y
+    ejecuta: <span class="ͼ11">set_boolean</span>(<span class="ͼz">'show-banners'</span>, <span
+        class="ͼy">false</span>);</p>
+<p>Si estaba: <var class="inline-code">false</var> hace: <kbd class="inline-code">!</kbd><code
+        class="inline-code">false</code> → <var class="inline-code">true</var> y lo vuelve a activar.</p>
+<p>En otras palabras, es un <strong data-start="1268" data-end="1278">toggle</strong>.:</p>
+<pre><samp>show-banners
+     │
+     ▼
+   leer
+     │
+     ▼
+   invertir
+     │
+     ▼
+   guardar</samp></pre>
+<h3>¿Por qué eso equivale a DND?</h3>
+<p>Porque aquí la extensión está utilizando: <kbd class="inline-code">show-banners</kbd> = <var
+        class="inline-code">false</var>, como indicador práctico de que las notificaciones emergentes están
+    desactivadas.</p>
+<p>Así:</p>
+<table>
+    <thead>
+        <tr>
+            <th><code>show-banners</code></th>
+            <th>Efecto</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>true</code></td>
+            <td>se permiten banners</td>
+        </tr>
+        <tr>
+            <td><code>false</code></td>
+            <td>no se muestran banners</td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="card">
+    <h4>Observaciones de este bloque</h4>
+    <hr>
+
+    <details>
+        <summary>Y ahora conecta con algo que vimos antes</summary>
+        <p>En <code data-start="1709" data-end="1718">_init()</code> teníamos:</p>
+        <pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>isDndOff <span class="ͼv">=</span> <span class="ͼy">true</span>;
+
+<span class="ͼy">this</span><span class="ͼv">.</span>dndpref <span class="ͼv">=</span>
+    <span class="ͼ11">Main</span><span class="ͼv">.</span>panel<span class="ͼv">.</span>statusArea<span class="ͼv">.</span>dateMenu<span class="ͼv">.</span>_indicator<span class="ͼv">.</span>_settings;</samp></pre>
+        <p>Y ahora:</p>
+        <pre><samp>isDndOff
+   │
+   │ estado que la extensión mantiene
+   │
+   ▼
+dndToggle()
+   │
+   ▼
+dndpref
+   │
+   ▼
+show-banners</samp></pre>
+        <p>Pero aquí hay una distinción importante: <code data-start="2028" data-end="2038">isDndOff</code> y <code
+                data-start="2041" data-end="2055">show-banners</code> no son la misma cosa.</p>
+        <p><code data-start="2079" data-end="2089">isDndOff</code> es una variable propia de la extensión: <span
+                class="ͼy">this</span><span class="ͼv">.</span>isDndOff mientras que: <span class="ͼy">this</span><span
+                class="ͼv">.</span>dndpref<span class="ͼv">.</span>get_boolean(<span class="ͼz">'show-banners'</span>)
+            consulta
+            el estado real almacenado en GNOME Shell.</p>
+        <p>Por eso todavía necesitamos estudiar: <span class="ͼ11">loadDndStatus</span>() para saber <strong
+                data-start="2376" data-end="2450">cómo sincroniza la extensión su <code data-start="2410"
+                    data-end="2420">isDndOff</code> con el estado real de GNOME</strong>.</p>
+    </details>
+    <details>
+        <summary>Y aparece otra conexión interesante</summary>
+        <p>Anteriormente estudiamos: <span class="ͼ11">setNotificationBannerPolicy</span>(<span
+                class="ͼ11">canonicalizedNameWithPath</span>, <span class="ͼ11">value</span>) y allí también
+            aparecía: <span class="ͼ11">set_boolean</span>(<span class="ͼz">"show-banners"</span>, <span
+                class="ͼy">true</span><span class="ͼv">/</span><span class="ͼy">false</span>) pero sobre:</p>
+        <pre><samp><span class="ͼv">new</span> <span class="ͼ11">Gio</span><span class="ͼv">.</span>Settings({
+    schema_id: <span class="ͼz">"org.gnome.desktop.notifications.application"</span>,
+    path: <span class="ͼ11">canonicalizedNameWithPath</span>
+})</samp></pre>
+        <p>Eso es ligeramente diferente. Tenemos entonces <strong data-start="2894" data-end="2909">dos
+                niveles</strong>:
+        </p>
+        <blockquote>¡Y ambas utilizan una clave llamada <code data-start="3204" data-end="3218">show-banners</code>!
+        </blockquote>
+        <pre><samp>GNOME Shell
+│
+├── configuración general / indicador
+│       │
+│       └── dndpref
+│            └── show-banners
+│
+└── configuración por aplicación
+        │
+        └── org.gnome.desktop.notifications.application
+             └── show-banners</samp></pre>
+        <p>Pero <strong data-start="3226" data-end="3278">no significan exactamente la misma configuración</strong>,
+            porque
+            pertenecen a distintos objetos/esquemas/rutas de <code data-start="3336" data-end="3347">GSettings</code>.
+            Esto
+            es
+            algo que vale la pena conservar en nuestro mapa para no confundirlas más adelante.</p>
+    </details>
+    <details>
+        <summary>Conclusión</summary>
+        <p><code data-start="3461" data-end="3474">dndToggle()</code> es básicamente:</p>
+        <blockquote>Invertir directamente el estado de <code data-start="3531" data-end="3545">show-banners</code>
+            utilizado
+            por
+            GNOME Shell para activar/desactivar la presentación de banners.</blockquote>
+        <p>Y deja pendiente una pieza clave:</p>
+        <pre><samp>dndToggle()
+     ▲
+     │
+loadDndStatus()
+     │
+     ▼
+¿cómo determina la extensión el estado inicial de DND?</samp></pre>
+        <p>Esa será la siguiente pieza que nos conviene estudiar cuando aparezca.</p>
     </details>
 </div>
