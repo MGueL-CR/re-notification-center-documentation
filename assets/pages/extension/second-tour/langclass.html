@@ -8,9 +8,12 @@
             <a href="#section3">animateOnNewNotification ( )</a>
             <a href="#section4">blinkIcon ( )</a>
             <a href="#section5">blinkIconStopIfBlinking ( )</a>
-            <a href="#section6">dndToggle ()</a>
-            <a href="#section7">loadDndStatus ()</a>
-            <a href="#section8">loadPreferences ()</a>
+            <a href="#section6">dndToggle ( )</a>
+            <a href="#section7">loadDndStatus ( )</a>
+            <a href="#section8">loadPreferences ( )</a>
+            <a href="#section9">manageAutohide ( )</a>
+            <a href="#section10">manageEvents ( )</a>
+            <a href="#section11">manageLabel ( )</a>
             <hr>
             <a href="#section"> ...</a>
         </div>
@@ -2949,5 +2952,981 @@ showEventsInCalendarAlso
             podemos regresar a <code>loadPreferences()</code> y seguir su origen hasta el <code>gschema</code> y la
             interfaz de preferencias</blockquote>
         <p>Eso es exactamente lo que queríamos conseguir con este segundo repaso.</p>
+    </details>
+</div>
+<h2 id="section9" class="class-exts">manageAutohide ( )</h2>
+<hr>
+<p>Esta función es de las que justifican todo el trabajo anterior, porque aquí <strong data-start="89"
+        data-end="147">convergen varias preferencias que acabamos de rastrear</strong>.</p>
+<p><code data-start="150" data-end="168">manageAutohide()</code> decide principalmente <strong data-start="191"
+        data-end="243">cuándo debe estar visible el indicador del panel</strong> y, cuando el menú ya está abierto,
+    <strong data-start="279" data-end="320">qué debe mostrar el área de contenido</strong>.
+</p>
+<h3>¿El menú está abierto?</h3>
+<pre><code><span class="ͼv">if</span>(<span class="ͼv">!</span><span class="ͼy">this</span><span class="ͼv">.</span>menu<span class="ͼv">.</span>isOpen) {
+    ...
+}
+<span class="ͼv">else</span> {
+    ...
+}</code></pre>
+<p>Tenemos dos escenarios completamente diferentes:</p>
+<pre><samp>                 manageAutohide()
+                       │
+              ┌────────┴────────┐
+              │                 │
+        menú cerrado        menú abierto
+              │                 │
+              ▼                 ▼
+       indicador visible    contenido vacío/no vacío</samp></pre>
+<p>Esto es importante: el nombre <code data-start="818" data-end="834">manageAutohide</code> podría hacernos pensar
+    únicamente en ocultar el botón, pero <strong data-start="895" data-end="976">también administra el estado visual del
+        contenido cuando el menú está abierto</strong>.</p>
+<h3>Cuando el menú está cerrado</h3>
+<h4>Icono de media</h4>
+<p>Aquí aparecen tres condiciones.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>mediaIcon<span class="ͼv">.</span>visible <span class="ͼv">=</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>mediaSection<span class="ͼv">.</span>_shouldShow() <span class="ͼv">&amp;&amp;</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>showThreeIcons <span class="ͼv">&amp;&amp;</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>mediaSectionToBeShown;</code></pre>
+<div class="row">
+    <div class="col">
+        <h5>Primera</h5>
+        <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>mediaSection<span class="ͼv">.</span>_shouldShow()</code></pre>
+    </div>
+    <div class="col">
+        <p>Es una condición proporcionada por GNOME Shell: pregunta si la sección multimedia considera que debe
+            mostrarse.</p>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <h5>Segunda</h5>
+        <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>showThreeIcons</code></pre>
+    </div>
+    <div class="col">
+        <p>Viene de:</p>
+        <pre><samp>individual-icons
+      ↓
+showThreeIcons</samp></pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <h5>Tercera</h5>
+        <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>mediaSectionToBeShown</code></pre>
+    </div>
+    <div class="col">
+        <p>Viene de:</p>
+        <pre><samp>show-media
+      ↓
+mediaSectionToBeShown</samp></pre>
+    </div>
+</div>
+<p>Por tanto:</p>
+<pre><samp>                    MEDIA ICON
+                       │
+          ┌────────────┼────────────┐
+          ▼            ▼            ▼
+    GNOME quiere   individual    show-media
+     mostrarlo       icons          &gt; 0
+          │            │            │
+          └────────────┴────────────┘
+                       │
+                 todas verdaderas
+                       │
+                       ▼
+                mediaIcon.visible</samp></pre>
+<p>Si cualquiera es falsa, no aparece el icono de media.</p>
+<h4>Icono de eventos</h4>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>eventsIcon<span class="ͼv">.</span>visible <span class="ͼv">=</span>
+    (<span class="ͼy">this</span><span class="ͼv">.</span>shouldShowEventsSection()) <span class="ͼv">&amp;&amp;</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>showThreeIcons <span class="ͼv">&amp;&amp;</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>eventsSectionToBeShown;</code></pre>
+<p>Es prácticamente el mismo patrón:</p>
+<pre><samp>shouldShowEventsSection()
+          +
+showThreeIcons
+          +
+eventsSectionToBeShown
+          ↓
+eventsIcon.visible</samp></pre>
+<p>Pero fíjate en algo: <code data-start="2503" data-end="2530">shouldShowEventsSection()</code> <strong
+        data-start="2531" data-end="2552">no es simplemente</strong> <code data-start="2553"
+        data-end="2577">eventsSectionToBeShown</code>. Es una función que probablemente incorpora otras condiciones
+    relacionadas con los eventos.</p>
+<p>Por eso no debemos sustituir mentalmente: <span class="ͼy">this</span><span
+        class="ͼv">.</span>shouldShowEventsSection() por: <span class="ͼy">this</span><span
+        class="ͼv">.</span>eventsSectionToBeShown, son cosas diferentes.</p>
+<h4>Icono de notificaciones</h4>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>notificationIcon<span class="ͼv">.</span>visible <span class="ͼv">=</span>
+    (<span class="ͼy">this</span><span class="ͼv">.</span>notificationSection<span class="ͼv">.</span>_list<span class="ͼv">.</span>get_children()<span class="ͼv">.</span>length <span class="ͼv">&amp;&amp;</span>
+     <span class="ͼy">this</span><span class="ͼv">.</span>notificationSectionToBeShown) <span class="ͼv">||</span></code></pre>
+<h5>Primera posibilidad:</h5>
+<blockquote>Hay notificaciones y la sección de notificaciones está habilitada.</blockquote>
+<p>Es decir:</p>
+<pre><samp>cantidad de notificaciones &gt; 0
+             +
+notificationSectionToBeShown
+             ↓
+notificationIcon.visible</samp></pre>
+<h5>Segunda posibilidad</h5>
+<p>Aquí ocurre algo interesante.</p>
+<pre><code>(<span class="ͼy">this</span><span class="ͼv">.</span>mediaSection<span class="ͼv">.</span>_shouldShow() <span class="ͼv">&amp;&amp;</span>
+ <span class="ͼy">this</span><span class="ͼv">.</span>mediaSectionToBeShown <span class="ͼv">&amp;&amp;</span>
+ <span class="ͼv">!</span><span class="ͼy">this</span><span class="ͼv">.</span>showThreeIcons)</code></pre>
+<p>Si <strong data-start="3462" data-end="3468">no</strong> utilizamos tres iconos individuales: <kbd
+        class="inline-code">showThreeIcons</kbd> = <var class="inline-code">false</var> entonces el icono general de
+    notificaciones funciona como indicador también para la sección multimedia. Por eso:</p>
+<pre><samp>media visible
+     +
+no three icons
+     ↓
+notificationIcon visible</samp></pre>
+<h5>Tercera posibilidad</h5>
+<pre><code>((<span class="ͼy">this</span><span class="ͼv">.</span>shouldShowEventsSection()) <span class="ͼv">&amp;&amp;</span>
+ <span class="ͼy">this</span><span class="ͼv">.</span>eventsSectionToBeShown <span class="ͼv">&amp;&amp;</span>
+ <span class="ͼv">!</span><span class="ͼy">this</span><span class="ͼv">.</span>showThreeIcons)</code></pre>
+<p>Exactamente el mismo concepto para eventos:</p>
+<pre><samp>events visible
+     +
+no three icons
+     ↓
+notificationIcon visible</samp></pre>
+<p>Por tanto, cuando <code data-start="4024" data-end="4042">individual-icons</code> está desactivado, el icono general
+    representa más cosas.</p>
+<h5>Y aparece DND</h5>
+<p>La última condición es:</p>
+<pre><code>((<span class="ͼv">!</span><span class="ͼy">this</span><span class="ͼv">.</span>isDndOff) <span class="ͼv">*</span> <span class="ͼy">this</span><span class="ͼv">.</span>autohide <span class="ͼv">&gt;</span> <span class="ͼy">1</span>)</code></pre>
+<p>Esta es probablemente la parte más interesante de toda la función.</p>
+<p><b>Primero</b>: <span class="ͼv">!</span><span class="ͼy">this</span><span class="ͼv">.</span>isDndOff
+    significa: DND está activo porque anteriormente vimos: <kbd class="inline-code">isDndOff</kbd> = <var
+        class="inline-code">show-banners</var>. Así que:</p>
+<pre><samp>show-banners = false
+        ↓
+isDndOff = false
+        ↓
+!isDndOff = true</samp></pre>
+<p><b>Después</b> tenemos: <span class="ͼy">this</span><span class="ͼv">.</span>autohide <span class="ͼv">&gt;</span>
+    <span class="ͼy">1</span> y sabemos que <code data-start="4595" data-end="4605">autohide</code> tiene tres estados:
+    <kbd class="inline-code">0</kbd>, <kbd class="inline-code">1</kbd>, <kbd class="inline-code">2</kbd>.
+</p>
+<p>Por lo tanto, <code data-start="4660" data-end="4665">&gt; 1</code> significa específicamente: <kbd
+        class="inline-code">autohide</kbd> == <var class="inline-code">2 </var>que corresponde a:</p>
+<blockquote>If Do Not Disturb is Off</blockquote>
+<p>Ahora la expresión completa se puede leer conceptualmente como:</p>
+<pre><samp>DND está activo
+     AND
+autohide = "If Do Not Disturb is Off"
+     ↓
+notificationIcon.visible = true</samp></pre>
+<p>Esto explica por qué la opción <code data-start="4984" data-end="4994">autohide</code> necesitaba conocer el estado
+    DND.</p>
+<h4>Una pequeña peculiaridad: <code data-start="5066" data-end="5069">*</code> en lugar de <code data-start="5082"
+        data-end="5086">&amp;&amp;</code></h4>
+<p>Tenemos: (<span class="ͼv">!</span><span class="ͼy">this</span><span class="ͼv">.</span>isDndOff) <span
+        class="ͼv">*</span> <span class="ͼy">this</span><span class="ͼv">.</span>autohide <span class="ͼv">&gt;</span>
+    <span class="ͼy">1</span>. Esto es JavaScript aprovechándose de la conversión:
+</p>
+<pre><samp>true  → 1
+false → 0</samp></pre>
+<p>Por ejemplo:</p>
+<pre><samp>true * 2  = 2
+false * 2 = 0</samp></pre>
+<p>Entonces: (<kbd class="inline-code">!</kbd><code class="inline-code">isDndOff</code>) <kbd
+        class="inline-code">*</kbd> <kbd class="inline-code">autohide</kbd> &gt; <var class="inline-code">1</var>
+    funciona como una especie de condición. No es la forma más clara de escribirlo.
+    Conceptualmente sería mucho más legible como:</p>
+<pre><samp><span class="ͼv">!</span><span class="ͼy">this</span><span class="ͼv">.</span>isDndOff <span class="ͼv">&amp;&amp;</span> <span class="ͼy">this</span><span class="ͼv">.</span>autohide <span class="ͼv">&gt;</span> <span class="ͼy">1</span></samp></pre>
+<p><strong data-start="5529" data-end="5562">Pero no lo cambiaría todavía.</strong> Para nuestra fase de comprensión nos
+    interesa saber qué hace, no modernizarlo todavía. Este es un buen candidato para nuestra futura fase de
+    limpieza/migración.</p>
+<h3>¿Cuándo muestra finalmente el indicador?</h3>
+<pre><code><span class="ͼv">if</span>(
+    <span class="ͼy">this</span><span class="ͼv">.</span>mediaIcon<span class="ͼv">.</span>visible <span class="ͼv">||</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>eventsIcon<span class="ͼv">.</span>visible <span class="ͼv">||</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>notificationIcon<span class="ͼv">.</span>visible <span class="ͼv">||</span>
+    <span class="ͼv">!</span><span class="ͼy">this</span><span class="ͼv">.</span>autohide
+) {</code></pre>
+<p>Hay cuatro posibilidades para mantener visible el botón:</p>
+<pre><samp>mediaIcon visible
+       OR
+eventsIcon visible
+       OR
+notificationIcon visible
+       OR
+autohide == 0</samp></pre>
+<p>La última es importante.</p>
+<p>Si: <kbd class="inline-code">autohide</kbd> = <var class="inline-code">0</var> entonces: <span
+        class="ͼv">!</span><span class="ͼy">this</span><span class="ͼv">.</span>autohide es: <kbd
+        class="inline-code">!</kbd><code class="inline-code">0</code> → <var class="inline-code">true</var></p>
+<p>Por lo tanto:</p>
+<blockquote>Con <code data-start="6289" data-end="6304">autohide = No</code>, el indicador nunca se oculta por falta de
+    actividad.</blockquote>
+<h3>Ahora fuerza la visibilidad del indicador</h3>
+<p>Hasta aquí, bastante directo.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>visible <span class="ͼv">=</span> <span class="ͼy">true</span>;</code></pre>
+<p>Pero inmediatamente hace algo más:</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>notificationIcon<span class="ͼv">.</span>visible <span class="ͼv">=</span>
+    (<span class="ͼy">this</span><span class="ͼv">.</span>mediaIcon<span class="ͼv">.</span>visible <span class="ͼv">||</span> <span class="ͼy">this</span><span class="ͼv">.</span>eventsIcon<span class="ͼv">.</span>visible)
+        <span class="ͼv">?</span> <span class="ͼy">this</span><span class="ͼv">.</span>notificationIcon<span class="ͼv">.</span>visible
+        <span class="ͼv">:</span> <span class="ͼy">true</span>;</code></pre>
+<p>Esta línea merece atención. Podemos leerla así:</p>
+<h4>Si hay icono de media o eventos:</h4>
+<pre><samp>mediaIcon.visible || eventsIcon.visible
+            ↓
+          true</samp></pre>
+<p>Entonces: <kbd class="inline-code">notificationIcon</kbd>.<kbd class="inline-code">visible</kbd> conserva su
+    estado actual.</p>
+<h4>Si ninguno de los dos está visible:</h4>
+<p><code class="inline-code">false</code> entonces fuerza: <kbd class="inline-code">notificationIcon</kbd>.<kbd
+        class="inline-code">visible</kbd> = <var class="inline-code">true</var>. Es decir, el icono general actúa como
+    <strong data-start="7091" data-end="7112">icono de respaldo</strong>.
+</p>
+<p>Esto encaja perfectamente con <code data-start="7145" data-end="7163">individual-icons</code>:</p>
+<pre><samp>              showThreeIcons
+                   │
+          ┌────────┴────────┐
+          │                 │
+        true              false
+          │                 │
+          ▼                 ▼
+  iconos separados      icono general</samp></pre>
+<h3>Si no hay nada que mostrar</h3>
+<p>Si no entramos en el <code data-start="7478" data-end="7482">if</code>: <span class="ͼy">this</span><span
+        class="ͼv">.</span>visible <span class="ͼv">=</span> <span class="ͼy">false</span>;</p>
+<p>Así que con el menú cerrado:</p>
+<pre><samp>¿hay algún indicador?
+       │
+   ┌───┴───┐
+  sí       no
+  │         │
+  ▼         ▼
+visible   oculto</samp></pre>
+<p>Y aquí <code data-start="7679" data-end="7689">autohide</code> determina si puede desaparecer automáticamente.</p>
+<h3>Cuando el menú está ABIERTO</h3>
+<p>Ahora pasamos al <code data-start="7796" data-end="7802">else</code>:</p>
+<pre><code><span class="ͼv">else</span> {
+    <span class="ͼy">this</span><span class="ͼv">.</span>noNotificationLabel<span class="ͼv">.</span>visible <span class="ͼv">=</span> ...</code></pre>
+<p>Aquí cambia completamente la finalidad. Ya no está decidiendo si ocultar el botón del panel. Está decidiendo:</p>
+<blockquote>¿Debemos mostrar "No Notifications"?</blockquote>
+<h4>La condición</h4>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>noNotificationLabel<span class="ͼv">.</span>visible <span class="ͼv">=</span>
+    <span class="ͼv">!</span>(
+        (<span class="ͼy">this</span><span class="ͼv">.</span>mediaSection<span class="ͼv">.</span>_shouldShow() <span class="ͼv">&amp;&amp;</span>
+         <span class="ͼy">this</span><span class="ͼv">.</span>mediaSectionToBeShown) <span class="ͼv">||</span>
+
+        (<span class="ͼy">this</span><span class="ͼv">.</span>notificationSection<span class="ͼv">.</span>_list<span class="ͼv">.</span>get_children()<span class="ͼv">.</span>length <span class="ͼv">&amp;&amp;</span>
+         <span class="ͼy">this</span><span class="ͼv">.</span>notificationSectionToBeShown) <span class="ͼv">||</span>
+
+        ((<span class="ͼy">this</span><span class="ͼv">.</span>shouldShowEventsSection() <span class="ͼv">||</span>
+          <span class="ͼy">this</span><span class="ͼv">.</span>showEventsSectionIfEmpty) <span class="ͼv">&amp;&amp;</span>
+         <span class="ͼy">this</span><span class="ͼv">.</span>eventsSectionToBeShown)
+    )</code></pre>
+<p>Podemos traducirlo:</p>
+<blockquote>Mostrar <code data-start="8475" data-end="8495">"No Notifications"</code> si <strong data-start="8499"
+        data-end="8510">ninguna</strong> de las secciones relevantes tiene algo que mostrar.</blockquote>
+<p>Tenemos tres posibilidades de contenido:</p>
+<div class="row">
+    <div class="col">
+        <pre><samp>MEDIA
+  │
+  ├── GNOME dice que debe mostrarse
+  └── show-media &gt; 0</samp></pre>
+    </div>
+    <div class="col">
+        <pre><samp>NOTIFICACIONES
+  │
+  ├── hay notificaciones
+  └── show-notification &gt; 0</samp></pre>
+    </div>
+    <div class="col">
+        <pre><samp>EVENTOS
+  │
+  ├── shouldShowEventsSection()
+  │      OR
+  │   showEventsSectionIfEmpty
+  └── show-events &gt; 0</samp></pre>
+    </div>
+</div>
+<p>Si ninguna es cierta:</p>
+<pre><samp>"No Notifications" = visible</samp></pre>
+<h3>Y aquí reaparece <code data-start="8962" data-end="8992">show-events-section-if-empty</code></h3>
+<p>Esta parte es especialmente interesante:</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>shouldShowEventsSection() <span class="ͼv">||</span>
+<span class="ͼy">this</span><span class="ͼv">.</span>showEventsSectionIfEmpty</code></pre>
+<p>Esto explica por qué esa preferencia existe.</p>
+<div class="row">
+    <div class="col">
+        <p>Aunque no haya eventos:</p>
+        <pre><samp>shouldShowEventsSection() = false</samp></pre>
+    </div>
+    <div class="col">
+        <p>La sección todavía puede considerarse válida si:</p>
+        <pre><samp>showEventsSectionIfEmpty = true</samp></pre>
+    </div>
+</div>
+<p>Así que el usuario puede decidir:</p>
+<blockquote>"Quiero que la sección de eventos siga apareciendo aunque esté vacía."</blockquote>
+<p>Esto conecta directamente con lo que vimos en <code data-start="9487" data-end="9511">PrefsWindowForCalendar</code>.
+</p>
+<h3>Finalmente cambia la clase CSS</h3>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>box<span class="ͼv">.</span>style_class <span class="ͼv">=</span>
+    (<span class="ͼy">this</span><span class="ͼv">.</span>noNotificationLabel<span class="ͼv">.</span>visible)
+        <span class="ͼv">?</span> <span class="ͼz">"notification-center-message-list-empty"</span>
+        <span class="ͼv">:</span> <span class="ͼz">"notification-center-message-list"</span>;</code></pre>
+<div class="row">
+    <div class="col">
+        <p>Tenemos dos estados visuales:</p>
+        <pre><samp>contenido vacío
+     ↓
+notification-center-message-list-empty</samp></pre>
+    </div>
+    <div class="col">
+        <p>o:</p>
+        <pre><samp>hay contenido
+     ↓
+notification-center-message-list</samp></pre>
+    </div>
+</div>
+<p>Esto probablemente permite que el CSS trate de manera diferente el espacio vacío, el centrado del mensaje, márgenes,
+    etc.</p>
+<p>Y aquí recordamos que <code data-start="10057" data-end="10066">_init()</code> creó:</p>
+<pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>box <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">St</span><span class="ͼv">.</span>BoxLayout({
+    style_class: <span class="ͼz">"notification-center-message-list"</span>,
+    vertical: <span class="ͼy">true</span>
+});</samp></pre>
+<p>Por lo tanto <code data-start="10212" data-end="10230">manageAutohide()</code> puede cambiar dinámicamente esa clase.
+</p>
+<div class="card">
+    <h4>Observaciones de este bloque</h4>
+    <hr>
+    <details>
+        <summary>Mapa de dependencias de <code>manageAutohide()</code></summary>
+        <p>Ahora podemos añadir una pieza bastante grande a nuestro mapa:</p>
+        <pre><samp>                         manageAutohide()
+                                │
+             ┌──────────────────┴──────────────────┐
+             │                                     │
+       MENÚ CERRADO                           MENÚ ABIERTO
+             │                                     │
+             ▼                                     ▼
+       indicadores                         ¿hay contenido?
+             │                                     │
+    ┌────────┼─────────┐                           │
+    ▼        ▼         ▼                           ▼
+  media    events   notification          noNotificationLabel
+    │        │         │                           │
+    │        │         ├── notificaciones          │
+    │        │         ├── media                   │
+    │        │         ├── eventos                 │
+    │        │         └── DND/autohide             │
+    │        │                                     │
+    └────────┴─────────┘                           ▼
+             │                              style_class
+             ▼
+        this.visible</samp></pre>
+        <p>Y desde preferencias:</p>
+        <pre><samp>gschema
+ │
+ ├── show-media ──────────────► mediaSectionToBeShown
+ │
+ ├── show-notification ───────► notificationSectionToBeShown
+ │
+ ├── show-events ─────────────► eventsSectionToBeShown
+ │
+ ├── individual-icons ────────► showThreeIcons
+ │
+ ├── autohide ────────────────► autohide
+ │
+ └── show-events-section-if-empty
+                    │
+                    ▼
+          showEventsSectionIfEmpty</samp></pre>
+        <p>Mientras que DND viene por otro camino:</p>
+        <pre><samp>GNOME
+  │
+  └── show-banners
+          │
+          ▼
+       dndpref
+          │
+          ▼
+      isDndOff
+          │
+          ▼
+     manageAutohide()</samp></pre>
+    </details>
+    <details>
+        <summary>Y una conclusión importante</summary>
+        <p>Ahora sí podemos ver que <code>manageAutohide()</code> es realmente un <strong>punto de
+                integración</strong>
+            entre varias partes del proyecto:</p>
+        <ul>
+            <li>preferencias del indicador,</li>
+            <li>preferencias de las secciones,</li>
+            <li>estado de las notificaciones,</li>
+            <li>estado de los eventos,</li>
+            <li>multimedia,</li>
+            <li>DND,</li>
+            <li>y estado de apertura del menú.</li>
+        </ul>
+        <p>Por eso estudiarla <strong>después de <code>loadPreferences()</code> y <code>loadDndStatus()</code> fue
+                exactamente el orden correcto</strong>. Si hubiéramos visto esta función en el primer recorrido,
+            muchas
+            de estas condiciones habrían parecido arbitrarias.</p>
+        <p>Y hay dos cosas que yo marcaría para <strong>revisión posterior</strong>, sin tocarlas todavía:</p>
+        <ol>
+            <li><code>(!this.isDndOff) * this.autohide &gt; 1</code> → funciona, pero es una expresión poco clara.
+            </li>
+            <li><code>this.notificationIcon.visible = ... ? ... : true</code> → parece implementar deliberadamente
+                el
+                <strong>icono general como fallback</strong>, y debemos verificar dónde se vuelve a establecer ese
+                estado para entender completamente la interacción con <code>individual-icons</code>.
+            </li>
+        </ol>
+        <p>La siguiente función que aparezca nos permitirá seguir comprobando estas dos pistas.</p>
+    </details>
+</div>
+<h2 id="section10" class="class-exts">manageEvents ( )</h2>
+<hr>
+<p>Esta función es muy buena para nuestro mapa porque ahora podemos conectar <strong data-start="78"
+        data-end="197">calendario, eventos, <code data-start="101" data-end="118">events-position</code>, <code
+            data-start="120" data-end="136">sections-order</code> y el movimiento físico de la sección dentro de la
+        interfaz</strong>.</p>
+<pre><code><span class="ͼ13">manageEvents</span>: <span class="ͼv">function</span>(<span class="ͼ11">action</span>) { ... }</code></pre>
+<p>El parámetro <code data-start="265" data-end="273">action</code> es importante. Aquí no es una preferencia; es una
+    <strong data-start="324" data-end="369">instrucción sobre qué transición realizar</strong>.
+</p>
+<p>Por lo que vemos:</p>
+<pre><samp>action = 0 → llevar eventos al Notification Center
+action = 1 → devolver eventos al Calendar</samp></pre>
+<p>Eso lo vamos a confirmar por el comportamiento de cada caso.</p>
+<h3>Si la sección de eventos debe estar visible</h3>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>eventsSection<span class="ͼv">.</span>visible <span class="ͼv">=</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>showEventsSectionIfEmpty <span class="ͼv">||</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>shouldShowEventsSection();</code></pre>
+<p>Tenemos dos caminos para que la sección sea visible:</p>
+<pre><samp>showEventsSectionIfEmpty
+          OR
+shouldShowEventsSection()
+          ↓
+eventsSection.visible</samp></pre>
+<p>Esto conecta directamente con lo que vimos en <code data-start="962" data-end="980">manageAutohide()</code>.</p>
+<h4>showEventsSectionIfEmpty</h4>
+<p>Viene de:</p>
+<pre><samp>gschema
+   ↓
+show-events-section-if-empty
+   ↓
+loadPreferences()
+   ↓
+showEventsSectionIfEmpty</samp></pre>
+<h4>shouldShowEventsSection()</h4>
+<p>Es una función de <code data-start="1185" data-end="1205">NotificationCenter</code> que todavía tendremos que
+    estudiar. Por ahora sabemos que responde a algo como:</p>
+<blockquote>"¿Hay actualmente eventos que justifican mostrar la sección?"</blockquote>
+<p>Por tanto esta primera línea garantiza que la sección de eventos tenga el estado visual correcto antes de moverla.
+</p>
+<h3>¿Los eventos deben estar también en el calendario?</h3>
+<pre><code><span class="ͼv">if</span>(<span class="ͼy">this</span><span class="ͼv">.</span>showEventsInCalendarAlso <span class="ͼv">==</span> <span class="ͼy">true</span>) { ... }</code></pre>
+<p>Esta propiedad la vimos en <code data-start="1640" data-end="1659">loadPreferences()</code>:</p>
+<pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>showEventsInCalendarAlso <span class="ͼv">=</span>
+    (<span class="ͼy">this</span><span class="ͼv">.</span>eventsSectionToBeShown <span class="ͼv">&amp;&amp;</span>
+     <span class="ͼy">this</span><span class="ͼv">.</span>eventsSectionPosition <span class="ͼv">!=</span> <span class="ͼy">1</span>) <span class="ͼv">?</span> <span class="ͼy">true</span> <span class="ͼv">:</span> <span class="ͼy">false</span>;</samp></pre>
+<p>Por tanto llegamos a:</p>
+<pre><samp>show-events
+     +
+events-position
+     ↓
+showEventsInCalendarAlso
+     ↓
+manageEvents()</samp></pre>
+<p>Y aquí hay una idea muy importante:</p>
+<blockquote>Si <code data-start="1970" data-end="1996">showEventsInCalendarAlso</code> es <code data-start="2000"
+        data-end="2007">false</code>, <code data-start="2009" data-end="2025">manageEvents()</code> no mueve físicamente
+    la sección.</blockquote>
+<p>La primera línea todavía ajusta: <span class="ͼ11">eventsSection</span><span class="ͼv">.</span>visible pero
+    todo el bloque de movimiento queda ignorado.</p>
+<h3>Llevar eventos al Notification Center</h3>
+<pre><code><span class="ͼv">case</span> <span class="ͼy">0</span>:</code></pre>
+<p>Primero:</p>
+<pre><code><span class="ͼv">if</span>(<span class="ͼy">this</span><span class="ͼv">.</span>eventsSectionhere <span class="ͼv">==</span> <span class="ͼy">true</span>) {
+    <span class="ͼv">return</span>;
+}</code></pre>
+<p><code data-start="2357" data-end="2376">eventsSectionhere</code> lo vimos también en <code data-start="2397"
+        data-end="2416">loadPreferences()</code>:</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>eventsSectionhere <span class="ͼv">=</span> <span class="ͼy">this</span><span class="ͼv">.</span>showEventsInCalendarAlso;</code></pre>
+<p>Pero después se utiliza como <strong data-start="2523" data-end="2540">estado actual</strong>, no simplemente como
+    preferencia. Es decir: <kbd class="inline-code">eventsSectionhere</kbd> termina significando algo parecido a:</p>
+<blockquote>"¿La sección de eventos está actualmente aquí?"</blockquote>
+<p>Y veremos que cambia de valor después de moverla.</p>
+<h3>Elimina la sección de su ubicación actual</h3>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>removeSection(<span class="ͼy">this</span><span class="ͼv">.</span>eventsSection);</code></pre>
+<p>Esta función todavía no la hemos estudiado, pero por el nombre y el contexto sabemos que prepara/elimina la sección
+    de su padre actual. Y aquí aparece algo que será muy interesante cuando estudiemos <code data-start="3072"
+        data-end="3089">removeSection()</code>:</p>
+<pre><samp>eventsSection
+      │
+      ▼
+removeSection()
+      │
+      ▼
+¿qué hace exactamente con el padre actual?</samp></pre>
+<p>No necesitamos especular más todavía.</p>
+<h3>Inserta los eventos en el Notification Center</h3>
+<p>¡Aquí aparece una conexión que acabamos de construir!</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>box<span class="ͼv">.</span>insert_child_at_index(
+    <span class="ͼy">this</span><span class="ͼv">.</span>eventsSection,
+    <span class="ͼy">this</span><span class="ͼv">.</span>showingSections<span class="ͼv">.</span>indexOf(<span class="ͼz">"events"</span>)
+);</code></pre>
+<div class="row">
+    <div class="col">
+        <p>Recordemos:</p>
+        <pre><samp>show-media
+show-notification
+show-events
+        ↓
+reorderOrderOfSections()
+        ↓
+sections-order
+        ↓
+loadPreferences()
+        ↓
+showingSections</samp></pre>
+    </div>
+    <div class="col">
+        <p>Ahora:</p>
+        <pre><samp>showingSections
+      │
+      ▼
+indexOf("events")
+      │
+      ▼
+posición donde insertar eventsSection</samp></pre>
+    </div>
+</div>
+<p>Así que <code data-start="3796" data-end="3812">sections-order</code> no es simplemente una lista informativa.
+    Determina físicamente dónde se inserta la sección dentro de <code data-start="3917" data-end="3927">this.box</code>.
+</p>
+<p>Por ejemplo, conceptualmente:</p>
+<pre><samp>sections-order = ["media", "notification", "events"]
+                       │
+                       └── events → índice 2</samp></pre>
+<p>Entonces: <span class="ͼ11">insert_child_at_index</span>(<span class="ͼ11">eventsSection</span>, <span
+        class="ͼy">2</span>) pone eventos después de las otras dos secciones.</p>
+<p>Si fuera: ["<var class="inline-code">events</var>", "<var class="inline-code">media</var>", "<var
+        class="inline-code">notification</var>"] entonces: <kbd class="inline-code">events</kbd> → <kbd
+        class="inline-code">índice</kbd> 0 y se insertaría arriba.</p>
+<p>Esto confirma algo muy importante de nuestro recorrido anterior.</p>
+<h3>Actualiza el estado</h3>
+<p>Ahora la sección está en <code data-start="4526" data-end="4536">this.box</code>.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>eventsSectionhere <span class="ͼv">=</span> <span class="ͼy">true</span>;
+<span class="ͼv">return</span>;</code></pre>
+<p>Por eso: <kbd class="inline-code">eventsSectionhere</kbd> = <var class="inline-code">true</var> significa:</p>
+<blockquote>Los eventos están actualmente dentro del Notification Center.</blockquote>
+<p>Entonces el siguiente <code data-start="4686" data-end="4698">action = 0</code> no hará nada porque:</p>
+<pre><code><span class="ͼv">if</span>(<span class="ͼy">this</span><span class="ͼv">.</span>eventsSectionhere <span class="ͼv">==</span> <span class="ͼy">true</span>) {
+    <span class="ͼv">return</span>;
+}</code></pre>
+<p>Evita mover nuevamente una sección que ya está allí.</p>
+<h3>Devolver eventos al calendario</h3>
+<pre><code><span class="ͼv">case</span> <span class="ͼy">1</span>:</code></pre>
+<p>Exactamente lo contrario.</p>
+<pre><code><span class="ͼv">if</span>(<span class="ͼy">this</span><span class="ͼv">.</span>eventsSectionhere <span class="ͼv">==</span> <span class="ͼy">false</span>) {
+    <span class="ͼv">return</span>;
+}</code></pre>
+<p>Si los eventos <strong data-start="5060" data-end="5110">no están actualmente en el Notification Center</strong>, no
+    hay nada que devolver.</p>
+<h3>Elimina eventos del Notification Center</h3>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>box<span class="ͼv">.</span>remove_child(
+    <span class="ͼy">this</span><span class="ͼv">.</span>box<span class="ͼv">.</span>get_children()[
+        <span class="ͼy">this</span><span class="ͼv">.</span>showingSections<span class="ͼv">.</span>indexOf(<span class="ͼz">"events"</span>)
+    ]
+);</code></pre>
+<p>Esta línea es bastante interesante porque utiliza otra vez: <span class="ͼy">this</span><span
+        class="ͼv">.</span>showingSections<span class="ͼv">.</span>indexOf(<span class="ͼz">"events"</span>). Es decir,
+    vuelve a buscar la posición de <code data-start="5477" data-end="5487">"events"</code> en: <kbd
+        class="inline-code">sections-order</kbd> y elimina el hijo que está en esa posición.</p>
+<p>Tenemos entonces:</p>
+<pre><samp>sections-order
+      │
+      ▼
+posición de "events"
+      │
+      ▼
+box.get_children()[posición]
+      │
+      ▼
+remove_child()</samp></pre>
+<p>Esto supone que el orden de los hijos de <code data-start="5767" data-end="5777">this.box</code> coincide con <code
+        data-start="5791" data-end="5808">showingSections</code>. Y precisamente <code data-start="5826"
+        data-end="5852">reorderOrderOfSections()</code> fue diseñada para construir ese orden.</p>
+<h3>Devuelve eventos a su padre original</h3>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>newEventsSectionParent<span class="ͼv">.</span>insert_child_at_index(
+    <span class="ͼy">this</span><span class="ͼv">.</span>eventsSection,
+    <span class="ͼy">this</span><span class="ͼv">.</span>eventsSectionPosition
+);</code></pre>
+<p>Aquí aparece otra propiedad que ya vimos en <code data-start="6113" data-end="6122">_init()</code>:</p>
+<pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>newEventsSectionParent <span class="ͼv">=</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>eventsSection<span class="ͼv">.</span>get_parent();</samp></pre>
+<p>Y además:</p>
+<pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>originalEventsSectionParent <span class="ͼv">=</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>newEventsSectionParent;</samp></pre>
+<p>Por lo tanto:</p>
+<pre><samp>_init()
+  │
+  ├── eventsSection
+  │
+  └── newEventsSectionParent
+           │
+           ▼
+     padre original</samp></pre>
+<p>Cuando <code data-start="6455" data-end="6467">action = 1</code>, la sección vuelve a ese padre:</p>
+<pre><samp>Notification Center
+       │
+       │ action = 1
+       ▼
+newEventsSectionParent
+       │
+       ▼
+eventsSection</samp></pre>
+<p>Y <code data-start="6629" data-end="6652">eventsSectionPosition</code> determina dónde queda dentro de ese padre.</p>
+<h3>Actualiza nuevamente <code data-start="6729" data-end="6748">eventsSectionhere</code></h3>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>eventsSectionhere <span class="ͼv">=</span> <span class="ͼy">false</span>;
+<span class="ͼv">return</span>;</code></pre>
+<p>Ahora: <kbd class="inline-code">eventsSectionhere</kbd> = <var class="inline-code">false</var> significa:</p>
+<blockquote>La sección de eventos ya no está dentro del Notification Center.</blockquote>
+<p>Así el ciclo queda perfectamente cerrado:</p>
+<pre><samp>                   eventsSectionhere
+                         │
+             ┌───────────┴───────────┐
+             │                       │
+          false                    true
+             │                       │
+     eventos en Calendar      eventos en NC
+             │                       │
+        action = 0              action = 1
+             │                       │
+             ▼                       ▼
+      removeSection()         box.remove_child()
+             │                       │
+             ▼                       ▼
+       box.insert...           calendar.insert...
+             │                       │
+             ▼                       ▼
+           true                    false</samp></pre>
+<div class="card">
+    <h4>Observaciones de este bloque</h4>
+    <hr>
+    <details>
+        <summary>Tenemos un mapa bastante bonito</summary>
+        <pre><samp>                   GSettings
+                       │
+              events-position
+                       │
+                       ▼
+            eventsSectionPosition
+                       │
+                       │
+        show-events ───┤
+                       ▼
+             showEventsInCalendarAlso
+                       │
+                       ▼
+                 manageEvents()
+                       │
+              ┌────────┴────────┐
+              │                 │
+           action 0          action 1
+              │                 │
+              ▼                 ▼
+       Calendar → NC        NC → Calendar
+              │                 │
+              ▼                 ▼
+          this.box        newEventsSectionParent
+              │                 │
+              └────────┬────────┘
+                       │
+                 eventsSection</samp></pre>
+        <p>Y paralelamente:</p>
+        <pre><samp>show-media
+show-notification
+show-events
+       │
+       ▼
+reorderOrderOfSections()
+       │
+       ▼
+sections-order
+       │
+       ▼
+showingSections
+       │
+       ▼
+indexOf("events")
+       │
+       ▼
+posición de eventsSection</samp></pre>
+    </details>
+    <details>
+        <summary>Algo que me parece especialmente valioso</summary>
+        <p>Ahora entendemos que hay <strong>dos conceptos diferentes</strong> que el código llama de forma parecida:</p>
+        <div class="row">
+            <div class="col">
+                <h5>showEventsInCalendarAlso</h5>
+                <p>Es una <strong>decisión derivada de las preferencias</strong>:</p>
+                <blockquote>¿Debe la sección de eventos poder aparecer también junto al calendario?</blockquote>
+            </div>
+            <div class="col">
+                <h5>eventsSectionhere</h5>
+                <p>Es un <strong>estado de ejecución</strong>:</p>
+                <blockquote>¿Dónde está físicamente la sección ahora mismo?</blockquote>
+            </div>
+        </div>
+        <p>Aunque inicialmente en <code>loadPreferences()</code> se hace:</p>
+        <pre><samp><span>this</span><span>.</span>eventsSectionhere <span>=</span> <span>this</span><span>.</span>showEventsInCalendarAlso;</samp></pre>
+        <p>Después <code>manageEvents()</code> toma el control de esa variable y la cambia entre: <kbd>true</kbd>
+            <code>↔</code> <kbd>false</kbd> según mueve realmente el objeto.
+        </p>
+        <blockquote><strong>Esto es una distinción importante para nuestra futura modernización.</strong> No deberíamos
+            tratar <code>eventsSectionhere</code> como una simple copia de una preferencia.</blockquote>
+        <p>Y también aparece una pregunta para más adelante:</p>
+        <blockquote>¿Quién llama a <code>manageEvents(action)</code> y qué significa exactamente
+            <code>action = 0/1</code> en cada punto de llamada?
+        </blockquote>
+        <p>Cuando encontremos esas llamadas, podremos cerrar el circuito completo de <strong>Calendar ↔ Notification
+                Center</strong> en lugar de inferirlo únicamente por esta función.</p>
+    </details>
+</div>
+<h2 id="section11" class="class-exts">manageLabel ( )</h2>
+<hr>
+<p>Esta función es relativamente corta, pero conecta <strong data-start="54" data-end="113">conteos, <code
+            data-start="65" data-end="83">new-notification</code>, eventos y cambio de iconos</strong>. Además, ahora
+    que conocemos <code data-start="143" data-end="162">loadPreferences()</code>, podemos leerla casi directamente.</p>
+<h3>Los parámetros: <code data-start="221" data-end="229">nCount</code> y <code data-start="232"
+        data-end="240">eCount</code></h3>
+<pre><code><span class="ͼ13">manageLabel</span>: <span class="ͼv">function</span>(<span class="ͼ11">nCount</span>, <span class="ͼ11">eCount</span>) { ... }</code></pre>
+<p>Aquí la función recibe los conteos <strong data-start="348" data-end="367">como argumentos</strong>:</p>
+<ul>
+    <li><code>nCount</code> → cantidad de notificaciones.</li>
+    <li><code>eCount</code> → cantidad de eventos.</li>
+</ul>
+<p>Esto es importante: <code data-start="466" data-end="481">manageLabel()</code> <strong data-start="482"
+        data-end="509">no calcula esos conteos</strong>. Recibe los resultados de otra parte.</p>
+<p>El flujo será algo parecido a:</p>
+<pre><samp>notificaciones ──► nCount ──┐
+                            ├──► manageLabel()
+eventos ─────────► eCount ──┘</samp></pre>
+<p>Más adelante tendremos que encontrar quién la llama y con qué valores.</p>
+<h4>Aparece el indicador de notificaciones</h4>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>notificationLabel<span class="ͼv">.</span>visible <span class="ͼv">=</span>
+    <span class="ͼ11">nCount</span> <span class="ͼv">*</span> <span class="ͼy">this</span><span class="ͼv">.</span>newNotificationAction;</code></pre>
+<p>Aquí tenemos una peculiaridad de JavaScript.</p>
+<p><code data-start="984" data-end="993">visible</code> espera esencialmente un booleano, pero el código le entrega un
+    número: <kbd class="inline-code">nCount</kbd> <code class="inline-code">×</code> <kbd
+        class="inline-code">newNotificationAction</kbd></p>
+<div class="row">
+    <div class="col">
+        <p>Recordemos de <code>loadPreferences()</code>:</p>
+        <pre><samp>new-notification
+       ↓
+this.newNotificationAction</samp></pre>
+    </div>
+    <div class="col">
+        <p>Y en <code>PrefsWindowForIndicator</code> vimos las opciones:</p>
+        <pre><samp>0 → Show Nothing
+1 → Show Dot
+2 → Show Count</samp></pre>
+    </div>
+</div>
+<p>Por tanto:</p>
+<h5>newNotificationAction = 0</h5>
+<div class="row">
+    <div class="col">
+        <pre><samp>nCount × 0 = 0</samp></pre>
+    </div>
+    <div class="col">
+        <p>→ no se muestra.</p>
+    </div>
+</div>
+<h5>newNotificationAction = 1</h5>
+<pre><samp>nCount × 1 = nCount</samp></pre>
+<p>Si hay notificaciones:</p>
+<div class="row">
+    <div class="col">
+        <pre><samp>nCount &gt; 0 → valor positivo → visible</samp></pre>
+    </div>
+    <div class="col">
+        <p>→ aparece el punto.</p>
+    </div>
+</div>
+<h5>newNotificationAction = 2</h5>
+<p>También será distinto de cero cuando existan notificaciones:</p>
+<div class="row">
+    <div class="col">
+        <pre><samp>nCount × 2</samp></pre>
+    </div>
+    <div class="col">
+        <p>→ visible.</p>
+    </div>
+</div>
+<p>Así que esta línea realmente implementa:</p>
+<pre><samp>newNotificationAction = 0 → ocultar
+newNotificationAction &gt; 0 → mostrar si nCount &gt; 0</samp></pre>
+<h3>Hace lo mismo con eventos</h3>
+<p>Lo mismo, pero con una condición adicional</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>eventsLabel<span class="ͼv">.</span>visible <span class="ͼv">=</span>
+    <span class="ͼ11">eCount</span> <span class="ͼv">*</span> <span class="ͼy">this</span><span class="ͼv">.</span>newNotificationAction <span class="ͼv">&amp;&amp;</span>
+    (<span class="ͼy">this</span><span class="ͼv">.</span>shouldShowEventsSection() <span class="ͼv">&gt;</span> <span class="ͼy">0</span>);</code></pre>
+<p>Aquí hay dos condiciones.</p>
+<p>Primero: <kbd class="inline-code">eCount</kbd> <code class="inline-code">×</code> <kbd
+        class="inline-code">newNotificationAction</kbd>. Y después: <kbd
+        class="inline-code">shouldShowEventsSection()</kbd> <code class="inline-code">&gt;</code> <kbd
+        class="inline-code">0</kbd></p>
+<p>Por tanto, aunque existan eventos y <code data-start="2257" data-end="2280">newNotificationAction</code> esté
+    habilitado, el indicador de eventos solamente aparece si <code data-start="2343"
+        data-end="2370">shouldShowEventsSection()</code> dice que la sección de eventos debe mostrarse.</p>
+<p>Tenemos:</p>
+<pre><samp>eCount &gt; 0
+     +
+newNotificationAction &gt; 0
+     +
+shouldShowEventsSection() &gt; 0
+     ↓
+eventsLabel.visible</samp></pre>
+<p>Esto es interesante porque <code data-start="2589" data-end="2602">eventsLabel</code> no depende únicamente del
+    conteo.</p>
+<h3><code data-start="2648" data-end="2661">changeIcons</code></h3>
+<p>Aquí conecta con otra función.</p>
+<pre><code><span class="ͼv">if</span> (<span class="ͼy">this</span><span class="ͼv">.</span>changeIcons) {
+    <span class="ͼy">this</span><span class="ͼv">.</span>manageIconChange(<span class="ͼ11">nCount</span> <span class="ͼv">&gt;</span> <span class="ͼy">0</span> <span class="ͼv">||</span> <span class="ͼ11">eCount</span> <span class="ͼv">&gt;</span> <span class="ͼy">0</span>);
+}</code></pre>
+<p>Recordemos:</p>
+<pre><samp>change-icons
+     ↓
+loadPreferences()
+     ↓
+this.changeIcons</samp></pre>
+<p>Si está habilitado, llama: <span class="ͼy">this</span><span class="ͼv">.</span>manageIconChange(...) Y le
+    pasa: <span class="ͼ11">nCount</span> <span class="ͼv">&gt;</span> <span class="ͼy">0</span> <span
+        class="ͼv">||</span> <span class="ͼ11">eCount</span> <span class="ͼv">&gt;</span> <span class="ͼy">0</span></p>
+<p>Es decir, un booleano: </p>
+<pre><samp>hay notificaciones
+       OR
+hay eventos
+       ↓
+¿hay algo nuevo?</samp></pre>
+<p>Por tanto podemos anotar:</p>
+<pre><samp>nCount/eCount
+     │
+     ▼
+manageLabel()
+     │
+     └── changeIcons
+             │
+             ▼
+      manageIconChange(hayAlgo)</samp></pre>
+<p>Todavía no debemos adelantarnos a qué hace <code data-start="3383" data-end="3403">manageIconChange()</code>. Esa
+    será la siguiente pieza que necesitamos estudiar.</p>
+<h3>Finalmente</h3>
+<p>Si está configurado "Show Count".</p>
+<pre><code><span class="ͼv">if</span> (<span class="ͼy">this</span><span class="ͼv">.</span>newNotificationAction <span class="ͼv">==</span> <span class="ͼy">2</span>) {</code></pre>
+<p>Aquí separamos el caso:</p>
+<pre><samp>newNotificationAction = 2
+        ↓
+Show Count</samp></pre>
+<p>Entonces:</p>
+<pre><samp><span class="ͼv">if</span>(<span class="ͼ11">nCount</span> <span class="ͼv">&gt;</span> <span class="ͼy">0</span>) {
+    <span class="ͼy">this</span><span class="ͼv">.</span>notificationLabel<span class="ͼv">.</span>text <span class="ͼv">=</span> <span class="ͼ11">nCount</span><span class="ͼv">.</span>toString();
+}</samp></pre>
+<p>El punto: <kbd class="inline-code">•</kbd> que fue creado en <code data-start="3829" data-end="3838">_init()</code>:
+</p>
+<pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>notificationLabel <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">St</span><span class="ͼv">.</span>Label({
+    text: <span class="ͼz">"•"</span>,
+    ...
+});</samp></pre>
+<p>Se convierte en algo como: <kbd class="inline-code">5</kbd> si hay cinco notificaciones.</p>
+<p>Lo mismo para eventos:</p>
+<pre><code><span class="ͼv">if</span>(<span class="ͼ11">eCount</span> <span class="ͼv">&gt;</span> <span class="ͼy">0</span>) {
+    <span class="ͼy">this</span><span class="ͼv">.</span>eventsLabel<span class="ͼv">.</span>text <span class="ͼv">=</span> <span class="ͼ11">eCount</span><span class="ͼv">.</span>toString();
+}</code></pre>
+<p>Así que tenemos la transformación:</p>
+<pre><samp>new-notification
+       │
+       ├── 0 → nada
+       ├── 1 → •
+       └── 2 → número</samp></pre>
+<p>Y eso confirma perfectamente las tres opciones que vimos en las preferencias.</p>
+
+<div class="card">
+    <h4>Observaciones de este bloque</h4>
+    <hr>
+    <details>
+        <summary>Mapa de esta función</summary>
+        <pre><samp>                     manageLabel(nCount,eCount)
+                              │
+              ┌───────────────┴────────────────┐
+              │                                │
+       notificationLabel                 eventsLabel
+              │                                │
+       nCount × action             eCount × action
+              │                                │
+              │                         + shouldShowEventsSection()
+              │                                │
+              └───────────────┬────────────────┘
+                              │
+                              ▼
+                    visible / oculto
+                              │
+                              │
+                newNotificationAction
+                       │
+             ┌─────────┼─────────┐
+             ▼         ▼         ▼
+             0         1         2
+           nada       •        número</samp></pre>
+        <p>Y además:</p>
+        <pre><samp>nCount &gt; 0
+    OR
+eCount &gt; 0
+    │
+    ▼
+manageIconChange()</samp></pre>
+        <p>si: <kbd>changeIcons</kbd> == <var>true</var></p>
+    </details>
+    <details>
+        <summary>Una cosa que ahora podemos descartar</summary>
+        <p>Antes podríamos haber pensado que <code>newNotificationAction</code> solamente controlaba <strong>qué texto
+                poner</strong>.</p>
+        <blockquote>No.</blockquote>
+        <p>La función demuestra que controla <strong>dos cosas</strong>:</p>
+        <ol>
+            <li>si el indicador es visible;</li>
+            <li>qué representa visualmente.</li>
+        </ol>
+        <p>Por eso:</p>
+        <pre><samp>0 → visible = false
+1 → visible según conteo + punto
+2 → visible según conteo + número</samp></pre>
+    </details>
+    <details>
+        <summary>Y una pequeña observación de código</summary>
+        <p>Estas expresiones:</p>
+        <pre><samp><span class="ͼ11">nCount</span> <span class="ͼv">*</span> <span class="ͼy">this</span><span class="ͼv">.</span>newNotificationAction</samp></pre>
+        <p>y:</p>
+        <pre><samp><span class="ͼ11">eCount</span> <span class="ͼv">*</span> <span class="ͼy">this</span><span class="ͼv">.</span>newNotificationAction</samp></pre>
+        <p>dependen de la conversión implícita entre números y booleanos.</p>
+        <p>Funciona, pero es menos expresivo que algo como:</p>
+        <pre><code><span class="ͼ11">nCount</span> <span class="ͼv">&gt;</span> <span class="ͼy">0</span> <span class="ͼv">&amp;&amp;</span> <span class="ͼy">this</span><span class="ͼv">.</span>newNotificationAction <span class="ͼv">&gt;</span> <span class="ͼy">0</span></code></pre>
+        <p><strong data-start="6189" data-end="6216">No lo cambiaría todavía</strong>, exactamente por la misma razón
+            que
+            hicimos con <code data-start="6265" data-end="6303">(!this.isDndOff) * this.autohide &gt; 1</code>: primero
+            estamos
+            reconstruyendo el comportamiento histórico; después podremos decidir qué conviene modernizar.</p>
+        <p>Y tenemos una nueva pieza claramente marcada en nuestro mapa:</p>
+        <blockquote><strong data-start="6484" data-end="6508"><code data-start="6486"
+                    data-end="6506">manageIconChange()</code></strong> — ahora sabemos exactamente qué información
+            recibe: un
+            booleano que indica si existe al menos una notificación o evento.</blockquote>
     </details>
 </div>
