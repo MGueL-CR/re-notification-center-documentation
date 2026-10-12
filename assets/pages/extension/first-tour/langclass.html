@@ -1,11 +1,6 @@
 <aside id="listBlocks" class="list-blocks">
-    <div class="symbol-tab">
-        <div class="symbol">
-            <div class="icon-bar"></div>
-        </div>
-    </div>
     <div class="card">
-        <p>Bloques:</p>
+        <p>Funciones:</p>
         <div class="list-links">
             <a href="#show-content" class="item-link" data-name="extension/first-tour/class/funtions">Funciones</a>
             <hr>
@@ -58,10 +53,10 @@
 <pre><code><span class="ͼg">const</span><span> </span><span class="ͼm">NotificationCenter</span><span> </span><span class="ͼg">=</span><span> </span><span class="ͼg">new</span><span> </span><span class="ͼm">LangClass</span><span>({
     Name: </span><span class="ͼk">'NotificationCenter'</span><span>,
     ...</span></code></pre>
-<hr>
 <h3>¿Por qué?</h3>
+<hr>
 <p>Porque quiero responder otra pregunta de arquitectura. Hasta ahora sabemos:</p>
-<pre><samp class="samp-block">GNOME
+<pre><samp>GNOME
     │
     ▼
  enable()
@@ -71,8 +66,13 @@
 </samp></pre>
 <p>Pero ahora la pregunta es:</p>
 <blockquote>¿Qué es NotificationCenter?</blockquote>
-<p>¿Hereda de <code data-start="973" data-end="991">PanelMenu.Button</code>? ¿Hereda de <code data-start="1005"
-        data-end="1016">PopupMenu</code>? ¿No hereda de nadie? ¿Es simplemente un objeto que contiene otros objetos?</p>
+<p>Y también:</p>
+<ul>
+    <li>¿Hereda de <code>PanelMenu.Button</code>?</li>
+    <li>¿Hereda de <code>PopupMenu</code>?</li>
+    <li>¿No hereda de nadie?</li>
+    <li>¿Es simplemente un objeto que contiene otros objetos?</li>
+</ul>
 <p>Eso cambia completamente nuestra comprensión del proyecto.</p>
 <hr>
 <h3>Lo que espero encontrar</h3>
@@ -103,11 +103,10 @@
     </div>
 </div>
 <p>Y ahí ya podemos hacer una equivalencia mental.</p>
-<hr>
 <h3>JavaScript moderno</h3>
+<hr>
 <p>Si hoy escribiéramos una clase sería algo así:</p>
-<pre>
-    <code><span class="ͼg">class</span><span> </span><span class="ͼl">NotificationCenter</span><span> {
+<pre><code><span class="ͼg">class</span><span> </span><span class="ͼl">NotificationCenter</span><span> {
 
     constructor() {
 
@@ -121,15 +120,13 @@
 
     }
 
-}</span></code>
-</pre>
-<hr>
+}</span></code></pre>
 <h3>Un traductor mental</h3>
+<hr>
 <p>A partir de este punto quiero que tengas esta tabla en la cabeza. Con solo esta tabla, de repente el código deja de
     verse "raro".</p>
-
 <div class="row">
-    <div class="col"></div>
+    <div class="col-2"></div>
     <div class="col">
         <table>
             <thead>
@@ -162,5 +159,5 @@
             </tbody>
         </table>
     </div>
-    <div class="col"></div>
+    <div class="col-2"></div>
 </div>

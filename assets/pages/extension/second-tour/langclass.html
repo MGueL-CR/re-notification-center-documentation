@@ -9,8 +9,10 @@
             <a href="#section4">blinkIcon ( )</a>
             <a href="#section5">blinkIconStopIfBlinking ( )</a>
             <a href="#section6">dndToggle ()</a>
+            <a href="#section7">loadDndStatus ()</a>
+            <a href="#section8">loadPreferences ()</a>
             <hr>
-            <a href="#section7">...</a>
+            <a href="#section"> ...</a>
         </div>
     </div>
 </aside>
@@ -2203,5 +2205,749 @@ loadDndStatus()
      ▼
 ¿cómo determina la extensión el estado inicial de DND?</samp></pre>
         <p>Esa será la siguiente pieza que nos conviene estudiar cuando aparezca.</p>
+    </details>
+</div>
+<h2 id="section7" class="class-exts">loadDndStatus ( )</h2>
+<hr>
+<p>Aquí aparece justamente la pieza que faltaba para entender el estado DND. Y además esta función nos confirma varias
+    cosas que habíamos dejado como hipótesis.</p>
+<h3>Sincroniza el estado interno con GNOME</h3>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>isDndOff <span class="ͼv">=</span> <span class="ͼy">this</span><span class="ͼv">.</span>dndpref<span class="ͼv">.</span>get_boolean(<span class="ͼz">"show-banners"</span>);</code></pre>
+<p>Esta línea confirma nuestra sospecha anterior. <code data-start="334" data-end="344">isDndOff</code> <strong
+        data-start="345" data-end="374">no es la fuente de verdad</strong>. La fuente real es:</p>
+<pre><samp>GNOME Settings
+      │
+      ▼
+show-banners
+      │
+      ▼
+dndpref.get_boolean()
+      │
+      ▼
+isDndOff</samp></pre>
+<p>Por tanto:</p>
+<pre><samp>show-banners = true  → isDndOff = true
+show-banners = false → isDndOff = false</samp></pre>
+<p>Y por el nombre de la variable:</p>
+<blockquote><code data-start="667" data-end="685">isDndOff == true</code> significa que DND está desactivado.
+</blockquote>
+<h3>Sincroniza el interruptor visual</h3>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>dndItem<span class="ͼv">.</span>setToggleState(<span class="ͼv">!</span><span class="ͼy">this</span><span class="ͼv">.</span>isDndOff);</code></pre>
+<p>Aquí aparece la inversión que puede confundir inicialmente.</p>
+<p>Si: <kbd class="inline-code">isDndOff</kbd> = <var class="inline-code">true</var> entonces: <kbd
+        class="inline-code">!</kbd><kbd class="inline-code">isDndOff</kbd> = <var class="inline-code">false</var>. Por
+    lo tanto el interruptor queda apagado.</p>
+<p>Si: <kbd class="inline-code">isDndOff</kbd> = <var class="inline-code">false</var> entonces: <kbd
+        class="inline-code">!</kbd><kbd class="inline-code">isDndOff</kbd> = <var class="inline-code">true</var> y el
+    interruptor queda encendido.</p>
+<p>Esto tiene mucho sentido:</p>
+<pre><samp>Estado DND
+     │
+     ├── DND apagado
+     │       ↓
+     │   isDndOff = true
+     │       ↓
+     │   toggle = false
+     │
+     └── DND encendido
+             ↓
+         isDndOff = false
+             ↓
+         toggle = true</samp></pre>
+<p>Así que <code data-start="1399" data-end="1408">dndItem</code> representa <strong data-start="1420"
+        data-end="1436">DND activado</strong>, mientras <code data-start="1447" data-end="1457">isDndOff</code>
+    representa <strong data-start="1469" data-end="1488">DND desactivado</strong>.</p>
+<h3>Detiene cualquier parpadeo</h3>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>blinkIconStopIfBlinking();</code></pre>
+<p>Esto conecta directamente con la función que acabamos de estudiar:</p>
+<pre><samp>loadDndStatus()
+      │
+      ▼
+blinkIconStopIfBlinking()
+      │
+      ├── elimina transiciones
+      └── opacity = 255</samp></pre>
+<p>Tiene bastante lógica:</p>
+<blockquote>Al cambiar/revisar el estado DND, la extensión deja de hacer parpadear el icono.</blockquote>
+<h3>Reevalúa <code data-start="1909" data-end="1919">autohide</code></h3>
+<p>Y aquí vuelve a aparecer la otra pieza que tenemos pendiente.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>manageAutohide();</code></pre>
+<p>Ahora sabemos que <code data-start="2044" data-end="2062">manageAutohide()</code> participa:</p>
+<div class="row">
+    <div class="col">
+        <p>Al menos en:</p>
+        <pre><samp>loadDndStatus()
+      │
+      ▼
+manageAutohide()</samp></pre>
+    </div>
+    <div class="col">
+        <p>Y:</p>
+        <pre><samp>blinkIcon()
+      │
+      ▼
+manageAutohide()</samp></pre>
+    </div>
+</div>
+<p>Así que probablemente DND y <code data-start="2239" data-end="2249">autohide</code> están relacionados. Y eso encaja
+    perfectamente con la opción que vimos:</p>
+<pre><samp>autohide
+├── No
+├── Yes
+└── If Do Not Disturb is Off</samp></pre>
+<p>La tercera opción <strong data-start="2420" data-end="2465">obviamente necesita conocer el estado DND</strong>.</p>
+<h3>Restaura el icono normal</h3>
+<p>Esto también es importante.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>notificationIcon<span class="ͼv">.</span>icon_name <span class="ͼv">=</span> <span class="ͼy">this</span><span class="ͼv">.</span>notificationIconName;</code></pre>
+<p>Recordemos que anteriormente teníamos: <span class="ͼy">this</span><span class="ͼv">.</span>notificationIconName
+    <span class="ͼv">=</span> <span class="ͼy">null</span>; y probablemente <code data-start="2722"
+        data-end="2741">loadPreferences()</code> le asignará el nombre real.
+</p>
+<p>Aquí <code data-start="2776" data-end="2793">loadDndStatus()</code> dice:</p>
+<blockquote>Antes de decidir si estamos en DND, restaura el icono normal.</blockquote>
+<p>Entonces:</p>
+<pre><samp>normal
+notificationIconName
+       │
+       ▼
+notificationIcon.icon_name</samp></pre>
+<p>Pero después ocurre algo interesante si DND está activo.</p>
+<h3>Si DND está desactivado, termina aquí</h3>
+<pre><code><span class="ͼv">if</span>(<span class="ͼy">this</span><span class="ͼv">.</span>isDndOff) {
+    <span class="ͼy">this</span><span class="ͼv">.</span>notificationIcon<span class="ͼv">.</span>set_opacity(<span class="ͼy">255</span>);
+    <span class="ͼy">this</span><span class="ͼv">.</span>manageLabel();
+    <span class="ͼv">return</span> <span class="ͼy">false</span>;
+}</code></pre>
+<p>Es decir:</p>
+<pre><samp>isDndOff == true
+       │
+       ├── opacity = 255
+       ├── manageLabel()
+       └── return false</samp></pre>
+<p>Ese <code data-start="3325" data-end="3339">return false</code> es importante. La función no solamente realiza
+    acciones: <strong data-start="3398" data-end="3452">también comunica al llamador cuál es el estado DND</strong>.</p>
+<p>Podemos interpretar:</p>
+<pre><samp>false → DND no está activo
+true  → DND está activo</samp></pre>
+<p>Y ahora veremos que efectivamente el código posterior devuelve <code data-start="3604" data-end="3610">true</code>.
+</p>
+<h3>Si DND está activo, intenta cambiar el icono</h3>
+<pre><code><span class="ͼv">if</span>(<span class="ͼ11">Gtk</span><span class="ͼv">.</span>IconTheme<span class="ͼv">.</span>get_default()) {
+    <span class="ͼv">if</span>(<span class="ͼ11">Gtk</span><span class="ͼv">.</span>IconTheme<span class="ͼv">.</span>get_default()<span class="ͼv">.</span>has_icon(
+        <span class="ͼz">"notifications-disabled-symbolic"</span>
+    )) {
+        <span class="ͼy">this</span><span class="ͼv">.</span>notificationIcon<span class="ͼv">.</span>icon_name <span class="ͼv">=</span>
+            <span class="ͼz">"notifications-disabled-symbolic"</span>;
+    }
+}</code></pre>
+<p>Aquí está buscando un icono específico: <var class="inline-code">notifications-disabled-symbolic</var></p>
+<p>Si el tema de iconos disponible lo contiene:</p>
+<pre><samp>notificationIcon
+       │
+       ▼
+notifications-disabled-symbolic</samp></pre>
+<p>Así el usuario visualmente puede reconocer:</p>
+<blockquote>"Las notificaciones están desactivadas."</blockquote>
+<p>Esto es mejor que simplemente dejar el mismo icono normal.</p>
+<h3>¿Y si no encuentra el icono?</h3>
+<p>Aquí hay un detalle curioso.</p>
+<pre><code><span class="ͼv">else</span> {
+    <span class="ͼy">this</span><span class="ͼv">.</span>notificationIcon<span class="ͼv">.</span>set_opacity(<span class="ͼy">150</span>);
+}</code></pre>
+<p>El <code data-start="4432" data-end="4438">else</code> corresponde a: <span class="ͼv">if</span>(<span
+        class="ͼ11">Gtk</span><span class="ͼv">.</span>IconTheme<span class="ͼv">.</span>get_default()) <strong
+        data-start="4506" data-end="4512">no</strong> al: <span class="ͼ11">has_icon</span>(...). Por tanto:</p>
+<pre><samp>Gtk.IconTheme.get_default()
+       │
+       ├── existe
+       │     │
+       │     └── pregunta has_icon(...)
+       │
+       └── no existe
+             │
+             └── opacity = 150</samp></pre>
+<p>No está diciendo:</p>
+<blockquote>"Si no existe <code data-start="4797" data-end="4830">notifications-disabled-symbolic</code>, baja la
+    opacidad."</blockquote>
+<p>Eso <strong data-start="4856" data-end="4889">no es lo que hace este código</strong>. Si <code data-start="4895"
+        data-end="4924">Gtk.IconTheme.get_default()</code> existe pero el icono no existe, simplemente conserva el icono
+    que tenía previamente.</p>
+<h3>Oculta los indicadores de conteo</h3>
+<pre><code>[
+  <span class="ͼy">this</span><span class="ͼv">.</span>notificationLabel<span class="ͼv">.</span>visible,
+  <span class="ͼy">this</span><span class="ͼv">.</span>eventsLabel<span class="ͼv">.</span>visible
+] <span class="ͼv">=</span> [ <span class="ͼy">false</span>, <span class="ͼy">false</span> ];</code></pre>
+<p>Cuando DND está activo:</p>
+<pre><samp>notificationLabel → oculto
+eventsLabel        → oculto</samp></pre>
+<p>Recordemos que estos son los: <kbd class="inline-code">•</kbd> que vimos creados en <code data-start="5402"
+        data-end="5411">_init()</code>. Así que:</p>
+<pre><samp>DND activo
+   │
+   ├── icono → notifications-disabled-symbolic
+   ├── notificationLabel → hidden
+   └── eventsLabel → hidden</samp></pre>
+<p>Esto evita mostrar indicadores de notificaciones/eventos mientras el modo DND está activo.</p>
+<h3>Y finalmente devuelve <code data-start="5687" data-end="5693">true</code></h3>
+<pre><code><span class="ͼv">return</span> <span class="ͼy">true</span>;</code></pre>
+<p>Tenemos entonces una función que devuelve un valor perfectamente interpretable:</p>
+<div class="row">
+    <div class="col">
+        <pre><samp>isDndOff
+   │
+   ├── true
+   │     └── return false
+   │
+   └── false
+         └── return true</samp></pre>
+    </div>
+    <div class="col">
+        <p>Por lo tanto:</p>
+        <pre><samp>return false → DND apagado
+return true  → DND encendido</samp></pre>
+        <p>Es básicamente el inverso de <code>isDndOff</code>.</p>
+    </div>
+</div>
+<div class="card">
+    <h4>Observaciones de este bloque</h4>
+    <hr>
+    <details>
+        <summary>Ahora sí podemos cerrar el circuito DND</summary>
+        <p>Ya tenemos las tres piezas:</p>
+        <pre><samp>                    GNOME Shell
+                         │
+                         ▼
+                   show-banners
+                         │
+                         ▼
+                      dndpref
+                         │
+             ┌───────────┴───────────┐
+             │                       │
+       dndToggle()              loadDndStatus()
+             │                       │
+             ▼                       ▼
+       invierte valor          isDndOff = valor
+                                     │
+                     ┌───────────────┼──────────────┐
+                     │               │              │
+                     ▼               ▼              ▼
+                  dndItem       manageAutohide()  icono
+                toggleState
+                                     │
+                                     ▼
+                              comportamiento
+                                autohide</samp></pre>
+        <p>Y <code>loadDndStatus()</code> además limpia el estado visual:</p>
+        <pre><samp>loadDndStatus()
+ │
+ ├── detiene parpadeo
+ ├── restaura icono normal
+ │
+ ├── DND OFF
+ │     └── icono normal + labels
+ │
+ └── DND ON
+       ├── icono disabled
+       └── oculta labels</samp></pre>
+    </details>
+    <details>
+        <summary>Una observación especialmente interesante</summary>
+        <p>Ahora podemos explicar por qué <code>dndToggle()</code> era tan pequeño:</p>
+        <pre><code><span class="ͼy">this</span><span class="ͼv">.</span>dndpref<span class="ͼv">.</span>set_boolean(
+    <span class="ͼz">'show-banners'</span>,
+    <span class="ͼv">!</span><span class="ͼy">this</span><span class="ͼv">.</span>dndpref<span class="ͼv">.</span>get_boolean(<span class="ͼz">'show-banners'</span>)
+);</code></pre>
+        <p>No necesita actualizar manualmente:</p>
+        <ul>
+            <li><code>isDndOff</code></li>
+            <li><code>dndItem</code></li>
+            <li><code>notificationIcon</code></li>
+            <li>labels</li>
+            <li>autohide</li>
+            <li>parpadeo</li>
+        </ul>
+        <p>Porque <strong>otra parte del flujo termina llamando a <code>loadDndStatus()</code></strong>, que sincroniza
+            todo a partir del verdadero estado de <code>show-banners</code>. Eso es precisamente el tipo de relación que
+            buscábamos en este segundo recorrido.</p>
+        <p>Y aquí sí dejaría una pequeña bandera para más adelante:</p>
+        <blockquote>¿Quién llama a <code>loadDndStatus()</code> y cuándo?</blockquote>
+        <p>Porque ahí veremos el mecanismo completo de actualización del estado DND.</p>
+    </details>
+</div>
+<h2 id="section8" class="class-exts">loadPreferences ( )</h2>
+<hr>
+<p>Aquí llegamos a una función <strong data-start="32" data-end="50">muy importante</strong>, porque <code
+        data-start="59" data-end="78">loadPreferences()</code> es prácticamente el punto donde el contenido del <code
+        data-start="128" data-end="137">gschema</code> se convierte en el <strong data-start="157" data-end="202">estado
+        de trabajo de <code data-start="180" data-end="200">NotificationCenter</code></strong>.</p>
+<p>La idea general es:</p>
+<pre><samp>                 gschema
+                    │
+                    │ settings
+                    ▼
+              loadPreferences()
+                    │
+                    ▼
+       propiedades de NotificationCenter
+                    │
+                    ▼
+          resto de extension.js</samp></pre>
+<p>No modifica preferencias. <strong data-start="558" data-end="648">Las lee y las traduce a variables que el resto de
+        la clase puede utilizar cómodamente.</strong></p>
+<h3>this.<code class="inline-code">autohide</code></h3>
+<p>Aquí toma directamente el entero almacenado en <code data-start="787" data-end="797">autohide</code>.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>autohide <span class="ͼv">=</span> <span class="ͼy">this</span><span class="ͼv">.</span>prefs<span class="ͼv">.</span>get_int(<span class="ͼz">"autohide"</span>);</code></pre>
+<p>Ya vimos en <code data-start="812" data-end="826">prefsGtk4.js</code> que el usuario lo selecciona mediante:</p>
+<pre><samp>No
+Yes
+If Do Not Disturb is Off</samp></pre>
+<p>Pero lo importante para <code data-start="936" data-end="950">extension.js</code> es que aquí <strong
+        data-start="963" data-end="985">no recibe el texto</strong>, recibe el valor entero asociado.</p>
+<p>Por ejemplo, conceptualmente:</p>
+<pre><samp>Preferencia GUI
+      ↓
+"autohide"
+      ↓
+0 / 1 / 2
+      ↓
+this.autohide</samp></pre>
+<p>Más adelante <code data-start="1153" data-end="1171">manageAutohide()</code> será quien interprete esos valores.</p>
+<h3>Las tres secciones</h3>
+<p>Aquí hay una decisión interesante.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>mediaSectionToBeShown <span class="ͼv">=</span>
+    (<span class="ͼy">this</span><span class="ͼv">.</span>prefs<span class="ͼv">.</span>get_int(<span class="ͼz">"show-media"</span>) <span class="ͼv">&gt;</span> <span class="ͼy">0</span>) <span class="ͼv">?</span> <span class="ͼy">true</span> <span class="ͼv">:</span> <span class="ͼy">false</span>;
+
+<span class="ͼy">this</span><span class="ͼv">.</span>notificationSectionToBeShown <span class="ͼv">=</span>
+    (<span class="ͼy">this</span><span class="ͼv">.</span>prefs<span class="ͼv">.</span>get_int(<span class="ͼz">"show-notification"</span>) <span class="ͼv">&gt;</span> <span class="ͼy">0</span>) <span class="ͼv">?</span> <span class="ͼy">true</span> <span class="ͼv">:</span> <span class="ͼy">false</span>;
+
+<span class="ͼy">this</span><span class="ͼv">.</span>eventsSectionToBeShown <span class="ͼv">=</span>
+    (<span class="ͼy">this</span><span class="ͼv">.</span>prefs<span class="ͼv">.</span>get_int(<span class="ͼz">"show-events"</span>) <span class="ͼv">&gt;</span> <span class="ͼy">0</span>) <span class="ͼv">?</span> <span class="ͼy">true</span> <span class="ͼv">:</span> <span class="ͼy">false</span>;</code></pre>
+<p>En el <code data-start="1582" data-end="1591">gschema</code>, estas preferencias contienen <strong data-start="1622"
+        data-end="1634">posición</strong>, no simplemente verdadero/falso:</p>
+<div class="row">
+    <div class="col">
+        <p>Cada preferencia:</p>
+        <pre><samp>show-media
+show-notification
+show-events</samp></pre>
+    </div>
+    <div class="col">
+        <p>Con:</p>
+        <pre><samp>0 = none
+1 = top
+2 = middle
+3 = bottom</samp></pre>
+    </div>
+    <div class="col">
+        <p>Pero <code>loadPreferences()</code> crea otra interpretación:</p>
+        <pre><samp>valor = 0 → false
+valor &gt; 0 → true</samp></pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <p>Por ejemplo:</p>
+        <pre><samp>show-media = 0
+       ↓
+mediaSectionToBeShown = false</samp></pre>
+    </div>
+    <div class="col">
+        <p>Mientras:</p>
+        <pre><samp>show-media = 2
+       ↓
+mediaSectionToBeShown = true</samp></pre>
+    </div>
+</div>
+<p>Esto es importante:</p>
+<blockquote>La posición y la visibilidad son dos conceptos diferentes, aunque provengan de la misma preferencia.
+</blockquote>
+<p>La posición será utilizada después por <code data-start="2207" data-end="2223">sections-order</code>, mientras que
+    estas tres variables solamente responden:</p>
+<blockquote>"¿Debe existir/mostrarse esta sección?"</blockquote>
+<h3>this.<code class="inline-code">eventsSectionPosition</code></h3>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>eventsSectionPosition <span class="ͼv">=</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>prefs<span class="ͼv">.</span>get_enum(<span class="ͼz">"events-position"</span>);</code></pre>
+<p>Esta viene de: <kbd class="inline-code">events-position</kbd> y aquí sí se conserva directamente el valor del enum.
+</p>
+<p>Según lo que ya vimos en <code data-start="2576" data-end="2600">PrefsWindowForCalendar</code>:</p>
+<pre><samp>Only In Notification Center
+Below Calendar
+Beside Calendar</samp></pre>
+<p>Y el propio comentario del código documenta la correspondencia:</p>
+<pre><samp>// 0 = below, 1 = dont show, 2 = beside</samp></pre>
+<p>Aquí hay algo que debemos distinguir cuidadosamente: <strong data-start="2852" data-end="2994">el orden en que <code
+            data-start="2870" data-end="2884">prefsGtk4.js</code> presenta las opciones no necesariamente es la misma
+        representación numérica que utiliza el enum del esquema</strong>.</p>
+<p>Por eso no debemos deducir el número simplemente mirando:</p>
+<pre><samp>[<span class="ͼz">"dontshow"</span>, <span class="ͼz">"below"</span>, <span class="ͼz">"beside"</span>]</samp></pre>
+<p>El valor real del enum viene definido por el <code data-start="3152" data-end="3161">gschema</code>. Esta variable
+    después será utilizada para decidir qué hacer con el calendario y la sección de eventos.</p>
+<h3>this.<code class="inline-code">hideEmptySpace</code></h3>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>hideEmptySpace <span class="ͼv">=</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>prefs<span class="ͼv">.</span>get_boolean(<span class="ͼz">"autohide-space-beside-calendar"</span>);</code></pre>
+<p>Aquí es mucho más sencillo:</p>
+<pre><samp>gschema boolean
+      ↓
+get_boolean()
+      ↓
+this.hideEmptySpace</samp></pre>
+<p>Es la opción:</p>
+<blockquote>Ocultar el espacio vacío junto al calendario cuando corresponda.</blockquote>
+<p>Todavía no sabemos <strong data-start="3609" data-end="3617">cómo</strong> se aplica; eso lo veremos cuando
+    encontremos dónde se usa <code data-start="3676" data-end="3692">hideEmptySpace</code>.</p>
+<h3>this.<code class="inline-code">showEventsInCalendarAlso</code></h3>
+<p>Esta es una de las líneas más interesantes de la función porque <strong data-start="3938" data-end="3966">combina dos
+        preferencias</strong>.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>showEventsInCalendarAlso <span class="ͼv">=</span>
+    (<span class="ͼy">this</span><span class="ͼv">.</span>eventsSectionToBeShown <span class="ͼv">&amp;&amp;</span>
+     <span class="ͼy">this</span><span class="ͼv">.</span>eventsSectionPosition <span class="ͼv">!=</span> <span class="ͼy">1</span>) <span class="ͼv">?</span> <span class="ͼy">true</span> <span class="ͼv">:</span> <span class="ͼy">false</span>;</code></pre>
+<p>Tenemos:</p>
+<pre><samp>eventsSectionToBeShown
+        +
+eventsSectionPosition
+        ↓
+showEventsInCalendarAlso</samp></pre>
+<p>Para que sea <code data-start="4095" data-end="4101">true</code> deben cumplirse ambas:</p>
+<pre><samp>eventsSectionToBeShown == true
+AND
+eventsSectionPosition != 1</samp></pre>
+<p>Es decir:</p>
+<blockquote>Los eventos están habilitados <strong data-start="4244" data-end="4249">y</strong> la configuración no
+    indica "no mostrar".</blockquote>
+<p>Esto evita que <code data-start="4307" data-end="4320">show-events</code> y <code data-start="4323"
+        data-end="4340">events-position</code> se tengan que comprobar constantemente por separado.</p>
+<h3>this.<code data-start="4405" data-end="4431">showEventsSectionIfEmpty</code></h3>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>showEventsSectionIfEmpty <span class="ͼv">=</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>prefs<span class="ͼv">.</span>get_boolean(<span class="ͼz">"show-events-section-if-empty"</span>);</code></pre>
+<p>Esta viene directamente del switch que ya vimos: <kbd class="inline-code">show-events-section-if-empty</kbd></p>
+<p>Pero recordemos que en <code data-start="4659" data-end="4683">PrefsWindowForCalendar</code> utilizábamos: <span
+        class="ͼ11">prefSwitchInverted</span>(...). Por eso la relación visual era invertida.</p>
+<p>Aquí <code data-start="4790" data-end="4809">loadPreferences()</code> vuelve a recuperar <strong data-start="4829"
+        data-end="4870">el valor real almacenado en GSettings</strong>, no el estado visual del switch. Esto es un buen
+    ejemplo de por qué conviene separar:</p>
+<pre><samp>lo que ve el usuario
+        ↓
+lo que almacena GSettings
+        ↓
+lo que recibe extension.js</samp></pre>
+<h3>this.<code data-start="5076" data-end="5092">showThreeIcons</code></h3>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>showThreeIcons <span class="ͼv">=</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>prefs<span class="ͼv">.</span>get_boolean(<span class="ͼz">"individual-icons"</span>);</code></pre>
+<p>Viene de: <kbd class="inline-code">individual-icons</kbd> que vimos en <code data-start="5237"
+        data-end="5262">PrefsWindowForIndicator</code>. El nombre interno de la variable es diferente:</p>
+<pre><samp>individual-icons
+       ↓
+showThreeIcons</samp></pre>
+<p>Esto nos dice bastante sobre la intención:</p>
+<blockquote>La preferencia controla si el indicador utiliza iconos individuales para las diferentes categorías.
+</blockquote>
+<p>Todavía no debemos asumir exactamente cómo los utiliza; eso lo veremos cuando encontremos <code data-start="5604"
+        data-end="5620">showThreeIcons</code>.</p>
+<h3>this.<code data-start="5633" data-end="5653">includeEventsCount</code></h3>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>includeEventsCount <span class="ͼv">=</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>prefs<span class="ͼv">.</span>get_boolean(<span class="ͼz">"include-events-count"</span>);</code></pre>
+<p>Directamente:</p>
+<pre><samp>include-events-count
+        ↓
+includeEventsCount</samp></pre>
+<p>Su función será determinar si el número de eventos participa en el conteo que muestra el indicador.</p>
+<h3>this.<code data-start="5941" data-end="5964">newNotificationAction</code></h3>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>newNotificationAction <span class="ͼv">=</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>prefs<span class="ͼv">.</span>get_enum(<span class="ͼz">"new-notification"</span>);</code></pre>
+<p>Esta viene de la preferencia: <kbd class="inline-code">new-notification</kbd> que en <code data-start="6127"
+        data-end="6152">PrefsWindowForIndicator</code> tenía:</p>
+<pre><samp>Show Nothing
+Show Dot
+Show Count</samp></pre>
+<p>Aquí nuevamente se conserva el valor numérico del enum. Y esto es importante para entender <code data-start="6299"
+        data-end="6313">extension.js</code>:</p>
+<pre><samp>prefsGtk4
+   ↓
+usuario selecciona "Show Dot"
+   ↓
+gschema almacena el enum correspondiente
+   ↓
+loadPreferences()
+   ↓
+this.newNotificationAction</samp></pre>
+<p>No se almacena la palabra <code data-start="6501" data-end="6508">"dot"</code> en esta propiedad; <code
+        data-start="6528" data-end="6540">get_enum()</code> entrega el valor numérico del enum.</p>
+<h3>this.<code data-start="6589" data-end="6608">eventsSectionhere</code></h3>
+<p>Aquí no estamos leyendo nada del esquema.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>eventsSectionhere <span class="ͼv">=</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>showEventsInCalendarAlso;</code></pre>
+<p>Simplemente estamos creando otra propiedad con el mismo valor.</p>
+<pre><samp>showEventsInCalendarAlso
+          │
+          ▼
+eventsSectionhere</samp></pre>
+<p>Y esto me parece un buen candidato para una futura revisión de limpieza del código.</p>
+<p>No debemos eliminarlo ahora, pero cuando encontremos <strong data-start="7014" data-end="7061">todas las referencias
+        a <code data-start="7040" data-end="7059">eventsSectionhere</code></strong>, podremos determinar si realmente
+    aporta algo o si simplemente es un nombre histórico que quedó de versiones anteriores.</p>
+<h3>this.<code data-start="7195" data-end="7212">showingSections</code></h3>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>showingSections <span class="ͼv">=</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>prefs<span class="ͼv">.</span>get_strv(<span class="ͼz">"sections-order"</span>);</code></pre>
+<p>Esta es particularmente importante porque conecta con lo que acabamos de estudiar en: <span
+        class="ͼ11">reorderOrderOfSections</span>()</p>
+<div class="row">
+    <div class="col">
+        <p>Ahí vimos que:</p>
+        <pre><samp>show-media
+show-notification
+show-events
+        ↓
+reorderOrderOfSections()
+        ↓
+sections-order</samp></pre>
+    </div>
+    <div class="col">
+        <p>Y ahora:</p>
+        <pre><samp>sections-order
+      ↓
+loadPreferences()
+      ↓
+showingSections</samp></pre>
+    </div>
+</div>
+<p>Por tanto tenemos un circuito bastante claro:</p>
+<pre><samp>show-media
+show-notification
+show-events
+        │
+        ▼
+reorderOrderOfSections()
+        │
+        ▼
+sections-order
+        │
+        ▼
+showingSections</samp></pre>
+<p>Esta variable es la representación que <code data-start="7904" data-end="7924">NotificationCenter</code> utiliza para
+    conocer <strong data-start="7946" data-end="7990">el orden final de las secciones visibles</strong>.</p>
+<h3>this.<span class="ͼv"></span><code class="inline-code">appBlackList</code></h3>
+<p>Esto conecta directamente con el <code data-start="8143" data-end="8166">PrefsWindowForAppList</code> que estudiamos.
+</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>appBlackList <span class="ͼv">=</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>prefs<span class="ͼv">.</span>get_strv(<span class="ͼz">"name-list"</span>);</code></pre>
+<p>Recordemos:</p>
+<pre><samp>application-list
+name-list
+script-list</samp></pre>
+<p>Aquí <code data-start="8254" data-end="8274">NotificationCenter</code> solamente carga:</p>
+<pre><samp>name-list → appBlackList
+script-list → scriptList</samp></pre>
+<div class="row">
+    <div class="col">
+        <p>Es decir:</p>
+        <pre><samp>name-list
+   ↓
+appBlackList</samp></pre>
+    </div>
+    <div class="col">
+        <p>Y:</p>
+        <pre><samp>script-list
+   ↓
+scriptList</samp></pre>
+    </div>
+</div>
+<p>El nombre <code data-start="8463" data-end="8477">appBlackList</code> ya nos da una pista de cómo se utilizan
+    posteriormente.</p>
+<h3>this.<code data-start="8546" data-end="8566">allowRunningScript</code></h3>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>allowRunningScript <span class="ͼv">=</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>prefs<span class="ͼv">.</span>get_boolean(<span class="ͼz">"run-script"</span>);</code></pre>
+<p>Directamente corresponde al switch: <kbd class="inline-code">run-script</kbd> que vimos en <code data-start="8729"
+        data-end="8752">PrefsWindowForAppList</code>. Por tanto el flujo será:</p>
+<pre><samp>run-script
+   ↓
+allowRunningScript
+   ↓
+¿se permite ejecutar scripts?</samp></pre>
+<p>Esto será especialmente interesante cuando encontremos <code data-start="8919" data-end="8930">utilSpawn</code>,
+    porque arriba en <code data-start="8949" data-end="8963">extension.js</code> tenemos: <span class="ͼv">const</span>
+    <span class="ͼ11">utilSpawn</span> <span class="ͼv">=</span> <span class="ͼ11">imports</span><span
+        class="ͼv">.</span>misc<span class="ͼv">.</span>util<span class="ͼv">.</span>spawn;
+</p>
+<p>Así que ya podemos anticipar una conexión que tendremos que comprobar cuando aparezca:</p>
+<pre><samp>allowRunningScript
+        ↓
+scriptList
+        ↓
+utilSpawn(...)</samp></pre>
+<p>Pero todavía no afirmamos que sea exactamente así hasta verlo.</p>
+<h3>this.<code data-start="9277" data-end="9294">blackListAction</code></h3>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>blackListAction <span class="ͼv">=</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>prefs<span class="ͼv">.</span>get_enum(<span class="ͼz">"for-list"</span>);</code></pre>
+<p>Esta viene de: <kbd class="inline-code">for-list</kbd> que vimos como:</p>
+<pre><samp>Show them
+Show counts only
+Show banner only
+Ignore them</samp></pre>
+<p>Nuevamente:</p>
+<pre><samp>GUI
+ ↓
+enum GSettings
+ ↓
+get_enum()
+ ↓
+blackListAction</samp></pre>
+<p>El nombre <code data-start="9590" data-end="9607">blackListAction</code> es bastante descriptivo: define <strong
+        data-start="9640" data-end="9696">qué hacer con una aplicación que está en <code data-start="9683"
+            data-end="9694">name-list</code></strong>.</p>
+<h3>this.<code data-start="9710" data-end="9726">notAnimateIcon</code></h3>
+<p>Aquí encontramos otra inversión.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>notAnimateIcon <span class="ͼv">=</span>
+    <span class="ͼv">!</span><span class="ͼy">this</span><span class="ͼv">.</span>prefs<span class="ͼv">.</span>get_boolean(<span class="ͼz">"animate-icon"</span>);</code></pre>
+<p>La preferencia se llama: <kbd class="inline-code">animate-icon</kbd> pero la variable: <code
+        class="inline-code">notAnimateIcon</code> expresa exactamente lo contrario.</p>
+<div class="row">
+    <div class="col">
+        <p>Por eso:</p>
+        <pre><samp>animate-icon = true
+        ↓
+notAnimateIcon = false</samp></pre>
+    </div>
+    <div class="col">
+        <p>y:</p>
+        <pre><samp>animate-icon = false
+        ↓
+notAnimateIcon = true</samp></pre>
+    </div>
+</div>
+<p>Esto conecta directamente con la función que acabamos de estudiar: <span class="ͼv">if</span>(<span
+        class="ͼ11">times</span> <span class="ͼv">==</span> <span class="ͼy">0</span> <span class="ͼv">||</span> <span
+        class="ͼy">this</span><span class="ͼv">.</span>notAnimateIcon). Ahora sabemos de dónde salió <code
+        data-start="10282" data-end="10298">notAnimateIcon</code>.</p>
+<h3>this.<code data-start="10312" data-end="10323">blinkTime</code></h3>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>blinkTime <span class="ͼv">=</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>prefs<span class="ͼv">.</span>get_int(<span class="ͼz">"blink-time"</span>);</code></pre>
+<p>Directamente desde: <kbd class="inline-code">blink-time</kbd> y ya sabemos cómo se utiliza:</p>
+<pre><samp>blink-time
+    ↓
+blinkTime
+    ↓
+blinkIcon()
+    ↓
+ease({ duration: interval })</samp></pre>
+<p>Así que ahora tenemos el camino completo desde el esquema hasta la animación.</p>
+<h3>this.<code data-start="10658" data-end="10670">blinkCount</code></h3>
+<p>Aquí aparece algo que descubrimos antes:</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>blinkCount <span class="ͼv">=</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>prefs<span class="ͼv">.</span>get_int(<span class="ͼz">"blink-icon"</span>) <span class="ͼv">*</span> <span class="ͼy">2</span>;</code></pre>
+<p>Esta línea es particularmente buena porque demuestra que <code data-start="10850"
+        data-end="10869">loadPreferences()</code> <strong data-start="10870" data-end="10912">no siempre copia el valor
+        literalmente</strong>.</p>
+<p>La preferencia: <kbd class="inline-code">blink-icon</kbd> se multiplica por <code data-start="10974"
+        data-end="10977">2</code>.</p>
+<h4>¿Por qué?</h4>
+<p>Porque ya vimos que <code data-start="11011" data-end="11024">blinkIcon()</code> trabaja con transiciones, y un ciclo
+    visual de: <kbd class="inline-code">visible</kbd> → <kbd class="inline-code">transparente</kbd> → <kbd
+        class="inline-code">visible</kbd> requiere dos cambios.</p>
+<p>Por eso:</p>
+<pre><samp>blink-icon = 3
+       ↓
+blinkCount = 6</samp></pre>
+<p>Y esto explica nuestra observación anterior de que <code data-start="11256" data-end="11268">blinkTimes</code>
+    realmente representa <strong data-start="11290" data-end="11306">transiciones</strong>, no necesariamente parpadeos
+    completos.</p>
+<h3>this.<code data-start="11359" data-end="11370">showLabel</code></h3>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>showLabel <span class="ͼv">=</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>prefs<span class="ͼv">.</span>get_boolean(<span class="ͼz">"show-label"</span>);</code></pre>
+<p>Viene directamente del switch: <kbd class="inline-code">show-label</kbd> y posteriormente <code data-start="11523"
+        data-end="11538">manageLabel()</code> utilizará este estado.</p>
+<p>De hecho ya vimos que <code data-start="11585" data-end="11602">loadDndStatus()</code> llama: <span
+        class="ͼy">this</span><span class="ͼv">.</span>manageLabel(); cuando DND está desactivado.</p>
+<p>Ahora entendemos que <code data-start="11701" data-end="11716">manageLabel()</code> tendrá acceso a: <kbd
+        class="inline-code">this.showLabel</kbd>.</p>
+<h3>this.<code data-start="11774" data-end="11787">changeIcons</code></h3>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>changeIcons <span class="ͼv">=</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>prefs<span class="ͼv">.</span>get_boolean(<span class="ͼz">"change-icons"</span>);</code></pre>
+<p>Directamente desde: <kbd class="inline-code">change-icons</kbd> que vimos también en <code data-start="11939"
+        data-end="11964">PrefsWindowForIndicator</code>.</p>
+<p>Todavía no hemos llegado al código que lo utiliza, así que aquí simplemente registramos:</p>
+<pre><samp>change-icons
+      ↓
+changeIcons</samp></pre>
+
+
+<div class="card">
+    <h4>Observaciones de este bloque</h4>
+    <hr>
+    <details>
+        <summary>El mapa completo</summary>
+        <p>Esta función queda mucho más clara si la vemos agrupada:</p>
+        <pre><samp>GSettings
+   │
+   ├── autohide ───────────────────► autohide
+   │
+   ├── show-media ─────────────────► mediaSectionToBeShown
+   ├── show-notification ──────────► notificationSectionToBeShown
+   ├── show-events ────────────────► eventsSectionToBeShown
+   │
+   ├── events-position ────────────► eventsSectionPosition
+   ├── autohide-space-beside-calendar ► hideEmptySpace
+   ├── show-events-section-if-empty ──► showEventsSectionIfEmpty
+   │
+   ├── individual-icons ───────────► showThreeIcons
+   ├── include-events-count ───────► includeEventsCount
+   ├── new-notification ───────────► newNotificationAction
+   │
+   ├── sections-order ─────────────► showingSections
+   │
+   ├── name-list ──────────────────► appBlackList
+   ├── script-list ────────────────► scriptList
+   ├── run-script ─────────────────► allowRunningScript
+   ├── for-list ───────────────────► blackListAction
+   │
+   ├── animate-icon ────────────────► notAnimateIcon (!)
+   ├── blink-time ──────────────────► blinkTime
+   ├── blink-icon ──────────────────► blinkCount (*2)
+   ├── show-label ──────────────────► showLabel
+   └── change-icons ────────────────► changeIcons</samp></pre>
+        <p>Y además hay dos propiedades <strong>derivadas</strong>, que no vienen directamente del esquema:</p>
+        <pre><samp>eventsSectionToBeShown
+          +
+eventsSectionPosition
+          ↓
+showEventsInCalendarAlso
+          ↓
+eventsSectionhere</samp></pre>
+    </details>
+    <details>
+        <summary>Lo más importante de esta función</summary>
+        <p>Ahora que ya hicimos el primer recorrido por <code>gschema</code> + <code>prefsGtk4.js</code>, podemos ver
+            que <code>loadPreferences()</code> es una especie de <strong>adaptador</strong>.</p>
+        <div class="row">
+            <div class="col">
+                <p>El esquema habla en términos de:</p>
+                <pre><samp>GSettings
+boolean
+int
+enum
+strv</samp></pre>
+            </div>
+            <div class="col">
+                <p>La interfaz habla en términos de:</p>
+                <pre><samp>No / Yes
+Top / Middle / Bottom
+Show Dot / Show Count
+etc.</samp></pre>
+            </div>
+        </div>
+        <p>Pero <code>NotificationCenter</code> necesita variables que tengan significado para su propia lógica:</p>
+        <pre><samp>mediaSectionToBeShown
+blackListAction
+newNotificationAction
+blinkCount
+showEventsInCalendarAlso
+...</samp></pre>
+        <p>Y <strong>ese puente es precisamente <code>loadPreferences()</code></strong>. Además, ahora tenemos una regla
+            muy útil para nuestro segundo recorrido:</p>
+        <blockquote>Cuando encontremos una variable como <code>this.blackListAction</code>, <code>this.blinkCount</code>
+            o <code>this.showEventsInCalendarAlso</code> más adelante, ya no tendremos que preguntarnos de dónde salió:
+            podemos regresar a <code>loadPreferences()</code> y seguir su origen hasta el <code>gschema</code> y la
+            interfaz de preferencias</blockquote>
+        <p>Eso es exactamente lo que queríamos conseguir con este segundo repaso.</p>
     </details>
 </div>

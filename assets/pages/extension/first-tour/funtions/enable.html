@@ -3,36 +3,32 @@
 <p>Este <code>enable()</code> es muchísimo más pequeño de lo que esperaba. Esto me dice que Selenium-H quiso que
     <code>enable()</code> fuera un <b>orquestador</b> , no un lugar donde vive toda la lógica.
 </p>
+<pre><code><span class="ͼv">function</span> <span class="ͼ11">enable</span>() {
 
-<pre class="cm-content q9tKkq_readonly m-0">
-    <code><span class="ͼg">function</span><span> </span><span class="ͼm">enable</span><span>() {
+    <span class="ͼ11">notificationCenter</span> <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">NotificationCenter</span>();
+    <span class="ͼ11">notificationCenter</span><span class="ͼv">.</span>startNotificationCenter();
+    <span class="ͼ11">reloadExtensionOnPrefsChange</span>();
+    <span class="ͼ11">reloadApplicationProfilesOnPrefsChange</span>();
 
-</span><span class="ͼm">notificationCenter</span><span> </span><span class="ͼg">=</span><span> </span><span class="ͼg">new</span><span> </span><span class="ͼm">NotificationCenter</span><span>();
-</span><span class="ͼm">notificationCenter</span><span class="ͼg">.</span><span>startNotificationCenter();
-</span><span class="ͼm">reloadExtensionOnPrefsChange</span><span>();
-</span><span class="ͼm">reloadApplicationProfilesOnPrefsChange</span><span>();
-
-}</span>
-</code>
-</pre>
-
+}</code></pre>
 <h3>Analicemos línea por línea</h3>
 <hr>
-<pre class="cm-content q9tKkq_readonly m-0">
-    <code><span class="ͼm">notificationCenter</span><span> </span><span class="ͼg">=</span><span> </span><span class="ͼg">new</span><span> </span><span class="ͼm">NotificationCenter</span><span>();</span></code>
-</pre>
+<pre><code><span class="ͼm">notificationCenter</span><span> </span><span class="ͼg">=</span><span> </span><span class="ͼg">new</span><span> </span><span class="ͼm">NotificationCenter</span><span>();</span></code></pre>
 <p>Se crea el objeto principal, pero fíjate en un detalle... No hace nada más, todavía no inicia la extensión.</p>
 <hr>
-<pre class="cm-content q9tKkq_readonly m-0">
-    <code><span class="ͼm">notificationCenter</span><span class="ͼg">.</span><span>startNotificationCenter();</span></code>
-</pre>
+<pre><code><span class="ͼm">notificationCenter</span><span class="ͼg">.</span><span>startNotificationCenter();</span></code></pre>
 <p>Y aquí vino la sorpresa. Yo esperaba que el constructor hiciera toda la inicialización. pero Selenium-H separó dos
     conceptos, que me parece una decisión interesante.</p>
-<blockquote>Crear el objeto<div><br></div>
-    <div>y</div>
-    <div><br></div>
-    <div>Iniciar el objeto</div>
-</blockquote>
+<div class="row">
+    <div class="col">
+        <p>Primero:</p>
+        <pre><samp>Crear el objeto</samp></pre>
+    </div>
+    <div class="col">
+        <p>Y luego:</p>
+        <pre><samp>Iniciar el objeto</samp></pre>
+    </div>
+</div>
 <p>Esto significa que el constructor probablemente solo prepara el objeto. Mientras
     que <span></span><code><span>startNotificationCenter</span>()</code> es quien realmente:</p>
 <ul>
@@ -46,14 +42,10 @@
 </ul>
 <p>Es un patrón bastante limpio.</p>
 <hr>
-<pre class="cm-content q9tKkq_readonly m-0">
-    <code><span class="ͼm">startNotificationCenter</span><span>()</span></code>
-</pre>
+<pre><code><span class="ͼm">reloadExtensionOnPrefsChange</span><span>()</span></code></pre>
 <p>Este nombre me encanta. No necesito ver el código para imaginar qué hace. Probablemente:</p>
 <blockquote>"Si el usuario cambia una preferencia, reinicia la extensión."</blockquote>
 <hr>
-<pre class="cm-content q9tKkq_readonly m-0">
-    <code><span class="ͼm">reloadApplicationProfilesOnPrefsChange</span><span>();</span></code>
-</pre>
+<pre><code><span class="ͼm">reloadApplicationProfilesOnPrefsChange</span><span>();</span></code></pre>
 <p>Aquí descubrimos algo que ni siquiera sabíamos que existía, <code>Application Profiles</code> . Eso
     significa que la extensión tiene un sistema de perfiles, ni siquiera habíamos llegado a esa parte del código.</p>
