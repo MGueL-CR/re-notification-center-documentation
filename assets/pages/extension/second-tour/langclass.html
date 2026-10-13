@@ -1,3 +1,4 @@
+<a href="/index.html" class="no-display">Index</a>
 <aside class="list-blocks">
     <div class="card">
         <p>Secciones:</p>
@@ -14,8 +15,12 @@
             <a href="#section9">manageAutohide ( )</a>
             <a href="#section10">manageEvents ( )</a>
             <a href="#section11">manageLabel ( )</a>
+            <a href="#section12">manageIconChange ( )</a>
+            <a href="#section13">middleClickDndToggle ( )</a>
+            <a href="#section14">newNotif ( )</a>
+            <a href="#section15">resetIndicator ( )</a>
             <hr>
-            <a href="#section"> ...</a>
+            <a href="#section"> ... </a>
         </div>
     </div>
 </aside>
@@ -3928,5 +3933,910 @@ manageIconChange()</samp></pre>
                     data-end="6506">manageIconChange()</code></strong> — ahora sabemos exactamente qué información
             recibe: un
             booleano que indica si existe al menos una notificación o evento.</blockquote>
+    </details>
+</div>
+<h2 id="section12" class="class-exts">manageIconChange ( )</h2>
+<hr>
+<p>Y esta función confirma rápidamente lo que sospechábamos en <code data-start="68" data-end="83">manageLabel()</code>.
+</p>
+<pre><code><span class="ͼ13">manageIconChange</span>: <span class="ͼv">function</span>(<span class="ͼ11">statusIcon</span>) {
+
+    <span class="ͼv">let</span> <span class="ͼ11">iconName</span> <span class="ͼv">=</span> <span class="ͼ11">statusIcon</span>
+        <span class="ͼv">?</span> <span class="ͼz">"notification-center-full"</span>
+        <span class="ͼv">:</span> <span class="ͼz">"notification-center-empty"</span>;
+
+    <span class="ͼy">this</span><span class="ͼv">.</span>notificationIcon<span class="ͼv">.</span>icon_name <span class="ͼv">=</span> <span class="ͼ11">iconName</span>;
+
+}</code></pre>
+<h3>¿Qué recibe?</h3>
+<p>Recibe <code data-start="333" data-end="345">statusIcon</code>, que <strong data-start="351" data-end="380">no es el
+        nombre del icono</strong>, sino un booleano.</p>
+<p>Recordemos la llamada que acabamos de ver: <span class="ͼy">this</span><span
+        class="ͼv">.</span>manageIconChange(<span class="ͼ11">nCount</span> <span class="ͼv">&gt;</span> <span
+        class="ͼy">0</span> <span class="ͼv">||</span> <span class="ͼ11">eCount</span> <span class="ͼv">&gt;</span>
+    <span class="ͼy">0</span>); Por tanto:
+</p>
+<pre><samp>nCount &gt; 0
+      OR
+eCount &gt; 0
+      ↓
+   statusIcon</samp></pre>
+<p>Tenemos:</p>
+<pre><samp>true  → hay notificaciones o eventos
+false → no hay ninguno</samp></pre>
+<p>Elige el nombre del icono</p>
+<pre><code><span class="ͼv">let</span> <span class="ͼ11">iconName</span> <span class="ͼv">=</span> <span class="ͼ11">statusIcon</span>
+    <span class="ͼv">?</span> <span class="ͼz">"notification-center-full"</span>
+    <span class="ͼv">:</span> <span class="ͼz">"notification-center-empty"</span>;</code></pre>
+<p>Es simplemente un operador ternario:</p>
+<div class="row">
+    <div class="col">
+        <pre><samp>statusIcon == true
+       ↓
+notification-center-full</samp></pre>
+    </div>
+    <div class="col">
+        <pre><samp>statusIcon == false
+       ↓
+notification-center-empty</samp></pre>
+    </div>
+</div>
+<p>No hay ninguna otra lógica aquí.</p>
+<h3>Cambia el icono real</h3>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>notificationIcon<span class="ͼv">.</span>icon_name <span class="ͼv">=</span> <span class="ͼ11">iconName</span>;</code></pre>
+<p>Y aquí aparece la conexión con <code data-start="1146" data-end="1155">_init()</code>:</p>
+<pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>notificationIcon <span class="ͼv">=</span> <span class="ͼv">new</span> <span class="ͼ11">St</span><span class="ͼv">.</span>Icon({
+    style_class: <span class="ͼz">"system-status-icon"</span>,
+    visible: <span class="ͼy">false</span>
+});</samp></pre>
+<p>Inicialmente no se especificó <code data-start="1307" data-end="1318">icon_name</code>.</p>
+<p>Ahora <code data-start="1327" data-end="1347">manageIconChange()</code> lo establece dinámicamente.</p>
+<p>El flujo completo queda:</p>
+<pre><samp>             nCount
+                │
+             eCount
+                │
+                ▼
+          manageLabel()
+                │
+                ▼
+       nCount &gt; 0 || eCount &gt; 0
+                │
+                ▼
+          manageIconChange()
+                │
+         ┌──────┴──────┐
+       true           false
+         │               │
+         ▼               ▼
+ notification-       notification-
+ center-full         center-empty
+         │               │
+         └──────┬────────┘
+                ▼
+       notificationIcon</samp></pre>
+
+<div class="card">
+    <h4>Observaciones de este bloque</h4>
+    <hr>
+    <details>
+        <summary>Mapa actualizado</summary>
+        <p>Ahora tenemos una cadena bastante limpia:</p>
+        <pre><samp>GSettings
+   │
+   └── change-icons
+          │
+          ▼
+    this.changeIcons
+          │
+          ▼
+    manageLabel(nCount,eCount)
+          │
+          ├───────────────┐
+          │               │
+          ▼               ▼
+    mostrar label     changeIcons?
+                          │
+                         sí
+                          │
+                          ▼
+                  manageIconChange()
+                          │
+                  ┌───────┴───────┐
+                  ▼               ▼
+                true            false
+                  │               │
+                  ▼               ▼
+           notification-   notification-
+             center-full     center-empty</samp></pre>
+        <p>Y lo interesante es que <strong><code>change-icons</code> no tiene nada que ver con
+                <code>individual-icons</code></strong>, aunque ambos nombres pueden parecer relacionados.</p>
+        <ul>
+            <li><code>individual-icons</code> → <code>showThreeIcons</code> → controla si media/eventos tienen iconos
+                propios.</li>
+            <li><code>change-icons</code> → <code>changeIcons</code> → controla si el icono principal cambia entre
+                <code>full</code> y <code>empty</code>.
+            </li>
+        </ul>
+        <p>Eso es precisamente el tipo de relación que nuestro segundo recorrido está empezando a revelar.</p>
+    </details>
+    <details>
+        <summary>Ahora se entiende <code>change-icons</code></summary>
+        <p>En <code data-start="2006" data-end="2025">loadPreferences()</code> teníamos:</p>
+        <pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>changeIcons <span class="ͼv">=</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>prefs<span class="ͼv">.</span>get_boolean(<span class="ͼz">"change-icons"</span>);</samp></pre>
+        <p>Y en <code data-start="2124" data-end="2139">manageLabel()</code>:</p>
+        <pre><samp><span class="ͼv">if</span> (<span class="ͼy">this</span><span class="ͼv">.</span>changeIcons) {
+    <span class="ͼy">this</span><span class="ͼv">.</span>manageIconChange(<span class="ͼ11">nCount</span> <span class="ͼv">&gt;</span> <span class="ͼy">0</span> <span class="ͼv">||</span> <span class="ͼ11">eCount</span> <span class="ͼv">&gt;</span> <span class="ͼy">0</span>);
+}</samp></pre>
+        <p>Así que la preferencia <strong data-start="2263" data-end="2298">no cambia directamente el icono</strong>.
+        </p>
+        <p>Lo que hace es habilitar o deshabilitar este comportamiento:</p>
+        <div class="row">
+            <div class="col">
+                <pre><samp>change-icons = false
+       ↓
+no llamar manageIconChange()<br></samp></pre>
+            </div>
+            <div class="col">
+                <pre><samp>change-icons = true
+       ↓
+llamar manageIconChange()
+       ↓
+cambiar entre full / empty</samp></pre>
+            </div>
+        </div>
+        <p>Eso es una distinción importante.</p>
+    </details>
+</div>
+<h2 id="section13" class="class-exts">middleClickDndToggle ( )</h2>
+<hr>
+<p>Esta es bastante sencilla, pero tiene una función importante: <strong data-start="66" data-end="135">conecta el clic
+        central del botón del indicador con el estado DND</strong>.</p>
+<pre><code><span class="ͼ13">middleClickDndToggle</span>: <span class="ͼv">function</span> (<span class="ͼ11">actor</span>, <span class="ͼ11">event</span>) { ... }</code></pre>
+<p>Recibe dos objetos:</p>
+<ul>
+    <li><code>actor</code> → el elemento de GNOME que recibió el evento.</li>
+    <li><code>event</code> → el evento del ratón.</li>
+</ul>
+<p>En esta función realmente solo necesitamos <code data-start="359" data-end="366">event</code>.</p>
+<h3>Identifica el botón del ratón</h3>
+<p><code data-start="459" data-end="473">get_button()</code> devuelve el botón utilizado.</p>
+<pre><code><span class="ͼv">switch</span>(<span class="ͼ11">event</span><span class="ͼv">.</span>get_button()) { ... }</code></pre>
+<p>Aquí solo interesa: <span class="ͼv">case</span> <span class="ͼy">2</span>: <span class="ͼt">// if middle
+        click</span></p>
+<p>En GTK/GNOME:</p>
+<pre><samp>1 → botón izquierdo
+2 → botón central
+3 → botón derecho</samp></pre>
+<p>Por tanto, esta función <strong data-start="679" data-end="718">solamente reacciona al clic central</strong>.</p>
+<h3>¿Por qué cierra el menú?</h3>
+<pre><code><span class="ͼv">if</span> (<span class="ͼy">this</span><span class="ͼv">.</span>menu<span class="ͼv">.</span>isOpen) {
+    <span class="ͼy">this</span><span class="ͼv">.</span>menu<span class="ͼv">.</span>actor<span class="ͼv">.</span>visible <span class="ͼv">=</span> <span class="ͼy">false</span>;
+}</code></pre>
+<p>El comentario del código lo explica:</p>
+<blockquote>close the menu, since it gets open on any click</blockquote>
+<p>El clic sobre <code data-start="953" data-end="973">NotificationCenter</code> normalmente provoca la apertura del
+    menú. Pero en este caso el usuario no quiere abrirlo; quiere utilizar el clic central como atajo para DND.</p>
+<p>Por eso:</p>
+<pre><samp>clic central
+    ↓
+GNOME abre el menú
+    ↓
+esta función detecta clic central
+    ↓
+oculta el menú
+    ↓
+cambia DND</samp></pre>
+<p>Es una solución bastante pragmática.</p>
+<h3>Cambia DND</h3>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>dndToggle();</code></pre>
+<p>Ya estudiamos <code data-start="1368" data-end="1381">dndToggle()</code>:</p>
+<pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>dndpref<span class="ͼv">.</span>set_boolean(
+    <span class="ͼz">'show-banners'</span>,
+    <span class="ͼv">!</span><span class="ͼy">this</span><span class="ͼv">.</span>dndpref<span class="ͼv">.</span>get_boolean(<span class="ͼz">'show-banners'</span>)
+);</samp></pre>
+<p>Así que aquí realmente sucede:</p>
+<pre><samp>middleClick
+    ↓
+dndToggle()
+    ↓
+show-banners = !show-banners</samp></pre>
+<p>Y recuerda que <code data-start="1623" data-end="1632">dndpref</code> viene de <code data-start="1642"
+        data-end="1651">_init()</code>:</p>
+<pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>dndpref <span class="ͼv">=</span>
+    <span class="ͼ11">Main</span><span class="ͼv">.</span>panel<span class="ͼv">.</span>statusArea<span class="ͼv">.</span>dateMenu<span class="ͼv">.</span>_indicator<span class="ͼv">.</span>_settings;</samp></pre>
+<p>Por tanto esta función <strong data-start="1768" data-end="1804">no mantiene un estado DND propio</strong>. Modifica
+    directamente el <code data-start="1831" data-end="1842">GSettings</code> que utiliza GNOME.</p>
+<h3>Actualiza inmediatamente la interfaz</h3>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>loadDndStatus();</code></pre>
+<p>Esto es importante porque <code data-start="1988" data-end="2001">dndToggle()</code> solamente cambia el valor en
+    GSettings. <code data-start="2043" data-end="2060">loadDndStatus()</code> hace el trabajo de reflejarlo
+    visualmente:</p>
+<pre><samp>dndToggle()
+     │
+     ▼
+GSettings: show-banners
+     │
+     ▼
+loadDndStatus()
+     │
+     ├── isDndOff
+     ├── dndItem
+     ├── notificationIcon
+     ├── notificationLabel
+     ├── eventsLabel
+     └── manageAutohide()</samp></pre>
+<p>Por eso las dos llamadas consecutivas tienen sentido:</p>
+<ul>
+    <li><span>this</span><span>.</span>dndToggle(); - <strong>cambia el estado</strong>.</li>
+    <li><span>this</span><span>.</span>loadDndStatus(); - <strong>sincroniza la interfaz con el nuevo estado</strong>.
+    </li>
+</ul>
+<p>El <code data-start="2561" data-end="2569">return</code></p>
+<p>Simplemente termina el procesamiento del evento después de manejar el clic central.</p>
+<pre><code><span class="ͼv">return</span>;</code></pre>
+<p>No hay <code data-start="2690" data-end="2699">default</code>, así que si el usuario hace clic izquierdo o derecho,
+    esta función no hace nada.</p>
+<div class="card">
+    <h4>Observaciones de este bloque</h4>
+    <hr>
+    <details>
+        <summary>Mapa completo de <code>middleClickDndToggle()</code></summary>
+        <p>Podemos añadir otra pequeña ruta:</p>
+        <pre><samp>             clic central
+                  │
+                  ▼
+       middleClickDndToggle()
+                  │
+          ┌───────┴────────┐
+          ▼                ▼
+     cerrar menú       dndToggle()
+                           │
+                           ▼
+                    show-banners
+                           │
+                           ▼
+                   loadDndStatus()
+                           │
+              ┌────────────┴───────────┐
+              ▼                        ▼
+       icono/labels DND          manageAutohide()</samp></pre>
+    </details>
+    <details>
+        <summary>Algo interesante</summary>
+        <p>Tenemos dos maneras de cambiar DND que ya conocemos:</p>
+        <pre><samp>PopupMenu
+   │
+   └── dndToggle()
+
+Clic central
+   │
+   └── dndToggle()</samp></pre>
+        <p>Es decir, <code>dndToggle()</code> está correctamente aislada como la operación común:</p>
+        <pre><samp>             dndToggle()
+                 ▲
+                 │
+       ┌─────────┴─────────┐
+       │                   │
+ menú DND             clic central</samp></pre>
+        <p>Eso es un buen diseño dentro de este código antiguo: <strong>las distintas interfaces no duplican la
+                modificación de <code>show-banners</code></strong>.</p>
+        <p>Y después ambas pueden terminar pasando por <code>loadDndStatus()</code> para actualizar el estado visual.
+        </p>
+    </details>
+</div>
+<h2 id="section14" class="class-exts">newNotif ( )</h2>
+<hr>
+<p>Aquí llegamos a una función <strong data-start="28" data-end="46">muy importante</strong>. <code data-start="48"
+        data-end="60">newNotif()</code> es uno de los puntos donde el estado real de GNOME entra al modelo interno de
+    <code data-start="139" data-end="159">NotificationCenter</code>.
+</p>
+<p>Y ahora que ya conocemos <code data-start="187" data-end="206">loadPreferences()</code>, <code data-start="208"
+        data-end="223">manageLabel()</code>, <code data-start="225" data-end="245">manageIconChange()</code>, <code
+        data-start="247" data-end="264">loadDndStatus()</code> y <code data-start="267"
+        data-end="285">manageAutohide()</code>, muchas líneas empiezan a tener sentido.</p>
+<h3>¿Qué recibe?</h3>
+<pre><code><span class="ͼ13">newNotif</span>: <span class="ͼv">function</span>(<span class="ͼ11">messageType</span>) { ... }</code></pre>
+<p><code data-start="417" data-end="430">messageType</code> indica qué tipo de cosa acaba de ocurrir:</p>
+<pre><samp>"media"
+"notification"
+"events"</samp></pre>
+<p>Por tanto, la función es un despachador:</p>
+<pre><samp>                 newNotif(messageType)
+                         │
+          ┌──────────────┼──────────────┐
+          ▼              ▼              ▼
+       media       notification       events</samp></pre>
+<p>Cada caso actualiza un contador/estado diferente.</p>
+<h3>Caso <code data-start="859" data-end="866">media</code></h3>
+<p>Es el más sencillo.</p>
+<pre><code><span class="ͼv">case</span> <span class="ͼz">"media"</span>:
+    <span class="ͼy">this</span><span class="ͼv">.</span>mediaCount<span class="ͼv">++</span>;
+    <span class="ͼv">break</span>;</code></pre>
+<p>Cada vez que llega una señal indicando actividad multimedia:</p>
+<pre><samp>media
+  ↓
+mediaCount++</samp></pre>
+<p>No hace ninguna otra cosa aquí. Y luego veremos que <code data-start="1132" data-end="1144">mediaCount</code> termina
+    participando en la actualización del indicador.</p>
+<h3>Caso <code data-start="1217" data-end="1231">notification</code></h3>
+<p>Aquí empieza lo interesante:</p>
+<pre><code><span class="ͼv">case</span> <span class="ͼz">"notification"</span>:</code></pre>
+<p>Incrementa el contador... pero solamente si el menú está cerrado</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>notificationCount <span class="ͼv">=</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>notificationCount <span class="ͼv">+</span> <span class="ͼv">!</span><span class="ͼy">this</span><span class="ͼv">.</span>menu<span class="ͼv">.</span>isOpen;</code></pre>
+<p>Esto vuelve a utilizar una conversión implícita:</p>
+<pre><samp>menu cerrado → !false = true → 1
+menu abierto  → !true  = false → 0</samp></pre>
+<p>Por lo tanto:</p>
+<pre><samp>MENÚ CERRADO
+    ↓
+notificationCount++
+
+MENÚ ABIERTO
+    ↓
+notificationCount no aumenta</samp></pre>
+<p>Esto tiene muchísimo sentido desde el punto de vista de UX:</p>
+<blockquote>Si el usuario ya tiene abierto el Notification Center, las nuevas notificaciones no deberían acumularse como
+    "no vistas" en el indicador.</blockquote>
+<p>Esto también nos ayuda a entender por qué existe <code data-start="2013" data-end="2025">seenEvents</code> más
+    adelante.</p>
+<h3>Obtiene las fuentes de notificación </h3>
+<p>Aquí el código consulta directamente al sistema de notificaciones de GNOME.</p>
+<pre><code><span class="ͼv">let</span> <span class="ͼ11">source</span> <span class="ͼv">=</span> <span class="ͼ11">Main</span><span class="ͼv">.</span>messageTray<span class="ͼv">.</span>getSources();</code></pre>
+<p><code data-start="2249" data-end="2263">getSources()</code> devuelve las fuentes/aplicaciones que actualmente tienen
+    notificaciones.</p>
+<p>Después:</p>
+<pre><code><span class="ͼv">let</span> <span class="ͼ11">applicationIndex</span> <span class="ͼv">=</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>appBlackList<span class="ͼv">.</span>indexOf(<span class="ͼ11">source</span>[<span class="ͼ11">source</span><span class="ͼv">.</span>length<span class="ͼv">-</span><span class="ͼy">1</span>]<span class="ͼv">.</span>title);</code></pre>
+<h4><code class="inline-code">source[source.length-1]</code></h4>
+<p>Obtiene el <strong data-start="2528" data-end="2547">último elemento</strong> de las fuentes.</p>
+<p>El código asume que ese último <q class="inline-code">source</q> corresponde a la aplicación que acaba de generar la
+    notificación.</p>
+<p>Luego: .<span class="ͼ11">title</span> obtiene el nombre/título de esa fuente.</p>
+<p>Y finalmente: <span class="ͼy">this</span><span class="ͼv">.</span>appBlackList<span class="ͼv">.</span>indexOf(...)
+    busca ese nombre dentro de:</p>
+<pre><samp>name-list
+   ↓
+appBlackList</samp></pre>
+<p>Que vimos en <code data-start="2929" data-end="2948">loadPreferences()</code>:</p>
+<pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>appBlackList <span class="ͼv">=</span> <span class="ͼy">this</span><span class="ͼv">.</span>prefs<span class="ͼv">.</span>get_strv(<span class="ͼz">"name-list"</span>);</samp></pre>
+<p>Así obtenemos:</p>
+<pre><samp>aplicación que produjo la notificación
+             ↓
+          title
+             ↓
+       appBlackList
+             ↓
+       applicationIndex</samp></pre>
+<h3>Aquí aparece <code data-start="3244" data-end="3257">script-list</code></h3>
+<p>Tenemos tres condiciones.</p>
+<pre><code><span class="ͼv">if</span>(<span class="ͼy">this</span><span class="ͼv">.</span>allowRunningScript <span class="ͼv">&amp;&amp;</span>
+   <span class="ͼ11">applicationIndex</span> <span class="ͼv">&gt;</span> <span class="ͼy">0</span> <span class="ͼv">&amp;&amp;</span>
+   <span class="ͼy">this</span><span class="ͼv">.</span>scriptList[<span class="ͼ11">applicationIndex</span>]<span class="ͼv">!=</span><span class="ͼz">""</span>) { ... }</code></pre>
+<h4>Primera</h4>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>allowRunningScript</code></pre>
+<p>Proviene de:</p>
+<pre><samp>run-script
+   ↓
+allowRunningScript</samp></pre>
+<h4>Segunda</h4>
+<pre><code><span class="ͼ11">applicationIndex</span> <span class="ͼv">&gt;</span> <span class="ͼy">0</span></code></pre>
+<p>La aplicación debe encontrarse en la lista, aunque aquí aparece algo que debemos marcar:</p>
+<blockquote>¿Por qué <code data-start="3726" data-end="3731">&gt; 0</code> y no <code data-start="3737"
+        data-end="3743">&gt; -1</code>?</blockquote>
+<p>Porque <code data-start="3753" data-end="3764">indexOf()</code> devuelve:</p>
+<pre><samp>-1 → no encontrado
+ 0 → primer elemento
+ 1 → segundo elemento
+...</samp></pre>
+<p>Por lo tanto esta condición <strong data-start="3895" data-end="3941">excluye deliberadamente el primer
+        elemento</strong>. No asumiría todavía que es intencional. Es un candidato claro para investigar.</p>
+<h4>Tercera</h4>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>scriptList[<span class="ͼ11">applicationIndex</span>] <span class="ͼv">!=</span> <span class="ͼz">""</span></code></pre>
+<p>El elemento correspondiente de: <kbd class="inline-code">script-list</kbd> debe contener una ruta a un script.</p>
+<h3>Ejecuta el script</h3>
+<pre><code><span class="ͼ11">utilspawn</span>([<span class="ͼz">"sh"</span>, <span class="ͼy">this</span><span class="ͼv">.</span>scriptList[<span class="ͼ11">applicationIndex</span>]]);</code></pre>
+<p>Aquí encontramos finalmente esa pista que habíamos dejado pendiente sobre <strong data-start="4403"
+        data-end="4420"><code data-start="4405" data-end="4418">script-list</code></strong>.</p>
+<p>En <code data-start="4426" data-end="4435">_init()</code> teníamos: <span class="ͼv">const</span> <span
+        class="ͼ11">utilSpawn</span> <span class="ͼv">=</span> <span class="ͼ11">imports</span><span
+        class="ͼv">.</span>misc<span class="ͼv">.</span>util<span class="ͼv">.</span>spawn;.</p>
+<p>Pero aquí aparece: <span class="ͼ11">utilspawn</span>(...)</p>
+<blockquote>Hay una diferencia de mayúsculas/minúsculas:</blockquote>
+<pre><samp>util<u>S</u>pawn
+util<u>s</u>pawn</samp></pre>
+<p>JavaScript distingue ambas. Si el código realmente está exactamente así, debemos investigar si existe otra variable
+    <code data-start="4786" data-end="4797">utilspawn</code> en alguna parte o si esto es simplemente un error del
+    código original.
+</p>
+<p>No lo corregiría todavía. Y esto conecta directamente con nuestra investigación pendiente de <code data-start="4968"
+        data-end="4981">script-list</code>.</p>
+<h3>Después comprueba DND</h3>
+<pre><code><span class="ͼv">if</span>(<span class="ͼy">this</span><span class="ͼv">.</span>isDndOff) { ... }</code></pre>
+<p>Recordemos: <kbd class="inline-code">isDndOff</kbd> = <var class="inline-code">show-banners</var>. Así que:</p>
+<pre><samp>isDndOff == true
+       ↓
+DND está desactivado
+       ↓
+la notificación puede procesarse normalmente</samp></pre>
+<p>Si DND está activo, todo lo que sigue dentro de este <code data-start="5319" data-end="5323">if</code> se salta.</p>
+<h3>Comprueba si la aplicación está en la lista</h3>
+<p>Aquí sí usa correctamente <code data-start="5475" data-end="5481">&gt; -1</code>.</p>
+<p><span class="ͼv">if</span>(<span class="ͼ11">applicationIndex</span> <span class="ͼv">&gt;</span> <span
+        class="ͼv">-</span><span class="ͼy">1</span>) { ... }</p>
+<p>Eso significa: <kbd class="inline-code">applicationIndex</kbd> <code class="inline-code">&gt;=</code> <var
+        class="inline-code">0</var>. La aplicación existe en <code data-start="5571" data-end="5582">name-list</code>.
+</p>
+<h3>for-list</h3>
+<p>Aquí vuelve la configuración de Prefs.</p>
+<pre><code><span class="ͼv">switch</span>(<span class="ͼy">this</span><span class="ͼv">.</span>blackListAction) { ... }</code></pre>
+<div class="row">
+    <div class="col">
+        <p>Recordemos:</p>
+        <pre><samp>for-list
+   ↓
+blackListAction</samp></pre>
+    </div>
+    <div class="col">
+        <p>Y de <code>prefsGtk4.js</code> ya sabemos:</p>
+        <pre><samp>0 → Show them
+1 → Show counts only
+2 → Show banner only
+3 → Ignore them</samp></pre>
+    </div>
+</div>
+<p>Aquí solamente se consideran:</p>
+<pre><code><span class="ͼ13">case</span> 3:
+<span class="ͼ13">case</span> 2:
+    <span class="ͼ13">this</span><span class="ͼv">.</span>notificationCount<span class="ͼv">--</span>;</code></pre>
+<div class="row">
+    <div class="col">
+        <p>Por tanto:</p>
+        <pre><samp>for-list = 2 → reducir contador
+for-list = 3 → reducir contador</samp></pre>
+    </div>
+    <div class="col">
+        <p>Mientras que:</p>
+        <pre><samp>for-list = 0
+for-list = 1</samp></pre>
+        <p>No reducen el contador.</p>
+    </div>
+</div>
+<h3>¿Por qué resta uno?</h3>
+<p>Esta parte requiere atención.</p>
+<p>Al principio hicimos: <span class="ͼ11">notificationCount</span><span class="ͼv">++</span> pero ahora, para
+    determinadas aplicaciones: <span class="ͼ11">notificationCount</span><span class="ͼv">--</span></p>
+<p>Por tanto, el efecto neto es:</p>
+<pre><samp>notificación recibida
+       ↓
+      +1
+       ↓
+¿aplicación configurada para no contar?
+       │
+      sí
+       ↓
+      -1
+       ↓
+contador queda igual</samp></pre>
+<p>Esto encaja con:</p>
+<ul>
+    <li><code>Show banner only</code><span></span></li>
+    <li><code>Ignore them</code><span></span></li>
+</ul>
+<p>Aunque el nombre <code data-start="6723" data-end="6733">for-list</code>/<code data-start="6734"
+        data-end="6751">blackListAction</code> hace que la semántica sea un poco confusa.</p>
+<h3>Anima el icono</h3>
+<p>Esto conecta directamente con la función que acabamos de estudiar antes.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>animateOnNewNotification(<span class="ͼy">5</span>);</code></pre>
+<p>Le pasa: <kbd class="inline-code">times</kbd> = <var class="inline-code">5</var> y <code data-start="7009"
+        data-end="7037">animateOnNewNotification()</code> empieza su secuencia de:</p>
+<pre><samp>escala
+↓
+traslación
+↓
+rotación
+↓
+opacidad
+↓
+repetición
+↓
+blinkIcon()</samp></pre>
+<p>Así que una nueva notificación, cuando DND está desactivado, provoca también la animación visual.</p>
+<h3>Caso <code data-start="7273" data-end="7281">events</code></h3>
+<pre><code><span class="ͼv">case</span> <span class="ͼz">"events"</span>:</code></pre>
+<p>Aquí tenemos una asignación múltiple:</p>
+<pre><code>[
+    <span class="ͼy">this</span><span class="ͼv">.</span>seenEvents,
+    <span class="ͼy">this</span><span class="ͼv">.</span>eventsCount
+] <span class="ͼv">=</span> [
+    (<span class="ͼ11">Main</span><span class="ͼv">.</span>panel<span class="ͼv">.</span>statusArea<span class="ͼv">.</span>dateMenu<span class="ͼv">.</span>menu<span class="ͼv">.</span>isOpen)
+        <span class="ͼv">?</span> <span class="ͼy">this</span><span class="ͼv">.</span>seenEvents
+        <span class="ͼv">:</span> <span class="ͼy">false</span>,
+
+    <span class="ͼy">this</span><span class="ͼv">.</span>shouldShowEventsSection() <span class="ͼv">*</span> (<span class="ͼv">!</span><span class="ͼy">this</span><span class="ͼv">.</span>menu<span class="ͼv">.</span>isOpen)
+];</code></pre>
+<h4><code class="inline-code">seenEvents</code></h4>
+<pre><code>(<span class="ͼ11">Main</span><span class="ͼv">.</span>panel<span class="ͼv">.</span>statusArea<span class="ͼv">.</span>dateMenu<span class="ͼv">.</span>menu<span class="ͼv">.</span>isOpen)
+    <span class="ͼv">?</span> <span class="ͼy">this</span><span class="ͼv">.</span>seenEvents
+    <span class="ͼv">:</span> <span class="ͼy">false</span></code></pre>
+<p>Si el menú del <strong data-start="7763" data-end="7784">Calendar de GNOME...</strong></p>
+<div class="row">
+    <div class="col">
+        <p>Está abierto:</p>
+        <pre><samp>calendar menu abierto
+      ↓
+conservar seenEvents</samp></pre>
+    </div>
+    <div class="col">
+        <p>Está cerrado:</p>
+        <pre><samp>calendar menu cerrado
+      ↓
+seenEvents = false</samp></pre>
+    </div>
+</div>
+<p>Es decir, el código considera que mientras el calendario está abierto puede conservarse el estado de eventos vistos.
+</p>
+<p>Aquí tenemos otra variable que claramente tiene significado de <strong data-start="8149" data-end="8172">estado de
+        ejecución</strong>, no de preferencia.</p>
+<h4><code data-start="8205" data-end="8218">eventsCount</code></h4>
+<p>Otra vez la multiplicación booleana.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>shouldShowEventsSection() <span class="ͼv">*</span> (<span class="ͼv">!</span><span class="ͼy">this</span><span class="ͼv">.</span>menu<span class="ͼv">.</span>isOpen)</code></pre>
+<p>Si: <kbd class="inline-code">shouldShowEventsSection</kbd>() → <var class="inline-code">true</var> y el
+    Notification Center está cerrado: <kbd class="inline-code">!</kbd><code class="inline-code">this.menu.isOpen</code>
+    → <var class="inline-code">true</var> entonces:</p>
+<pre><samp>true * true
+→ 1</samp></pre>
+<p>Por lo tanto <code data-start="8560" data-end="8573">eventsCount</code> termina siendo <strong data-start="8589"
+        data-end="8594">1</strong>, no necesariamente el número real de eventos.</p>
+<p>Si el Notification Center está abierto: <kbd class="inline-code">!</kbd><code
+        class="inline-code">this.menu.isOpen</code> → <var class="inline-code">false</var> entonces: <kbd
+        class="inline-code">eventsCount</kbd> = <var class="inline-code">0</var>.</p>
+<p>Esto es una pista importante:</p>
+<blockquote><code data-start="8819" data-end="8832">eventsCount</code> aparentemente no representa "cantidad de eventos"
+    en el sentido literal. En este punto funciona como un <strong data-start="8937" data-end="8979">indicador booleano
+        convertido a número</strong>.</blockquote>
+<p>Tendremos que ver dónde más se modifica <code data-start="9022" data-end="9035">eventsCount</code>, porque quizás
+    existe otra ruta donde sí recibe un conteo real.</p>
+<h3>Al final, <code data-start="9138" data-end="9156">resetIndicator()</code></h3>
+<p>Después del <code data-start="9170" data-end="9178">switch</code>: <span class="ͼy">this</span><span
+        class="ͼv">.</span>resetIndicator();</p>
+<p>Esto ocurre para <strong data-start="9252" data-end="9270">los tres tipos</strong>. Por tanto:</p>
+<pre><samp>media ───────────────┐
+notification ────────┼──► resetIndicator()
+events ──────────────┘</samp></pre>
+<p>Y esto es importantísimo para nuestro recorrido porque <code data-start="9454"
+        data-end="9472">resetIndicator()</code> probablemente sea quien finalmente conecta:</p>
+<pre><samp>mediaCount
+notificationCount
+eventsCount
+       ↓
+manageLabel()
+       ↓
+manageAutohide()</samp></pre>
+<p>No necesitamos adivinarlo: <strong data-start="9648" data-end="9725">esa es una de las próximas funciones que vale
+        muchísimo la pena estudiar.</strong></p>
+<div class="card">
+    <h4>Observaciones de este bloque</h4>
+    <hr>
+    <details>
+        <summary>Mapa completo de <code>newNotif()</code></summary>
+        <pre><samp>                     newNotif(type)
+                           │
+          ┌────────────────┼────────────────┐
+          │                │                │
+        media        notification         events
+          │                │                │
+          ▼                ▼                ▼
+    mediaCount++     notificationCount    seenEvents
+                           │                │
+                           │                ▼
+                           │           eventsCount
+                           │                │
+                           ▼                │
+                    MessageTray             │
+                           │                │
+                           ▼                │
+                    applicationIndex        │
+                           │                │
+                    ┌──────┴──────┐         │
+                    │             │         │
+                 scripts       for-list     │
+                    │             │         │
+                    ▼             ▼         │
+                 script       +/- count     │
+                    │             │         │
+                    └──────┬──────┘         │
+                           │                │
+                           ▼                ▼
+                     animate...       shouldShowEvents
+                           │                │
+                           └───────┬────────┘
+                                   ▼
+                            resetIndicator()</samp></pre>
+        <p>Y hay una última conexión que me parece especialmente buena para nuestro mapa:</p>
+        <pre><samp>                  newNotif()
+                     │
+                     ▼
+              resetIndicator()
+                     │
+                     ▼
+             ┌───────┴───────┐
+             │               │
+        conteos/estado    visibilidad
+             │               │
+             ▼               ▼
+        manageLabel()   manageAutohide()</samp></pre>
+        <p><strong><code>resetIndicator()</code> es ahora una pieza clave.</strong> Yo seguiría con esa función antes de
+            saltar a otra zona, porque probablemente nos permitirá cerrar el circuito que comenzó aquí.</p>
+    </details>
+    <details>
+        <summary>Aquí aparecen tres puntos que yo marcaría</summary>
+        <h4>applicationIndex &gt; 0</h4>
+        <p>Tenemos: <span class="ͼv">if</span>(<span class="ͼy">this</span><span class="ͼv">.</span>allowRunningScript
+            <span class="ͼv">&amp;&amp;</span> <span class="ͼ11">applicationIndex</span> <span class="ͼv">&gt;</span>
+            <span class="ͼy">0</span> <span class="ͼv">...</span>) pero después: <span class="ͼv">if</span>(<span
+                class="ͼ11">applicationIndex</span> <span class="ͼv">&gt;</span> <span class="ͼv">-</span><span
+                class="ͼy">1</span>).
+        </p>
+        <p>No parecen equivalentes. Hay que averiguar por qué el primer elemento de <code data-start="11606"
+                data-end="11617">name-list</code> queda excluido de la ejecución de scripts.</p>
+        <h4><code data-start="11671" data-end="11682">utilspawn</code> vs <code data-start="11686"
+                data-end="11697">utilSpawn</code></h4>
+        <p>Tenemos en <code data-start="11710" data-end="11719">_init()</code>: <span class="ͼv">const</span> <span
+                class="ͼ11">utilSpawn</span> <span class="ͼv">=</span> <span class="ͼ11">imports</span><span
+                class="ͼv">.</span>misc<span class="ͼv">.</span>util<span class="ͼv">.</span>spawn; pero aquí: <span
+                class="ͼ11">utilspawn</span>(...).</p>
+        <p>JavaScript distingue mayúsculas y minúsculas. Esto merece una búsqueda exacta en <code data-start="11914"
+                data-end="11928">extension.js</code> antes de tocarlo.</p>
+        <h4>eventsCount</h4>
+        <p>Esta expresión: <span class="ͼy">this</span><span class="ͼv">.</span>shouldShowEventsSection() <span
+                class="ͼv">*</span> (<span class="ͼv">!</span><span class="ͼy">this</span><span
+                class="ͼv">.</span>menu<span class="ͼv">.</span>isOpen) hace que el valor sea normalmente: <var
+                class="inline-code">0</var> o <var class="inline-code">1</var></p>
+        <p>Así que no debemos llamarlo "contador" todavía sin investigar dónde más se modifica.</p>
+    </details>
+</div>
+<h2 id="section15" class="class-exts">resetIndicator ( )</h2>
+<hr>
+<p>Sí, aquí cerramos el circuito que dejamos pendiente con <code data-start="56" data-end="68">newNotif()</code>. <code
+        data-start="70" data-end="88">resetIndicator()</code> es básicamente el <strong data-start="107"
+        data-end="160">orquestador final del estado visual del indicador</strong>.</p>
+<h3>Primero actualiza el autohide</h3>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>manageAutohide();</code></pre>
+<p>Esto hace que el estado de visibilidad del botón se recalcule con los valores actuales:</p>
+<pre><samp>conteos / preferencias / DND
+              ↓
+       manageAutohide()
+              ↓
+       ¿se muestra el indicador?</samp></pre>
+<p>Es importante que ocurra <strong data-start="487" data-end="496">antes</strong> de <code data-start="500"
+        data-end="515">manageLabel()</code>, porque ambas funciones afectan partes distintas de la presentación.</p>
+<h3>Si aparece el botón Clear</h3>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>clearButton<span class="ͼv">.</span>visible <span class="ͼv">=</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>notificationSection<span class="ͼv">.</span>_canClear <span class="ͼv">&amp;&amp;</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>notificationSectionToBeShown;</code></pre>
+<p>Tenemos dos condiciones:</p>
+<pre><samp>notificationSection._canClear
+        +
+notificationSectionToBeShown
+        ↓
+    Clear visible</samp></pre>
+<p>La <b>primera</b> viene de GNOME: <span class="ͼy">this</span><span class="ͼv">.</span>notificationSection<span
+        class="ͼv">.</span>_canClear indica que la sección de notificaciones tiene algo que puede limpiarse.</p>
+<p>La <b>segunda</b> viene de nuestras preferencias:</p>
+<pre><samp>show-notification
+       ↓
+notificationSectionToBeShown</samp></pre>
+<p>Así que aunque GNOME permita limpiar, si el usuario configuró: <kbd class="inline-code">show-notification</kbd> =
+    <var class="inline-code">0</var> el botón <code data-start="1270" data-end="1277">Clear</code> no se muestra.
+</p>
+<h3>include-events-count</h3>
+<p>Esto confirma algo que sospechábamos antes.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>eventsCount <span class="ͼv">=</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>eventsCount <span class="ͼv">*</span> <span class="ͼy">this</span><span class="ͼv">.</span>includeEventsCount;</code></pre>
+<div class="row">
+    <div class="col">
+        <p>Recordemos:</p>
+        <pre><samp>include-events-count
+        ↓
+includeEventsCount</samp></pre>
+        <p>Es booleano.</p>
+    </div>
+    <div class="col">
+        <p>Entonces:</p>
+        <pre><samp>includeEventsCount = true
+    → eventsCount conserva su valor
+
+includeEventsCount = false
+    → eventsCount = 0</samp></pre>
+    </div>
+</div>
+<p>Por tanto esta preferencia funciona como un <strong data-start="1751" data-end="1801">interruptor del aporte de
+        eventos al indicador</strong>. Y ahora entendemos mucho mejor por qué se llamaba: <kbd
+        class="inline-code">include-events-count</kbd>.</p>
+<p>No necesariamente significa "mostrar el número exacto de eventos"; significa que el estado de eventos puede <strong
+        data-start="1990" data-end="2032">participar o no en el indicador/conteo</strong>.</p>
+<h3>Aparece la condición DND</h3>
+<pre><code><span class="ͼv">if</span>(<span class="ͼy">this</span><span class="ͼv">.</span>isDndOff) { ... }</code></pre>
+<p>Esto es coherente con lo que vimos anteriormente:</p>
+<pre><samp>isDndOff = true
+       ↓
+show-banners = true
+       ↓
+DND desactivado</samp></pre>
+<p>Si DND está activo: <kbd class="inline-code">isDndOff</kbd> = <var class="inline-code">false</var> no
+    ejecuta <code data-start="2312" data-end="2327">manageLabel()</code>.</p>
+<p>Esto explica una parte que podría haber parecido extraña en <code data-start="2390"
+        data-end="2402">newNotif()</code>. Aunque <code data-start="2412" data-end="2424">newNotif()</code> actualice
+    contadores, <strong data-start="2447" data-end="2521">la presentación del indicador queda bloqueada mientras DND
+        está activo</strong>.</p>
+<h3>Y llegamos a la línea más importante</h3>
+<p>Esta línea finalmente nos permite entender el papel de <code data-start="2792"
+        data-end="2810">individual-icons</code>.</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>manageLabel(
+    (<span class="ͼy">this</span><span class="ͼv">.</span>notificationCount <span class="ͼv">+</span>
+     (<span class="ͼv">!</span><span class="ͼy">this</span><span class="ͼv">.</span>showThreeIcons) <span class="ͼv">*</span> <span class="ͼy">this</span><span class="ͼv">.</span>eventsCount),
+
+    (<span class="ͼy">this</span><span class="ͼv">.</span>showThreeIcons) <span class="ͼv">*</span> <span class="ͼy">this</span><span class="ͼv">.</span>eventsCount
+);</code></pre>
+<p>Recordemos:</p>
+<pre><samp>individual-icons
+       ↓
+showThreeIcons</samp></pre>
+<p>Tenemos dos escenarios.</p>
+<h4>individual-icons = true</h4>
+<p>Entonces: <kbd class="inline-code">showThreeIcons</kbd> = <var class="inline-code">true</var>. Por tanto: <code
+        class="inline-code">!</code><kbd class="inline-code">showThreeIcons</kbd> = <var class="inline-code">false</var>
+    y: <kbd class="inline-code">(!showThreeIcons)</kbd> * <kbd class="inline-code">eventsCount</kbd>
+    = <var class="inline-code">0</var></p>
+<div class="row">
+    <div class="col">
+        <p>El primer argumento queda:</p>
+        <pre><samp>notificationCount</samp></pre>
+    </div>
+    <div class="col">
+        <p>Mientras que el segundo:</p>
+        <pre><samp>eventsCount</samp></pre>
+    </div>
+</div>
+<p>Así que:</p>
+<pre><samp>manageLabel(
+    notificationCount,
+    eventsCount
+)</samp></pre>
+<p>Los eventos tienen su propio indicador. Esto corresponde al modo de <strong data-start="3346" data-end="3369">iconos
+        individuales</strong>.</p>
+<h4>individual-icons = false</h4>
+<p>Ahora: <kbd class="inline-code">showThreeIcons</kbd> = <var class="inline-code">false</var>. Entonces: <code
+        class="inline-code">!</code><kbd class="inline-code">showThreeIcons</kbd> = <var class="inline-code">true</var>
+    y: <kbd class="inline-code">(!showThreeIcons)</kbd> * <kbd class="inline-code">eventsCount</kbd>
+    = <kbd class="inline-code">eventsCount</kbd>.</p>
+<div class="row">
+    <div class="col">
+        <p>El primer argumento se convierte en:</p>
+        <pre><samp>notificationCount + eventsCount</samp></pre>
+    </div>
+    <div class="col">
+        <p>Mientras que el segundo:</p>
+        <pre><samp>0</samp></pre>
+    </div>
+</div>
+<p>Es decir:</p>
+<pre><samp>manageLabel(
+    notificationCount + eventsCount,
+    0
+)</samp></pre>
+<p>Por tanto, cuando no hay iconos individuales:</p>
+<blockquote>Los eventos se incorporan al indicador general de notificaciones.</blockquote>
+<p>Esto confirma perfectamente lo que habíamos deducido en <code data-start="3946"
+        data-end="3964">manageAutohide()</code>.</p>
+<div class="card">
+    <h4>Observaciones de este bloque</h4>
+    <hr>
+    <details>
+        <summary>Esta función completa el rompecabezas</summary>
+        <p>Ahora podemos dibujarlo mucho mejor:</p>
+        <pre><samp>                    resetIndicator()
+                           │
+             ┌─────────────┼──────────────┐
+             │             │              │
+             ▼             ▼              ▼
+     manageAutohide()   Clear button   eventsCount
+                                          │
+                                   includeEventsCount
+                                          │
+                                          ▼
+                                     0 ó valor
+                                          │
+                                          ▼
+                                  ¿individual-icons?
+                                    │           │
+                                   sí           no
+                                    │           │
+                                    ▼           ▼
+                               ┌────────┐   ┌──────────────┐
+                               │nCount  │   │nCount+eCount │
+                               │eCount  │   │      0       │
+                               └───┬────┘   └──────┬───────┘
+                                   │               │
+                                   └───────┬───────┘
+                                           ▼
+                                      manageLabel()
+                                           │
+                              ┌────────────┴────────────┐
+                              ▼                         ▼
+                       notificationLabel          eventsLabel</samp></pre>
+    </details>
+    <details>
+        <summary>Y ahora podemos conectar <code>newNotif()</code> con todo esto</summary>
+        <p>El flujo que llevamos desde hace varias funciones queda:</p>
+        <pre><samp>                nueva actividad
+                       │
+              ┌────────┼────────┐
+              ▼        ▼        ▼
+            media notification events
+              │        │        │
+              ▼        ▼        ▼
+         mediaCount  notificationCount  eventsCount
+                       │                 │
+                       └────────┬────────┘
+                                ▼
+                         resetIndicator()
+                                │
+                    ┌───────────┴───────────┐
+                    ▼                       ▼
+             manageAutohide()          manageLabel()
+                                            │
+                              ┌─────────────┴────────────┐
+                              ▼                          ▼
+                       notificationLabel          eventsLabel</samp></pre>
+        <p>Y tenemos además:</p>
+        <pre><samp>individual-icons
+       │
+       ▼
+showThreeIcons
+       │
+       ├── true  → eventos separados
+       │
+       └── false → eventos incluidos en notificationCount</samp></pre>
+    </details>
+    <details>
+        <summary>Hay algo que ahora queda confirmado</summary>
+        <p>En <code data-start="6791" data-end="6803">newNotif()</code> vimos:</p>
+        <pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>notificationCount <span class="ͼv">=</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>notificationCount <span class="ͼv">+</span> <span class="ͼv">!</span><span class="ͼy">this</span><span class="ͼv">.</span>menu<span class="ͼv">.</span>isOpen;</samp></pre>
+        <p>Y ahora vemos que <strong data-start="6922" data-end="7025"><code data-start="6924"
+                    data-end="6943">notificationCount</code> no necesariamente representa simplemente "cantidad de
+                notificaciones recibidas"</strong>. Es realmente un valor utilizado para construir el <strong
+                data-start="7078" data-end="7109">estado visual del indicador</strong>. Lo mismo ocurre con <code
+                data-start="7132" data-end="7145">eventsCount</code>.</p>
+        <p>Eso explica por qué hay tantas operaciones aparentemente extrañas con <code data-start="7218"
+                data-end="7226">* true</code>, <code data-start="7228" data-end="7237">* false</code>, <code
+                data-start="7239" data-end="7242">+</code>, etc.: el código está usando números como una especie de
+            <strong data-start="7300" data-end="7332">estado booleano cuantificado</strong>.
+        </p>
+        <p>Dos observaciones para nuestra futura revisión</p>
+        <h4>1. this.eventsCount</h4>
+        <pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>eventsCount <span class="ͼv">=</span> <span class="ͼy">this</span><span class="ͼv">.</span>eventsCount <span class="ͼv">*</span> <span class="ͼy">this</span><span class="ͼv">.</span>includeEventsCount;</samp></pre>
+        <p>Es correcto, pero una forma moderna y mucho más legible sería conceptualmente:</p>
+        <pre><samp>if (!this.includeEventsCount)
+    this.eventsCount = 0;</samp></pre>
+        <h4>2. Hay una dependencia fuerte entre:</h4>
+        <p>Esto es precisamente lo que queríamos descubrir con nuestro segundo recorrido.</p>
+        <pre><samp>individual-icons
+        ↓
+showThreeIcons
+        ↓
+resetIndicator()
+        ↓
+manageLabel()
+        ↓
+qué label recibe eventsCount</samp></pre>
+        <p>Y con <code data-start="7943" data-end="7961">resetIndicator()</code> ya podemos decir que <strong
+                data-start="7983" data-end="8090">el circuito <code class="inline-code">newNotif()</code> → <code
+                    class="inline-code">resetIndicator()</code> → <code class="inline-code">manageLabel()</code>/<code
+                    class="inline-code">manageAutohide()</code> está prácticamente cerrado</strong>. </p>
     </details>
 </div>

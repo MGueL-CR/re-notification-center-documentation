@@ -143,6 +143,10 @@ body {
 	color: var(--cdark);
 }
 
+.no-display {
+	display: none;
+}
+
 .borderless {
 	border: none;
 	outline: none;
