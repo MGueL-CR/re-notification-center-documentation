@@ -19,6 +19,10 @@
             <a href="#section13">middleClickDndToggle ( )</a>
             <a href="#section14">newNotif ( )</a>
             <a href="#section15">resetIndicator ( )</a>
+            <a href="#section16">remNotif ( )</a>
+            <a href="#section17">removeSection ( )</a>
+            <a href="#section18">setNotificationIconName ( )</a>
+            <a href="#section19">iconThemeChanged ( )</a>
             <hr>
             <a href="#section"> ... </a>
         </div>
@@ -4838,5 +4842,568 @@ qué label recibe eventsCount</samp></pre>
                 data-start="7983" data-end="8090">el circuito <code class="inline-code">newNotif()</code> → <code
                     class="inline-code">resetIndicator()</code> → <code class="inline-code">manageLabel()</code>/<code
                     class="inline-code">manageAutohide()</code> está prácticamente cerrado</strong>. </p>
+    </details>
+</div>
+<h2 id="section16" class="class-exts">remNotif ( )</h2>
+<hr>
+<p><code data-start="13" data-end="25">remNotif()</code> es, en esencia, la <strong data-start="45"
+        data-end="76">contraparte de <code data-start="62" data-end="74">newNotif()</code></strong>: cuando algo
+    desaparece o deja de estar presente, ajusta el estado interno y vuelve a recalcular el indicador.</p>
+<pre><code><span class="ͼ13">remNotif</span>: <span class="ͼv">function</span>(<span class="ͼ11">messageType</span>) { ... }</code></pre>
+<p>Recibe los mismos tres tipos:</p>
+<pre><samp>"media"
+"notification"
+"events"</samp></pre>
+<h3>Case "Media":</h3>
+<pre><code><span class="ͼv">case</span> <span class="ͼz">"media"</span> :
+    <span class="ͼy">this</span><span class="ͼv">.</span>mediaCount<span class="ͼv">--</span>;
+    <span class="ͼv">break</span>;</code></pre>
+<p>Muy directo: </p>
+<pre><samp>media eliminado
+     ↓
+mediaCount--</samp></pre>
+<p>Aquí no hay protección contra valores negativos. Eso es algo que podemos anotar para pruebas, pero no necesariamente
+    es un problema porque presumiblemente GNOME solo genera la señal cuando corresponde.</p>
+<h3>Case "Notification":</h3>
+<p>Aquí el autor sí protege el contador.</p>
+<pre><code><span class="ͼv">case</span> <span class="ͼz">"notification"</span> :
+    (<span class="ͼy">this</span><span class="ͼv">.</span>notificationCount<span class="ͼv">&gt;</span><span class="ͼy">0</span>)
+        <span class="ͼv">?</span> <span class="ͼy">this</span><span class="ͼv">.</span>notificationCount<span class="ͼv">--</span>
+        <span class="ͼv">:</span> <span class="ͼy">0</span>;
+    <span class="ͼv">break</span>;</code></pre>
+<p>La expresión equivale conceptualmente a:</p>
+<pre><samp>¿notificationCount &gt; 0?
+       │
+    ┌──┴──┐
+   sí     no
+    │      │
+    ▼      ▼
+   -1    hacer nada</samp></pre>
+<p>Así evita: <kbd class="inline-code">notificationCount</kbd> = <var class="inline-code">-1</var>.</p>
+<p>Es interesante compararlo con <code data-start="1102" data-end="1114">newNotif()</code>:</p>
+<div class="row">
+    <div class="col">
+        <pre><samp>newNotif()
+   ↓
+notificationCount + 1   (cuando menú cerrado)</samp></pre>
+    </div>
+    <div class="col">
+        <pre><samp>remNotif()
+   ↓
+notificationCount - 1   (si &gt; 0)</samp></pre>
+    </div>
+</div>
+<p>Pero <strong data-start="1247" data-end="1282">no son perfectamente simétricos</strong>, porque <code
+        data-start="1291" data-end="1303">newNotif()</code> condiciona el incremento a que el menú esté cerrado,
+    mientras que <code data-start="1370" data-end="1382">remNotif()</code> no comprueba <code data-start="1396"
+        data-end="1414">this.menu.isOpen</code>.</p>
+<p>Eso puede ser deliberado: una cosa representa una notificación nueva/no vista y la otra la desaparición de una
+    notificación existente.</p>
+<h3>Case "Events":</h3>
+<p>Aquí tenemos algo particularmente interesante:</p>
+<pre><code><span class="ͼv">case</span> <span class="ͼz">"events"</span> :
+    <span class="ͼy">this</span><span class="ͼv">.</span>eventsCount <span class="ͼv">=</span> <span class="ͼy">this</span><span class="ͼv">.</span>shouldShowEventsSection();
+    <span class="ͼv">break</span>;</code></pre>
+<p>Recordemos que en <code data-start="1739" data-end="1751">newNotif()</code> teníamos:</p>
+<pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>eventsCount <span class="ͼv">=</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>shouldShowEventsSection() <span class="ͼv">*</span> (<span class="ͼv">!</span><span class="ͼy">this</span><span class="ͼv">.</span>menu<span class="ͼv">.</span>isOpen);</samp></pre>
+<p>Aquí, en cambio:</p>
+<pre><samp>remNotif()
+    ↓
+eventsCount = shouldShowEventsSection()</samp></pre>
+<p>Por tanto <strong data-start="1957" data-end="1991">no utiliza <code data-start="1970"
+            data-end="1989">!this.menu.isOpen</code></strong>.</p>
+<h5>Esto es importante.</h5>
+<div class="row">
+    <div class="col">
+        <p><span><code>newNotif("events")</code></span></p>
+        <pre><samp>shouldShowEventsSection()
+        ×
+!menu.isOpen
+        ↓
+eventsCount</samp></pre>
+    </div>
+    <div class="col">
+        <p><span><code>remNotif("events")</code></span></p>
+        <pre><samp>shouldShowEventsSection()
+        ↓
+eventsCount</samp></pre>
+    </div>
+</div>
+<p>Así que después de eliminar un evento, <code data-start="2251" data-end="2264">eventsCount</code> puede quedar en
+    <code data-start="2281" data-end="2284">1</code> incluso si el Notification Center está abierto.
+</p>
+<p>Pero inmediatamente después: <span class="ͼy">this</span><span class="ͼv">.</span>resetIndicator(); y ahí <code
+        data-start="2412" data-end="2430">resetIndicator()</code> decide cómo utilizar ese valor.</p>
+<h3>El <code data-start="2477" data-end="2495">resetIndicator()</code></h3>
+<p>Aquí vuelve a ser la pieza común. Al igual que en <code data-start="2541" data-end="2553">newNotif()</code>: <span
+        class="ͼy">this</span><span class="ͼv">.</span>resetIndicator();
+</p>
+<p>Por tanto tenemos una estructura muy clara:</p>
+<pre><samp>                ACTIVIDAD
+                   │
+          ┌────────┴────────┐
+          │                 │
+       newNotif()        remNotif()
+          │                 │
+          ▼                 ▼
+    aumenta estado       disminuye estado
+          │                 │
+          └────────┬────────┘
+                   ▼
+            resetIndicator()
+                   │
+          ┌────────┴────────┐
+          ▼                 ▼
+    manageAutohide()    manageLabel()</samp></pre>
+<p>Esto es probablemente uno de los principales ciclos de <code data-start="3185"
+        data-end="3205">NotificationCenter</code>.</p>
+
+<div class="card">
+    <h4>Observaciones de este bloque</h4>
+    <hr>
+    <details>
+        <summary>Comparación directa</summary>
+        <p>Ahora que tenemos ambas funciones, vale mucho la pena ponerlas lado a lado conceptualmente:</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Tipo</th>
+                    <th><code>newNotif()</code></th>
+                    <th><code>remNotif()</code></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>media</code></td>
+                    <td><code>mediaCount++</code></td>
+                    <td><code>mediaCount--</code></td>
+                </tr>
+                <tr>
+                    <td><code>notification</code></td>
+                    <td>incrementa si menú cerrado</td>
+                    <td>decrementa si &gt; 0</td>
+                </tr>
+                <tr>
+                    <td><code>events</code></td>
+                    <td><code>shouldShowEventsSection() * !menu.isOpen</code></td>
+                    <td><code>shouldShowEventsSection()</code></td>
+                </tr>
+                <tr>
+                    <td>final</td>
+                    <td><code>resetIndicator()</code></td>
+                    <td><code>resetIndicator()</code></td>
+                </tr>
+            </tbody>
+        </table>
+        <p>Y aquí aparece una conclusión importante: Los tres valores no representan necesariamente lo mismo. Eso
+            explica bastante bien la diferencia entre los tres.</p>
+        <ul>
+            <li><code>mediaCount</code>: sí parece ser un contador.</li>
+            <li><code>notificationCount</code>: es un contador de notificaciones <strong>pendientes/no vistas desde la
+                    perspectiva del indicador</strong>.</li>
+            <li><code>eventsCount</code>: parece funcionar más como un <strong>estado 0/1 de existencia/visibilidad de
+                    eventos</strong> que como un contador real.</li>
+        </ul>
+    </details>
+    <details>
+        <summary>Un pequeño punto para nuestra lista de investigación</summary>
+        <p>Hay una pregunta que ahora sí vale la pena conservar:</p>
+        <blockquote>¿Quién llama <code>newNotif("events")</code> y <code>remNotif("events")</code>, y en qué momento?
+        </blockquote>
+        <p>Porque ahí podremos comprobar si <code>eventsCount</code> realmente se mantiene siempre como 0/1 y qué
+            significa exactamente <code>shouldShowEventsSection()</code> en cada momento.</p>
+        <p>Y también será interesante ver quién llama estas funciones para <code>media</code> y
+            <code>notification</code>.
+        </p>
+        <p>No tocaría nada todavía. <strong>Solo estamos reconstruyendo el comportamiento. </strong>Con
+            <code>newNotif()</code> + <code>remNotif()</code> + <code>resetIndicator()</code> ya tenemos una pieza
+            bastante sólida del mapa de dependencias.
+        </p>
+    </details>
+</div>
+<h2 id="section17" class="class-exts">removeSection ( ) </h2>
+<hr>
+<p>Esta es pequeña pero importante porque es una de las funciones que <strong data-start="71" data-end="127">modifica
+        físicamente dónde vive una sección de GNOME</strong>. Además, ahora que vimos <code data-start="153"
+        data-end="169">manageEvents()</code>, podemos ubicar exactamente por qué existe.</p>
+<h3>Recibe una sección</h3>
+<pre><code><span class="ͼ11">removeSection</span>(<span class="ͼ11">section</span>) { ... }</code></pre>
+<p><code data-start="286" data-end="295">section</code> puede ser una de las secciones que maneja <code data-start="338"
+        data-end="358">NotificationCenter</code>, principalmente:</p>
+<pre><samp>media
+notification
+events</samp></pre>
+<p>Pero <code data-start="421" data-end="429">events</code> es especial.</p>
+<h3>Caso especial: calendario/eventos</h3>
+<pre><code><span class="ͼv">if</span>(<span class="ͼ11">section</span> <span class="ͼv">==</span> <span class="ͼy">this</span><span class="ͼv">.</span>eventsSection) {
+    <span class="ͼy">this</span><span class="ͼv">.</span>newEventsSectionParent<span class="ͼv">.</span>remove_actor(<span class="ͼy">this</span><span class="ͼv">.</span>eventsSection);
+    <span class="ͼv">return</span>;
+}</code></pre>
+<p>Recordemos <code data-start="637" data-end="646">_init()</code>:</p>
+<pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>eventsSection <span class="ͼv">=</span>
+    <span class="ͼ11">Main</span><span class="ͼv">.</span>panel<span class="ͼv">.</span>statusArea<span class="ͼv">.</span>dateMenu<span class="ͼv">.</span>_eventsItem;
+
+<span class="ͼy">this</span><span class="ͼv">.</span>newEventsSectionParent <span class="ͼv">=</span>
+    <span class="ͼy">this</span><span class="ͼv">.</span>eventsSection<span class="ͼv">.</span>get_parent();</samp></pre>
+<p>Por lo tanto:</p>
+<pre><samp>eventsSection
+    ↓
+_eventsItem del Calendar
+    ↓
+su parent original → newEventsSectionParent</samp></pre>
+<p>Si la sección que queremos quitar es precisamente <code data-start="978" data-end="993">eventsSection</code>, no se
+    utiliza <code data-start="1009" data-end="1023">_sectionList</code>. Se elimina directamente del padre que tenía
+    originalmente:</p>
+<pre><samp>newEventsSectionParent
+        │
+        └── eventsSection
+                 ↓
+          remove_actor()</samp></pre>
+<p>Y después: <span class="ͼv">return</span>; evita ejecutar el código siguiente.</p>
+<h3>Para media y notification</h3>
+<p>Si no es <code data-start="1326" data-end="1334">events</code>:</p>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>_messageList<span class="ͼv">.</span>_sectionList<span class="ͼv">.</span>remove_actor(<span class="ͼ11">section</span>);
+<span class="ͼy">this</span><span class="ͼv">.</span>_messageList<span class="ͼv">.</span>_sync();</code></pre>
+<p>Aquí volvemos a objetos internos de GNOME:</p>
+<p>
+<pre><samp>_messageList
+        │
+        └── _sectionList
+                │
+                ├── mediaSection
+                └── notificationSection</samp></pre>
+</p>
+<p>Primero: <span class="ͼ11">remove_actor</span>(<span class="ͼ11">section</span>); quita físicamente la sección
+    de esa lista visual.</p>
+<p>Después: <span class="ͼy">this</span><span class="ͼv">.</span>_messageList<span class="ͼv">.</span>_sync(); le
+    dice al <code data-start="1788" data-end="1801">MessageList</code> que <strong data-start="1806"
+        data-end="1869">sincronice/reconstruya su estado después de la modificación</strong>.</p>
+<div class="card">
+    <h4>Observaciones de este bloque</h4>
+    <hr>
+    <details>
+        <summary>Lo interesante:</summary>
+        <p>Ahora entendemos <code>manageEvents()</code>. Hace unos mensajes vimos:</p>
+        <pre><samp><span class="ͼy">this</span><span class="ͼv">.</span>removeSection(<span class="ͼy">this</span><span class="ͼv">.</span>eventsSection);</samp></pre>
+        <p>Ahora sabemos exactamente qué significa:</p>
+        <pre><samp>manageEvents()
+      │
+      ▼
+removeSection(eventsSection)
+      │
+      ▼
+newEventsSectionParent.remove_actor(eventsSection)
+      │
+      ▼
+events desaparece de su ubicación original
+      │
+      ▼
+box.insert_child_at_index(...)
+      │
+      ▼
+events pasa al Notification Center</samp></pre>
+        <p>Y cuando vuelve al calendario:</p>
+        <pre><samp>manageEvents()
+      │
+      ▼
+this.box.remove_child(...)
+      │
+      ▼
+newEventsSectionParent.insert_child_at_index(...)
+      │
+      ▼
+events vuelve al Calendar</samp></pre>
+        <p>Así que <code>removeSection()</code> <strong>no decide qué sección mostrar ni dónde colocarla</strong>.</p>
+        <p>Su responsabilidad es mucho más concreta:</p>
+        <blockquote>Desenganchar una sección de su contenedor actual.</blockquote>
+    </details>
+    <details>
+        <summary>Una distinción importante</summary>
+        <p>Aquí aparece algo que debemos conservar en nuestro mapa:</p>
+        <div>
+            <div>
+                <h5><code>eventsSection</code></h5>
+                <p>Tiene una ruta especial:</p>
+                <pre><samp>Calendar
+  └── eventsSection</samp></pre>
+            </div>
+            <div>
+                <h5><code>mediaSection</code> / <code>notificationSection</code></h5>
+                <p>Tienen otra:</p>
+                <pre><samp>MessageList
+  └── _sectionList
+       ├── media
+       └── notification</samp></pre>
+            </div>
+        </div>
+        <p>Por eso el <code>if</code> no es simplemente una optimización. <strong>Los eventos tienen una arquitectura
+                diferente dentro de GNOME. </strong>Y eso explica buena parte de la complejidad que vimos en
+            <code>manageEvents()</code>.
+        </p>
+    </details>
+    <details>
+        <summary>Mapa actualizado</summary>
+        <pre><samp>removeSection(section)
+        │
+        ├── eventsSection
+        │       ↓
+        │  newEventsSectionParent
+        │       ↓
+        │  remove_actor()
+        │
+        └── media / notification
+                ↓
+          _messageList
+                ↓
+          _sectionList
+                ↓
+          remove_actor()
+                ↓
+             _sync()</samp></pre>
+        <p>Esta función podemos considerarla <strong>cerrada</strong>. La siguiente que aparezca después de ella
+            probablemente nos ayude a completar la parte de manipulación de las secciones, especialmente porque ya
+            sabemos
+            que <code>manageEvents()</code> depende directamente de ella.</p>
+    </details>
+</div>
+<h2 id="section18" class="class-exts">setNotificationIconName ( )</h2>
+<hr>
+<p>Esta función es sencilla, pero tiene una finalidad muy concreta: <strong data-start="69" data-end="131">determinar
+        qué icono de notificación puede usar el sistema</strong> y guardar ese nombre para utilizarlo después.</p>
+<h3>Comprueba si existe el tema de iconos</h3>
+<p>Obtiene el tema de iconos predeterminado de GTK.</p>
+<pre><code><span class="ͼv">if</span>(<span class="ͼ11">Gtk</span><span class="ͼv">.</span>IconTheme<span class="ͼv">.</span>get_default()) { ... }</code></pre>
+<p>Si existe, continúa comprobando si contiene un icono específico.</p>
+<h3>Comprueba <code data-start="416" data-end="439">notification-symbolic</code></h3>
+<pre><code><span class="ͼy">this</span><span class="ͼv">.</span>notificationIconName <span class="ͼv">=</span>
+    <span class="ͼ11">Gtk</span><span class="ͼv">.</span>IconTheme<span class="ͼv">.</span>get_default()<span class="ͼv">.</span>has_icon(<span class="ͼz">"notification-symbolic"</span>)
+        <span class="ͼv">?</span> <span class="ͼz">"notification-symbolic"</span>
+        <span class="ͼv">:</span> <span class="ͼz">"preferences-system-notifications-symbolic"</span>;</code></pre>
+<p>Aquí tenemos otro ternario:</p>
+<pre><samp>¿Existe "notification-symbolic"?
+          │
+       ┌──┴──┐
+      sí     no
+       │      │
+       ▼      ▼
+notification  preferences-system-
+-symbolic     notifications-symbolic</samp></pre>
+<p>Por tanto <code data-start="874" data-end="896">notificationIconName</code> <strong data-start="897"
+        data-end="936">no es necesariamente un nombre fijo</strong>.</p>
+<p>Es un mecanismo de compatibilidad:</p>
+<blockquote>Si el tema de iconos proporciona el icono moderno/preferido, lo utiliza; si no, utiliza una alternativa.
+</blockquote>
+<h3>¿Qué ocurre si no existe <code data-start="1120" data-end="1131">IconTheme</code>?</h3>
+<p>Aquí simplemente utiliza directamente el icono alternativo.</p>
+<pre><code><span class="ͼv">else</span> {
+    <span class="ͼy">this</span><span class="ͼv">.</span>notificationIconName <span class="ͼv">=</span>
+        <span class="ͼz">"preferences-system-notifications-symbolic"</span>;
+}</code></pre>
+<p>En términos prácticos:</p>
+<pre><samp>Gtk.IconTheme disponible
+        │
+        ├── notification-symbolic existe
+        │       ↓
+        │  notification-symbolic
+        │
+        └── no existe
+                ↓
+        preferences-system-notifications-symbolic
+
+Gtk.IconTheme no disponible
+        ↓
+preferences-system-notifications-symbolic</samp></pre>
+<h3>¿Dónde termina este valor?</h3>
+<p>Esto es lo interesante al relacionarlo con <code data-start="1734" data-end="1743">_init()</code> y <code
+        data-start="1746" data-end="1763">loadDndStatus()</code>.</p>
+<p>En <code data-start="1769" data-end="1778">_init()</code> vimos: <span class="ͼy">this</span><span
+        class="ͼv">.</span>notificationIconName <span class="ͼv">=</span> <span class="ͼy">null</span>;</p>
+<p>Luego esta función establece el valor real:</p>
+<pre><samp>setNotificationIconName()
+        ↓
+this.notificationIconName</samp></pre>
+<p>Y en <code data-start="1965" data-end="1982">loadDndStatus()</code> encontramos: <span class="ͼy">this</span><span
+        class="ͼv">.</span>notificationIcon<span class="ͼv">.</span>icon_name <span class="ͼv">=</span> <span
+        class="ͼy">this</span><span class="ͼv">.</span>notificationIconName;</p>
+<p>Así que tenemos:</p>
+<pre><samp>setNotificationIconName()
+        │
+        ▼
+notificationIconName
+        │
+        ▼
+loadDndStatus()
+        │
+        ▼
+notificationIcon.icon_name</samp></pre>
+<p>Después <code data-start="2266" data-end="2283">loadDndStatus()</code> puede reemplazar temporalmente ese icono
+    cuando DND está activo:</p>
+<pre><samp><span class="ͼv">if</span>(<span class="ͼ11">Gtk</span><span class="ͼv">.</span>IconTheme<span class="ͼv">.</span>get_default()) {
+    <span class="ͼv">if</span>(<span class="ͼ11">Gtk</span><span class="ͼv">.</span>IconTheme<span class="ͼv">.</span>get_default()<span class="ͼv">.</span>has_icon(
+        <span class="ͼz">"notifications-disabled-symbolic"</span>
+    )) {
+        <span class="ͼy">this</span><span class="ͼv">.</span>notificationIcon<span class="ͼv">.</span>icon_name <span class="ͼv">=</span>
+            <span class="ͼz">"notifications-disabled-symbolic"</span>;
+    }
+}</samp></pre>
+<p>Por eso podemos entender <code data-start="2621" data-end="2643">notificationIconName</code> como el <strong
+        data-start="2652" data-end="2682">icono normal de referencia</strong>:</p>
+<pre><samp>                 notificationIconName
+                         │
+                         ▼
+                  estado normal
+                         │
+                         │ DND activo
+                         ▼
+             notifications-disabled-symbolic</samp></pre>
+<p>Y cuando vuelve a estar DND desactivado, <code data-start="3000" data-end="3017">loadDndStatus()</code> vuelve a
+    asignar <code data-start="3035" data-end="3057">notificationIconName</code>.</p>
+
+<div class="card">
+    <h4>Observaciones de este bloque</h4>
+    <hr>
+    <details>
+        <summary>Una observación para nuestro recorrido</summary>
+        <p>Aquí vemos otra vez una intención que aparece bastante en este código antiguo:</p>
+        <blockquote>Compatibilidad mediante detección de capacidades.</blockquote>
+        <div class="row">
+            <div class="col">
+                <p>No dice:</p>
+                <blockquote>"En GNOME versión X usa este icono."</blockquote>
+            </div>
+            <div class="col">
+                <p>Dice:</p>
+                <blockquote>"¿Existe este icono? Si existe, úsalo; si no, usa otro."</blockquote>
+            </div>
+        </div>
+        <p>Eso es particularmente interesante para nuestro objetivo de llevar <strong>RE: Notification Center</strong> a
+            versiones nuevas de GNOME, porque tendremos que distinguir entre:</p>
+        <ul>
+            <li>cosas que siguen siendo compatibles mediante detección;</li>
+            <li>cosas que cambiaron de API;</li>
+            <li>y cosas que simplemente dejaron de existir.</li>
+        </ul>
+        <p>Esta función, por sí sola, parece pertenecer al primer grupo.</p>
+    </details>
+</div>
+
+<h2 id="section19" class="class-exts">iconThemeChanged ( )</h2>
+<hr>
+<p>Esta es una de esas funciones pequeñas que parecen triviales, pero que existen para resolver un problema muy
+    concreto: <strong data-start="119" data-end="197">el usuario cambia el tema de iconos mientras la extensión está
+        funcionando</strong>.</p>
+<pre><code><span class="ͼ13">iconThemeChanged</span>: <span class="ͼv">function</span>() {
+
+    <span class="ͼy">this</span><span class="ͼv">.</span>setNotificationIconName();
+    <span class="ͼy">this</span><span class="ͼv">.</span>loadDndStatus();
+
+}</code></pre>
+<h3>¿Qué problema resuelve?</h3>
+<p>Recordemos que <code data-start="379" data-end="406">setNotificationIconName()</code> hace:</p>
+<pre><samp>buscar icono disponible en el tema actual
+        ↓
+notificationIconName</samp></pre>
+<p>Por ejemplo:</p>
+<pre><samp>Tema A
+   ↓
+notification-symbolic
+
+Tema B
+   ↓
+preferences-system-notifications-symbolic</samp></pre>
+<p>Si el usuario cambia el tema de iconos:</p>
+<pre><samp>Papirus
+   ↓
+Adwaita</samp></pre>
+<p>O:</p>
+<pre><samp>Tema claro
+   ↓
+Tema oscuro</samp></pre>
+<p>El icono almacenado en: <span class="ͼy">this</span><span class="ͼv">.</span>notificationIconName podría quedar
+    obsoleto.</p>
+<h3>Recalcula el icono correcto</h3>
+<p><span class="ͼy">this</span><span class="ͼv">.</span>setNotificationIconName(); Esto vuelve a hacer:</p>
+<pre><samp>Tema actual
+        ↓
+  ¿notification-symbolic existe?
+        ↓
+  notificationIconName</samp></pre>
+<h3>Aplica el cambio visual</h3>
+<p>Después: <span class="ͼy">this</span><span class="ͼv">.</span>loadDndStatus();</p>
+<p>Esto es importante. Porque <code data-start="1247" data-end="1274">setNotificationIconName()</code> solamente
+    actualiza: <kbd class="inline-code">notificationIconName</kbd> pero no cambia inmediatamente el icono visible.</p>
+<p><code data-start="1392" data-end="1409">loadDndStatus()</code> sí lo hace:</p>
+<pre><samp>this.notificationIcon.icon_name =
+    this.notificationIconName;</samp></pre>
+<p>O: <span class="ͼ11">notifications</span><span class="ͼv">-</span><span class="ͼ11">disabled</span><span
+        class="ͼv">-</span><span class="ͼ11">symbolic </span> si DND está activo.</p>
+<h3>¿Quién llama esta función?</h3>
+<p>Esto es lo interesante. En <code data-start="1999" data-end="2008">_init()</code> vimos: <span
+        class="ͼy">this</span><span class="ͼv">.</span>iconThemeChangeSig <span class="ͼv">=</span> <span
+        class="ͼy">null</span>;</p>
+<p>Y en <code data-start="2085" data-end="2112">startNotificationCenter()</code> (lo vimos hace bastante tiempo)
+    aparecía algo parecido a: <span class="ͼ11">icon theme changed signal.</span><span class="ͼv"></span></p>
+<p>Seguramente existe algo como: <span class="ͼ11">Gtk</span><span class="ͼv">.</span>IconTheme<span
+        class="ͼv">.</span>get_default()<span class="ͼv">.</span>connect(...) o algo equivalente.</p>
+<p>El flujo sería:</p>
+<pre><samp>usuario cambia tema
+        ↓
+GTK emite señal
+        ↓
+iconThemeChanged()
+        ↓
+setNotificationIconName()
+        ↓
+loadDndStatus()</samp></pre>
+<div class="card">
+    <h4>Observaciones de este bloque</h4>
+    <hr>
+    <details>
+        <summary>Observación importante para RE:</summary>
+        <p>Esto pertenece claramente a la categoría: <code>compatibilidad dinámica</code>.</p>
+        <p>La extensión:</p>
+        <ul>
+            <li>no asume un tema concreto;</li>
+            <li>no asume un icono concreto;</li>
+            <li>se adapta cuando el sistema cambia.</li>
+        </ul>
+        <p>Eso es una buena práctica y probablemente algo que querremos conservar.</p>
+    </details>
+    <details>
+        <summary>Flujo completo</summary>
+        <pre><samp>Tema de iconos cambia
+          │
+          ▼
+ iconThemeChanged()
+          │
+   ┌──────┴──────┐
+   ▼             ▼
+setNotification   loadDndStatus()
+IconName()             │
+   │                   ▼
+   ▼             notificationIcon
+notificationIconName</samp></pre>
+        <p>Y aquí podemos conectar otra pieza del rompecabezas:</p>
+        <pre><samp>DND cambia
+      │
+      ▼
+loadDndStatus()
+
+Tema cambia
+      │
+      ▼
+iconThemeChanged()
+      │
+      ▼
+loadDndStatus()</samp></pre>
+        <p>Es decir:</p>
+        <blockquote><code>loadDndStatus()</code> se está comportando cada vez más como una función de
+            <strong>sincronización
+                visual general del indicador</strong>.
+        </blockquote>
+        <p>No solo maneja DND. También actualiza iconos, opacidad, etiquetas y autohide. Eso es algo que vale la pena
+            tener
+            presente cuando más adelante pensemos en refactorizaciones.</p>
     </details>
 </div>
